@@ -19,6 +19,9 @@
 #include "rex_engine/gfx/system/graphics_engine.h"
 #include "rex_engine/gfx/rendering/renderer.h"
 
+#include "rex_engine/gfx/resources/sampler_2d.h"
+#include "rex_engine/gfx/resources/raster_state.h"
+
 #include "rex_std/bonus/utility.h"
 
 #include "rex_engine/pooling/scoped_pool_object.h"
@@ -76,5 +79,17 @@ namespace rex
     // Return the height of the render target of the swapchain
     s32 swapchain_height();
 
+    // The following functions allow you to return a few common resource items
+    enum class CommonRasterState
+    {
+      DefaultNoDepth,
+      DefaultDepth
+    };
+    RasterStateDesc common_raster_state(CommonRasterState type);
+    enum class CommonSampler
+    {
+      Default2D
+    };
+    Sampler2D* common_sampler(CommonSampler type);
   }
 }

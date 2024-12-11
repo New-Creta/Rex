@@ -6,6 +6,7 @@
 #include "rex_engine/gfx/system/root_signature_cache.h"
 
 #include "rex_std/bonus/utility.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -17,11 +18,44 @@ namespace rex
     GpuEngine* g_gpu_engine;
     rsl::vector<rsl::unique_ptr<Renderer>> g_renderers;
 
+    rsl::array<RasterStateDesc, rsl::enum_refl::enum_count<CommonRasterState>()> g_common_raster_states;
+    rsl::array<rsl::unique_ptr<Sampler2D>, rsl::enum_refl::enum_count<CommonSampler>()> g_common_samplers;
+
     namespace internal
     {
       void add_renderer(rsl::unique_ptr<Renderer> renderer)
       {
         g_renderers.emplace_back(rsl::move(renderer));
+      }
+      void init_common_resources()
+      {
+        // common raster states
+        RasterStateDesc raster_state{};
+        raster_state.fill_mode = rex::gfx::FillMode::Solid;
+        raster_state.cull_mode = rex::gfx::CullMode::Back;
+        raster_state.front_ccw = false;
+        raster_state.depth_clip_enable = true;
+        g_common_raster_states[rsl::enum_refl::enum_index(CommonRasterState::DefaultDepth).value()] = raster_state;
+
+        raster_state.depth_clip_enable = false;
+        g_common_raster_states[rsl::enum_refl::enum_index(CommonRasterState::DefaultNoDepth).value()] = raster_state;
+
+        // common samplers
+        SamplerDesc sampler_desc{};
+        sampler_desc.filtering = rex::gfx::SamplerFiltering::MinMagMipPoint;
+        sampler_desc.address_mode_u = rex::gfx::TextureAddressMode::Wrap;
+        sampler_desc.address_mode_v = rex::gfx::TextureAddressMode::Wrap;
+        sampler_desc.address_mode_w = rex::gfx::TextureAddressMode::Wrap;
+        sampler_desc.mip_lod_bias = 0.0f;
+        sampler_desc.max_anisotropy = 0;
+        sampler_desc.comparison_func = rex::gfx::ComparisonFunc::Always;
+        sampler_desc.border_color = rex::gfx::BorderColor::TransparentBlack;
+        sampler_desc.min_lod = 0.0f;
+        sampler_desc.max_lod = 0.0f;
+        sampler_desc.shader_register = 0;
+        sampler_desc.register_space = 0;
+        sampler_desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
+        g_common_samplers[rsl::enum_refl::enum_index(CommonSampler::Default2D).value()] = rhi::create_sampler2d(sampler_desc);
       }
     }
 
@@ -53,6 +87,9 @@ namespace rex
       {
         return Error("Failed to create GPU Engine");
       }
+
+      // Init the common resources so that we don't have to repeat creating the same resources
+      internal::init_common_resources();
 
       // Make sure we release the scopeguard which would shutdown our graphics systems otherwise
       shutdown_on_failure.release();
@@ -120,6 +157,15 @@ namespace rex
     s32 swapchain_height()
     {
       return g_gpu_engine->current_backbuffer_rt()->height();
+    }
+
+    RasterStateDesc common_raster_state(CommonRasterState type)
+    {
+      return g_common_raster_states.at(rsl::enum_refl::enum_index(type).value());
+    }
+    Sampler2D* common_sampler(CommonSampler type)
+    {
+      return g_common_samplers.at(rsl::enum_refl::enum_index(type).value()).get();
     }
   }
 }

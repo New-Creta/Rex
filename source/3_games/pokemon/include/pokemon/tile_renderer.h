@@ -101,6 +101,6 @@ namespace pokemon
     rsl::unique_array<glm::vec2> m_tile_coords;
 
     rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;    // The render pass which holds all the information needed to render a single frame
-    rsl::unique_ptr<rex::gfx::Sampler2D> m_default_sampler; // The sampler for the tileset texture
+    rex::gfx::Sampler2D* m_default_sampler; // The sampler for the tileset texture
   };
 }

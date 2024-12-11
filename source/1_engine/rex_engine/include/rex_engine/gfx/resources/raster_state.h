@@ -25,8 +25,8 @@ namespace rex
       {
       }
 
-      FillMode fill_mode; // Describe the fill mode of a primitive
-      CullMode cull_mode; // Describe the cull mode of a primitive
+      FillMode fill_mode;           // Describe the fill mode of a primitive
+      CullMode cull_mode;           // Describe the cull mode of a primitive
       s32 depth_bias;               // Depth value added to a given pixel
       f32 depth_bias_clamp;         // Maximum depth bias of a pixel
       f32 sloped_scale_depth_bias;  // scalar on a given pixel's slope
@@ -35,23 +35,6 @@ namespace rex
       bool aa_lines_enable;         // Specifies whether to enable line antialiasing
       bool depth_clip_enable;       // specifies whether to enable clipping based on distance
       bool front_ccw;               // Describe if a triangle is front or back-facing
-    };
-
-    // A raster state
-    class RasterState
-    {
-    public:
-      RasterState(const RasterStateDesc& desc)
-        : m_desc(desc)
-      {}
-
-      const RasterStateDesc& get() const
-      {
-        return m_desc;
-      }
-
-    private:
-      RasterStateDesc m_desc;
     };
   }
 }

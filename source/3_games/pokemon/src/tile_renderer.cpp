@@ -7,6 +7,7 @@
 
 #include "rex_engine/gfx/system/shader_library.h"
 #include "rex_engine/gfx/rendering/swapchain_info.h"
+#include "rex_engine/gfx/graphics.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -39,8 +40,6 @@ namespace pokemon
     // Bind all the resources to the gfx pipeline
     render_ctx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
     render_ctx->set_index_buffer(m_tiles_ib_gpu.get());
-
-    //#TODO: Get rid of these 2 calls
     render_ctx->set_viewport(rex::gfx::swapchain_info().viewport);
     render_ctx->set_scissor_rect(rex::gfx::swapchain_info().scissor_rect);
 
@@ -220,24 +219,7 @@ namespace pokemon
   }
   void TileRenderer::init_sampler()
   {
-    // Sampler is currently hardcoded
-    //#TODO: Create default samplers
-    rex::gfx::SamplerDesc desc{};
-    desc.filtering = rex::gfx::SamplerFiltering::MinMagMipPoint;
-    desc.address_mode_u = rex::gfx::TextureAddressMode::Wrap;
-    desc.address_mode_v = rex::gfx::TextureAddressMode::Wrap;
-    desc.address_mode_w = rex::gfx::TextureAddressMode::Wrap;
-    desc.mip_lod_bias = 0.0f;
-    desc.max_anisotropy = 0;
-    desc.comparison_func = rex::gfx::ComparisonFunc::Always;
-    desc.border_color = rex::gfx::BorderColor::TransparentBlack;
-    desc.min_lod = 0.0f;
-    desc.max_lod = 0.0f;
-    desc.shader_register = 0;
-    desc.register_space = 0;
-    desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
-
-    m_default_sampler = rex::gfx::rhi::create_sampler2d(desc);
+    m_default_sampler = rex::gfx::common_sampler(rex::gfx::CommonSampler::Default2D);
   }
 
   void TileRenderer::init_renderpass()
@@ -246,12 +228,7 @@ namespace pokemon
 
     render_pass_desc.name = "Tile Renderer";
 
-    //#TODO: Create a default render state here
-    rex::gfx::RasterStateDesc& raster_state = render_pass_desc.pso_desc.output_merger.raster_state;
-    raster_state.fill_mode = rex::gfx::FillMode::Solid;
-    raster_state.cull_mode = rex::gfx::CullMode::Back;
-    raster_state.front_ccw = false;
-    raster_state.depth_clip_enable = true;
+    render_pass_desc.pso_desc.output_merger.raster_state = rex::gfx::common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
     // We're rendering directly to the back buffer
     render_pass_desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
@@ -269,7 +246,7 @@ namespace pokemon
 
     m_render_pass = rsl::make_unique<rex::gfx::RenderPass>(render_pass_desc);
     m_render_pass->set("tile_texture", m_tileset_texture);
-    m_render_pass->set("default_sampler", m_default_sampler.get());
+    m_render_pass->set("default_sampler", m_default_sampler);
     m_render_pass->set("RenderingMetaData", m_tile_renderer_cb.get());
     m_render_pass->set("TileIndexBuffer", m_tile_indices_buffer.get());
   }
