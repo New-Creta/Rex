@@ -4,6 +4,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/gfx/core/texture_format.h"
+#include "rex_engine/gfx/rendering/swapchain_info.h"
 
 namespace rex
 {
@@ -12,11 +13,6 @@ namespace rex
 		class RenderTarget;
 		class RenderContext;
 		class DepthStencilBuffer;
-
-		// An empty structure, it's just to indicate that the swapchain's backbuffer should be used as color buffer
-		struct SwapchainFrameBufferHandle {};
-		// This function returns a new swapchain frame buffer handle
-		SwapchainFrameBufferHandle swapchain_frame_buffer_handle();
 
 		// A frame buffer attachment can be provided in 3 ways
 		// - define the width, height and format of the attachment, causing it to be created at frame buffer construction

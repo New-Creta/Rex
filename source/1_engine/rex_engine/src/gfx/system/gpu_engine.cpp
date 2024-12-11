@@ -9,6 +9,7 @@
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/rendering/swapchain_info.h"
 
 namespace rex
 {
@@ -120,6 +121,18 @@ namespace rex
     void GpuEngine::init_swapchain()
     {
       m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
+      
+      SwapchainInfo swapchain_info{};
+      swapchain_info.width = m_swapchain->width();
+      swapchain_info.height = m_swapchain->height();
+      swapchain_info.viewport.top_left_x = 0.0f;
+      swapchain_info.viewport.top_left_y = 0.0f;
+      swapchain_info.viewport.width = swapchain_info.width;
+      swapchain_info.viewport.height = swapchain_info.height;
+      swapchain_info.scissor_rect.right = swapchain_info.width;
+      swapchain_info.scissor_rect.bottom = swapchain_info.height;
+
+      update_swapchain_info(swapchain_info);
     }
     // Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
     void GpuEngine::init_sub_engines()

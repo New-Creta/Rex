@@ -102,7 +102,5 @@ namespace pokemon
 
     rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;    // The render pass which holds all the information needed to render a single frame
     rsl::unique_ptr<rex::gfx::Sampler2D> m_default_sampler; // The sampler for the tileset texture
-    rex::gfx::Viewport m_viewport;                          // viewport used for rendering
-    rex::gfx::ScissorRect m_scissor_rect;                   // scissor rect for rendering
   };
 }

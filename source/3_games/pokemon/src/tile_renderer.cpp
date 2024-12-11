@@ -6,6 +6,7 @@
 #include "rex_engine/filesystem/vfs.h"
 
 #include "rex_engine/gfx/system/shader_library.h"
+#include "rex_engine/gfx/rendering/swapchain_info.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -36,14 +37,12 @@ namespace pokemon
     m_render_pass->bind_to(render_ctx.get());
 
     // Bind all the resources to the gfx pipeline
-    render_ctx->transition_buffer(m_tiles_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
-
     render_ctx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
     render_ctx->set_index_buffer(m_tiles_ib_gpu.get());
 
     //#TODO: Get rid of these 2 calls
-    render_ctx->set_viewport(m_viewport);
-    render_ctx->set_scissor_rect(m_scissor_rect);
+    render_ctx->set_viewport(rex::gfx::swapchain_info().viewport);
+    render_ctx->set_scissor_rect(rex::gfx::swapchain_info().scissor_rect);
 
     // Send the draw command
     const s32 index_count_per_instance = 6;
@@ -123,15 +122,6 @@ namespace pokemon
     // The tile cache is like a map matrix but it holds indices on a tile level instead of block level
     m_tile_cache = rsl::make_unique<s8[]>(num_tiles());
 
-    //#TODO: create a viewport and scissor rect for the backbuffer
-    m_viewport.top_left_x = 0.0f;
-    m_viewport.top_left_y = 0.0f;
-    m_viewport.width = 720.0f;
-    m_viewport.height = 720.0f;
-
-    m_scissor_rect.right = m_viewport.width;
-    m_scissor_rect.bottom = m_viewport.height;
-
     // Initialize all the GPU resources
     init_per_vertex_vb();
     init_tile_indices_buffer();
@@ -159,12 +149,20 @@ namespace pokemon
     tile_vertices[2] = TileVertex{rsl::point<f32>(0,                     -inv_tile_screen_height), rsl::point<f32>(0.0f, uv_height)};       // bottom left
     tile_vertices[3] = TileVertex{rsl::point<f32>(inv_tile_screen_width, -inv_tile_screen_height), rsl::point<f32>(uv_width, uv_height)};   // bottom right
 
-    m_tiles_vb_gpu = rex::gfx::rhi::create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
+    // It's possible we're updating the tiles vertex buffer due to a map transition
+    // In which case we don't need to allocate a new one, just update the existing one
+    if (!m_tiles_vb_gpu)
+    {
+      m_tiles_vb_gpu = rex::gfx::rhi::create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
+    }
 
     auto copy_ctx = rex::gfx::new_copy_ctx();
     copy_ctx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(TileVertex));
     copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
 
+    auto render_ctx = rex::gfx::new_render_ctx();
+    render_ctx->transition_buffer(m_tiles_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
+    render_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
   }
   void TileRenderer::init_tile_indices_buffer()
   {
@@ -209,7 +207,12 @@ namespace pokemon
     texture_data.inv_tile_screen_width = 2.0f / constants::g_screen_width_in_tiles;
     texture_data.inv_tile_screen_height = 2.0f / constants::g_screen_height_in_tiles;
 
-    m_tile_renderer_cb = rex::gfx::rhi::create_constant_buffer(sizeof(RenderingMetaData));
+    // It's possible we're updating and not creating due to a map transition
+    // In which case we don't need to allocate a new one, just update the existing one
+    if (!m_tile_renderer_cb)
+    {
+      m_tile_renderer_cb = rex::gfx::rhi::create_constant_buffer(sizeof(RenderingMetaData));
+    }
 
     auto copy_ctx = rex::gfx::new_copy_ctx();
     copy_ctx->update_buffer(m_tile_renderer_cb.get(), &texture_data, sizeof(texture_data));
@@ -276,5 +279,9 @@ namespace pokemon
     auto copy_ctx = rex::gfx::new_copy_ctx();
     copy_ctx->update_buffer(m_tile_indices_buffer.get(), m_tile_cache.get(), m_tile_cache.byte_size());
     copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
+
+    auto render_context = rex::gfx::new_render_ctx();
+    render_context->transition_buffer(m_tile_indices_buffer.get(), rex::gfx::ResourceState::NonPixelShaderResource);
+    render_context->execute_on_gpu(rex::gfx::WaitForFinish::yes);
   }
 }

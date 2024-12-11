@@ -9,11 +9,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		SwapchainFrameBufferHandle swapchain_frame_buffer_handle()
-		{
-			return SwapchainFrameBufferHandle{};
-		}
-
 		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(SwapchainFrameBufferHandle)
 			: m_use_swapchain(true)
 		{}
