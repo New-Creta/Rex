@@ -196,8 +196,8 @@ namespace rex
 
   void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
   {
-    thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
     ++thread_local_mem_tag_index();
+    thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
   }
   void MemoryTracker::pop_tag() // NOLINT(readability-convert-member-functions-to-static)
   {
