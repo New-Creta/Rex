@@ -33,6 +33,11 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
     conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
     conf.AddPublicDependency<Entt>(target, DependencySetting.Default);
+
+    if (conf.Platform == Platform.win32 || conf.Platform == Platform.win64)
+    {
+      conf.LibraryFiles.Add("Setupapi.lib");
+    }
   }
 
   protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)

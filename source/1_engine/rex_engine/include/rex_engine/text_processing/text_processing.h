@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/string_view.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -41,5 +42,35 @@ namespace rex
 
   // returns true if the character after the string view is '\0'
   bool is_null_terminated(rsl::string_view string);
+
+  // returns the shortname of the day presented by the nr.
+  // according to the international standard ISO 8601
+  // https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week#:~:text=In%20the%20international%20standard%20ISO,second%20day%20of%20the%20week.
+  // Monday starts at index 1
+  rsl::string_view day_nr_to_name(s32 dayNr);
+
+  // returns the full name of the day presented by the nr.
+  // according to the international standard ISO 8601
+  // https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week#:~:text=In%20the%20international%20standard%20ISO,second%20day%20of%20the%20week.
+  // Monday starts at index 1
+  rsl::string_view day_nr_to_full_name(s32 dayNr);
+
+  // returns the numeral representation of a day
+  // according to the international standard ISO 8601
+  // https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week#:~:text=In%20the%20international%20standard%20ISO,second%20day%20of%20the%20week.
+  // Monday starts at index 1
+  s32 day_name_to_nr(rsl::string_view dayName);
+
+  // returns the shortname of the month presented by the nr.
+  // January starts at index 1
+  rsl::string_view month_nr_to_name(s32 monthNr);
+
+  // returns the full name of the month presented by the nr.
+  // January starts at index 1
+  rsl::string_view month_nr_to_full_name(s32 monthNr);
+
+  // returns the numeral representation of a month
+  // January starts at index 1
+  s32 month_name_to_nr(rsl::string_view monthName);
 
 } // namespace rex

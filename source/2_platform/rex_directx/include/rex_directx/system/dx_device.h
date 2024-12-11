@@ -33,8 +33,6 @@ namespace rex
     private:
       // Query the shader model of this device and cache it
       void init_shader_model();
-      // Query the driver version of this device on the current machine
-      rsl::small_stack_string query_driver_version() const;
 
     private:
       wrl::ComPtr<ID3D12Device1> m_device;

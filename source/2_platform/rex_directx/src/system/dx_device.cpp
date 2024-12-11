@@ -4,6 +4,8 @@
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/dxgi/includes.h"
 
+#include "rex_engine/system/video_driver.h"
+
 namespace rex
 {
   namespace gfx
@@ -21,7 +23,7 @@ namespace rex
       m_info.shader_version = shader_model_name(shader_model);
       m_info.adaptor        = m_adapter->description().name;
       m_info.vendor         = m_adapter->description().vendor_name;
-      m_info.driver_version = query_driver_version();
+      m_info.driver_version = query_video_driver(m_info.adaptor).user_driver_version;
       m_info.available_memory = m_adapter->description().dedicated_video_memory;
     }
 
@@ -66,11 +68,6 @@ namespace rex
 
       m_shader_version = shader_model_name(shader_model);
       m_api_version    = feature_level_name(m_feature_level);
-    }
-
-    rsl::small_stack_string DxDevice::query_driver_version() const
-    {
-      return "Unknown"_small;
     }
   } // namespace gfx
 } // namespace rex
