@@ -9,7 +9,7 @@ namespace rex
   namespace gfx
   {
     GraphicsEngine::GraphicsEngine(GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker)
-      : m_command_queue(rhi::create_command_queue(type))
+      : m_command_queue(gal()->create_command_queue(type))
       , m_command_allocator_pool(type)
       , m_context_pool([this](CommandAllocator* alloc) { return allocate_new_context(alloc); })
       , m_resource_state_tracker(globalResourceStateTracker)

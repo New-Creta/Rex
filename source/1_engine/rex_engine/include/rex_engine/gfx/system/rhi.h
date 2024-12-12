@@ -62,11 +62,14 @@ namespace rex
     public:
       virtual ~GALInterface() = default;
 
+      // Initialize the graphics systesm and create a gpu engine
+      virtual gfx::GpuEngine* create_gpu_engine(const OutputWindowUserData& userData) = 0;
+
       // Return basic info about the graphics hardware of the current machine
-      virtual const Info& info() = 0;
+      virtual const Info& info() const = 0;
 
       // Configuration
-      virtual ShaderPlatform shader_platform() = 0;
+      virtual ShaderPlatform shader_platform() const = 0;
 
       // Backend Systems
       virtual rsl::unique_ptr<CommandQueue> create_command_queue(GraphicsEngineType type) = 0;
@@ -92,54 +95,15 @@ namespace rex
       virtual rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc) = 0;
       virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
 
+      virtual ShaderSignature reflect_shader(const gfx::Shader* shader) = 0;
+
     private:
 
     };
 
-    // All logic inside the "api" namespace is only declared
-    // The definition of these functions and/or classes are found in the graphics API specific rhi code.
-    // eg. rhi::shader_platform for DirectX is defined in dx_rhi.cpp
-    // The reason we've made a seperate namespace is just for readability.
+    GALInterface* gal();
 
-    namespace rhi
-    {
-      // Initializes the render hardware infrastructure
-      // For DirectX, creates the dxgi factory, d3d device, command buffers, heaps and swapchain
-      // After this, the rhi is setup to start creating resources (textures, shaders, vertex buffers, ..)
-      gfx::GpuEngine* init(const OutputWindowUserData& userData);
-
-      // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
-      void shutdown();
-
-      // Return basic info about the graphics hardware of the current machine
-      const Info& info();
-
-      // Configuration
-      ShaderPlatform shader_platform();
-
-      // Backend Systems
-      rsl::unique_ptr<CommandQueue> create_command_queue(GraphicsEngineType type);
-      rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle);
-      rsl::unique_ptr<CommandAllocator> create_command_allocator(GraphicsEngineType type);
-
-      // Resource creation
-      rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format);
-      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize, const void* data = nullptr);
-      rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format, const void* data = nullptr);
-      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters);
-      rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
-      rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
-      rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc);
-      rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size, rsl::string_view debugName = "Constant Buffer");
-      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
-      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
-      rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
-      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
-      rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
-      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-      rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc);
-      rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc);
-      rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr);
-    }
+		gfx::GpuEngine* init_gal(rsl::unique_ptr<GALInterface> galInterface, const OutputWindowUserData& userData);
+		void shutdown_gal();
   } // namespace gfx
 } // namespace rex

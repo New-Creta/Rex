@@ -22,7 +22,7 @@ namespace rex
 			: m_name(desc.name)
 		{
 			m_pso_desc = desc.pso_desc;
-			m_pso = rhi::create_pso(desc.pso_desc);
+			m_pso = gal()->create_pso(desc.pso_desc);
 			const ShaderPipelineReflection& reflection = shader_reflection_cache::load(desc.pso_desc.shader_pipeline);
 			m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.renderpass_param_store_desc);
 			m_framebuffer = rsl::make_unique<FrameBuffer>(desc.framebuffer_desc);

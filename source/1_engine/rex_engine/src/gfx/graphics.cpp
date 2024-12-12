@@ -55,13 +55,13 @@ namespace rex
         sampler_desc.shader_register = 0;
         sampler_desc.register_space = 0;
         sampler_desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
-        g_common_samplers[rsl::enum_refl::enum_index(CommonSampler::Default2D).value()] = rhi::create_sampler2d(sampler_desc);
+        g_common_samplers[rsl::enum_refl::enum_index(CommonSampler::Default2D).value()] = gal()->create_sampler2d(sampler_desc);
       }
     }
 
     void log_info()
     {
-      auto& gfx_info = rhi::info();
+      auto& gfx_info = gal()->info();
       REX_UNUSED_PARAM(gfx_info);
 
       REX_INFO(LogGraphics, "Renderer Info - Adaptor: {}", gfx_info.adaptor);
@@ -72,12 +72,12 @@ namespace rex
       REX_INFO(LogGraphics, "Renderer Info - Driver Version: {}", gfx_info.driver_version);
     }
 
-    Error init(const OutputWindowUserData& userData)
+    Error init(rsl::unique_ptr<GALInterface> galInterface, const OutputWindowUserData& userData)
     {
       // Initialize the gpu engine, it's responsible for the entire graphics pipeline.
       // The gpu engine gets created by the rhi as some of the objects wrapped by the gpu engine
       // are also needed by the rhi to create other objects.
-      g_gpu_engine = rhi::init(userData);
+      g_gpu_engine = init_gal(rsl::move(galInterface), userData);
       rsl::scopeguard shutdown_on_failure = []() { shutdown(); };
 
       // If we even fail to allocate the memory for the gpu engine, we exit immediately.
@@ -100,7 +100,7 @@ namespace rex
       g_renderers.clear();
       root_signature_cache::clear();
 
-      rhi::shutdown();
+      shutdown_gal();
     }
 
     void render()

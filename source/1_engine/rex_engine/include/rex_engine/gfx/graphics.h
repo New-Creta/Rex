@@ -26,6 +26,8 @@
 
 #include "rex_engine/pooling/scoped_pool_object.h"
 
+#include "rex_engine/gfx/system/rhi.h"
+
 // This is the interface of the main application with the graphics engine
 
 namespace rex
@@ -45,8 +47,10 @@ namespace rex
     // Log the basic info about the graphics hardware of the current machine
     void log_info();
 
+    // Set the graphics abstraction layer object
+
     // Create and initialize the graphics engine, rendering is possible from here on out
-    Error init(const OutputWindowUserData& userData);
+    Error init(rsl::unique_ptr<GALInterface> galInterface, const OutputWindowUserData& userData);
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 

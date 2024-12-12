@@ -7,6 +7,7 @@
 #include "rex_engine/gfx/shader_reflection/bound_resource_reflection.h"
 #include "rex_engine/gfx/core/shader_visibility.h"
 
+#include "rex_engine/gfx/system/rhi.h"
 
 namespace rex
 {
@@ -223,8 +224,8 @@ namespace rex
 				}
 
 				ShaderPipelineReflectionBuilder builder{};
-				builder.process_shader(api::reflect_shader(pipeline.vs), ShaderVisibility::Vertex);
-				builder.process_shader(api::reflect_shader(pipeline.ps), ShaderVisibility::Pixel);
+				builder.process_shader(gal()->reflect_shader(pipeline.vs), ShaderVisibility::Vertex);
+				builder.process_shader(gal()->reflect_shader(pipeline.ps), ShaderVisibility::Pixel);
 
 				ShaderPipelineReflection reflection = builder.build();
 				auto result = g_reflection_cache_lookup.emplace(pipeline, rsl::move(reflection));

@@ -30,11 +30,11 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogDxGpuEngine);
 
-    DxGpuEngine::DxGpuEngine(const OutputWindowUserData& userData, rsl::unique_ptr<DxDevice> device, dxgi::AdapterManager* adapterManager)
+    DxGpuEngine::DxGpuEngine(const OutputWindowUserData& userData, DxDevice* device, dxgi::AdapterManager* adapterManager)
       : GpuEngine(userData)
-      , m_device(rsl::move(device))
+      , m_device(device)
       , m_adapter_manager(adapterManager)
-      , m_heap(rhi::create_resource_heap())
+      , m_heap(dx_gal()->create_resource_heap())
       , m_shader_compiler()
     {
     }
@@ -128,7 +128,7 @@ namespace rex
     // Allocate a new view heap of a given type
     rsl::unique_ptr<ViewHeap> DxGpuEngine::allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible)
     {
-      return rhi::create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
+      return dx_gal()->create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
     }
   }
 }

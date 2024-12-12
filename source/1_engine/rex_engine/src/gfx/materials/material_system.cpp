@@ -55,8 +55,8 @@ namespace rex
 				// However, to get around the compiler errors, we implement it as this for now
 				switch (param_type)
 				{
-				case rex::gfx::ShaderParameterType::Texture: break; // material->set_texture(name, rhi::create_texture2d(path).get());
-				case rex::gfx::ShaderParameterType::Sampler: break; // material->set_sampler(name, rhi::create_sampler2d(path).get());
+				case rex::gfx::ShaderParameterType::Texture: break; // material->set_texture(name, gal()->create_texture2d(path).get());
+				case rex::gfx::ShaderParameterType::Sampler: break; // material->set_sampler(name, gal()->create_sampler2d(path).get());
 				default: break;
 				}
 			}
@@ -98,7 +98,7 @@ namespace rex
 			mat_desc.shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
 
 			// Create the material object
-			rsl::unique_ptr<Material> material = rhi::create_material(mat_desc);
+			rsl::unique_ptr<Material> material = gal()->create_material(mat_desc);
 
 			// Load in the parameters values from the material
 			init_material_parameters(material.get(), json_blob); // infinite loop here when inserting into json

@@ -38,6 +38,8 @@
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/tracked_allocator.h"
 
+#include "rex_directx/system/dx_rhi.h"
+
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
 
@@ -323,7 +325,7 @@ namespace rex
         user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::get_int("max_frames_in_flight", 3);
 
-        gfx::init(user_data);
+        gfx::init(rsl::make_unique<gfx::DirectXInterface>(), user_data);
 
         REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 

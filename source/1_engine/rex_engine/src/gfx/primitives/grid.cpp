@@ -63,8 +63,8 @@ namespace rex
           indices.push_back(start_vtx + 2);
         }
 
-        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(vertices.size(), sizeof(vertices.front()), vertices.data());
-        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(indices.size(), IndexBufferFormat::Uint16, indices.data());
+        rsl::unique_ptr<VertexBuffer> vb = gal()->create_vertex_buffer(vertices.size(), sizeof(vertices.front()), vertices.data());
+        rsl::unique_ptr<IndexBuffer> ib = gal()->create_index_buffer(indices.size(), IndexBufferFormat::Uint16, indices.data());
 
         return StaticMesh(rsl::move(vb), rsl::move(ib));
       }

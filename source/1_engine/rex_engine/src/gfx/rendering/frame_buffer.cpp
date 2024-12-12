@@ -88,7 +88,7 @@ namespace rex
 					if (is_depth_format(attachment_desc.format()))
 					{
 						REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
-						m_depth_stencil_buffer = rhi::create_depth_stencil_buffer(attachment_desc.width(), attachment_desc.height(), attachment_desc.format(), attachment_desc.clear_state());
+						m_depth_stencil_buffer = gal()->create_depth_stencil_buffer(attachment_desc.width(), attachment_desc.height(), attachment_desc.format(), attachment_desc.clear_state());
 					}
 					else
 					{

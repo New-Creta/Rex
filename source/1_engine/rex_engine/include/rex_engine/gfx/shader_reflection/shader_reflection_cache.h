@@ -14,11 +14,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		namespace api
-		{
-			gfx::ShaderSignature reflect_shader(const gfx::Shader* shader);
-		}
-
 		struct ShaderPipelineReflection
 		{
 			// This holds the parameters that are needed for the shader pipeline, but does not hold any data for them

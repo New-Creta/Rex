@@ -322,7 +322,7 @@ namespace rex
       return ShaderArithmeticType::Unknown;
     }
 
-    namespace api
+    namespace shader_reflection
     {
       gfx::ShaderSignature reflect_shader(const gfx::Shader* shader)
 			{

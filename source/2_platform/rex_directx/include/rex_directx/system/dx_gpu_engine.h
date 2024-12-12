@@ -35,7 +35,7 @@ namespace rex
     class DxGpuEngine : public GpuEngine
     {
     public:
-      DxGpuEngine(const OutputWindowUserData& userData, rsl::unique_ptr<DxDevice> device, dxgi::AdapterManager* adapterManager);
+      DxGpuEngine(const OutputWindowUserData& userData, DxDevice* device, dxgi::AdapterManager* adapterManager);
 
       // Allocate a 1D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
@@ -75,7 +75,7 @@ namespace rex
       rsl::unique_ptr<ViewHeap> allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible) override;
 
     private:
-      rsl::unique_ptr<DxDevice> m_device;    // The DirectX device
+      DxDevice* m_device;    // The DirectX device
       dxgi::AdapterManager* m_adapter_manager;    // The list of adapters (aka gpus)
       rsl::unique_ptr<ResourceHeap> m_heap;  // The heap we use to allocate gpu resources
       ShaderCompiler m_shader_compiler;      // A shader compiler with internal caching

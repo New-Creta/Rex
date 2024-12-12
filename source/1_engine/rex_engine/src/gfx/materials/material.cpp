@@ -64,7 +64,7 @@ namespace rex
         {
           PipelineStateDesc pso_desc = psoDesc;
           pso_desc.shader_pipeline = m_shader_pipeline;
-          m_pso = rhi::create_pso(pso_desc);
+          m_pso = gal()->create_pso(pso_desc);
         }
 
         result.is_overwritten = true;

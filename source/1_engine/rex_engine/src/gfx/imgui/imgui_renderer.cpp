@@ -144,7 +144,7 @@ namespace rex
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
       TextureFormat format = TextureFormat::Unorm4;
 
-      m_fonts_texture = rhi::create_texture2d(width, height, format, pixels);
+      m_fonts_texture = gal()->create_texture2d(width, height, format, pixels);
 
       io.Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
     }
@@ -167,7 +167,7 @@ namespace rex
       desc.register_space = 0;
       desc.shader_visibility = ShaderVisibility::Pixel;
 
-      m_fonts_sampler = rhi::create_sampler2d(desc);
+      m_fonts_sampler = gal()->create_sampler2d(desc);
     }
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_renderpass()

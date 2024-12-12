@@ -49,8 +49,8 @@ namespace rex
 					rsl::unique_ptr<Shader> new_shader;
 					switch (type)
 					{
-					case rex::gfx::ShaderType::Vertex:	new_shader = rhi::create_vertex_shader(memory::blob_to_string_view(content)); break;
-					case rex::gfx::ShaderType::Pixel:		new_shader = rhi::create_pixel_shader(memory::blob_to_string_view(content));	break;
+					case rex::gfx::ShaderType::Vertex:	new_shader = gal()->create_vertex_shader(memory::blob_to_string_view(content)); break;
+					case rex::gfx::ShaderType::Pixel:		new_shader = gal()->create_pixel_shader(memory::blob_to_string_view(content));	break;
 					default: break;
 					}
 

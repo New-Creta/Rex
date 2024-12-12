@@ -21,7 +21,7 @@ namespace rex
 					return it->value.get();
 				}
 
-				auto layout = rhi::create_input_layout(desc);
+				auto layout = gal()->create_input_layout(desc);
 				return g_cached_layouts.emplace(desc, rsl::move(layout)).inserted_element->value.get();
 			}
 

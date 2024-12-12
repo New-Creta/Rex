@@ -63,7 +63,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&d3d_buffer));
         d3d::set_debug_name_for(d3d_buffer.Get(), rsl::format("DxSwapchain Back Buffer {}", i));
-        auto render_target = rhi::create_render_target(d3d_buffer);
+        auto render_target = dx_gal()->create_render_target(d3d_buffer);
         store_render_target(rsl::move(render_target));
       }
     }

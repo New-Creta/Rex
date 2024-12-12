@@ -21,7 +21,7 @@ namespace rex
       // Some backends will leave PlatformHandleRaw == 0, in which case we assume PlatformHandle will contain the HWND.
       HWND hwnd = viewport->PlatformHandleRaw ? (HWND)viewport->PlatformHandleRaw : (HWND)viewport->PlatformHandle;
       IM_ASSERT(hwnd != 0);
-      m_swapchain = rhi::create_swapchain(creationInfo.command_queue, creationInfo.max_num_frames_in_flight, hwnd);
+      m_swapchain = dx_gal()->create_swapchain(creationInfo.command_queue, creationInfo.max_num_frames_in_flight, hwnd);
 
       const s32 width = static_cast<s32>(viewport->Size.x);
       const s32 height = static_cast<s32>(viewport->Size.y);

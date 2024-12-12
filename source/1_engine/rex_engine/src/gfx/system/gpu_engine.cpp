@@ -120,7 +120,7 @@ namespace rex
     // Initialize the swapchain which is used for presenting to the main window
     void GpuEngine::init_swapchain()
     {
-      m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
+      m_swapchain = gal()->create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
       
       SwapchainInfo swapchain_info{};
       swapchain_info.width = m_swapchain->width();

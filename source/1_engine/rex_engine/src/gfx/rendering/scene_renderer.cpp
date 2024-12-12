@@ -65,8 +65,8 @@ namespace rex
 
 		void SceneRenderer::init_gpu_resources()
 		{
-			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData), "Per View Data");
-			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData), "Per Scene Data");
+			m_cb_view_data = gal()->create_constant_buffer(sizeof(PerViewData), "Per View Data");
+			m_cb_scene_data = gal()->create_constant_buffer(sizeof(PerSceneData), "Per Scene Data");
 
 			// The number of objects per scene currently has a hard limit
 			// If we hit this limit we can upscale it or come up with a different strategy
@@ -77,7 +77,7 @@ namespace rex
 			for (s32 i = 0; i < s_max_number_of_objects_per_scene; ++i)
 			{
 				debugName = rsl::format("Per Instance Data {}", i);
-				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData), debugName));
+				m_per_instance_cbs.push_back(gal()->create_constant_buffer(sizeof(PerInstanceData), debugName));
 			}
 		}
 

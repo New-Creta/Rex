@@ -28,7 +28,7 @@ namespace rex
     // Allocate a render context
     rsl::unique_ptr<GraphicsContext> DxRenderEngine::allocate_new_context(CommandAllocator* alloc)
     {
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, GraphicsEngineType::Render);
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = dx_gal()->create_commandlist(alloc, GraphicsEngineType::Render);
 
       cmdlist->Close();
       return rsl::make_unique<DxRenderContext>(this, cmdlist);
