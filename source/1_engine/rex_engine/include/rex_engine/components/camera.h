@@ -35,6 +35,9 @@ namespace rex
 			// Switch the projection mode of the camera
 			void switch_mode(ProjectionMode newMode);
 
+			// Return the default forward vector if the actual one cannot get calculated
+			constexpr static glm::vec3 default_forward();
+
 		private:
 			// Calculate the projection matrix based on the current camera settings
 			void calc_proj_matrix();
@@ -52,6 +55,10 @@ namespace rex
 			f32 m_far;
 			rsl::deg_angle m_fov;
 			ProjectionMode m_projection_mode;
+
+			// By default, the forward vector is calculated as the vector from the position to the world's origin
+			// However, if the position is the world origin, this vector is used as the forward vector
+			constexpr static glm::vec3 s_default_forward = glm::vec3(0.0f, 0.0f, 1.0f);
 		};
 	}
 }

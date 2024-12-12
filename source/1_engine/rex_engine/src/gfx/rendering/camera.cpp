@@ -16,6 +16,11 @@ namespace rex
 			, m_near(near)
 			, m_far(far)
 		{
+			if (m_position == glm::vec3())
+			{
+				m_forward = s_default_forward;
+			}
+
 			calc_proj_matrix();
 		}
 
@@ -47,6 +52,11 @@ namespace rex
 				m_projection_mode = newMode;
 				calc_proj_matrix();
 			}
+		}
+
+		glm::vec3 Camera::default_forward()
+		{
+			return s_default_forward;
 		}
 
 		void Camera::calc_proj_matrix()

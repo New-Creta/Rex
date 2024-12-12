@@ -37,9 +37,11 @@ namespace rex
     void resume();
     void quit();
 
+    bool is_initializing() const;
     bool is_paused() const;
     bool is_running() const;
     bool is_marked_for_destroy() const;
+    bool is_shutting_down() const;
 
   protected:
     virtual bool platform_init()     = 0;

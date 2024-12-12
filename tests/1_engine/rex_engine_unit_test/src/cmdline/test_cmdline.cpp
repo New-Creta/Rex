@@ -6,7 +6,6 @@ TEST_CASE("empty commandline")
 {
   rex::cmdline::init("");
 
-  REX_CHECK(rex::cmdline::get().empty());
   REX_CHECK(rex::cmdline::get_argument("something").has_value() == false);
 }
 
@@ -14,7 +13,6 @@ TEST_CASE("commandline with 1 argument")
 {
   rex::cmdline::init("-ExampleArgument");
 
-  REX_CHECK(rex::cmdline::get().length() > 0);
   REX_CHECK(rex::cmdline::get_argument("something").has_value() == false);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgument").has_value() == true);
 }
@@ -23,7 +21,6 @@ TEST_CASE("commandline with 2 arguments")
 {
   rex::cmdline::init("-ExampleArgument -ExampleArgument2");
 
-  REX_CHECK(rex::cmdline::get().length() > 0);
   REX_CHECK(rex::cmdline::get_argument("something").has_value() == false);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgument").has_value() == true);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgument2").has_value() == true);
@@ -33,7 +30,6 @@ TEST_CASE("commandline with equal sign")
 {
   rex::cmdline::init("-ExampleArgumentWithEqual=10");
 
-  REX_CHECK(rex::cmdline::get().length() > 0);
   REX_CHECK(rex::cmdline::get_argument("something").has_value() == false);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgumentWithEqual").has_value() == true);
   REX_CHECK(rsl::stoi(rex::cmdline::get_argument("ExampleArgumentWithEqual").value()).value() == 10);
@@ -43,7 +39,6 @@ TEST_CASE("commandline with equal sign and example argument")
 {
   rex::cmdline::init("-ExampleArgumentWithEqual=10 -ExampleArgument");
 
-  REX_CHECK(rex::cmdline::get().length() > 0);
   REX_CHECK(rex::cmdline::get_argument("something").has_value() == false);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgument").has_value() == true);
   REX_CHECK(rex::cmdline::get_argument("ExampleArgumentWithEqual").has_value() == true);

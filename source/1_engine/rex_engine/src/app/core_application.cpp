@@ -91,6 +91,12 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
+  bool CoreApplication::is_initializing() const
+  {
+    return m_app_state.has_state(ApplicationState::Initializing);
+  }
+
+  //-------------------------------------------------------------------------
   bool CoreApplication::is_paused() const
   {
     return m_app_state.has_state(ApplicationState::Paused);
@@ -106,6 +112,12 @@ namespace rex
   bool CoreApplication::is_marked_for_destroy() const
   {
     return m_app_state.has_state(ApplicationState::MarkedForDestroy);
+  }
+
+  //--------------------------------------------------------------------------------------------
+  bool CoreApplication::is_shutting_down() const
+  {
+    return m_app_state.has_state(ApplicationState::ShuttingDown);
   }
 
   //--------------------------------------------------------------------------------------------
