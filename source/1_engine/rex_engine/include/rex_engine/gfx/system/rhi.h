@@ -55,6 +55,47 @@ namespace rex
     struct Info;
     struct MaterialDesc;
 
+    // GAL standa for graphics abstraction interface
+    // It is the layer between the program and the graphics systems
+    class GALInterface
+    {
+    public:
+      virtual ~GALInterface() = default;
+
+      // Return basic info about the graphics hardware of the current machine
+      virtual const Info& info() = 0;
+
+      // Configuration
+      virtual ShaderPlatform shader_platform() = 0;
+
+      // Backend Systems
+      virtual rsl::unique_ptr<CommandQueue> create_command_queue(GraphicsEngineType type) = 0;
+      virtual rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle) = 0;
+      virtual rsl::unique_ptr<CommandAllocator> create_command_allocator(GraphicsEngineType type) = 0;
+
+      // Resource creation
+      virtual rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format) = 0;
+      virtual rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize, const void* data = nullptr) = 0;
+      virtual rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format, const void* data = nullptr) = 0;
+      virtual rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters) = 0;
+      virtual rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc) = 0;
+      virtual rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr) = 0;
+      virtual rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc) = 0;
+      virtual rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size, rsl::string_view debugName = "Constant Buffer") = 0;
+      virtual rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc) = 0;
+      virtual rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "") = 0;
+      virtual rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob) = 0;
+      virtual rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "") = 0;
+      virtual rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob) = 0;
+      virtual rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size) = 0;
+      virtual rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc) = 0;
+      virtual rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc) = 0;
+      virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
+
+    private:
+
+    };
+
     // All logic inside the "api" namespace is only declared
     // The definition of these functions and/or classes are found in the graphics API specific rhi code.
     // eg. rhi::shader_platform for DirectX is defined in dx_rhi.cpp
