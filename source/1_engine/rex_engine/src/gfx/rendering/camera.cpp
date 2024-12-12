@@ -54,11 +54,6 @@ namespace rex
 			}
 		}
 
-		glm::vec3 Camera::default_forward()
-		{
-			return s_default_forward;
-		}
-
 		void Camera::calc_proj_matrix()
 		{
 			f32 fov_rad = glm::radians(m_fov.get());

@@ -13,7 +13,7 @@ namespace rex::test
 		{}
 
 	protected:
-		bool platform_init() override {}
+		bool platform_init() override { return true; }
 		void platform_update() override {}
 		void platform_shutdown() override {}
 

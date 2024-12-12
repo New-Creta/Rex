@@ -36,7 +36,10 @@ namespace rex
 			void switch_mode(ProjectionMode newMode);
 
 			// Return the default forward vector if the actual one cannot get calculated
-			constexpr static glm::vec3 default_forward();
+			constexpr static glm::vec3 default_forward()
+			{
+				return s_default_forward;
+			}
 
 		private:
 			// Calculate the projection matrix based on the current camera settings

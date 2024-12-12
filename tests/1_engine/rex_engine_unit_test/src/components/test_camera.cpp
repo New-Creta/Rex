@@ -204,10 +204,10 @@ TEST_CASE("Switching Between Camera Project Modes")
 
 	camera.switch_mode(rex::gfx::ProjectionMode::Perspective);
 
-	glm::vec3 target = pos + camera.default_forward();
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0);
+	target = pos + camera.default_forward();
+	up = glm::vec3(0.0f, 1.0f, 0.0);
 
-	glm::mat4 view_mat = glm::lookAt(pos, target, up);
+	view_mat = glm::lookAt(pos, target, up);
 
 	REX_CHECK(camera.position() == pos);
 	REX_CHECK(camera.forward() == camera.default_forward());
