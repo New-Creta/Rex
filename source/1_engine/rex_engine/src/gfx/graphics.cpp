@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/gfx/system/gpu_engine.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/core/gpu_description.h"
 #include "rex_engine/gfx/system/root_signature_cache.h"
 
@@ -14,7 +14,7 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogGraphics);
 
-    // We can access it in the high level graphics api, but the gpu engine is owned by the rhi
+    // We can access it in the high level graphics api, but the gpu engine is owned by the gal
     GpuEngine* g_gpu_engine;
     rsl::vector<rsl::unique_ptr<Renderer>> g_renderers;
 
@@ -75,13 +75,13 @@ namespace rex
     Error init(rsl::unique_ptr<GALInterface> galInterface, const OutputWindowUserData& userData)
     {
       // Initialize the gpu engine, it's responsible for the entire graphics pipeline.
-      // The gpu engine gets created by the rhi as some of the objects wrapped by the gpu engine
-      // are also needed by the rhi to create other objects.
+      // The gpu engine gets created by the gal as some of the objects wrapped by the gpu engine
+      // are also needed by the gal to create other objects.
       g_gpu_engine = init_gal(rsl::move(galInterface), userData);
       rsl::scopeguard shutdown_on_failure = []() { shutdown(); };
 
       // If we even fail to allocate the memory for the gpu engine, we exit immediately.
-      // This is possible if we OOM or if any pre allocation checks fail in the rhi
+      // This is possible if we OOM or if any pre allocation checks fail in the gal
       // and it has returns before even getting to the gpu engine initialization step
       if (!g_gpu_engine)
       {

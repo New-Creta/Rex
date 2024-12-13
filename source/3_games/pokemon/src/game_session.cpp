@@ -25,7 +25,7 @@
 
 #include "rex_std/unordered_map.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/images/image_loader.h"
 #include "rex_engine/memory/array_view.h"
 

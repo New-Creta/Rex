@@ -7,7 +7,7 @@
 #include "rex_engine/gfx/shader_reflection/bound_resource_reflection.h"
 #include "rex_engine/gfx/core/shader_visibility.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 namespace rex
 {

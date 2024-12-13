@@ -9,7 +9,7 @@
 //#include "rex_engine/memory/blob.h"
 //#include "rex_engine/memory/blob_reader.h"
 //
-//#include "rex_engine/gfx/system/rhi.h"
+//#include "rex_engine/gfx/system/gal.h"
 //#include "rex_engine/gfx/resources/texture_2d.h"
 //
 //#include "glm/glm.hpp"
@@ -876,7 +876,7 @@
 //			}
 //		}
 //
-//		rsl::unique_ptr<Texture2D> map_texture = rex::rhi::allocate_texture_2d(width, height, rex::gfx::TextureFormat::Unorm4Srgb);
+//		rsl::unique_ptr<Texture2D> map_texture = rex::gal::allocate_texture_2d(width, height, rex::gfx::TextureFormat::Unorm4Srgb);
 //		rex::gfx::copy_to_texture(map_texture, map_texture_data.get(), map_texture_data.byte_size());
 //	}
 //

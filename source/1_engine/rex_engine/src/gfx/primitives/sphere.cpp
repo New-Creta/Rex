@@ -2,7 +2,7 @@
 
 #include "rex_std/numbers.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 namespace rex
 {

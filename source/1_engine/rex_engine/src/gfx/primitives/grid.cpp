@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/primitives/grid.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"

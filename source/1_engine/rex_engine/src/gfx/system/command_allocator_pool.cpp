@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_engine/gfx/system/command_allocator.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_engine/containers/vector_utils.h"
 

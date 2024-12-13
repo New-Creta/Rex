@@ -11,7 +11,7 @@
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/gfx/core/depth_info.h"
 #include "rex_engine/gfx/core/renderer_output_window_user_data.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/graphics.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
@@ -38,7 +38,7 @@
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/tracked_allocator.h"
 
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -325,8 +325,11 @@ namespace rex
         user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::get_int("max_frames_in_flight", 3);
 
+#ifdef REX_USING_DIRECTX
         gfx::init(rsl::make_unique<gfx::DirectXInterface>(), user_data);
-
+#else
+#error "No Graphics API defined"
+#endif
         REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 
         return true;

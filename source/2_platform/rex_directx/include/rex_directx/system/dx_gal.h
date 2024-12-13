@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"

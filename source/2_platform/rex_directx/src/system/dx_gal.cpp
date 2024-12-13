@@ -1,4 +1,4 @@
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 
 #include "rex_directx/utility/dx_util.h"
 
@@ -157,7 +157,7 @@ namespace rex
 			return m_gpu_engine->current_backbuffer_rt();
 		}
 
-		// Generic functions, coming from rhi.h
+		// Generic functions, coming from gal.h
 		// -------------------------------------------
 		rsl::unique_ptr<DxFence>          DirectXInterface::create_fence()
 		{

@@ -11,7 +11,7 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/entities/entity.h"
 #include "rex_engine/gfx/components/mesh_component.h"
 

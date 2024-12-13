@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/primitives/box.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 namespace rex
 {

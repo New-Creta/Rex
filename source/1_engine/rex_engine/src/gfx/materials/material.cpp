@@ -3,7 +3,7 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/materials/material_system.h"
 
 #include "rex_engine/gfx/shader_reflection/shader_reflection_cache.h"

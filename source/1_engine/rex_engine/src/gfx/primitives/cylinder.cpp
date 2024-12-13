@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/primitives/cylinder.h"
 #include <glm/gtc/constants.hpp>
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 namespace rex
 {

@@ -26,7 +26,7 @@
 
 #include "rex_engine/pooling/scoped_pool_object.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 // This is the interface of the main application with the graphics engine
 

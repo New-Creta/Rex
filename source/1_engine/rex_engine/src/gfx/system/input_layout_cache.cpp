@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/system/input_layout_cache.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_std/functional.h"
 #include "rex_std/unordered_map.h"

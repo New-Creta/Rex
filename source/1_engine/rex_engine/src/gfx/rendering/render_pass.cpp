@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/rendering/render_pass.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/shader_reflection/shader_reflection_cache.h"
 
 #include "rex_engine/filesystem/vfs.h"

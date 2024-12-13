@@ -2,7 +2,7 @@
 
 #include "rex_directx/diagnostics/dx_call.h"
 
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 #include "rex_directx/gfx/dx_render_context.h"
 
 #include "rex_engine/gfx/graphics.h"

@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/imgui/imgui_frame_context.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/gfx/resources/vertex_buffer.h"

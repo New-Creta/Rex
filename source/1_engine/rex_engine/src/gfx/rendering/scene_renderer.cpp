@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/rendering/scene_renderer.h"
 
 #include "rex_engine/gfx/resources/constant_buffer.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_engine/components/camera.h"
 

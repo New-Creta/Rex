@@ -8,7 +8,7 @@
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/diagnostics/log.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/rendering/swapchain_info.h"
 
 namespace rex

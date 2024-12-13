@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/rendering/frame_buffer.h"
 
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/system/render_context.h"
 #include "rex_engine/gfx/graphics.h"
 

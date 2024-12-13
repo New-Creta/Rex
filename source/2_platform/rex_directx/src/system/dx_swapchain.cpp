@@ -1,7 +1,7 @@
 #include "rex_directx/system/dx_swapchain.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/gfx/core/msaa_settings.h"
 #include "rex_engine/gfx/core/renderer_output_window_user_data.h"

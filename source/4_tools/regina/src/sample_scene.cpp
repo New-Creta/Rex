@@ -12,7 +12,7 @@
 #include "rex_engine/gfx/core/depth_info.h"
 #include "rex_engine/gfx/core/vertex.h"
 #include "rex_engine/gfx/rendering/renderer.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_windows/app/gui_application.h"
 
@@ -42,7 +42,7 @@ namespace regina
 
     s32 x, y, channels;
     stbi_uc* data = stbi_load("D:\\Engines\\Rex\\data\\Pokemon\\Map\\Kanto\\old\\celadon_city.png", &x, &y, &channels, 4);
-    m_pokemon_texture = rex::gfx::rhi::create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
+    m_pokemon_texture = rex::gfx::gal::create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
 
     // Sampler is currently hardcoded
     rex::gfx::SamplerDesc desc{};
@@ -60,7 +60,7 @@ namespace regina
     desc.register_space = 0;
     desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
 
-    m_pokemon_sampler = rex::gfx::rhi::create_sampler2d(desc);
+    m_pokemon_sampler = rex::gfx::gal::create_sampler2d(desc);
 
     m_primitive_material->set("default_sampler", m_pokemon_sampler.get());
     m_primitive_material->set("default_texture", m_pokemon_texture.get());

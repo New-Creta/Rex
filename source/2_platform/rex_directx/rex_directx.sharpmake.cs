@@ -15,6 +15,13 @@ public class RexDirectX : PlatformProject
     SourceRootPath = ThisFileFolder;
   }
 
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    conf.add_public_define("REX_USING_DIRECTX");
+  }
+
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
     base.SetupLibDependencies(conf, target);

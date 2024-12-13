@@ -1,6 +1,6 @@
 #include "pokemon/tileset.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/engine/object_pool.h"
 
 namespace pokemon
@@ -54,6 +54,6 @@ namespace pokemon
 	//		pixels.push_back(pixel);
 	//	}
 
-	//	return rex::load_object<TileSet>(rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, pixels.data()));
+	//	return rex::load_object<TileSet>(rex::gfx::gal::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, pixels.data()));
 	//}
 }

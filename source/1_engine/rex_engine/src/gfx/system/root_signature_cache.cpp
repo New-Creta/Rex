@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/system/root_signature_cache.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 
 #include "rex_std/functional.h"
 #include "rex_std/unordered_map.h"

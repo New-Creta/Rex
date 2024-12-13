@@ -6,7 +6,7 @@
 #include "rex_engine/gfx/resources/index_buffer.h"
 #include "rex_engine/gfx//resources/sampler_2d.h"
 #include "rex_engine/gfx//resources/unordered_access_buffer.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/graphics.h"
 
 #include "rex_engine/memory/array_view.h"

@@ -8,7 +8,7 @@
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/gfx/system/shader_pipeline.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/shader_reflection/shader_signature.h"
 #include "rex_engine/gfx/system/shader_library.h"
 

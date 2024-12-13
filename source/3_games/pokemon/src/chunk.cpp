@@ -3,7 +3,7 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/gfx/materials/material_system.h"
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/components/mesh_component.h"
 #include "rex_engine/components/transform_component.h"
 #include "rex_engine/gfx/primitives/mesh_factory.h"
@@ -30,7 +30,7 @@ namespace pokemon
 		//{
 		//	format = rex::gfx::TextureFormat::Unorm4;
 		//}
-		//m_texture = rex::gfx::rhi::create_texture2d(x, y, format, data);
+		//m_texture = rex::gfx::gal::create_texture2d(x, y, format, data);
 		//rex::gfx::SamplerDesc desc{};
 		//desc.filtering = rex::gfx::SamplerFiltering::MinMagMipLinear;
 		//desc.address_mode_u = rex::gfx::TextureAddressMode::Wrap;
@@ -45,7 +45,7 @@ namespace pokemon
 		//desc.shader_register = 0;
 		//desc.register_space = 0;
 		//desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
-		//m_sampler = rex::gfx::rhi::create_sampler2d(desc);
+		//m_sampler = rex::gfx::gal::create_sampler2d(desc);
 
 		//m_material->set("default_sampler", m_sampler.get());
 		//m_material->set("default_texture", m_texture.get());

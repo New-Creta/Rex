@@ -4,7 +4,7 @@
 #include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_directx/gfx/dx_compute_context.h"
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 
 namespace rex
 {

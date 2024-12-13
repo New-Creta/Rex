@@ -5,7 +5,7 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/resources/texture_2d.h"
 #include "rex_engine/gfx/core/texture_format.h"
 

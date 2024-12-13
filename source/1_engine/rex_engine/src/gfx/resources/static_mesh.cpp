@@ -1,6 +1,6 @@
 #include "rex_engine/gfx/resources/static_mesh.h"
 
-#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/graphics.h"
 
 namespace rex
