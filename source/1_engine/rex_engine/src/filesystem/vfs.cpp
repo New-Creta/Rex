@@ -519,8 +519,19 @@ namespace rex
     {
       g_vfs_state_controller.change_state(VfsState::ShuttingDown);
 
-      g_reading_thread.join();
-      g_closing_thread.join();
+      if (g_reading_thread.joinable())
+      {
+        g_reading_thread.join();
+      }
+      if (g_closing_thread.joinable())
+      {
+        g_closing_thread.join();
+      }
+
+      // clean up all data assets
+      g_root.clear();
+      g_engine_data_root.clear();
+      g_mounted_roots.clear();
 
       g_vfs_state_controller.change_state(VfsState::ShutDown);
     }
