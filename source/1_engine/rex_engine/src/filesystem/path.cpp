@@ -397,8 +397,12 @@ namespace rex
     {
       // simply convert the files into their actual files on disk
       // then do a string wise comparison
-      const rsl::string real_path1 = real_path(path1);
-      const rsl::string real_path2 = real_path(path2);
+      rsl::string real_path1 = real_path(path1);
+      rsl::string real_path2 = real_path(path2);
+
+      rsl::to_lower(real_path1.cbegin(), real_path1.begin(), real_path1.size());
+      rsl::to_lower(real_path2.cbegin(), real_path2.begin(), real_path2.size());
+      
       return real_path1 == real_path2;
     }
     // Splits the path into a head and a tail
