@@ -24,8 +24,8 @@ namespace rex::test
 
 	protected:
 		bool platform_init() override { return m_init_func(m_app_creation_params); }
-		void platform_update() override {}
-		void platform_shutdown() override {}
+		void platform_update() override { m_update_func(); }
+		void platform_shutdown() override { m_shutdown_func(); }
 
 	private:
 		ApplicationCreationParams m_app_creation_params;
@@ -75,12 +75,14 @@ TEST_CASE("Core Application Failed Initialization")
 TEST_CASE("Core Application Successful Initialization")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
+	rex::test::TestCoreApp* app_ptr = nullptr;
 
 	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
-	app_creation_params.engine_params.app_update_func = []() {};
+	app_creation_params.engine_params.app_update_func = [&app_ptr]() { app_ptr->quit(); };
 	app_creation_params.engine_params.app_shutdown_func = []() {};
 
 	rex::test::TestCoreApp app(rsl::move(app_creation_params));
+	app_ptr = &app;
 
 	s32 return_code = app.run();
 
@@ -95,18 +97,18 @@ TEST_CASE("Core Application State Checking")
 	rex::test::TestCoreApp* app_ptr = nullptr;
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 
-	app_creation_params.engine_params.app_init_func = [app_ptr](const rex::ApplicationCreationParams&)
+	app_creation_params.engine_params.app_init_func = [&app_ptr](const rex::ApplicationCreationParams&)
 	{
 		REX_CHECK(app_ptr->is_initializing() == true);
 		REX_CHECK(app_ptr->is_paused() == false);
-		REX_CHECK(app_ptr->is_running() == true);
+		REX_CHECK(app_ptr->is_running() == false);
 		REX_CHECK(app_ptr->is_marked_for_destroy() == false);
 		REX_CHECK(app_ptr->is_shutting_down() == false);
 
 		return true;
 	};
 	
-	app_creation_params.engine_params.app_update_func = [app_ptr]()
+	app_creation_params.engine_params.app_update_func = [&app_ptr]()
 	{
 		REX_CHECK(app_ptr->is_initializing() == false);
 		REX_CHECK(app_ptr->is_paused() == false);
@@ -118,7 +120,7 @@ TEST_CASE("Core Application State Checking")
 
 		REX_CHECK(app_ptr->is_initializing() == false);
 		REX_CHECK(app_ptr->is_paused() == true);
-		REX_CHECK(app_ptr->is_running() == false);
+		REX_CHECK(app_ptr->is_running() == true);
 		REX_CHECK(app_ptr->is_marked_for_destroy() == false);
 		REX_CHECK(app_ptr->is_shutting_down() == false);
 
@@ -131,7 +133,7 @@ TEST_CASE("Core Application State Checking")
 		REX_CHECK(app_ptr->is_shutting_down() == false);
 
 	};
-	app_creation_params.engine_params.app_shutdown_func = [app_ptr]()
+	app_creation_params.engine_params.app_shutdown_func = [&app_ptr]()
 	{
 		REX_CHECK(app_ptr->is_initializing() == false);
 		REX_CHECK(app_ptr->is_paused() == false);
