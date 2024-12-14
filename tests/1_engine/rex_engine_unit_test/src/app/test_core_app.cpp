@@ -3,28 +3,51 @@
 #include "rex_engine/app/core_application.h"
 #include "rex_engine/engine/engine_params.h"
 
+namespace rex
+{
+	struct PlatformCreationParams {};
+}
+
 namespace rex::test
 {
 	class TestCoreApp : public rex::CoreApplication
 	{
 	public:
-		TestCoreApp(const rex::EngineParams& params)
-			: CoreApplication(params)
-		{}
+		TestCoreApp(ApplicationCreationParams&& appCreationParams)
+			: CoreApplication(appCreationParams.engine_params)
+			, m_app_creation_params(rsl::move(appCreationParams))
+		{
+			m_init_func = m_app_creation_params.engine_params.app_init_func;
+			m_update_func = m_app_creation_params.engine_params.app_update_func;
+			m_shutdown_func = m_app_creation_params.engine_params.app_shutdown_func;
+		}
 
 	protected:
-		bool platform_init() override { return true; }
+		bool platform_init() override { return m_init_func(m_app_creation_params); }
 		void platform_update() override {}
 		void platform_shutdown() override {}
 
 	private:
+		ApplicationCreationParams m_app_creation_params;
+		rex::EngineParams::init_func m_init_func;
+		rex::EngineParams::update_func m_update_func;
+		rex::EngineParams::shutdown_func m_shutdown_func;
 	};
+
+	rex::ApplicationCreationParams test_core_app_creation_params()
+	{
+		rex::ApplicationCreationParams app_params(PlatformCreationParams{});
+
+		app_params.gui_params.window_title = "test core app";
+
+		return app_params;
+	}
 }
 
 TEST_CASE("Core Application Construction")
 {
-	rex::EngineParams engine_params;
-	rex::test::TestCoreApp app(engine_params);
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
 
 	REX_CHECK(app.is_paused() == false);
 	REX_CHECK(app.is_running() == false);
@@ -33,12 +56,13 @@ TEST_CASE("Core Application Construction")
 
 TEST_CASE("Core Application Failed Initialization")
 {
-	rex::EngineParams engine_params;
-	engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return false; };
-	engine_params.app_update_func = []() {};
-	engine_params.app_shutdown_func = []() {};
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 
-	rex::test::TestCoreApp app(engine_params);
+	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return false; };
+	app_creation_params.engine_params.app_update_func = []() {};
+	app_creation_params.engine_params.app_shutdown_func = []() {};
+
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
 
 	s32 return_code = app.run();
 
@@ -50,12 +74,13 @@ TEST_CASE("Core Application Failed Initialization")
 
 TEST_CASE("Core Application Successful Initialization")
 {
-	rex::EngineParams engine_params;
-	engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
-	engine_params.app_update_func = []() {};
-	engine_params.app_shutdown_func = []() {};
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 
-	rex::test::TestCoreApp app(engine_params);
+	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
+	app_creation_params.engine_params.app_update_func = []() {};
+	app_creation_params.engine_params.app_shutdown_func = []() {};
+
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
 
 	s32 return_code = app.run();
 
@@ -68,9 +93,9 @@ TEST_CASE("Core Application Successful Initialization")
 TEST_CASE("Core Application State Checking")
 {
 	rex::test::TestCoreApp* app_ptr = nullptr;
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 
-	rex::EngineParams engine_params;
-	engine_params.app_init_func = [app_ptr](const rex::ApplicationCreationParams&) 
+	app_creation_params.engine_params.app_init_func = [app_ptr](const rex::ApplicationCreationParams&)
 	{
 		REX_CHECK(app_ptr->is_initializing() == true);
 		REX_CHECK(app_ptr->is_paused() == false);
@@ -81,7 +106,7 @@ TEST_CASE("Core Application State Checking")
 		return true;
 	};
 	
-	engine_params.app_update_func = [app_ptr]() 
+	app_creation_params.engine_params.app_update_func = [app_ptr]()
 	{
 		REX_CHECK(app_ptr->is_initializing() == false);
 		REX_CHECK(app_ptr->is_paused() == false);
@@ -106,7 +131,7 @@ TEST_CASE("Core Application State Checking")
 		REX_CHECK(app_ptr->is_shutting_down() == false);
 
 	};
-	engine_params.app_shutdown_func = [app_ptr]() 
+	app_creation_params.engine_params.app_shutdown_func = [app_ptr]()
 	{
 		REX_CHECK(app_ptr->is_initializing() == false);
 		REX_CHECK(app_ptr->is_paused() == false);
@@ -115,7 +140,7 @@ TEST_CASE("Core Application State Checking")
 		REX_CHECK(app_ptr->is_shutting_down() == true);
 	};
 
-	rex::test::TestCoreApp app(engine_params);
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
 	app_ptr = &app;
 	s32 return_code = app.run();
 

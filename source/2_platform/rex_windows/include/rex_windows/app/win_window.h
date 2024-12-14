@@ -4,7 +4,7 @@
 #include "rex_engine/engine/state_controller.h"
 #include "rex_engine/engine/types.h"
 #include "rex_windows/app/win_window_class.h"
-#include "rex_windows/engine/win_types.h"
+#include "rex_engine/platform/win/win_types.h"
 #include "rex_windows/event_system/win_event_handler.h"
 
 namespace rex

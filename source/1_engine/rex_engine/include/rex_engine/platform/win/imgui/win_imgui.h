@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_windows/engine/win_types.h"
+#include "rex_engine/platform/win/win_types.h"
 
 namespace rex
 {

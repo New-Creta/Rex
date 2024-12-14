@@ -3,7 +3,7 @@
 #include "imgui/platform/win/imgui_impl_win32.h"
 
 #include "rex_engine/gfx/imgui/imgui_window.h"
-#include "rex_windows/imgui/win_imgui.h"
+#include "rex_engine/platform/win/imgui/win_imgui.h"
 
 #include <Windows.h>
 
@@ -19,11 +19,11 @@ namespace rex
 
       // Maybe these can be done in the ImGui renderer
       ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-      platform_io.Renderer_CreateWindow = gfx::imgui_create_window;
-      platform_io.Renderer_DestroyWindow = gfx::imgui_destroy_window;
-      platform_io.Renderer_SetWindowSize = gfx::imgui_set_window_size;
-      platform_io.Renderer_RenderWindow = gfx::imgui_render_window;
-      platform_io.Renderer_SwapBuffers = gfx::imgui_swap_buffers;
+      platform_io.Renderer_CreateWindow = rex::gfx::imgui_create_window;
+      platform_io.Renderer_DestroyWindow = rex::gfx::imgui_destroy_window;
+      platform_io.Renderer_SetWindowSize = rex::gfx::imgui_set_window_size;
+      platform_io.Renderer_RenderWindow = rex::gfx::imgui_render_window;
+      platform_io.Renderer_SwapBuffers = rex::gfx::imgui_swap_buffers;
 
       return true;
     }

@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/memory.h"
-#include "rex_windows/engine/win_types.h"
+#include "rex_engine/platform/win/win_types.h"
 
 namespace rex
 {
