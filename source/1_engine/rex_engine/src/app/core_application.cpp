@@ -14,6 +14,7 @@
 
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/profiling/instrumentor.h"
+#include "rex_engine/cmdline/cmdline.h"
 
 #include <cstdlib>
 
@@ -38,7 +39,12 @@ namespace rex
   {
   }
   //-------------------------------------------------------------------------
-  CoreApplication::~CoreApplication() = default;
+  CoreApplication::~CoreApplication()
+  {
+    vfs::shutdown();
+
+    cmdline::shutdown();
+  }
 
   //--------------------------------------------------------------------------------------------
   s32 CoreApplication::run()
@@ -166,6 +172,7 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::mark_for_destroy()
   {
+    m_app_state.remove_state(ApplicationState::Paused); // It's possible the application is currently paused, in which case, remove that flag
     m_app_state.add_state(ApplicationState::MarkedForDestroy);
   }
   //--------------------------------------------------------------------------------------------

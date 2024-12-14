@@ -76,9 +76,7 @@ namespace rex
 
     void post_app_shutdown()
     {
-      vfs::shutdown();
 
-      cmdline::shutdown();
     }
   } // namespace internal
 } // namespace rex
