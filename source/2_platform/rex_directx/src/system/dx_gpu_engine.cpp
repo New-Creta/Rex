@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/gfx/imgui/imgui_window.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/utility/dx_util.h"
@@ -22,7 +23,6 @@
 #include "rex_directx/system/dx_compute_engine.h"
 #include "rex_directx/system/dx_copy_engine.h"
 
-#include "rex_directx/imgui/dx_imgui_window.h"
 
 namespace rex
 {

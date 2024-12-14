@@ -2,7 +2,7 @@
 
 #include "rex_engine/gfx/rendering/renderer.h"
 #include "rex_engine/gfx/rendering/scene_renderer.h"
-#include "rex_engine/components/camera.h"
+#include "rex_engine/gfx/rendering/camera.h"
 
 #include "rex_engine/gfx/components/mesh_component.h"
 

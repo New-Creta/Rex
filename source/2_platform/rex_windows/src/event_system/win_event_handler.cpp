@@ -26,7 +26,7 @@
 #define NOMINMAX
 #include <Windows.h>
 
-#include "rex_windows/imgui/win_imgui.h"
+#include "rex_engine/platform/win/imgui/win_imgui.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 

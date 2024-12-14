@@ -11,7 +11,7 @@
 #include "pokemon/tile_renderer.h"
 #include "pokemon/map_coordinates.h"
 
-#include "rex_engine/components/camera.h"
+#include "rex_engine/gfx/rendering/camera.h"
 #include "rex_engine/gfx/rendering/scene_renderer.h"
 #include "glm/glm.hpp"
 

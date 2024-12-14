@@ -3,7 +3,7 @@
 #include "rex_engine/gfx/resources/constant_buffer.h"
 #include "rex_engine/gfx/system/gal.h"
 
-#include "rex_engine/components/camera.h"
+#include "rex_engine/gfx/rendering/camera.h"
 
 #include "rex_engine/gfx/system/copy_context.h"
 #include "rex_engine/gfx/graphics.h"

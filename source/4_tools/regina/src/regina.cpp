@@ -20,7 +20,7 @@
 #include "rex_engine/memory/memory_tracking.h"
 
 #include "rex_engine/gfx/rendering/scene_renderer.h"
-#include "rex_engine/components/camera.h"
+#include "rex_engine/gfx/rendering/camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
