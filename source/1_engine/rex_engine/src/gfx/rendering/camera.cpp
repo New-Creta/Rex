@@ -1,4 +1,4 @@
-#include "rex_engine/components/camera.h"
+#include "rex_engine/gfx/rendering/camera.h"
 
 namespace rex
 {
