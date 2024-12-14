@@ -271,6 +271,14 @@ namespace rex
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
+      // If commandline arguments aren't initialized yet, we can't return a proper argument's value
+      // in which case we return a null optional and the user is meant to move their code
+      // to a point after the commandline is initialized.
+      if (!g_cmd_line_args)
+      {
+        return rsl::nullopt;
+      }
+
       return g_cmd_line_args->get_argument(arg);
     }
 
