@@ -5,6 +5,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "rex_std/bonus/math/deg_angle.h"
+#include "rex_std/bonus/math/rad_angle.h"
+
 namespace rex
 {
 	namespace gfx
@@ -24,6 +27,33 @@ namespace rex
 
 				glm::mat4 world = glm::translate(glm::mat4(1.0f), translation) * rotation_mat * glm::scale(glm::mat4(1.0f), scale);
 				return glm::transpose(world);
+			}
+
+			void rotate_x(rsl::deg_angle angle)
+			{
+
+			}
+			void rotate_x(rsl::rad_angle angle)
+			{
+
+			}
+
+			void rotate_y(rsl::deg_angle angle)
+			{
+
+			}
+			void rotate_y(rsl::rad_angle angle)
+			{
+
+			}
+
+			void rotate_z(rsl::deg_angle angle)
+			{
+
+			}
+			void rotate_z(rsl::rad_angle angle)
+			{
+
 			}
 		};
 	}
