@@ -136,7 +136,9 @@ TEST_CASE("Random Filename")
 TEST_CASE("Real Path")
 {
   // Make sure that the working directory is set correctly here
-  REX_CHECK(rex::path::same_path(rex::path::real_path("shortcut_to_foo.txt.lnk"), rex::path::abs_path("foo.txt")));
+  rsl::string real_path = rex::path::real_path("shortcut_to_foo.txt.lnk");
+  rsl::to_lower(real_path.cbegin(), real_path.begin(), real_path.size());
+  REX_CHECK(real_path.ends_with(rex::path::join("rexengineunittest", "foo.txt")));
 }
 
 TEST_CASE("Normalise Path")
