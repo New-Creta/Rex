@@ -35,7 +35,7 @@ TEST_CASE("File Modification Time")
 
   // wait 1 tail
   using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(0.1s);
+  rsl::this_thread::sleep_for(0.5s);
 
   // query the modification time again, it should still be the same
   auto new_mod_time = rex::file::modification_time(tmp_file.filename());
@@ -51,11 +51,15 @@ TEST_CASE("File Modification Time")
 
 TEST_CASE("File Access Time")
 {
+  // Note: We cannot reliable say that access time of files will be different between checks
+  // As it's determined by the OS when this gets updated. All we can say that between access
+  // the newer access time is not before the original 
+   
   // create a temp file, so it automatically cleans up
   rex::TempFile tmp_file;
 
-  // query the modification time and compare it to the original time with a threshold
-  auto access_time = rex::file::modification_time(tmp_file.filename());
+  // query the access time and compare it to the original time with a threshold
+  auto access_time = rex::file::access_time(tmp_file.filename());
 
   // wait 1 tail
   using namespace rsl::chrono_literals;
@@ -63,6 +67,7 @@ TEST_CASE("File Access Time")
 
   // query the access  time again, it should still be the same
   auto new_access_time = rex::file::access_time(tmp_file.filename());
+  REX_CHECK(access_time == new_access_time);
 
   // Modify the file
   rex::file::append_text(tmp_file.filename(), "random text");
@@ -71,7 +76,7 @@ TEST_CASE("File Access Time")
   new_access_time = rex::file::access_time(tmp_file.filename());
 
   // access time should now be different
-  REX_CHECK(access_time != new_access_time);
+  REX_CHECK(access_time <= new_access_time);
 
   // query an attribute of the file, attribute changes don't affect the access time
   rex::file::is_readonly(tmp_file.filename());
@@ -79,7 +84,7 @@ TEST_CASE("File Access Time")
   auto newer_access_time = rex::file::access_time(tmp_file.filename());
 
   // access time should now be different
-  REX_CHECK(access_time != newer_access_time);
+  REX_CHECK(access_time <= newer_access_time);
   REX_CHECK(new_access_time == newer_access_time);
 }
 
