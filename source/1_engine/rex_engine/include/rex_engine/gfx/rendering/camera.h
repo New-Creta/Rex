@@ -20,6 +20,10 @@ namespace rex
 		class Camera
 		{
 		public:
+			// When the arguments for near and far plane used to be called "near" and "far"
+			// A compiler error occured where those paremters would not be used to initialize the members
+			// Leaving the members to be zero initialized
+			// Renaming them to "nearPlane" and "farPlane" fixes the issue
 			Camera(const glm::vec3& pos, rsl::deg_angle fov, f32 width, f32 height, f32 nearPlan, f32 farPlane, ProjectionMode projectionMode = ProjectionMode::Perspective);
 
 			// Return the position of the camera
