@@ -293,6 +293,7 @@ TEST_CASE("Is Link")
 
 TEST_CASE("Is Same File")
 {
+  // No upper case
   REX_CHECK(rex::path::same_path("same_file.txt", "same_file.txt") == true);
   REX_CHECK(rex::path::same_path("sub_folder_1/../same_file.txt", "same_file.txt") == true);
   REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_filename()) == false);
@@ -303,6 +304,35 @@ TEST_CASE("Is Same File")
   REX_CHECK(rex::path::same_path("sub_folder_1/../sub_folder_1", "sub_folder_1") == true);
   REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_filename()) == false);
   REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_dir()) == false);
+
+
+  // First upper case
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", "same_file.txt") == true);
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../same_file.txt", "same_file.txt") == true);
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_dir()) == false);
+
+
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_dir()) == false);
+
+  // Second upper case
+  REX_CHECK(rex::path::same_path("same_file.txt", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::same_path("sub_folder_1/../same_file.txt", "SAME_FILE.TXT") == true);
+
+
+  REX_CHECK(rex::path::same_path("sub_folder_1", "SUB_FOLDER_1") == true);
+  REX_CHECK(rex::path::same_path("sub_folder_1/../sub_folder_1", "SUB_FOLDER_1") == true);
+
+  // All upper case
+  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../SAME_FILE.TXT", "SAME_FILE.TXT") == true);
+
+
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../sub_folder_1", "sub_folder_1") == true);
 
   REX_CHECK(rex::path::same_path(rex::path::random_filename(), rex::path::random_filename()) == false);
   REX_CHECK(rex::path::same_path(rex::path::random_filename(), rex::path::random_dir()) == false);
