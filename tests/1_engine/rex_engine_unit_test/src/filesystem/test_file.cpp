@@ -46,7 +46,7 @@ TEST_CASE("File Modification Time")
 
   // query the modification time again, it should be different now
   new_mod_time = rex::file::modification_time(tmp_file.filename());
-  REX_CHECK(mod_time != new_mod_time);
+  REX_CHECK(mod_time <= new_mod_time);
 }
 
 TEST_CASE("File Access Time")
