@@ -15,10 +15,6 @@ TEST_CASE("File Creation Time")
   // query the creation time and compare it to the original time with a threshold
   auto creation_time = rex::file::creation_time(tmp_file.filename());
 
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(0.1s);
-
   // query the creation time again, it should still be the same
   auto new_creation_time = rex::file::creation_time(tmp_file.filename());
 
@@ -32,10 +28,6 @@ TEST_CASE("File Modification Time")
 
   // query the modification time and compare it to the original time with a threshold
   auto mod_time = rex::file::modification_time(tmp_file.filename());
-
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(0.5s);
 
   // query the modification time again, it should still be the same
   auto new_mod_time = rex::file::modification_time(tmp_file.filename());
@@ -60,10 +52,6 @@ TEST_CASE("File Access Time")
 
   // query the access time and compare it to the original time with a threshold
   auto access_time = rex::file::access_time(tmp_file.filename());
-
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(0.1s);
 
   // query the access  time again, it should still be the same
   auto new_access_time = rex::file::access_time(tmp_file.filename());
