@@ -32,6 +32,13 @@ namespace rex
     // increments the read offset by the given amount
     void skip(s32 offset);
 
+    // returns the number of items in the buffer
+    s32 count() const;
+    // returns the max number of items the buffer can hold
+    s32 max_count() const;
+    // returns the byte size of the buffer
+    s32 size() const;
+
   private:
     rsl::unique_array<rsl::byte> m_data;
 
