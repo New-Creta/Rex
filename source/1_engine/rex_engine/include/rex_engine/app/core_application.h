@@ -35,7 +35,7 @@ namespace rex
 
     void pause();
     void resume();
-    void quit();
+    void quit(s32 exitCode = 0);
 
     bool is_initializing() const;
     bool is_paused() const;
@@ -52,7 +52,7 @@ namespace rex
     bool initialize();
     void update();
     void shutdown();
-    void mark_for_destroy();
+    void mark_for_destroy(s32 exitCode);
     void loop();
 
     void mount_engine_paths();
@@ -60,5 +60,6 @@ namespace rex
 
   private:
     StateController<ApplicationState> m_app_state;
+    s32 m_exit_code;
   };
 } // namespace rex

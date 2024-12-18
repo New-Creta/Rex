@@ -92,6 +92,50 @@ TEST_CASE("Core Application Successful Initialization")
 	REX_CHECK(app.is_marked_for_destroy() == false);
 }
 
+TEST_CASE("Core Application Failed Run")
+{
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
+	rex::test::TestCoreApp* app_ptr = nullptr;
+
+	s32 error_code = 1;
+
+	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
+	app_creation_params.engine_params.app_update_func = [&app_ptr, error_code]() { app_ptr->quit(error_code); };
+	app_creation_params.engine_params.app_shutdown_func = []() {};
+
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
+	app_ptr = &app;
+
+	s32 return_code = app.run();
+
+	REX_CHECK(return_code == error_code);
+	REX_CHECK(app.is_paused() == false);
+	REX_CHECK(app.is_running() == false);
+	REX_CHECK(app.is_marked_for_destroy() == false);
+
+}
+
+TEST_CASE("Core Application Successful Run")
+{
+	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
+	rex::test::TestCoreApp* app_ptr = nullptr;
+
+	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
+	app_creation_params.engine_params.app_update_func = [&app_ptr]() { app_ptr->quit(); };
+	app_creation_params.engine_params.app_shutdown_func = []() {};
+
+	rex::test::TestCoreApp app(rsl::move(app_creation_params));
+	app_ptr = &app;
+
+	s32 return_code = app.run();
+
+	REX_CHECK(return_code == EXIT_SUCCESS);
+	REX_CHECK(app.is_paused() == false);
+	REX_CHECK(app.is_running() == false);
+	REX_CHECK(app.is_marked_for_destroy() == false);
+}
+
+
 TEST_CASE("Core Application State Checking")
 {
 	rex::test::TestCoreApp* app_ptr = nullptr;

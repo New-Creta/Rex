@@ -35,7 +35,8 @@ namespace rex
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& /*engineParams*/)
-      : m_app_state(ApplicationState::Created)
+		: m_app_state(ApplicationState::Created)
+    , m_exit_code(0)
   {
   }
   //-------------------------------------------------------------------------
@@ -75,7 +76,7 @@ namespace rex
 
     // shutdown is automatically called from the scopeguard
 
-    return EXIT_SUCCESS;
+    return m_exit_code;
   }
 
   //-------------------------------------------------------------------------
@@ -91,9 +92,9 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::quit()
+  void CoreApplication::quit(s32 exitCode)
   {
-    mark_for_destroy();
+    mark_for_destroy(exitCode);
   }
 
   //-------------------------------------------------------------------------
@@ -170,10 +171,11 @@ namespace rex
     // nothing to implement
   }
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::mark_for_destroy()
+  void CoreApplication::mark_for_destroy(s32 exitCode)
   {
     m_app_state.remove_state(ApplicationState::Paused); // It's possible the application is currently paused, in which case, remove that flag
     m_app_state.add_state(ApplicationState::MarkedForDestroy);
+    m_exit_code = exitCode;
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::loop()
