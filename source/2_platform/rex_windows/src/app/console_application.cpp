@@ -71,7 +71,7 @@ namespace rex
         SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
         input::internal::set_global_input_handler(m_input);
 
-        event_system().subscribe<QuitApp>([this](const QuitApp& /*event*/) { m_app_instance->quit(); });
+        event_system().subscribe<QuitApp>([this](const QuitApp& event) { m_app_instance->quit(event.reason(), event.exit_code()); });
 
         if (!m_app_name.empty())
         {

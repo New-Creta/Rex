@@ -35,7 +35,7 @@ namespace rex
 
     void pause();
     void resume();
-    void quit(s32 exitCode = 0);
+    void quit(rsl::string_view reason = "", s32 exitCode = 0);
 
     bool is_initializing() const;
     bool is_paused() const;

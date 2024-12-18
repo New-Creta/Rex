@@ -92,8 +92,10 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::quit(s32 exitCode)
+  void CoreApplication::quit(rsl::string_view reason, s32 exitCode)
   {
+    REX_INFO(LogCoreApp, "Quitting app. Reason: {}", reason);
+
     mark_for_destroy(exitCode);
   }
 
