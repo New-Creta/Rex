@@ -177,8 +177,5 @@ namespace rex
     {
       static_assert(rsl::internal::always_false<T>, "Invalid type for data type construction");
     }
-
-    return DataType(DataType::Value::Unknown);
-
   }
 } // namespace rex
