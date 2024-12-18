@@ -33,7 +33,7 @@
 
 namespace rex
 {
-  namespace data_type
+  namespace internal
   {
     //-----------------------------------------------------------------------
     size_t get_data_type_typeid(const DataType::Value& dataTypeValue)
@@ -72,11 +72,7 @@ namespace rex
 
         case DataType::Value::String: return rsl::type_id<rsl::string>().hash_code();
 
-        case DataType::Value::Sampler2D:
-        case DataType::Value::Sampler3D:
-        case DataType::Value::SamplerCube: return rsl::type_id<s32>().hash_code();
-
-        case DataType::Value::None:
+        case DataType::Value::Unknown:
           // Nothing to implement
           break;
       }
@@ -120,13 +116,9 @@ namespace rex
 
         case DataType::Value::Bool: return sizeof(bool);
 
-        case DataType::Value::String: return sizeof(rsl::string);
+        case DataType::Value::String: return sizeof(rsl::string_view);
 
-        case DataType::Value::Sampler2D:
-        case DataType::Value::Sampler3D:
-        case DataType::Value::SamplerCube: return sizeof(s32);
-
-        case DataType::Value::None:
+        case DataType::Value::Unknown:
           // Nothing to implement
           break;
       }
@@ -144,7 +136,7 @@ namespace rex
 
   //-----------------------------------------------------------------------
   DataType::DataType(DataType&& other) noexcept
-      : m_value(rsl::exchange(other.m_value, DataType::Value::None))
+      : m_value(rsl::exchange(other.m_value, DataType::Value::Unknown))
   {
   }
 
@@ -153,7 +145,7 @@ namespace rex
   {
     REX_ASSERT_X(this != &other, "can't move to yourself");
 
-    m_value = rsl::exchange(other.m_value, DataType::Value::None);
+    m_value = rsl::exchange(other.m_value, DataType::Value::Unknown);
 
     return *this;
   }
@@ -179,7 +171,7 @@ namespace rex
   //-----------------------------------------------------------------------
   size_t DataType::to_type_id() const
   {
-    const size_t datatype_id = data_type::get_data_type_typeid(m_value);
+    const size_t datatype_id = internal::get_data_type_typeid(m_value);
 
     if(datatype_id == 0)
     {
@@ -191,7 +183,7 @@ namespace rex
   //-----------------------------------------------------------------------
   size_t DataType::to_byte_size() const
   {
-    const size_t datatype_size = data_type::get_data_type_size(m_value);
+    const size_t datatype_size = internal::get_data_type_size(m_value);
 
     if(datatype_size == 0)
     {

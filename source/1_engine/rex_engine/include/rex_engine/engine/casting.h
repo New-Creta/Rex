@@ -188,7 +188,7 @@ namespace rex
 
   // Utility function to cast a pointer into a byte array
   template <typename T>
-  constexpr const T* byte_cast(const T* data)
+  constexpr const rsl::byte* byte_cast(const T* data)
   {
     return reinterpret_cast<const rsl::byte*>(data); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
   }
@@ -207,7 +207,7 @@ namespace rex
   }
   // Utility function to cast a pointer into a char array
   template <typename T>
-  constexpr char8* byte_cast(T* data)
+  constexpr char8* char_cast(T* data)
   {
     return reinterpret_cast<char8*>(data); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
   }

@@ -33,9 +33,9 @@ namespace rex
   constexpr SplitIntResult split_int64_into_int32(u64 input)
   {
     SplitIntResult res{};
-    res.low = input & rsl::numeric_limits<u32>::max();
+    res.low = input & (rsl::numeric_limits<u32>::max)();
     input >>= sizeof(res.low) * static_cast<u32>(rsl::limits_byte::num_bits_per_byte);
-    res.high = input & rsl::numeric_limits<u32>::max();
+    res.high = input & (rsl::numeric_limits<u32>::max)();
 
     return res;
   }
