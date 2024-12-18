@@ -287,7 +287,7 @@ namespace rex
       }
       void subscribe_window_events()
       {
-        event_system().subscribe<WindowClose>([this](const WindowClose& /*evt*/) { event_system().enqueue_event(QuitApp()); });
+        event_system().subscribe<WindowClose>([this](const WindowClose& /*evt*/) { event_system().enqueue_event(QuitApp("Window closed")); });
         event_system().subscribe<WindowActivated>( [this](const WindowActivated& /*evt*/) { m_app_instance->resume(); });
         event_system().subscribe<WindowDeactivated>( [this](const WindowDeactivated& /*evt*/) { m_app_instance->pause(); });
         event_system().subscribe<WindowStartResize>( [this](const WindowStartResize& /*evt*/) { on_start_resize(); });

@@ -88,7 +88,7 @@ namespace console_app_example
 
     if(rex::input::is_key_pressed('Q'))
     {
-      rex::event_system().enqueue_event(rex::QuitApp());
+      rex::event_system().enqueue_event(rex::QuitApp("Q pressed"));
     }
   }
   void shutdown() {}

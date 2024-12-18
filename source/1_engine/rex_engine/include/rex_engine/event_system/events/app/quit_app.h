@@ -4,8 +4,19 @@
 
 namespace rex
 {
-  // This doesn't hold any data, just that the app will quit
   class QuitApp : public Event<QuitApp>
   {
+  public:
+    QuitApp(rsl::string_view reason)
+      : m_reason(reason)
+    {}
+
+    rsl::string_view reason() const
+    {
+      return m_reason;
+    }
+
+  private:
+    rsl::string_view m_reason;
   };
 }
