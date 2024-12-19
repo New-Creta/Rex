@@ -100,7 +100,7 @@ TEST_CASE("Core Application Failed Run")
 	s32 error_code = 1;
 
 	app_creation_params.engine_params.app_init_func = [](const rex::ApplicationCreationParams&) { return true; };
-	app_creation_params.engine_params.app_update_func = [&app_ptr, error_code]() { app_ptr->quit(error_code); };
+	app_creation_params.engine_params.app_update_func = [&app_ptr, error_code]() { app_ptr->quit("Exiting unit test", error_code); };
 	app_creation_params.engine_params.app_shutdown_func = []() {};
 
 	rex::test::TestCoreApp app(rsl::move(app_creation_params));

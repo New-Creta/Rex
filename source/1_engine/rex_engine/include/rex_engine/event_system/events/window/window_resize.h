@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/event_system/event.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -18,17 +19,17 @@ namespace rex
 	class WindowResize : public Event<WindowResize>
 	{
 	public:
-		WindowResize(card32 width, card32 height, WindowResizeType type)
+		WindowResize(s32 width, s32 height, WindowResizeType type)
 			: m_width(width)
 			, m_height(height)
 			, m_type(type)
 		{}
 
-		card32 width() const
+		s32 width() const
 		{
 			return m_width;
 		}
-		card32 height() const
+		s32 height() const
 		{
 			return m_height;
 		}
@@ -38,8 +39,8 @@ namespace rex
 		}
 
 	private:
-		card32 m_width;
-		card32 m_height;
+		s32 m_width;
+		s32 m_height;
 		WindowResizeType m_type;
 	};
 }

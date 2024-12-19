@@ -3,24 +3,24 @@
 #include "rex_engine/event_system/events/input/key_down.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Quit App Event")
+TEST_CASE("Key Down Event")
 {
   s32 num_quit_events_fired = 0;
-  rsl::string_view quit_msg;
-  auto subscription = rex::event_system().subscribe<rex::KeyDown>([&num_quit_events_fired, &quit_msg](const rex::KeyDown& evt)
+  rex::KeyCode key_code = rex::KeyCode::Unknown;
+  auto subscription = rex::event_system().subscribe<rex::KeyDown>([&num_quit_events_fired, &key_code](const rex::KeyDown& evt)
     {
       ++num_quit_events_fired;
-      REX_CHECK(evt.reason() == quit_msg);
+      REX_CHECK(evt.key() == key_code);
     });
 
   // Immediate event fire
-  quit_msg = "Test Quit Event";
-  rex::event_system().fire_event(rex::KeyDown(quit_msg));
+  key_code = rex::KeyCode::A;
+  rex::event_system().fire_event(rex::KeyDown(key_code));
   REX_CHECK(num_quit_events_fired == 1);
 
   // Queued event fire
-  quit_msg = "Test Quit Event 2";
-  rex::event_system().enqueue_event(rex::KeyDown(quit_msg));
+  key_code = rex::KeyCode::B;
+  rex::event_system().enqueue_event(rex::KeyDown(key_code));
   REX_CHECK(num_quit_events_fired == 1);
 
   rex::event_system().dispatch_queued_events();

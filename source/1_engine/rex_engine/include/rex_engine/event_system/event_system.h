@@ -64,6 +64,7 @@ namespace rex
     void enqueue_event(const Event& ev)
     {
       static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
+      REX_ASSERT_X(m_event_queue.count() + ev.event_size() < m_event_queue.max_count(), "Writting too many events in 1 frame, event buffer is full. Num queued events: {}", m_num_events_queued);
       m_num_events_queued++;
       m_event_queue.write(&ev, sizeof(ev));
     }

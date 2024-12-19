@@ -1,11 +1,11 @@
 #pragma once
 
-#include "rex_engine/event_system/events/input/mouse_event.h"
+#include "rex_engine/event_system/event.h"
 #include "rex_engine/input/mouse_position.h"
 
 namespace rex
 {
-	class MouseScroll : public MouseEvent
+	class MouseScroll : public Event<MouseScroll>
 	{
 	public:
 		MouseScroll(int32 wheelDelta, MousePosition position)
