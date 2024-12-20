@@ -48,6 +48,7 @@ namespace rex
       if (!exists(full_path))
       {
         REX_ERROR(LogFile, "Failed to read file as it doesn't exist: {}", quoted(full_path));
+        return {};
       }
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),               // Path to file
@@ -70,7 +71,7 @@ namespace rex
       const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
       if (file_size == 0)
       {
-        return memory::Blob();
+        return {};
       }
 
       rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size); // NOLINT(modernize-aError-c-arrays)

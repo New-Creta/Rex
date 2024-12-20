@@ -14,7 +14,7 @@ namespace rex
 
   TempDirectory::~TempDirectory()
   {
-    directory::del_recusrive(m_dirname);
+    directory::del_recursive(m_dirname);
   }
 
   Error TempDirectory::create_file(rsl::string_view filename)

@@ -316,12 +316,19 @@ namespace rex
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      const rsl::string norm_path  = path::norm_path(path);
-      const rsl::string norm_start = path::norm_path(start);
+      rsl::string norm_path  = path::norm_path(path);
+      rsl::string norm_start = path::norm_path(start);
 
       if(norm_path.empty() && norm_start.empty())
       {
         return rsl::string("");
+      }
+
+      // Fix issue here where a absoluate directory and a relative directory can cause invalid results
+      if (is_relative(norm_path) ^ is_relative(norm_start))
+      {
+        norm_path = abs_path(norm_path);
+        norm_start = abs_path(norm_start);
       }
 
       const rsl::vector<rsl::string_view> splitted_path  = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
@@ -393,7 +400,7 @@ namespace rex
     }
 
     // Returns true if 2 paths point to the same file
-    bool same_path(rsl::string_view path1, rsl::string_view path2)
+    bool is_same(rsl::string_view path1, rsl::string_view path2)
     {
       // simply convert the files into their actual files on disk
       // then do a string wise comparison

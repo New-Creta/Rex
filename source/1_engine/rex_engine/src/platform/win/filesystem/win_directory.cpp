@@ -63,14 +63,21 @@ namespace rex
     Error del(rsl::string_view path)
     {
       const rsl::string full_path = path::abs_path(path);
-      const bool success = RemoveDirectoryA(full_path.c_str());
 
-      return success
-        ? Error::no_error()
-        : Error::create_with_log(LogDirectory, "Failed to delete directory at \"{}\"", full_path);
+			rsl::vector<rsl::string> entries = list_entries(full_path);
+			if (!entries.empty())
+			{
+				return Error::create_with_log(LogDirectory, "Failed to delete directory as it wasn't empty. Directory: \"{}\"", full_path);
+			}
+
+			const bool success = RemoveDirectoryA(full_path.c_str());
+
+			return success
+				? Error::no_error()
+				: Error::create_with_log(LogDirectory, "Failed to delete directory at \"{}\"", full_path);
     }
     // Delete a directory recursively, including all files and sub folders
-    Error del_recusrive(rsl::string_view path)
+    Error del_recursive(rsl::string_view path)
     {
       const rsl::string full_path = path::abs_path(path);
 
@@ -79,7 +86,7 @@ namespace rex
       rsl::vector<rsl::string> dirs = list_dirs(full_path);
       for (rsl::string_view dir : dirs)
       {
-        error = del_recusrive(dir);
+        error = del_recursive(dir);
         if (error)
         {
           return Error::create_with_log(LogDirectory, "Failed to recursively delete \"{}\"", full_path);

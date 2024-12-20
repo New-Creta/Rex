@@ -23,7 +23,7 @@ namespace rex
       log_sanitization();
 
       REX_INFO(LogEngine, "Vfs Root: {}", rex::vfs::root());
-      REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::session_data_root());
+      REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::current_session_root());
     }
 
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)

@@ -19,7 +19,7 @@ namespace rex
 	public:
 		ProfilingSession()
 		{
-			m_filepath = rex::path::join(rex::vfs::session_data_root(), "profile_result.json");
+			m_filepath = rex::path::join(rex::vfs::current_session_root(), "profile_result.json");
 			write_header();
 		}
 

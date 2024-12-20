@@ -15,6 +15,8 @@ TEST_CASE("Path Joining")
   REX_CHECK(rex::path::join("D:", "foo", "bar") == "D:/foo/bar");
   REX_CHECK(rex::path::join("foo", "bar") == "foo/bar");
   REX_CHECK(rex::path::join("foo", "bar.txt") == "foo/bar.txt");
+
+
 }
 
 TEST_CASE("Change Extension")
@@ -245,6 +247,12 @@ TEST_CASE("Has Extension")
   REX_CHECK(rex::path::has_extension("") == false);  // Empty string
   REX_CHECK(rex::path::has_extension(".") == false);  // Only a dot, not a valid extension
   REX_CHECK(rex::path::has_extension("..") == false); // Double dots, not a valid extension
+
+  // This is a special edge case, but it caused a bug before
+  // We need to have a string view that points to actual data, but has a length of 0
+  rsl::string abs_path("C:\\Windows\\System32\\file.dll");
+  rsl::string_view abs_path_view(abs_path.data(), 0);
+  REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
 
 TEST_CASE("Is Absolute")
@@ -260,6 +268,12 @@ TEST_CASE("Is Absolute")
     REX_CHECK(rex::path::is_absolute("") == false);  // Empty string
     REX_CHECK(rex::path::is_absolute(".") == false);  // Current directory
     REX_CHECK(rex::path::is_absolute("..") == false); // Parent directory
+
+    // This is a special edge case, but it caused a bug before
+    // We need to have a string view that points to actual data, but has a length of 0
+    rsl::string abs_path("C:\\Windows\\System32\\file.dll");
+    rsl::string_view abs_path_view(abs_path.data(), 0);
+    REX_CHECK(rex::path::is_absolute(abs_path_view) == false);
 }
 
 TEST_CASE("Is Relative")
@@ -275,6 +289,12 @@ TEST_CASE("Is Relative")
     REX_CHECK(rex::path::is_relative("") == false);  // Empty string
     REX_CHECK(rex::path::is_relative(".") == false);  // Current directory
     REX_CHECK(rex::path::is_relative("..") == false); // Parent directory
+
+    // This is a special edge case, but it caused a bug before
+    // We need to have a string view that points to actual data, but has a length of 0
+    rsl::string abs_path("../relative/path/file.txt");
+    rsl::string_view abs_path_view(abs_path.data(), 0);
+    REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
 
 TEST_CASE("Is Junction")
@@ -294,49 +314,49 @@ TEST_CASE("Is Link")
 TEST_CASE("Is Same File")
 {
   // No upper case
-  REX_CHECK(rex::path::same_path("same_file.txt", "same_file.txt") == true);
-  REX_CHECK(rex::path::same_path("sub_folder_1/../same_file.txt", "same_file.txt") == true);
-  REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same("same_file.txt", "same_file.txt") == true);
+  REX_CHECK(rex::path::is_same("sub_folder_1/../same_file.txt", "same_file.txt") == true);
+  REX_CHECK(rex::path::is_same("same_file.txt", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::is_same("same_file.txt", rex::path::random_dir()) == false);
 
 
-  REX_CHECK(rex::path::same_path("sub_folder_1", "sub_folder_1") == true);
-  REX_CHECK(rex::path::same_path("sub_folder_1/../sub_folder_1", "sub_folder_1") == true);
-  REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::same_path("same_file.txt", rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same("sub_folder_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("sub_folder_1/../sub_folder_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("same_file.txt", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::is_same("same_file.txt", rex::path::random_dir()) == false);
 
 
   // First upper case
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", "same_file.txt") == true);
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../same_file.txt", "same_file.txt") == true);
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", "same_file.txt") == true);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1/../same_file.txt", "same_file.txt") == true);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", rex::path::random_dir()) == false);
 
 
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1", "sub_folder_1") == true);
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../SUB_FOLDER_1", "sub_folder_1") == true);
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1/../SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", rex::path::random_dir()) == false);
 
   // Second upper case
-  REX_CHECK(rex::path::same_path("same_file.txt", "SAME_FILE.TXT") == true);
-  REX_CHECK(rex::path::same_path("sub_folder_1/../same_file.txt", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::is_same("same_file.txt", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::is_same("sub_folder_1/../same_file.txt", "SAME_FILE.TXT") == true);
 
 
-  REX_CHECK(rex::path::same_path("sub_folder_1", "SUB_FOLDER_1") == true);
-  REX_CHECK(rex::path::same_path("sub_folder_1/../sub_folder_1", "SUB_FOLDER_1") == true);
+  REX_CHECK(rex::path::is_same("sub_folder_1", "SUB_FOLDER_1") == true);
+  REX_CHECK(rex::path::is_same("sub_folder_1/../sub_folder_1", "SUB_FOLDER_1") == true);
 
   // All upper case
-  REX_CHECK(rex::path::same_path("SAME_FILE.TXT", "SAME_FILE.TXT") == true);
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../SAME_FILE.TXT", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::is_same("SAME_FILE.TXT", "SAME_FILE.TXT") == true);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1/../SAME_FILE.TXT", "SAME_FILE.TXT") == true);
 
 
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1", "sub_folder_1") == true);
-  REX_CHECK(rex::path::same_path("SUB_FOLDER_1/../sub_folder_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1", "sub_folder_1") == true);
+  REX_CHECK(rex::path::is_same("SUB_FOLDER_1/../sub_folder_1", "sub_folder_1") == true);
 
-  REX_CHECK(rex::path::same_path(rex::path::random_filename(), rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::same_path(rex::path::random_filename(), rex::path::random_dir()) == false);
-  REX_CHECK(rex::path::same_path(rex::path::random_dir(), rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same(rex::path::random_filename(), rex::path::random_filename()) == false);
+  REX_CHECK(rex::path::is_same(rex::path::random_filename(), rex::path::random_dir()) == false);
+  REX_CHECK(rex::path::is_same(rex::path::random_dir(), rex::path::random_dir()) == false);
 }
 
 TEST_CASE("Split")

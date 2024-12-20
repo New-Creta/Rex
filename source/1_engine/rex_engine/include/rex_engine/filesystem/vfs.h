@@ -2,6 +2,8 @@
 
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/filesystem/mounting_point.h"
+#include "rex_engine/filesystem/directory.h"
+#include "rex_engine/filesystem/read_request.h"
 #include "rex_engine/diagnostics/error.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_std/bonus/attributes.h"
@@ -62,55 +64,30 @@ namespace rex
     rsl::string_view project_sessions_root();
 
     // Returns the root for all files outputed during this session run (eg. logs)
-    rsl::string_view session_data_root();
+    rsl::string_view current_session_root();
 
     DEFINE_YES_NO_ENUM(AppendToFile);
-
-    class QueuedRequest;
-
-    class ReadRequest
-    {
-    public:
-      ReadRequest(rsl::string_view filepath, QueuedRequest* queuedRequest);
-      ReadRequest(const ReadRequest& other);
-      ReadRequest(ReadRequest&& other);
-
-      ~ReadRequest();
-
-      ReadRequest& operator=(const ReadRequest& other);
-      ReadRequest& operator=(ReadRequest&& other);
-
-      void signal(const rsl::byte* buffer, rsl::memory_size size);
-      void wait() const;
-
-      const rsl::byte* data() const;
-      rsl::memory_size count() const;
-
-      rsl::string_view filepath() const;
-
-    private:
-      rsl::string_view m_filepath;
-      QueuedRequest* m_queued_request;
-      bool m_is_done;
-      const rsl::byte* m_buffer;
-      rsl::memory_size m_size;
-    };
 
     void init();
     void set_root(rsl::string_view root);
     void mount(MountingPoint root, rsl::string_view path);
-    void mount_for_session(MountingPoint root, rsl::string_view path);
     void shutdown();
 
     REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
+    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
+    Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
+    Error save_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
     Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
     Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     Error create_dir(MountingPoint root, rsl::string_view path);
+    Error create_dir(rsl::string_view path);
     Error create_dirs(rsl::string_view path);
 
+    bool exists(rsl::string_view path);
     bool exists(MountingPoint root, rsl::string_view path);
     bool is_dir(MountingPoint root, rsl::string_view path);
     bool is_dir(rsl::string_view path);
@@ -120,17 +97,20 @@ namespace rex
     rsl::string abs_path(MountingPoint root, rsl::string_view path);
 
     rsl::string_view mount_path(MountingPoint mount);
-    rsl::string_view no_mount_path();
+    bool is_mounted(MountingPoint mount);
+    rsl::vector<rsl::string> list_dirs(MountingPoint root, rsl::string_view path);
+    rsl::vector<rsl::string> list_entries(MountingPoint root, rsl::string_view path);
+    rsl::vector<rsl::string> list_files(MountingPoint root, rsl::string_view path);
+    rsl::vector<rsl::string> list_dirs(rsl::string_view path);
+    rsl::vector<rsl::string> list_entries(rsl::string_view path);
+    rsl::vector<rsl::string> list_files(rsl::string_view path);
 
-    rsl::vector<rsl::string> files_in_dir(rsl::string_view path);
-
-    // **************************************************************************
-    // PLATFORM SPECIFIC IMPLEMENTATIONS
-    // **************************************************************************
-    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    Error create_dir(rsl::string_view path);
-
+    Error delete_dir(MountingPoint root, rsl::string_view path);
+    Error delete_dir(rsl::string_view path);
+    Error delete_dir_recursive(MountingPoint root, rsl::string_view path);
+    Error delete_dir_recursive(rsl::string_view path);
+    Error delete_file(MountingPoint root, rsl::string_view path);
+    Error delete_file(rsl::string_view path);
   } // namespace vfs
 } // namespace rex
 

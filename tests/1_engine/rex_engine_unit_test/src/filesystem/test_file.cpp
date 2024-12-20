@@ -109,6 +109,13 @@ TEST_CASE("Read File")
     REX_CHECK(file_content.data() == nullptr);
     REX_CHECK(file_content.size() == 0);
   }
+
+  {
+    const rex::memory::Blob file_content = rex::file::read_file("file_that_doesnt_exist.txt");
+
+    REX_CHECK(file_content.data() == nullptr);
+    REX_CHECK(file_content.size() == 0);
+  }
 }
 
 TEST_CASE("Save To File")

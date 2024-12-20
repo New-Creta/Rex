@@ -198,7 +198,7 @@ namespace rex
     // Returns if the given path is a relative path
     bool is_relative(rsl::string_view path);
     // Returns true if 2 paths point to the same file or directory
-    bool same_path(rsl::string_view path1, rsl::string_view path2);
+    bool is_same(rsl::string_view path1, rsl::string_view path2);
     struct SplitResult
     {
       rsl::string_view head;

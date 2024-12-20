@@ -129,6 +129,11 @@ namespace rex
       // /foo - yes
       // anything else - no
 
+      if (path.empty())
+      {
+        return false;
+      }
+
       if(path.front() == '/' || path.front() == '\\')
       {
         return true;

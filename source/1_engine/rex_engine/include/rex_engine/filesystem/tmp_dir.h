@@ -11,7 +11,7 @@ namespace rex
   class TempDirectory
   {
   public:
-    // the constructor will create the file
+    // the constructor will create the directory
     explicit TempDirectory(rsl::string_view directory = "");
     TempDirectory(const TempDirectory&) = delete;
     TempDirectory(TempDirectory&&) = delete;

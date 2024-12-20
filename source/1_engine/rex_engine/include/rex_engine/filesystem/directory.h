@@ -16,10 +16,10 @@ namespace rex
     Error create(rsl::string_view path);
     // Create a directory recursively, creating all sub directories until the leaf dir
     Error create_recursive(rsl::string_view path);
-    // Delete a directory
+    // Delete a directory, it's expected to be empty
     Error del(rsl::string_view path);
     // Delete a directory recursively, including all files and sub folders
-    Error del_recusrive(rsl::string_view path);
+    Error del_recursive(rsl::string_view path);
     // Return if a directory exists
     bool exists(rsl::string_view path);
     // Copy a directory and its content

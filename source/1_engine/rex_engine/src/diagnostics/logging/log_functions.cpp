@@ -76,7 +76,7 @@ namespace rex
       // Setup the path where logs will go using a mounting point
       // With mounting points, we abstract away the hardcoded paths
       // so we can always set them elsewhere at runtime if we want to
-      rex::vfs::mount_for_session(rex::MountingPoint::Logs, "logs");
+      rex::vfs::mount(rex::MountingPoint::Logs, path::join(vfs::current_session_root(), "logs"));
 
       // Enable file sinks. The vfs is initialized by now, and the path for logs as well
       // we can start using file sinks
