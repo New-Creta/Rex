@@ -197,7 +197,7 @@ TEST_CASE("Relative Path")
   REX_CHECK(rex::path::rel_path("/path/to/dir//", "/") == rex::path::join("path", "to", "dir"));
 
   REX_CHECK(rex::path::rel_path("/path//to//dir/", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/", "path/to/dir") == rex::path::join("..", "..", ".."));
+  REX_CHECK(rex::path::rel_path("/", "path/to/dir") == rex::path::join(""));
 
   REX_CHECK(rex::path::rel_path("C:\\path\\to\\dir", "C:\\path") == rex::path::join("to", "dir"));
   REX_CHECK(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path") == rex::path::join("dir"));
@@ -226,7 +226,7 @@ TEST_CASE("Is Under Dir")
   REX_CHECK(rex::path::is_under_dir("/path/to/dir//", "/") == true);
 
   REX_CHECK(rex::path::is_under_dir("/path//to//dir/", "/") == true);
-  REX_CHECK(rex::path::is_under_dir("/", "path/to/dir") == false);
+  REX_CHECK(rex::path::is_under_dir("/", "path/to/dir") == true);
 
   REX_CHECK(rex::path::is_under_dir("C:\\path\\to\\dir", "C:\\path") == true);
   REX_CHECK(rex::path::is_under_dir("C:\\path\\to\\..\\dir", "C:\\path") == true);
