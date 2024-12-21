@@ -241,6 +241,11 @@ namespace rex
       // return the result
       return res;
     }
+    // Returns true if absolute paths on this platform have a drive letter
+    bool abs_needs_drive()
+    {
+      return true;
+    }
 
   } // namespace path
 } // namespace rex

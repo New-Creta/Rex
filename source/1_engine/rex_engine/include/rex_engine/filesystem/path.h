@@ -4,11 +4,81 @@
 #include "rex_std/bonus/types.h"
 #include "rex_std/vector.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
   namespace path
   {
+    struct SplitResult
+    {
+      rsl::string_view head;
+      rsl::string_view tail;
+    };
+    // Splits the path into a head and a tail
+    // the tail is the last pathname component
+    // the head is everything leading up to that
+    SplitResult split(rsl::string_view path);
+    // Splits the path into a head and a tail
+    // the head is the directory and the stem
+    // the tail is the extension
+    SplitResult split_ext(rsl::string_view path);
+    struct SplitRootResult
+    {
+      rsl::string_view drive;
+      rsl::string_view root;
+      rsl::string_view tail;
+    };
+
+    // -------------------------------------------------------------------------
+    // THESE FUNCTIONS ARE REQUIRED TO BE IMPLEMENTED BY PLATFORM SPECIFIC CODE
+    // -------------------------------------------------------------------------
+    
+    // Returns the current working directory
+    rsl::string cwd();
+
+    // Returns the path of the current user's temp folder
+    rsl::string temp_path();
+
+    // For symlinks, returns the path the link points to
+    // Otherwise returns the input
+    rsl::string real_path(rsl::string_view path);
+
+    // Returns if the given path is an absolute path
+    bool is_absolute(rsl::string_view path);
+
+    // Returns if a file is under a certain directory
+    bool is_under_dir(rsl::string_view path, rsl::string_view dir);
+
+    // Returns true if the given path points to a junction
+    bool is_junction(rsl::string_view path);
+
+    // Returns true if the given path points to a symlink
+    bool is_link(rsl::string_view path);
+
+    // Splits the path into a head and a tail
+    // the head is either the mount point or an empty string
+    // the tail is everything else
+    SplitResult split_origin(rsl::string_view path);
+
+    // Split the path into 3 components
+    // drive - root - tail
+    // drive: mounting point
+    // root: string of separators after the drive
+    // tail: everything after the root
+    // eg: c:/Users/Sam (Windows)
+    // drive: C:
+    // root: /
+    // tail: Users/Sam
+    SplitRootResult split_root(rsl::string_view path);
+
+    // Returns true if absolute paths on this platform have a drive letter
+    bool abs_needs_drive();
+
+    // -------------------------------------------------------------------------
+    // END OF PLATFORM SPECIFIC FUNCTIONS
+    // -------------------------------------------------------------------------
+
     namespace internal
     {
       void join_string_view(rsl::string& str, rsl::string_view arg);
@@ -199,65 +269,18 @@ namespace rex
     bool is_relative(rsl::string_view path);
     // Returns true if 2 paths point to the same file or directory
     bool is_same(rsl::string_view path1, rsl::string_view path2);
-    struct SplitResult
-    {
-      rsl::string_view head;
-      rsl::string_view tail;
-    };
-    // Splits the path into a head and a tail
-    // the tail is the last pathname component
-    // the head is everything leading up to that
-    SplitResult split(rsl::string_view path);
-    // Splits the path into a head and a tail
-    // the head is the directory and the stem
-    // the tail is the extension
-    SplitResult split_ext(rsl::string_view path);
-    struct SplitRootResult
-    {
-      rsl::string_view drive;
-      rsl::string_view root;
-      rsl::string_view tail;
-    };
 
-    // These functions are required to be implemented by platform specific code
-
-    // Returns the current working directory
-    rsl::string cwd();
-
-    // Returns the path of the current user's temp folder
-    rsl::string temp_path();
-
-    // For symlinks, returns the path the link points to
-    // Otherwise returns the input
-    rsl::string real_path(rsl::string_view path);
-
-    // Returns if the given path is an absolute path
-    bool is_absolute(rsl::string_view path);
-
-    // Returns if a file is under a certain directory
-    bool is_under_dir(rsl::string_view path, rsl::string_view dir);
-
-    // Returns true if the given path points to a junction
-    bool is_junction(rsl::string_view path);
-
-    // Returns true if the given path points to a symlink
-    bool is_link(rsl::string_view path);
-
-    // Splits the path into a head and a tail
-    // the head is either the mount point or an empty string
-    // the tail is everything else
-    SplitResult split_origin(rsl::string_view path);
-
-    // Split the path into 3 components
-    // drive - root - tail
-    // drive: mounting point
-    // root: string of separators after the drive
-    // tail: everything after the root
-    // eg: c:/Users/Sam (Windows)
-    // drive: C:
-    // root: /
-    // tail: Users/Sam
-    SplitRootResult split_root(rsl::string_view path);
+    // returns how deep a path is
+    // basically counts the number of slashes
+    // it does this without converting it to an absolute path
+    s32 depth(rsl::string_view path, rsl::string_view root = cwd());
+    // returns how deep from the root path is
+    // basically counts the number of slashes
+    s32 abs_depth(rsl::string_view path);
+    // Returns true if the path starts with a drive letter, false otherwise
+    bool has_drive(rsl::string_view path);
+    // Returns true if the path given is the drive
+    bool is_drive(rsl::string_view path);
   } // namespace path
 } // namespace rex
 
