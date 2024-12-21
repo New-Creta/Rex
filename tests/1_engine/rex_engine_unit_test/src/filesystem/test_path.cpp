@@ -766,3 +766,25 @@ TEST_CASE("Has Same Root")
   REX_CHECK(rex::path::has_same_root("d:/", "c:") == false);
   REX_CHECK(rex::path::has_same_root("d:/", "c:/") == false);
 }
+TEST_CASE("Set Working Directory")
+{
+  rsl::string cwd = rex::path::cwd();
+
+  rsl::string old_wd = rex::path::set_cwd("");
+  REX_CHECK(rex::path::is_same(old_wd, cwd));
+  REX_CHECK(rex::path::is_same(rex::path::cwd(), cwd));
+
+  rsl::string_view new_wd1 = "c:\\";
+  old_wd = rex::path::set_cwd(new_wd1);
+  REX_CHECK(rex::path::is_same(new_wd1, rex::path::cwd()));
+  REX_CHECK(rex::path::is_same(old_wd, cwd));
+
+  rsl::string_view new_wd2 = "c:\\Users";
+  old_wd = rex::path::set_cwd(new_wd2);
+  REX_CHECK(rex::path::is_same(new_wd2, rex::path::cwd()));
+  REX_CHECK(rex::path::is_same(old_wd, new_wd1));
+
+  old_wd = rex::path::set_cwd(cwd);
+  REX_CHECK(rex::path::is_same(cwd, rex::path::cwd()));
+  REX_CHECK(rex::path::is_same(old_wd, new_wd2));
+}

@@ -37,6 +37,10 @@ namespace rex
     // Returns the current working directory
     rsl::string cwd();
 
+    // Sets a new working directory and returns the old one
+    // A valid and existing path is expected or an assert is raised
+    rsl::string set_cwd(rsl::string_view dir);
+
     // Returns the path of the current user's temp folder
     rsl::string temp_path();
 

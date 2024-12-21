@@ -6,6 +6,7 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
@@ -71,6 +72,20 @@ namespace rex
       GetCurrentDirectoryA(current_dir.max_size(), current_dir.data()); // NOLINT(readability-static-accessed-through-instance)
       current_dir.reset_null_termination_offset();
       return rsl::string(current_dir).replace("\\", "/");
+    }
+    // Sets a new working directory and returns the old one
+    // A valid and existing path is expected or an assert is raised
+    rsl::string set_cwd(rsl::string_view dir)
+    {
+      rsl::string fulldir = rex::path::abs_path(dir);
+
+      REX_ASSERT_X(is_valid_path(fulldir), "dir is not a valid path, cannot change the working directory. Dir: {}", fulldir);
+      REX_ASSERT_X(directory::exists(fulldir), "dir specified for working dir doesn't exist. This is not allowed. Dir: {}", fulldir);
+
+      rsl::string cwd = path::cwd();
+      SetCurrentDirectoryA(fulldir.data());
+
+      return cwd;
     }
     // Returns the path of the current user's temp folder
     rsl::string temp_path()
