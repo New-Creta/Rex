@@ -207,8 +207,10 @@ namespace rex
     bool has_drive(rsl::string_view path);
     // Returns true if the path given is the drive
     bool is_drive(rsl::string_view path);
-    // Returns true fi the path is pointing to the root
+    // Returns true if the path is pointing to the root
     bool is_root(rsl::string_view path);
+    // Returns true if both paths are on the same mount
+    bool has_same_root(rsl::string_view lhs, rsl::string_view rhs);
   } // namespace path
 } // namespace rex
 

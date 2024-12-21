@@ -255,29 +255,29 @@ TEST_CASE("Normalise Path")
 TEST_CASE("Relative Path")
 {
   // linux style paths
-  REX_CHECK(rex::path::rel_path("/path/to/dir", "/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("path/to/dir", "path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("/", "/") == rex::path::join(""));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/dir", "/path")                   , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir", "path")                     , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/", "/")                                  , rex::path::join("")));
 
-  REX_CHECK(rex::path::rel_path("/path/./to/./dir", "/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("/path/to/../dir", "/path") == rex::path::join("dir"));
-  REX_CHECK(rex::path::rel_path("/path/to/../../dir", "/path") == rex::path::join("..", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/./to/./dir", "/path")               , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/../dir", "/path")                , rex::path::join("dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/../../dir", "/path")             , rex::path::join("..", "dir")));
 
-  REX_CHECK(rex::path::rel_path("/path/to/dir\\file", "/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("\\path\\to\\dir\\file", "/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("path/to/dir/file\\", "path") == rex::path::join("to", "dir", "file"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/dir\\file", "/path")             , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("\\path\\to\\dir\\file", "/path")          , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir/file\\", "path")              , rex::path::join("to", "dir", "file")));
 
-  REX_CHECK(rex::path::rel_path("//path/to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/\\path\\to/dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/path/to/dir\\", "/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("//path/to//dir", "/")                     , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/\\path\\to/dir", "/")                    , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/dir\\", "/")                     , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("/path//to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/path/to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/path/to/dir//", "/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path//to//dir", "/")                     , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to//dir", "/")                      , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/dir//", "/")                     , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("/path/to/else", "/path/to/dir") == rex::path::join("..", "else"));
-  REX_CHECK(rex::path::rel_path("\\path\\to\\else", "/path/to/dir") == rex::path::join("..", "else"));
-  REX_CHECK(rex::path::rel_path("path/to/else\\", "path/to/dir") == rex::path::join("..", "else"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/else", "/path/to/dir")           , rex::path::join("..", "else")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("\\path\\to\\else", "/path/to/dir")        , rex::path::join("..", "else")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/else\\", "path/to/dir")           , rex::path::join("..", "else")));
 
   rsl::string_view rel_path = "path/to/dir";
   s32 expected_depth = rex::path::abs_depth(rex::path::cwd());
@@ -287,80 +287,84 @@ TEST_CASE("Relative Path")
   {
     rel_to_root = rex::path::join(rel_to_root, "..");
   }
+
+  rsl::string abs_path = rex::path::abs_path(rel_path);
+  rex::path::SplitResult split_res = rex::path::split_origin(abs_path);
   
-  REX_CHECK(rex::path::rel_path("/path//to//dir/", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("/", rel_path) == rel_to_root);
-  REX_CHECK(rex::path::rel_path(rel_path, "/path") == rex::path::abs_path(rel_path));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/path//to//dir/", "/")                    , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("/", rel_path)                             , rel_to_root));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path(rel_path, "/path")                         , rex::path::join("..", split_res.tail)));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path(rel_path, "/path/dir")                     , rex::path::join("..", "..", split_res.tail)));
 
   // windows style paths
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir", "d:/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("path/to/dir", "path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/", "d:/") == rex::path::join(""));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir", "d:/path")               , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir", "path")                     , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/", "d:/")                              , rex::path::join("")));
 
-  REX_CHECK(rex::path::rel_path("d:/path/./to/./dir", "d:/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../dir", "d:/path") == rex::path::join("dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../../dir", "d:/path") == rex::path::join("..", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/./to/./dir", "d:/path")           , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../dir", "d:/path")            , rex::path::join("dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../../dir", "d:/path")         , rex::path::join("..", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path/./to/./dir", "D:/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../dir", "D:/path") == rex::path::join("dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../../dir", "D:/path") == rex::path::join("..", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/./to/./dir", "D:/path")           , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../dir", "D:/path")            , rex::path::join("dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../../dir", "D:/path")         , rex::path::join("..", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir\\file", "d:/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("\\path\\to\\dir\\file", "d:/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("path/to/dir/file\\", "path") == rex::path::join("to", "dir", "file"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir\\file", "d:/path")         , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("\\path\\to\\dir\\file", "d:/path")        , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir/file\\", "path")              , rex::path::join("to", "dir", "file")));
 
-  REX_CHECK(rex::path::rel_path("d://path/to//dir", "d:/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/\\path\\to/dir", "d:/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir\\", "d:/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d://path/to//dir", "d:/")                 , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/\\path\\to/dir", "d:/")                , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir\\", "d:/")                 , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path//to//dir", "d:/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to//dir", "d:/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir//", "d:/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path//to//dir", "d:/")                 , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to//dir", "d:/")                  , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir//", "d:/")                 , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path//to//dir/", "d:/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/", "path/to/dir") == rex::path::join(""));
-  REX_CHECK(rex::path::rel_path("to/dir/", "d:/path") == rex::path::join("..", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path//to//dir/", "d:/")                , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/", rel_path)                           , rex::path::join(rel_to_root)));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path(rel_path, "d:/path")                       , rex::path::join("..", split_res.tail)));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path(rel_path, "d:/path/dir")                   , rex::path::join("..", "..", split_res.tail)));
 
   // linux & windows style paths
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir", "/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("path/to/dir", "path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/", "/") == rex::path::join(""));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir", "/path")                 , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir", "path")                     , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/", "/")                                , rex::path::join("")));
 
-  REX_CHECK(rex::path::rel_path("d:/path/./to/./dir", "/path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../dir", "/path") == rex::path::join("dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/../../dir", "/path") == rex::path::join("..", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/./to/./dir", "/path")             , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../dir", "/path")              , rex::path::join("dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/../../dir", "/path")           , rex::path::join("..", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir\\file", "/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("\\path\\to\\dir\\file", "/path") == rex::path::join("to", "dir", "file"));
-  REX_CHECK(rex::path::rel_path("path/to/dir/file\\", "path") == rex::path::join("to", "dir", "file"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir\\file", "/path")           , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("\\path\\to\\dir\\file", "/path")          , rex::path::join("to", "dir", "file")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("path/to/dir/file\\", "path")              , rex::path::join("to", "dir", "file")));
 
-  REX_CHECK(rex::path::rel_path("d://path/to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/\\path\\to/dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir\\", "/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d://path/to//dir", "/")                   , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/\\path\\to/dir", "/")                  , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir\\", "/")                   , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path//to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to//dir", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/path/to/dir//", "/") == rex::path::join("path", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path//to//dir", "/")                   , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to//dir", "/")                    , rex::path::join("path", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path/to/dir//", "/")                   , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("d:/path//to//dir/", "/") == rex::path::join("path", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("d:/", "path/to/dir") == rex::path::join(""));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("d:/path//to//dir/", "/")                  , rex::path::join("path", "to", "dir")));
 
-  REX_CHECK(rex::path::rel_path("C:\\path\\to\\dir", "C:\\path") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path") == rex::path::join("dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("C:\\path\\to\\dir", "C:\\path")           , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path")       , rex::path::join("dir")));
 
-  REX_CHECK(rex::path::rel_path("D:\\path\\to\\dir", "C:\\path\\to\\dir") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("D:/path/to/dir", "C:/path/to/dir") == rex::path::join("dir"));
-  REX_CHECK(rex::path::rel_path("D:\\", "C:\\") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("D:/", "C:/") == rex::path::join("dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("D:\\path\\to\\dir", "C:\\path\\to\\dir")  , rex::path::join(rex::path::abs_path("D:\\path\\to\\dir"))));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("D:/path/to/dir", "C:/path/to/dir")        , rex::path::join(rex::path::abs_path("D:/path/to/dir"))));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("D:\\", "C:\\")                            , rex::path::join(rex::path::abs_path("D:\\"))));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("D:/", "C:/")                              , rex::path::join(rex::path::abs_path("D:/"))));
 
   // edge cases
-  REX_CHECK(rex::path::rel_path("to/dir/", "path") == rex::path::join("..", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("to/dir/", "") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("to/dir/", ".") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("to/dir/", "./") == rex::path::join("to", "dir"));
-  REX_CHECK(rex::path::rel_path("../to/dir/", "") == rex::path::join("..", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("../to/dir/", ".") == rex::path::join("..", "to", "dir"));
-  REX_CHECK(rex::path::rel_path("../to/dir/", "./") == rex::path::join("..", "to", "dir"));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("to/dir/", "path")                         , rex::path::join("..", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("to/dir/", "")                             , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("to/dir/", ".")                            , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("to/dir/", "./")                           , rex::path::join("to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("../to/dir/", "")                          , rex::path::join("..", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("../to/dir/", ".")                         , rex::path::join("..", "to", "dir")));
+  REX_CHECK(rex::path::is_same(rex::path::rel_path("../to/dir/", "./")                        , rex::path::join("..", "to", "dir")));
 }
 
 TEST_CASE("Is Under Dir")
@@ -741,4 +745,24 @@ TEST_CASE("Is Root")
   REX_CHECK(rex::path::is_root("\\") == true);
   REX_CHECK(rex::path::is_root("d:/") == true);
   REX_CHECK(rex::path::is_root("d:\\") == true);
+}
+TEST_CASE("Has Same Root")
+{
+  REX_CHECK(rex::path::has_same_root("", "") == true);
+  REX_CHECK(rex::path::has_same_root("/", "/") == true);
+  REX_CHECK(rex::path::has_same_root("\\", "\\") == true);
+  REX_CHECK(rex::path::has_same_root("some path", "some path") == true);
+  REX_CHECK(rex::path::has_same_root("some path", "some other path") == true);
+  REX_CHECK(rex::path::has_same_root("c:/", "c:/") == true);
+  REX_CHECK(rex::path::has_same_root("c:/some path", "c:/some path") == true);
+  REX_CHECK(rex::path::has_same_root("c:\\", "c:\\") == true);
+  REX_CHECK(rex::path::has_same_root("c:/", "c:\\") == true);
+  REX_CHECK(rex::path::has_same_root("c:\\", "c:/") == true);
+  REX_CHECK(rex::path::has_same_root("c:\\", "C:/") == true);
+
+  REX_CHECK(rex::path::has_same_root("c:", "c:/") == false);
+  REX_CHECK(rex::path::has_same_root("c:/", "c:") == false);
+  REX_CHECK(rex::path::has_same_root("c:/", "d:") == false);
+  REX_CHECK(rex::path::has_same_root("d:/", "c:") == false);
+  REX_CHECK(rex::path::has_same_root("d:/", "c:/") == false);
 }

@@ -258,6 +258,12 @@ namespace rex
     // Returns the absolute path for the given path
     rsl::string abs_path(rsl::string_view path)
     {
+      // if the path is invalid, we can't properly make it an absolute path
+      if (!is_valid_path(path))
+      {
+        return rsl::string(path);
+      }
+
       // If the path is already absolute, just return it
       if(is_absolute(path))
       {
@@ -466,6 +472,13 @@ namespace rex
         return rsl::string("");
       }
 
+      // If paths are pointing to different root
+      // return the absolute path of the former
+      if (!has_same_root(abs_norm_root, abs_norm_root))
+      {
+        return abs_norm_path;
+      }
+
       // If there is a mismatch however, we need to find where this happens and construct a path from the root to this path
       // Afterwards we can just append the remaining path
       rsl::vector<rsl::string_view> paths{ abs_norm_path, abs_norm_root };
@@ -474,13 +487,7 @@ namespace rex
       rsl::string_view diff_in_path = abs_norm_path.substr(common.length());
       rsl::string_view diff_in_root = abs_norm_root.substr(common.length());
 
-      // Find the first mismatch between the paths, if there's none, the paths are equal
-      const rsl::vector<rsl::string_view> splitted_path = rsl::split(diff_in_path, rsl::string_view(&g_seperation_char, 1));
-      const rsl::vector<rsl::string_view> splitted_start = rsl::split(diff_in_root, rsl::string_view(&g_seperation_char, 1));
-
-      auto mismatch_res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
-
-      s32 num_parent_dir_tokens = splitted_start.size();
+      s32 num_parent_dir_tokens = depth(diff_in_root);
       rsl::string result;
 			for (card32 i = 0; i < num_parent_dir_tokens; ++i)
 			{
@@ -660,6 +667,16 @@ namespace rex
 
       // Drive root
       return path.length() == 3 && has_drive(path);
+    }
+    bool has_same_root(rsl::string_view lhs, rsl::string_view rhs)
+    {
+      rsl::string lhs_fullpath = abs_path(lhs);
+      rsl::string rhs_fullpath = abs_path(rhs);
+
+      SplitResult lhs_split = split_origin(lhs_fullpath);
+      SplitResult rhs_split = split_origin(rhs_fullpath);
+
+      return rex::path::is_same(lhs_split.head, rhs_split.head);
     }
   } // namespace path
 } // namespace rex
