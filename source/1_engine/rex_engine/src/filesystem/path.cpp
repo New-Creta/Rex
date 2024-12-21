@@ -610,6 +610,11 @@ namespace rex
         return 0;
       }
 
+      if (!is_valid_path(path))
+      {
+        return 0;
+      }
+
       if (!is_under_dir(path, root))
       {
         return 0;
