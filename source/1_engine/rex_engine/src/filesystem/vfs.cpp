@@ -184,32 +184,32 @@ namespace rex
 
     rsl::string_view engine_root()
     {
-      return g_root_paths.engine_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.engine_root;
     }
 
     rsl::string_view editor_root()
     {
-      return g_root_paths.editor_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.editor_root;
     }
 
     rsl::string_view project_root()
     {
-      return g_root_paths.project_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.project_root;
     }
 
     rsl::string_view sessions_root()
     {
-      return g_root_paths.sessions_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.sessions_root;
     }
 
     rsl::string_view project_sessions_root()
     {
-      return g_root_paths.project_sessions_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.project_sessions_root;
     }
 
     rsl::string_view current_session_root()
     {
-      return g_root_paths.current_session_root; // If it crashes here, that's likely because the vfs isn't initialized yet
+      return g_root_paths.current_session_root;
     }
 
     void process_read_requests()

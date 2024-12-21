@@ -31,9 +31,9 @@ namespace rex::test
 TEST_CASE("Test VFS - init & shutdown")
 {
 	REX_CHECK(rex::path::is_same(rex::vfs::root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::project_sessions_root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::current_session_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::project_sessions_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::current_session_root(), ""));
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath1) == false);
 
 	rex::vfs::init();
@@ -46,9 +46,9 @@ TEST_CASE("Test VFS - init & shutdown")
 	rex::vfs::shutdown();
 
 	REX_CHECK(rex::path::is_same(rex::vfs::root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::project_sessions_root(), ""));
-	//REX_CHECK(rex::path::is_same(rex::vfs::current_session_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::project_sessions_root(), ""));
+	REX_CHECK(rex::path::is_same(rex::vfs::current_session_root(), ""));
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath1) == false);
 }
 TEST_CASE("Test VFS - Root Paths")

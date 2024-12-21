@@ -15,8 +15,6 @@ TEST_CASE("Path Joining")
   REX_CHECK(rex::path::join("D:", "foo", "bar") == "D:/foo/bar");
   REX_CHECK(rex::path::join("foo", "bar") == "foo/bar");
   REX_CHECK(rex::path::join("foo", "bar.txt") == "foo/bar.txt");
-
-
 }
 
 TEST_CASE("Is Valid Path")
