@@ -121,98 +121,20 @@ namespace rex
     // returns the seperation char for paths
     char8 seperation_char();
 
-    // returns an array of invalid characters for filenames
-    constexpr auto invalid_file_name_chars()
+    // Return the max length a file can have
+    constexpr s32 max_path_length()
     {
-      rsl::array res = {
-          '"',
-          '<',
-          '>',
-          '|',
-          ':',
-          '*',
-          '?',
-          '\\',
-          '/',
-          static_cast<char8>(0),
-          static_cast<char8>(1),
-          static_cast<char8>(2),
-          static_cast<char8>(3),
-          static_cast<char8>(4),
-          static_cast<char8>(5),
-          static_cast<char8>(6),
-          static_cast<char8>(7),
-          static_cast<char8>(8),
-          static_cast<char8>(9),
-          static_cast<char8>(10),
-          static_cast<char8>(11),
-          static_cast<char8>(12),
-          static_cast<char8>(13),
-          static_cast<char8>(14),
-          static_cast<char8>(15),
-          static_cast<char8>(16),
-          static_cast<char8>(17),
-          static_cast<char8>(18),
-          static_cast<char8>(19),
-          static_cast<char8>(20),
-          static_cast<char8>(21),
-          static_cast<char8>(22),
-          static_cast<char8>(23),
-          static_cast<char8>(24),
-          static_cast<char8>(25),
-          static_cast<char8>(26),
-          static_cast<char8>(27),
-          static_cast<char8>(28),
-          static_cast<char8>(29),
-          static_cast<char8>(30),
-          static_cast<char8>(31),
-      };
+      // MAX_PATH on Windows is 260 by default
+      // You switch a flag to support longer paths (bugged in Windows 11 though)
+      // https://answers.microsoft.com/en-us/windows/forum/all/long-file-path-issues-in-windows-11-pro-with/0c440721-e35a-4b58-9f5a-645656768f9d
+      // but by default this is disabled
+      return 256;
+    }
 
-      return res;
-    }
+    // returns an array of path names that aren't allowed to be used
+    const rsl::vector<rsl::string_view>& invalid_path_names();
     // returns an array of invalid characters for directories
-    constexpr auto invalid_path_chars()
-    {
-      rsl::array res = {
-          '"',
-          '<',
-          '>',
-          '|',
-          static_cast<char8>(0),
-          static_cast<char8>(1),
-          static_cast<char8>(2),
-          static_cast<char8>(3),
-          static_cast<char8>(4),
-          static_cast<char8>(5),
-          static_cast<char8>(6),
-          static_cast<char8>(7),
-          static_cast<char8>(8),
-          static_cast<char8>(9),
-          static_cast<char8>(10),
-          static_cast<char8>(11),
-          static_cast<char8>(12),
-          static_cast<char8>(13),
-          static_cast<char8>(14),
-          static_cast<char8>(15),
-          static_cast<char8>(16),
-          static_cast<char8>(17),
-          static_cast<char8>(18),
-          static_cast<char8>(19),
-          static_cast<char8>(20),
-          static_cast<char8>(21),
-          static_cast<char8>(22),
-          static_cast<char8>(23),
-          static_cast<char8>(24),
-          static_cast<char8>(25),
-          static_cast<char8>(26),
-          static_cast<char8>(27),
-          static_cast<char8>(28),
-          static_cast<char8>(29),
-          static_cast<char8>(30),
-          static_cast<char8>(31),
-      };
-      return res;
-    }
+    const rsl::vector<char8>& invalid_path_chars();
     // Join multiple paths together
     template <typename... PathLikeTypes>
     rsl::string join(PathLikeTypes&&... paths)
@@ -273,14 +195,20 @@ namespace rex
     // returns how deep a path is
     // basically counts the number of slashes
     // it does this without converting it to an absolute path
+		// a file directly under the root has a depth of 1, any subdirectory increments depth by 1
+    // this makes it so that the root always has a depth of 0
     s32 depth(rsl::string_view path, rsl::string_view root = cwd());
     // returns how deep from the root path is
     // basically counts the number of slashes
+    // a file directly under the root has a depth of 1, any subdirectory increments depth by 1
+    // this makes it so that the root always has a depth of 0
     s32 abs_depth(rsl::string_view path);
     // Returns true if the path starts with a drive letter, false otherwise
     bool has_drive(rsl::string_view path);
     // Returns true if the path given is the drive
     bool is_drive(rsl::string_view path);
+    // Returns true fi the path is pointing to the root
+    bool is_root(rsl::string_view path);
   } // namespace path
 } // namespace rex
 

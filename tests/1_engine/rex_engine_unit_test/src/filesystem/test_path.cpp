@@ -19,6 +19,84 @@ TEST_CASE("Path Joining")
 
 }
 
+TEST_CASE("Is Valid Path")
+{
+  // Valid ones
+  REX_CHECK(rex::path::is_valid_path("") == true);
+  REX_CHECK(rex::path::is_valid_path("/") == true);
+  REX_CHECK(rex::path::is_valid_path("\\") == true);
+  REX_CHECK(rex::path::is_valid_path("/file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("/path") == true);
+  REX_CHECK(rex::path::is_valid_path("/path/to/file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("!.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("/path.to.file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("path.to.file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("d:/path.to.file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("d:\\path/to.file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("d:\\path/to file.txt") == true);
+
+  // AI generated examples
+  REX_CHECK(rex::path::is_valid_path("/home/user/documents/file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("/etc/nginx/nginx.conf") == true);
+  REX_CHECK(rex::path::is_valid_path("/var/log/system.log") == true);
+  REX_CHECK(rex::path::is_valid_path("/usr/local/bin/script.sh") == true);
+  REX_CHECK(rex::path::is_valid_path("/tmp/") == true);
+  REX_CHECK(rex::path::is_valid_path("documents/file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("../file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("./script.sh") == true);
+  REX_CHECK(rex::path::is_valid_path("some/folder/another_file") == true);
+  REX_CHECK(rex::path::is_valid_path("C:\\Users\\Alice\\Documents\\file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("D:\\Projects\\code\\main.py") == true);
+  REX_CHECK(rex::path::is_valid_path("E:\\Music\\song.mp3") == true);
+  REX_CHECK(rex::path::is_valid_path("\\\\NetworkShare\\Folder\\File.docx") == true);
+  REX_CHECK(rex::path::is_valid_path("Documents\\file.txt") == true);
+  REX_CHECK(rex::path::is_valid_path("..\\config.ini") == true);
+  REX_CHECK(rex::path::is_valid_path(".\\run.bat") == true);
+  REX_CHECK(rex::path::is_valid_path("some\\folder\\subfolder") == true);
+
+  // Invalid ones
+  REX_CHECK(rex::path::is_valid_path("this is a very long path that goes way beyond the limit of what's supported xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx") == false);
+
+  // AI generated examples
+  REX_CHECK(rex::path::is_valid_path("/home/user/<documents>/file.txt") == false);
+  REX_CHECK(rex::path::is_valid_path("/etc/nginx/nginx|conf") == false);
+  REX_CHECK(rex::path::is_valid_path("/tmp/file*.txt") == false);
+  REX_CHECK(rex::path::is_valid_path("C:\\Users\\Alice\\Documents\\file?.txt") == false);
+  REX_CHECK(rex::path::is_valid_path("C:\\Users\\Alice\\|Documents\\file.txt") == false);
+  REX_CHECK(rex::path::is_valid_path("C:\\Users\\Alice\\Con\\file.txt") == false);
+  REX_CHECK(rex::path::is_valid_path("C:UsersAliceDocumentsfile.txt") == false);
+}
+TEST_CASE("Is Valid Filename")
+{
+  // Valid ones
+  REX_CHECK(rex::path::is_valid_filename("file.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("file with space.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("file_with_underscores.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("file-with-dashes.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("file.txt.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("file!.!.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("FILE!.!.txt") == true);
+  REX_CHECK(rex::path::is_valid_filename("FILE!.!.TXT") == true);
+  REX_CHECK(rex::path::is_valid_filename("file!.!.TXT") == true);
+
+  // AI generated examples
+  REX_CHECK(rex::path::is_valid_filename("file@name!#&$~.txt") == true);
+
+  // Invalid ones
+  REX_CHECK(rex::path::is_valid_filename("") == false);
+  REX_CHECK(rex::path::is_valid_filename("path/file.txt") == false);
+
+  // AI generated examples
+  REX_CHECK(rex::path::is_valid_filename("file*name.txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file:name.txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file<name>.txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file|name.txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file?name.txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file\"name\".txt") == false);
+  REX_CHECK(rex::path::is_valid_filename("file\\name.txt") == false);
+
+}
+
 TEST_CASE("Change Extension")
 {
   REX_CHECK(rex::path::change_extension("foo.txt", ".bar") == "foo.bar");
@@ -573,17 +651,62 @@ TEST_CASE("Split Root")
 
 TEST_CASE("Depth")
 {
+  // Testing from working directory
+  REX_CHECK(rex::path::depth("") == 0);
   REX_CHECK(rex::path::depth("path") == 1);
   REX_CHECK(rex::path::depth("path/to/dir") == 3);
   REX_CHECK(rex::path::depth("path/./to/dir") == 3);
+  REX_CHECK(rex::path::depth("path/../to/dir") == 2);
 
-  REX_CHECK(rex::path::depth("/path") == 1);
-  REX_CHECK(rex::path::depth("/path/to/dir") == 3);
-  REX_CHECK(rex::path::depth("/path/./to/dir") == 3);
+  // Testing from other directory
+  rsl::string_view dummy_dir = "dummy_dir";
+  REX_CHECK(rex::path::depth("", dummy_dir) == 0);
+  REX_CHECK(rex::path::depth("path", dummy_dir) == 0);
+  REX_CHECK(rex::path::depth("path/to/dir", dummy_dir) == 0);
+  REX_CHECK(rex::path::depth("path/./to/dir", dummy_dir) == 0);
+  REX_CHECK(rex::path::depth("path/../to/dir", dummy_dir) == 0);
 
-  REX_CHECK(rex::path::depth("d:/path") == 1);
-  REX_CHECK(rex::path::depth("d:/path/to/dir") == 3);
-  REX_CHECK(rex::path::depth("d:/path/./to/dir") == 3);
+  // Linux absolute path
+  REX_CHECK(rex::path::depth("/") == 0);
+  REX_CHECK(rex::path::depth("\\") == 0);
+  REX_CHECK(rex::path::depth("/path") == 0);
+  REX_CHECK(rex::path::depth("/path/to/dir") == 0);
+  REX_CHECK(rex::path::depth("/path/./to/dir") == 0);
+  REX_CHECK(rex::path::depth("/path/../to/dir") == 0);
+
+  // Windows absolute path
+  REX_CHECK(rex::path::depth("d:") == 0);
+  REX_CHECK(rex::path::depth("d:/") == 0);
+  REX_CHECK(rex::path::depth("d:/path") == 0);
+  REX_CHECK(rex::path::depth("d:/path/to/dir") == 0);
+  REX_CHECK(rex::path::depth("d:/path/../to/dir") == 0);
+
+  // Testing absolute depth
+
+  rsl::string cwd = rex::path::cwd();
+  s32 cwd_depth = rex::path::abs_depth(cwd);
+
+  REX_CHECK(rex::path::abs_depth("") == cwd_depth);
+  REX_CHECK(rex::path::abs_depth("path") == cwd_depth + 1);
+  REX_CHECK(rex::path::abs_depth("path/to/dir") == cwd_depth + 3);
+  REX_CHECK(rex::path::abs_depth("path/./to/dir") == cwd_depth + 3);
+  REX_CHECK(rex::path::abs_depth("path/../to/dir") == cwd_depth + 2);
+
+  // Linux absolute path
+  REX_CHECK(rex::path::abs_depth("/") == 0);
+  REX_CHECK(rex::path::abs_depth("\\") == 0);
+  REX_CHECK(rex::path::abs_depth("/path") == 1);
+  REX_CHECK(rex::path::abs_depth("/path/to/dir") == 3);
+  REX_CHECK(rex::path::abs_depth("/path/./to/dir") == 3);
+  REX_CHECK(rex::path::abs_depth("/path/../to/dir") == 2);
+
+  // Windows absolute path
+  REX_CHECK(rex::path::abs_depth("d:") == 0);
+  REX_CHECK(rex::path::abs_depth("d:/") == 0);
+  REX_CHECK(rex::path::abs_depth("d:/path") == 1);
+  REX_CHECK(rex::path::abs_depth("d:/path/to/dir") == 3);
+  REX_CHECK(rex::path::abs_depth("d:/path/./to/dir") == 3);
+  REX_CHECK(rex::path::abs_depth("d:/path/../to/dir") == 2);
 }
 
 TEST_CASE("Has Drive")
@@ -606,4 +729,16 @@ TEST_CASE("Is Drive")
   REX_CHECK(rex::path::is_drive("D/") == false);
   REX_CHECK(rex::path::is_drive("D") == false);
   REX_CHECK(rex::path::is_drive("path") == false);
+}
+TEST_CASE("Is Root")
+{
+  REX_CHECK(rex::path::is_root("") == false);
+  REX_CHECK(rex::path::is_root("d:") == false);
+  REX_CHECK(rex::path::is_root("path") == false);
+  REX_CHECK(rex::path::is_root("/path") == false);
+  REX_CHECK(rex::path::is_root("\\path") == false);
+  REX_CHECK(rex::path::is_root("/") == true);
+  REX_CHECK(rex::path::is_root("\\") == true);
+  REX_CHECK(rex::path::is_root("d:/") == true);
+  REX_CHECK(rex::path::is_root("d:\\") == true);
 }

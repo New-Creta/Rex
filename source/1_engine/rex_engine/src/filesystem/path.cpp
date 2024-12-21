@@ -83,17 +83,119 @@ namespace rex
       return g_seperation_char;
     }
 
+    // returns an array of invalid characters for filenames
+    const rsl::vector<char8>& invalid_path_chars()
+    {
+      static rsl::vector<char8> res = {
+          '"',
+          '<',
+          '>',
+          '|',
+          '*',
+          '?',
+          static_cast<char8>(0),
+          static_cast<char8>(1),
+          static_cast<char8>(2),
+          static_cast<char8>(3),
+          static_cast<char8>(4),
+          static_cast<char8>(5),
+          static_cast<char8>(6),
+          static_cast<char8>(7),
+          static_cast<char8>(8),
+          static_cast<char8>(9),
+          static_cast<char8>(10),
+          static_cast<char8>(11),
+          static_cast<char8>(12),
+          static_cast<char8>(13),
+          static_cast<char8>(14),
+          static_cast<char8>(15),
+          static_cast<char8>(16),
+          static_cast<char8>(17),
+          static_cast<char8>(18),
+          static_cast<char8>(19),
+          static_cast<char8>(20),
+          static_cast<char8>(21),
+          static_cast<char8>(22),
+          static_cast<char8>(23),
+          static_cast<char8>(24),
+          static_cast<char8>(25),
+          static_cast<char8>(26),
+          static_cast<char8>(27),
+          static_cast<char8>(28),
+          static_cast<char8>(29),
+          static_cast<char8>(30),
+          static_cast<char8>(31),
+      };
+
+      return res;
+    }
+    // returns an array of path names that aren't allowed to be used
+    const rsl::vector<rsl::string_view>& invalid_path_names()
+    {
+      static rsl::vector<rsl::string_view> res = {
+        // Filenames on windows that are reserved for device names
+        "con",
+        "aux",
+        "nul",
+        "com1",
+        "lpt1"
+      };
+
+      return res;
+    }
+
     // returns true if it's a valid path, returns false otherwise
     bool is_valid_path(rsl::string_view path)
     {
-      const rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
-      return path.find_first_of(invalid_chars) != path.npos(); // NOLINT(readability-static-accessed-through-instance)
+      if (path.length() > max_path_length())
+      {
+        return false;
+      }
+
+      if (path.length() == 0)
+      {
+        return true;
+      }
+
+      SplitResult split_origin_res = split_origin(path);
+      const rsl::vector<rsl::string_view> splitted = rsl::split(split_origin_res.tail, "/\\");
+      
+      for (rsl::string_view subpath : splitted)
+      {
+        if (!is_valid_filename(subpath))
+        {
+          return false;
+        }
+      }
+
+      return true;
+
+      //const rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
+      //return path.find_first_of(invalid_chars) == path.npos(); // NOLINT(readability-static-accessed-through-instance)
     }
     // returns true if it's a valid filename, returns false otherwise
     bool is_valid_filename(rsl::string_view filename)
     {
-      const rsl::string_view invalid_chars(invalid_file_name_chars().data(), invalid_file_name_chars().size());
-      return filename.find_first_of(invalid_chars) != filename.npos(); // NOLINT(readability-static-accessed-through-instance)
+      if (filename.length() == 0)
+      {
+        return false;
+      }
+
+      // files are not allowed to have slashes or colons
+      if (filename.find_first_of("/\\:") != filename.npos())
+      {
+        return false;
+      }
+
+      rsl::string filename_lower(filename);
+      rsl::to_lower(filename_lower.cbegin(), filename_lower.begin(), filename_lower.length());
+      if (rsl::find(invalid_path_names().cbegin(), invalid_path_names().cend(), filename_lower) != invalid_path_names().cend())
+      {
+        return false;
+      }
+
+      const rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
+      return filename.find_first_of(invalid_chars) == filename.npos(); // NOLINT(readability-static-accessed-through-instance)
     }
 
     // removes leading and trailing quotes from a path
@@ -496,6 +598,11 @@ namespace rex
     }
     s32 depth(rsl::string_view path, rsl::string_view root)
     {
+      if (path.empty())
+      {
+        return 0;
+      }
+
       if (!is_under_dir(path, root))
       {
         return 0;
@@ -509,6 +616,11 @@ namespace rex
     s32 abs_depth(rsl::string_view path)
     {
       rsl::string fullpath = abs_path(norm_path(path));
+
+      if (is_root(fullpath))
+      {
+        return 0;
+      }
 
       s32 slash_count = rsl::count(fullpath.cbegin(), fullpath.cend(), '/');
       s32 backwards_slash_count = rsl::count(fullpath.cbegin(), fullpath.cend(), '\\');
@@ -537,6 +649,17 @@ namespace rex
       return rsl::is_alpha(path[0]) &&
         path[1] == ':';
     }
+    // Returns true fi the path is pointing to the root
+    bool is_root(rsl::string_view path)
+    {
+      // Only slashes
+      if (path.length() > 0 && path.find_first_not_of("/\\") == path.npos())
+      {
+        return true;
+      }
 
+      // Drive root
+      return path.length() == 3 && has_drive(path);
+    }
   } // namespace path
 } // namespace rex
