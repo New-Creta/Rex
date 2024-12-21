@@ -9,52 +9,49 @@
 
 TEST_CASE("Test Temp CWD - Default")
 {
-	rsl::string_view tmp_cwd = "tmp_cwd";
+	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();
 
 	{
-		rex::TempCwd tmp(tmp_cwd);
+		rex::TempCwd tmp(tmp_dir.dirname());
 
-		REX_CHECK(rex::path::is_same(tmp_cwd, rex::path::cwd()));
+		REX_CHECK(rex::path::is_same(tmp_dir.dirname(), rex::path::cwd()));
+		REX_CHECK(rex::path::is_under_dir(tmp_dir.dirname(), old_cwd));
 	}
 
 	REX_CHECK(rex::path::is_same(old_cwd, rex::path::cwd()));
 }
 TEST_CASE("Test Temp CWD - Creating a directory")
 {
-	rsl::string_view tmp_cwd = "tmp_cwd";
+	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();
 
 	rsl::string random_name = rex::path::random_dir();
 	{
-		rex::TempCwd tmp(tmp_cwd);
+		rex::TempCwd tmp(tmp_dir.dirname());
 
 		rex::directory::create(random_name);
 		REX_CHECK(rex::directory::exists(random_name));
-		REX_CHECK(rex::directory::exists(rex::path::join(old_cwd, tmp_cwd, random_name)));
-		REX_CHECK(rex::directory::exists(rex::path::join(old_cwd, random_name)) == false);
+		REX_CHECK(rex::directory::exists(rex::path::join(tmp_dir.dirname(), random_name)));
 	}
 
 	REX_CHECK(rex::directory::exists(random_name) == false);
-	REX_CHECK(rex::directory::exists(rex::path::join(old_cwd, tmp_cwd, random_name)));
-	REX_CHECK(rex::directory::exists(rex::path::join(old_cwd, random_name)) == false);
+	REX_CHECK(rex::directory::exists(rex::path::join(tmp_dir.dirname(), random_name)));
 }
 TEST_CASE("Test Temp CWD - Creating a file")
 {
-	rsl::string_view tmp_cwd = "tmp_cwd";
+	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();
 
 	rsl::string random_name = rex::path::random_filename();
 	{
-		rex::TempCwd tmp(tmp_cwd);
+		rex::TempCwd tmp(tmp_dir.dirname());
 
 		rex::file::create(random_name);
 		REX_CHECK(rex::file::exists(random_name));
-		REX_CHECK(rex::file::exists(rex::path::join(old_cwd, tmp_cwd, random_name)));
-		REX_CHECK(rex::file::exists(rex::path::join(old_cwd, random_name)) == false);
+		REX_CHECK(rex::file::exists(rex::path::join(tmp_dir.dirname(), random_name)));
 	}
 
 	REX_CHECK(rex::file::exists(random_name) == false);
-	REX_CHECK(rex::file::exists(rex::path::join(old_cwd, tmp_cwd, random_name)));
-	REX_CHECK(rex::file::exists(rex::path::join(old_cwd, random_name)) == false);
+	REX_CHECK(rex::file::exists(rex::path::join(tmp_dir.dirname(), random_name)));
 }

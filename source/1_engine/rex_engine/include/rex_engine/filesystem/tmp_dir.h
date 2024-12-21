@@ -12,7 +12,7 @@ namespace rex
   {
   public:
     // the constructor will create the directory
-    explicit TempDirectory(rsl::string_view directory = "");
+    explicit TempDirectory(rsl::string_view root = "");
     TempDirectory(const TempDirectory&) = delete;
     TempDirectory(TempDirectory&&) = delete;
     // the destructor will delete the file
