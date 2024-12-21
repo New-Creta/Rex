@@ -4,7 +4,7 @@
 
 #include "rex_engine/filesystem/file.h"
 
-TEST_CASE("Ini Processor - no headers")
+TEST_CASE("TEST - Ini Processor - no headers")
 {
   const rex::memory::Blob content_blob = rex::file::read_file("test_settings.ini");
   rex::IniProcessor ini_processor = rex::IniProcessor(rex::memory::BlobView(content_blob));
@@ -20,7 +20,7 @@ TEST_CASE("Ini Processor - no headers")
   REX_CHECK(header_with_items.value.get("test_string") == "some string");
 }
 
-TEST_CASE("Ini Processor - with headers")
+TEST_CASE("TEST - Ini Processor - with headers")
 {
   const rex::memory::Blob content_blob = rex::file::read_file("test_settings_with_headers.ini");
   rex::IniProcessor ini_processor = rex::IniProcessor(rex::memory::BlobView(content_blob));
@@ -38,7 +38,7 @@ TEST_CASE("Ini Processor - with headers")
   REX_CHECK(ini_processor.get("Test Header 2", "test_string") == "some other string");
 }
 
-TEST_CASE("Ini Processor - error detection")
+TEST_CASE("TEST - Ini Processor - error detection")
 {
   {
     const rex::memory::Blob content_blob = rex::file::read_file("invalid_settings_1.ini");

@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/data_type.h"
 
-TEST_CASE("Data type construction from type")
+TEST_CASE("TEST - Data Type - construction from type")
 {
 	REX_CHECK(rex::data_type<s8>().get() == rex::DataType::Value::Int8);
 	REX_CHECK(rex::data_type<s16>().get() == rex::DataType::Value::Int16);

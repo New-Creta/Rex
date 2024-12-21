@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/defines.h"
 
-TEST_CASE("Testing Bit Define")
+TEST_CASE("TEST - Defines - Bit Define")
 {
 	REX_CHECK(BIT( 0) == 0b00000000000000000000000000000001);
 	REX_CHECK(BIT( 1) == 0b00000000000000000000000000000010);

@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/window/window_resize.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Window Resize Event")
+TEST_CASE("TEST - Events - Window Resize Event")
 {
   s32 num_quit_events_fired = 0;
   s32 width = 0;

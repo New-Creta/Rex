@@ -3,7 +3,7 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_std/thread.h"
 
-TEST_CASE("Fps Updating")
+TEST_CASE("TEST - Fps - Updating")
 {
   rex::FPS fps{};
 

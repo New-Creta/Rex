@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/project.h"
 
-TEST_CASE("Test Project")
+TEST_CASE("TEST - Project - Project Name")
 {
 	REX_CHECK(rex::project_name() == "unknown_project");
 

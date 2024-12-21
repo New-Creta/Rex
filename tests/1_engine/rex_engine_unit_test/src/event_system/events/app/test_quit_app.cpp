@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/app/quit_app.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Quit App Event")
+TEST_CASE("TEST - Events - Quit App Event")
 {
   s32 num_quit_events_fired = 0;
   rsl::string_view quit_msg;

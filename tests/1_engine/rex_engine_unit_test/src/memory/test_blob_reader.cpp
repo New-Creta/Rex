@@ -4,7 +4,7 @@
 #include "rex_engine/memory/blob.h"
 #include "rex_engine/engine/types.h"
 
-TEST_CASE("BlobReader - Read from blob")
+TEST_CASE("TEST - BlobReader - Read from blob")
 {
   auto data = rsl::make_unique<s32[]>(5);
   data[0] = 1;
@@ -29,7 +29,7 @@ TEST_CASE("BlobReader - Read from blob")
   REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
-TEST_CASE("BlobReader - Read from blob from offset")
+TEST_CASE("TEST - BlobReader - Read from blob from offset")
 {
   auto data = rsl::make_unique<s32[]>(5);
   data[0] = 1;
@@ -52,7 +52,7 @@ TEST_CASE("BlobReader - Read from blob from offset")
   REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
-TEST_CASE("BlobReader - Read from blob with skipping")
+TEST_CASE("TEST - BlobReader - Read from blob with skipping")
 {
   auto data = rsl::make_unique<s32[]>(5);
   data[0] = 1;
@@ -77,7 +77,7 @@ TEST_CASE("BlobReader - Read from blob with skipping")
   REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
-TEST_CASE("BlobReader - Read from blob from offset with skipping")
+TEST_CASE("TEST - BlobReader - Read from blob from offset with skipping")
 {
   auto data = rsl::make_unique<s32[]>(5);
   data[0] = 1;

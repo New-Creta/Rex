@@ -20168,7 +20168,7 @@ int main(int argc, char* const argv[])
 #define CATCH_TRANSLATE_EXCEPTION(signature) INTERNAL_CATCH_TRANSLATE_EXCEPTION(signature)
 
 // "BDD-style" convenience wrappers
-#define SCENARIO(...)                   TEST_CASE("Scenario: " __VA_ARGS__)
+#define SCENARIO(...)                   TEST_CASE("TEST - Scenario: " __VA_ARGS__)
 #define SCENARIO_METHOD(className, ...) INTERNAL_CATCH_TEST_CASE_METHOD(className, "Scenario: " __VA_ARGS__)
 
 #define GIVEN(desc)     INTERNAL_CATCH_DYNAMIC_SECTION("    Given: " << desc)

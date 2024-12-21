@@ -5,7 +5,7 @@
 
 #include "rex_unit_test/test_allocator.h"
 
-TEST_CASE("Blob - Default Creation")
+TEST_CASE("TEST - Blob - Default Creation")
 {
   rex::memory::Blob blob;
 
@@ -13,7 +13,7 @@ TEST_CASE("Blob - Default Creation")
   REX_CHECK(blob.data() == nullptr);
 }
 
-TEST_CASE("Blob - Blob move construction") 
+TEST_CASE("TEST - Blob - Blob move construction") 
 {
   rex::memory::Blob b1(rsl::make_unique<rsl::byte[]>(10));
   rex::memory::Blob b2(std::move(b1));
@@ -26,7 +26,7 @@ TEST_CASE("Blob - Blob move construction")
   REX_CHECK(b2.data() != nullptr);
 }
 
-TEST_CASE("Blob - Construction from byte array")
+TEST_CASE("TEST - Blob - Construction from byte array")
 {
   auto arr = rsl::make_unique<rsl::byte[]>(3);
   arr[0] = static_cast<rsl::byte>(1);
@@ -43,7 +43,7 @@ TEST_CASE("Blob - Construction from byte array")
   REX_CHECK(static_cast<s32>(b[2]) == 3);
 }
 
-TEST_CASE("Blob - Construction from typed array") 
+TEST_CASE("TEST - Blob - Construction from typed array") 
 {
   auto arr = rsl::make_unique<s32[]>(3);
   arr[0] = 1;
@@ -60,7 +60,7 @@ TEST_CASE("Blob - Construction from typed array")
   REX_CHECK(*reinterpret_cast<const s32*>(b.data() + sizeof(s32) * 2) == 3);
 }
 
-TEST_CASE("Blob - Move assignment")
+TEST_CASE("TEST - Blob - Move assignment")
 {
   rex::memory::Blob b1(rsl::make_unique<rsl::byte[]>(10));
   rex::memory::Blob b2;
@@ -75,7 +75,7 @@ TEST_CASE("Blob - Move assignment")
   REX_CHECK(b2.data() != nullptr);
 }
 
-TEST_CASE("Blob - Blob zero_initialize") 
+TEST_CASE("TEST - Blob - Blob zero_initialize") 
 {
   auto arr = rsl::make_unique<s32[]>(3);
   arr[0] = 1;
@@ -90,7 +90,7 @@ TEST_CASE("Blob - Blob zero_initialize")
   REX_CHECK(static_cast<s32>(b[2]) == 0);
 }
 
-TEST_CASE("Blob - Blob data_as")
+TEST_CASE("TEST - Blob - Blob data_as")
 {
   {
     auto arr = rsl::make_unique<s32[]>(1);
@@ -125,7 +125,7 @@ TEST_CASE("Blob - Blob data_as")
   }
 }
 
-TEST_CASE("Blob - reading")
+TEST_CASE("TEST - Blob - reading")
 {
   auto arr = rsl::make_unique<s32[]>(3);
   arr[0] = 1;
@@ -147,7 +147,7 @@ TEST_CASE("Blob - reading")
   REX_CHECK(x == 3);
 }
 
-TEST_CASE("Blob - writing")
+TEST_CASE("TEST - Blob - writing")
 {
   rex::memory::Blob b(rsl::make_unique<s32[]>(3));
   

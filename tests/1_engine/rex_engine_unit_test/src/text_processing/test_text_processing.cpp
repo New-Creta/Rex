@@ -2,7 +2,7 @@
 
 #include "rex_engine/text_processing/text_processing.h"
 
-TEST_CASE("Text Processing - strip - whitespace")
+TEST_CASE("TEST - Text Processing - strip - whitespace")
 {
   // nothing
   {
@@ -114,7 +114,7 @@ TEST_CASE("Text Processing - strip - whitespace")
   }
 }
 
-TEST_CASE("Text Processing - lstrip - whitespace")
+TEST_CASE("TEST - Text Processing - lstrip - whitespace")
 {
   // nothing
   {
@@ -212,7 +212,7 @@ TEST_CASE("Text Processing - lstrip - whitespace")
   }
 }
 
-TEST_CASE("Text Processing - rstrip - whitespace")
+TEST_CASE("TEST - Text Processing - rstrip - whitespace")
 {
   // nothing
   {
@@ -310,7 +310,7 @@ TEST_CASE("Text Processing - rstrip - whitespace")
   }
 }
 
-TEST_CASE("Text Processing - strip - characters")
+TEST_CASE("TEST - Text Processing - strip - characters")
 {
   // nothing
   {
@@ -453,7 +453,7 @@ TEST_CASE("Text Processing - strip - characters")
   }
 }
 
-TEST_CASE("Text Processing - lstrip - characters")
+TEST_CASE("TEST - Text Processing - lstrip - characters")
 {
   // nothing
   {
@@ -596,7 +596,7 @@ TEST_CASE("Text Processing - lstrip - characters")
   }
 }
 
-TEST_CASE("Text Processing - rstrip - characters")
+TEST_CASE("TEST - Text Processing - rstrip - characters")
 {
   // nothing
   {
@@ -739,7 +739,7 @@ TEST_CASE("Text Processing - rstrip - characters")
   }
 }
 
-TEST_CASE("Text Processing - quoted")
+TEST_CASE("TEST - Text Processing - quoted")
 {
   {
     rsl::string_view string = "something";
@@ -770,7 +770,7 @@ TEST_CASE("Text Processing - quoted")
   }
 }
 
-TEST_CASE("Text Processing - remove spaces")
+TEST_CASE("TEST - Text Processing - remove spaces")
 {
   {
     rsl::string string("something else");
@@ -808,7 +808,7 @@ TEST_CASE("Text Processing - remove spaces")
   }
 }
 
-TEST_CASE("Text Processing - remove quotes")
+TEST_CASE("TEST - Text Processing - remove quotes")
 {
   {
     rsl::string_view string = "something";

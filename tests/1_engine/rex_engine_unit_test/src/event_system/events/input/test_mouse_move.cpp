@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/input/mouse_move.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Mouse Move Event")
+TEST_CASE("TEST - Events - Mouse Move Event")
 {
   s32 num_quit_events_fired = 0;
   rex::MousePosition mouse_pos{};

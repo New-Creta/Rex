@@ -2,7 +2,7 @@
 
 #include "rex_engine/diagnostics/error.h"
 
-TEST_CASE("Error without error")
+TEST_CASE("TEST - Error - without error")
 {
   rex::Error err = rex::Error::no_error();
 
@@ -12,7 +12,7 @@ TEST_CASE("Error without error")
   REX_CHECK(err.error_msg() == "");
 }
 
-TEST_CASE("Error with error")
+TEST_CASE("TEST - Error - with error")
 {
   rex::Error err = rex::Error("some error msg");
 

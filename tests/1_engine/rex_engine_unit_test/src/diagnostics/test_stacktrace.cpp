@@ -19,7 +19,7 @@ void function_with_clear_name2()
 	function_with_clear_name1();
 }
 
-TEST_CASE("")
+TEST_CASE("TEST - Callstack - Resolution")
 {
 	function_with_clear_name2();
 }

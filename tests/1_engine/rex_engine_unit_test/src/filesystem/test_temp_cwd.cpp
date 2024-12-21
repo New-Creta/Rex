@@ -7,7 +7,7 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/directory.h"
 
-TEST_CASE("Test Temp CWD - Default")
+TEST_CASE("TEST - Temp CWD - Default")
 {
 	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();
@@ -21,7 +21,7 @@ TEST_CASE("Test Temp CWD - Default")
 
 	REX_CHECK(rex::path::is_same(old_cwd, rex::path::cwd()));
 }
-TEST_CASE("Test Temp CWD - Creating a directory")
+TEST_CASE("TEST - Temp CWD - Creating a directory")
 {
 	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();
@@ -38,7 +38,7 @@ TEST_CASE("Test Temp CWD - Creating a directory")
 	REX_CHECK(rex::directory::exists(random_name) == false);
 	REX_CHECK(rex::directory::exists(rex::path::join(tmp_dir.dirname(), random_name)));
 }
-TEST_CASE("Test Temp CWD - Creating a file")
+TEST_CASE("TEST - Temp CWD - Creating a file")
 {
 	rex::TempDirectory tmp_dir;
 	rsl::string old_cwd = rex::path::cwd();

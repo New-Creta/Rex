@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/input/char_down.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Char Down Event")
+TEST_CASE("TEST - Events - Char Down Event")
 {
   s32 num_quit_events_fired = 0;
   char8 key = 'a';

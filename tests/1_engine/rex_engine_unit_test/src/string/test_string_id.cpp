@@ -4,7 +4,7 @@
 #include "rex_engine/string/stringpool.h"
 #include "rex_unit_test/test_string.h"
 
-TEST_CASE("StringID - Invalid String ID")
+TEST_CASE("TEST - StringID - Invalid String ID")
 {
   {  
     rex::StringID sid = rex::StringID::create_invalid();
@@ -21,7 +21,7 @@ TEST_CASE("StringID - Invalid String ID")
   }
 }
 
-TEST_CASE("StringID - Creating of string id")
+TEST_CASE("TEST - StringID - Creating of string id")
 {
   {
     rsl::string_view string = "something";
@@ -44,7 +44,7 @@ TEST_CASE("StringID - Creating of string id")
   }
 }
 
-TEST_CASE("StringID - equal comparison")
+TEST_CASE("TEST - StringID - equal comparison")
 {
   rsl::string_view string = "something";
   rex::StringID sid = rex::StringID::create(string);
@@ -60,7 +60,7 @@ TEST_CASE("StringID - equal comparison")
   REX_CHECK(sid.operator u32() == sid2.operator u32());
 }
 
-TEST_CASE("StringID - not equal comparison")
+TEST_CASE("TEST - StringID - not equal comparison")
 {
   rsl::string_view string = "something";
   rsl::string_view string2 = "else";
@@ -77,7 +77,7 @@ TEST_CASE("StringID - not equal comparison")
   REX_CHECK(sid.operator u32() != sid2.operator u32());
 }
 
-TEST_CASE("StringId - hash collision")
+TEST_CASE("TEST - StringID - hash collision")
 {
   rsl::string_view string = "something";
   rex::StringID sid = rex::StringID::create(string);

@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/input/key_up.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Key Up Event")
+TEST_CASE("TEST - Events - Key Up Event")
 {
   s32 num_quit_events_fired = 0;
   rex::KeyCode key_code = rex::KeyCode::Unknown;

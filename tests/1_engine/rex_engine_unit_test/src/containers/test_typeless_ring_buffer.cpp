@@ -2,7 +2,7 @@
 
 #include "rex_engine/containers/typeless_ring_buffer.h"
 
-TEST_CASE("TypelessRingBuffer - basic operations")
+TEST_CASE("TEST - TypelessRingBuffer - basic operations")
 {
   rex::TypelessRingBuffer ring_buffer(10_bytes);
   REX_CHECK(ring_buffer.size() == 10);
@@ -24,7 +24,7 @@ TEST_CASE("TypelessRingBuffer - basic operations")
   REX_CHECK(ring_buffer.count() == 0);
 }
 
-TEST_CASE("TypelessRingBuffer - wrapping")
+TEST_CASE("TEST - TypelessRingBuffer - wrapping")
 {
   rex::TypelessRingBuffer ring_buffer(12_bytes);
 
@@ -60,7 +60,7 @@ TEST_CASE("TypelessRingBuffer - wrapping")
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - wrapping by splitting data")
+TEST_CASE("TEST - TypelessRingBuffer - wrapping by splitting data")
 {
   rex::TypelessRingBuffer ring_buffer(10_bytes);
 
@@ -91,7 +91,7 @@ TEST_CASE("TypelessRingBuffer - wrapping by splitting data")
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - resetting")
+TEST_CASE("TEST - TypelessRingBuffer - resetting")
 {
   rex::TypelessRingBuffer ring_buffer(24_bytes);
 
@@ -141,7 +141,7 @@ TEST_CASE("TypelessRingBuffer - resetting")
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - skipping")
+TEST_CASE("TEST - TypelessRingBuffer - skipping")
 {
   rex::TypelessRingBuffer ring_buffer(24_bytes);
 

@@ -3,7 +3,7 @@
 #include "rex_engine/settings/settings.h"
 
 
-TEST_CASE("Test Settings without headers - with casing")
+TEST_CASE("TEST - Settings - Settings without headers - with casing")
 {
   rex::settings::load("test_settings.ini");
 
@@ -37,7 +37,7 @@ TEST_CASE("Test Settings without headers - with casing")
 
   rex::settings::unload();
 }
-TEST_CASE("Test Settings without headers - without casing")
+TEST_CASE("TEST - Settings - Settings without headers - without casing")
 {
   rex::settings::load("test_settings.ini");
 
@@ -71,8 +71,7 @@ TEST_CASE("Test Settings without headers - without casing")
 
   rex::settings::unload();
 }
-
-TEST_CASE("Test Settings with headers - with casing")
+TEST_CASE("TEST - Settings - Settings with headers - with casing")
 {
   rex::settings::load("test_settings_with_headers.ini");
 
@@ -136,8 +135,7 @@ TEST_CASE("Test Settings with headers - with casing")
 
   rex::settings::unload();
 }
-
-TEST_CASE("Test Settings with headers - without casing")
+TEST_CASE("TEST - Settings - Settings with headers - without casing")
 {
   rex::settings::load("test_settings_with_headers.ini");
 

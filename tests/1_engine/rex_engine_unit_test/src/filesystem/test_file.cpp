@@ -7,7 +7,7 @@
 
 #include "rex_std/thread.h"
 
-TEST_CASE("File Creation Time")
+TEST_CASE("TEST - File - Creation Time")
 {
   // create a temp file, so it automatically cleans up
   rex::TempFile tmp_file;
@@ -21,7 +21,7 @@ TEST_CASE("File Creation Time")
   REX_CHECK(creation_time == new_creation_time);
 }
 
-TEST_CASE("File Modification Time")
+TEST_CASE("TEST - File - Modification Time")
 {
   // create a temp file, so it automatically cleans up
   rex::TempFile tmp_file;
@@ -41,7 +41,7 @@ TEST_CASE("File Modification Time")
   REX_CHECK(mod_time <= new_mod_time);
 }
 
-TEST_CASE("File Access Time")
+TEST_CASE("TEST - File - Access Time")
 {
   // Note: We cannot reliable say that access time of files will be different between checks
   // As it's determined by the OS when this gets updated. All we can say that between access
@@ -76,14 +76,14 @@ TEST_CASE("File Access Time")
   REX_CHECK(new_access_time == newer_access_time);
 }
 
-TEST_CASE("File Size")
+TEST_CASE("TEST - File - Size")
 {
   REX_CHECK(rex::file::size("file_0_bytes.txt") == 0);
   REX_CHECK(rex::file::size("file_500_bytes.txt") == 500);
   REX_CHECK(rex::file::size("file_1000_bytes.txt") == 1000);
 }
 
-TEST_CASE("File Exists")
+TEST_CASE("TEST - File - Exists")
 {
   REX_CHECK(rex::file::exists("file_that_definitely_exists.txt"));
   REX_CHECK(rex::file::exists("this_is_a_file.txt"));
@@ -92,7 +92,7 @@ TEST_CASE("File Exists")
   REX_CHECK(rex::file::exists(rex::path::random_dir()) == false);
 }
 
-TEST_CASE("Read File")
+TEST_CASE("TEST - File - Reading")
 {
   {
     const rex::memory::Blob file_content = rex::file::read_file("test_file.txt");
@@ -118,7 +118,7 @@ TEST_CASE("Read File")
   }
 }
 
-TEST_CASE("Save To File")
+TEST_CASE("TEST - File - Saving")
 {
   rsl::string_view dummy_content = "this is some dummy content";
   rsl::string dummy_file = rex::path::random_filename();
@@ -132,7 +132,33 @@ TEST_CASE("Save To File")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Append Lines")
+TEST_CASE("TEST - File - Append Line")
+{
+  rsl::string_view dummy_content = "this is some dummy content";
+  rsl::string dummy_file = rex::path::random_filename();
+  rex::file::append_line(dummy_file, dummy_content);
+
+  rex::memory::Blob blob = rex::file::read_file(dummy_file);
+  rsl::string_view file_content = rex::memory::blob_to_string_view(blob);
+  rsl::vector<rsl::string_view> file_lines = rsl::split(file_content, rex::endline());
+
+  REX_CHECK(file_lines.size() == 1);
+  REX_CHECK(file_lines[0] == "this is some dummy content"); 
+
+  rex::file::append_line(dummy_file, dummy_content);
+
+  blob = rex::file::read_file(dummy_file);
+  file_content = rex::memory::blob_to_string_view(blob);
+  file_lines = rsl::split(file_content, rex::endline());
+
+  REX_CHECK(file_lines.size() == 2);
+  REX_CHECK(file_lines[0] == "this is some dummy content");
+  REX_CHECK(file_lines[1] == "this is some dummy content");
+
+  rex::file::del(dummy_file);
+}
+
+TEST_CASE("TEST - File - Append Lines")
 {
   rsl::string_view dummy_content = "this is some dummy content";
   rsl::vector<rsl::string> lines;
@@ -174,33 +200,7 @@ TEST_CASE("Append Lines")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Append Line")
-{
-  rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string dummy_file = rex::path::random_filename();
-  rex::file::append_line(dummy_file, dummy_content);
-
-  rex::memory::Blob blob = rex::file::read_file(dummy_file);
-  rsl::string_view file_content = rex::memory::blob_to_string_view(blob);
-  rsl::vector<rsl::string_view> file_lines = rsl::split(file_content, rex::endline());
-
-  REX_CHECK(file_lines.size() == 1);
-  REX_CHECK(file_lines[0] == "this is some dummy content"); 
-
-  rex::file::append_line(dummy_file, dummy_content);
-
-  blob = rex::file::read_file(dummy_file);
-  file_content = rex::memory::blob_to_string_view(blob);
-  file_lines = rsl::split(file_content, rex::endline());
-
-  REX_CHECK(file_lines.size() == 2);
-  REX_CHECK(file_lines[0] == "this is some dummy content");
-  REX_CHECK(file_lines[1] == "this is some dummy content");
-
-  rex::file::del(dummy_file);
-}
-
-TEST_CASE("Append Text")
+TEST_CASE("TEST - File - Append Text")
 {
   rsl::string_view dummy_content = "this is some dummy content";
   rsl::string dummy_file = rex::path::random_filename();
@@ -221,7 +221,7 @@ TEST_CASE("Append Text")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Trunc File")
+TEST_CASE("TEST - File - Truncation")
 {
   rsl::string_view dummy_content = "this is some dummy content";
   rsl::string dummy_file = rex::path::random_filename();
@@ -249,7 +249,7 @@ TEST_CASE("Trunc File")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Copy File - no overwrite")
+TEST_CASE("TEST - File - Copy No Overwrite")
 {
   const rsl::string_view start_file = "test_file.txt";
   rex::memory::Blob file_content = rex::file::read_file(start_file);
@@ -276,7 +276,7 @@ TEST_CASE("Copy File - no overwrite")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Copy File - with overwrite")
+TEST_CASE("TEST - File - Copy With Overwrite")
 {
   rsl::string_view start_file = "test_file.txt";;
   rex::memory::Blob file_content = rex::file::read_file(start_file);
@@ -316,7 +316,7 @@ TEST_CASE("Copy File - with overwrite")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Move File to non existing")
+TEST_CASE("TEST - File - Move To Non Existing")
 {
   const rsl::string_view og_file = "test_file.txt";
   rsl::string start_file = rex::path::random_filename();
@@ -346,7 +346,7 @@ TEST_CASE("Move File to non existing")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("Move File to existing")
+TEST_CASE("TEST - File - Move File To Existing")
 {
   const rsl::string_view og_file = "test_file.txt";
   rsl::string start_file = rex::path::random_filename();
@@ -378,7 +378,7 @@ TEST_CASE("Move File to existing")
   rex::file::del(dummy_file);
 }
 
-TEST_CASE("File creation and deletion")
+TEST_CASE("TEST - File - Creation And Deletion")
 {
   rsl::string filename = rex::path::random_filename();
 
@@ -391,7 +391,7 @@ TEST_CASE("File creation and deletion")
   REX_CHECK(rex::file::exists(filename) == false);
 }
 
-TEST_CASE("File Read Only Checking")
+TEST_CASE("TEST - File - Read Only Checking")
 {
   rsl::string filename = rex::path::random_filename();
 

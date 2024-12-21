@@ -4,7 +4,7 @@
 
 #include "rex_std/thread.h"
 
-TEST_CASE("Interval")
+TEST_CASE("TEST - Interval - Timing")
 {
   rex::Interval interval{};
 

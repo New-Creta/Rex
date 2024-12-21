@@ -10,14 +10,14 @@
 #include <Windows.h>
 #include <ShlObj.h>
 
-TEST_CASE("Path Joining")
+TEST_CASE("TEST - Path - Joining")
 {
   REX_CHECK(rex::path::join("D:", "foo", "bar") == "D:/foo/bar");
   REX_CHECK(rex::path::join("foo", "bar") == "foo/bar");
   REX_CHECK(rex::path::join("foo", "bar.txt") == "foo/bar.txt");
 }
 
-TEST_CASE("Is Valid Path")
+TEST_CASE("TEST - Path - Is Valid Path")
 {
   // Valid ones
   REX_CHECK(rex::path::is_valid_path("") == true);
@@ -64,7 +64,7 @@ TEST_CASE("Is Valid Path")
   REX_CHECK(rex::path::is_valid_path("C:\\Users\\Alice\\Con\\file.txt") == false);
   REX_CHECK(rex::path::is_valid_path("C:UsersAliceDocumentsfile.txt") == false);
 }
-TEST_CASE("Is Valid Filename")
+TEST_CASE("TEST - Path - Is Valid Filename")
 {
   // Valid ones
   REX_CHECK(rex::path::is_valid_filename("file.txt") == true);
@@ -95,7 +95,7 @@ TEST_CASE("Is Valid Filename")
 
 }
 
-TEST_CASE("Change Extension")
+TEST_CASE("TEST - Path - Change Extension")
 {
   REX_CHECK(rex::path::change_extension("foo.txt", ".bar") == "foo.bar");
   REX_CHECK(rex::path::change_extension("foo.txt", "") == "foo");
@@ -108,13 +108,13 @@ TEST_CASE("Change Extension")
   REX_CHECK(rex::path::change_extension("bar/foo", "") == "bar/foo");
 }
 
-TEST_CASE("Dir Name")
+TEST_CASE("TEST - Path - Dir Name")
 {
   REX_CHECK(rex::path::dir_name("foo.txt") == "");
   REX_CHECK(rex::path::dir_name("bar/foo.txt") == "bar");
 }
 
-TEST_CASE("Get Extension")
+TEST_CASE("TEST - Path - Get Extension")
 {
   REX_CHECK(rex::path::extension("foo.txt") == ".txt");
   REX_CHECK(rex::path::extension("foo.txt.bar") == ".txt.bar");
@@ -125,7 +125,7 @@ TEST_CASE("Get Extension")
   REX_CHECK(rex::path::extension("bar/foo") == "");
 }
 
-TEST_CASE("Get Stem")
+TEST_CASE("TEST - Path - Get Stem")
 {
   REX_CHECK(rex::path::stem("foo.txt") == "foo");
   REX_CHECK(rex::path::stem("foo.txt.bar") == "foo");
@@ -136,7 +136,7 @@ TEST_CASE("Get Stem")
   REX_CHECK(rex::path::stem("bar/foo") == "foo");
 }
 
-TEST_CASE("Absolute Path")
+TEST_CASE("TEST - Path - Absolute Path")
 {
   rsl::string cwd = rex::path::cwd();
 
@@ -153,7 +153,7 @@ TEST_CASE("Absolute Path")
   REX_CHECK(rex::path::abs_path("c:/bar/foo") == "c:/bar/foo");
 }
 
-TEST_CASE("Path Root")
+TEST_CASE("TEST - Path - Path Root")
 {
   REX_CHECK(rex::path::path_root("c:/bar/foo.txt") == "c:");
   REX_CHECK(rex::path::path_root("bar/foo") == "");
@@ -162,7 +162,7 @@ TEST_CASE("Path Root")
   REX_CHECK(rex::path::path_root("~/bar/foo") == ""); // windows only, so root is empty
 }
 
-TEST_CASE("Common Path")
+TEST_CASE("TEST - Path - Common Path")
 {
   {
     rsl::vector<rsl::string_view> paths =
@@ -195,7 +195,7 @@ TEST_CASE("Common Path")
   }
 }
 
-TEST_CASE("Random Dir")
+TEST_CASE("TEST - Path - Random Dir")
 {
   for (int i = 0; i < 1000; ++i)
   {
@@ -203,7 +203,7 @@ TEST_CASE("Random Dir")
   }
 }
 
-TEST_CASE("Random Filename")
+TEST_CASE("TEST - Path - Random Filename")
 {
   for (int i = 0; i < 1000; ++i)
   {
@@ -211,7 +211,7 @@ TEST_CASE("Random Filename")
   }
 }
 
-TEST_CASE("Real Path")
+TEST_CASE("TEST - Path - Real Path")
 {
   // Make sure that the working directory is set correctly here
   rsl::string real_path = rex::path::real_path("shortcut_to_foo.txt.lnk");
@@ -219,7 +219,7 @@ TEST_CASE("Real Path")
   REX_CHECK(real_path.ends_with(rex::path::join("rexengineunittest", "foo.txt")));
 }
 
-TEST_CASE("Normalise Path")
+TEST_CASE("TEST - Path - Normalise Path")
 {
   REX_CHECK(rex::path::norm_path("/foo/./bar") == rex::path::join("/foo", "bar"));
   REX_CHECK(rex::path::norm_path("/path/to/dir") == rex::path::join("/path","to","dir"));
@@ -250,7 +250,7 @@ TEST_CASE("Normalise Path")
   REX_CHECK(rex::path::norm_path("C:\\path\\to\\..\\dir") == rex::path::join("C:","path","dir"));
 }
 
-TEST_CASE("Relative Path")
+TEST_CASE("TEST - Path - Relative Path")
 {
   // linux style paths
   REX_CHECK(rex::path::is_same(rex::path::rel_path("/path/to/dir", "/path")                   , rex::path::join("to", "dir")));
@@ -365,7 +365,7 @@ TEST_CASE("Relative Path")
   REX_CHECK(rex::path::is_same(rex::path::rel_path("../to/dir/", "./")                        , rex::path::join("..", "to", "dir")));
 }
 
-TEST_CASE("Is Under Dir")
+TEST_CASE("TEST - Path - Is Under Dir")
 {
   REX_CHECK(rex::path::is_under_dir("/path/to/dir", "/path") == true);
   REX_CHECK(rex::path::is_under_dir("path/to/dir", "path") == true);
@@ -394,7 +394,7 @@ TEST_CASE("Is Under Dir")
   REX_CHECK(rex::path::is_under_dir("C:\\path\\to\\..\\dir", "C:\\path") == true);
 }
 
-TEST_CASE("Has Extension")
+TEST_CASE("TEST - Path - Has Extension")
 {
   REX_CHECK(rex::path::has_extension("file.txt") == true);
   REX_CHECK(rex::path::has_extension("document.pdf") == true);
@@ -417,7 +417,7 @@ TEST_CASE("Has Extension")
   REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
 
-TEST_CASE("Is Absolute")
+TEST_CASE("TEST - Path - Is Absolute")
 {
     REX_CHECK(rex::path::is_absolute("/absolute/path") == true);
     REX_CHECK(rex::path::is_absolute("/another/absolute/path/file.txt") == true);
@@ -438,7 +438,7 @@ TEST_CASE("Is Absolute")
     REX_CHECK(rex::path::is_absolute(abs_path_view) == false);
 }
 
-TEST_CASE("Is Relative")
+TEST_CASE("TEST - Path - Is Relative")
 {
     REX_CHECK(rex::path::is_relative("relative/path") == true);
     REX_CHECK(rex::path::is_relative("./relative/path") == true);
@@ -459,21 +459,21 @@ TEST_CASE("Is Relative")
     REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
 
-TEST_CASE("Is Junction")
+TEST_CASE("TEST - Path - Is Junction")
 {
   REX_CHECK(rex::path::is_junction("original_folder") == false);
   REX_CHECK(rex::path::is_junction("original_file.txt") == false);
   //REX_CHECK(rex::path::is_junction("junction_folder") == true); // not testable as junction can't be put on version control
 }
 
-TEST_CASE("Is Link")
+TEST_CASE("TEST - Path - Is Link")
 {
   REX_CHECK(rex::path::is_link("original_folder") == false);
   REX_CHECK(rex::path::is_link("original_file.txt") == false);
   REX_CHECK(rex::path::is_link("junction_folder") == false);
 }
 
-TEST_CASE("Is Same File")
+TEST_CASE("TEST - Path - Is Same File")
 {
   // No upper case
   REX_CHECK(rex::path::is_same("same_file.txt", "same_file.txt") == true);
@@ -521,7 +521,7 @@ TEST_CASE("Is Same File")
   REX_CHECK(rex::path::is_same(rex::path::random_dir(), rex::path::random_dir()) == false);
 }
 
-TEST_CASE("Split")
+TEST_CASE("TEST - Path - Split")
 {
     auto result = rex::path::split("/path/to/file.txt");
     REX_CHECK(result.head == "/path/to");
@@ -548,7 +548,7 @@ TEST_CASE("Split")
     REX_CHECK(result.tail == "..");
 }
 
-TEST_CASE("Split Origin")
+TEST_CASE("TEST - Path - Split Origin")
 {
     auto result = rex::path::split_origin("C:\\Windows\\System32\\file.dll");
     REX_CHECK(result.head == "C:");
@@ -571,7 +571,7 @@ TEST_CASE("Split Origin")
     REX_CHECK(result.tail == "./relative/path");
 }
 
-TEST_CASE("Split Extension")
+TEST_CASE("TEST - Path - Split Extension")
 {
     auto result = rex::path::split_ext("/path/to/file.txt");
     REX_CHECK(result.head == "/path/to/file");
@@ -618,7 +618,7 @@ TEST_CASE("Split Extension")
     REX_CHECK(result.tail == "");
 }
 
-TEST_CASE("Split Root")
+TEST_CASE("TEST - Path - Split Root")
 {
     auto result = rex::path::split_root("C:\\Windows\\System32\\file.dll");
     REX_CHECK(result.drive == "C:");
@@ -651,7 +651,7 @@ TEST_CASE("Split Root")
     REX_CHECK(result.tail == "./relative/path");
 }
 
-TEST_CASE("Depth")
+TEST_CASE("TEST - Path - Depth")
 {
   // Testing from working directory
   REX_CHECK(rex::path::depth("") == 0);
@@ -711,7 +711,7 @@ TEST_CASE("Depth")
   REX_CHECK(rex::path::abs_depth("d:/path/../to/dir") == 2);
 }
 
-TEST_CASE("Has Drive")
+TEST_CASE("TEST - Path - Has Drive")
 {
   REX_CHECK(rex::path::has_drive("") == false);
   REX_CHECK(rex::path::has_drive("/") == false);
@@ -723,7 +723,7 @@ TEST_CASE("Has Drive")
   REX_CHECK(rex::path::has_drive("d:\\") == true);
   REX_CHECK(rex::path::has_drive("d:\\something") == true);
 }
-TEST_CASE("Is Drive")
+TEST_CASE("TEST - Path - Is Drive")
 {
   REX_CHECK(rex::path::is_drive("D:") == true);
   REX_CHECK(rex::path::is_drive("D:/") == false);
@@ -732,7 +732,7 @@ TEST_CASE("Is Drive")
   REX_CHECK(rex::path::is_drive("D") == false);
   REX_CHECK(rex::path::is_drive("path") == false);
 }
-TEST_CASE("Is Root")
+TEST_CASE("TEST - Path - Is Root")
 {
   REX_CHECK(rex::path::is_root("") == false);
   REX_CHECK(rex::path::is_root("d:") == false);
@@ -744,7 +744,7 @@ TEST_CASE("Is Root")
   REX_CHECK(rex::path::is_root("d:/") == true);
   REX_CHECK(rex::path::is_root("d:\\") == true);
 }
-TEST_CASE("Has Same Root")
+TEST_CASE("TEST - Path - Has Same Root")
 {
   REX_CHECK(rex::path::has_same_root("", "") == true);
   REX_CHECK(rex::path::has_same_root("/", "/") == true);
@@ -764,7 +764,7 @@ TEST_CASE("Has Same Root")
   REX_CHECK(rex::path::has_same_root("d:/", "c:") == false);
   REX_CHECK(rex::path::has_same_root("d:/", "c:/") == false);
 }
-TEST_CASE("Set Working Directory")
+TEST_CASE("TEST - Path - Set Working Directory")
 {
   rsl::string cwd = rex::path::cwd();
 

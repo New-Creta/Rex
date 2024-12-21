@@ -31,7 +31,7 @@ namespace rex::test
 	}
 }
 
-TEST_CASE("Are Matrices Equal")
+TEST_CASE("TEST - Math - Are Matrices Equal")
 {
 	glm::mat4 mat1(1.0f);
 	glm::mat4 mat2(1.0f);
@@ -53,7 +53,7 @@ TEST_CASE("Are Matrices Equal")
 	REX_CHECK(rex::test::are_matrices_equal(mat3, mat4) == false);
 }
 
-TEST_CASE("Transform component construction")
+TEST_CASE("TEST - Transform component - construction")
 {
 	rex::gfx::TransformComponent transform{};
 
@@ -63,7 +63,7 @@ TEST_CASE("Transform component construction")
 	REX_CHECK(rex::test::are_matrices_equal(transform.world_mat(), glm::mat4(1.0f)));
 }
 
-TEST_CASE("Transform component translation")
+TEST_CASE("TEST - Transform component - translation")
 {
 	rex::gfx::TransformComponent transform{};
 	glm::vec3 position(1.0f, 2.0f, 3.0f);
@@ -83,7 +83,7 @@ TEST_CASE("Transform component translation")
 	REX_CHECK(rex::test::are_matrices_equal(transform.world_mat(), desired_world_mat));
 }
 
-TEST_CASE("Transform component rotation")
+TEST_CASE("TEST - Transform component - rotation")
 {
 	f32 radians = glm::radians(45.0f);
 
@@ -141,7 +141,7 @@ TEST_CASE("Transform component rotation")
 	REX_CHECK(rex::test::are_matrices_equal(world_mat, desired_world_mat_z_rotation));
 }
 
-TEST_CASE("Transform component scale")
+TEST_CASE("TEST - Transform component - scale")
 {
 	rex::gfx::TransformComponent transform{};
 	glm::vec3 scale = glm::vec3(2.0f, 3.0f, 4.0f);
@@ -161,7 +161,7 @@ TEST_CASE("Transform component scale")
 	REX_CHECK(rex::test::are_matrices_equal(transform.world_mat(), desired_world_mat));
 }
 
-TEST_CASE("Transform component transformation")
+TEST_CASE("TEST - Transform component - transformation")
 {
 	rex::gfx::TransformComponent transform{};
 

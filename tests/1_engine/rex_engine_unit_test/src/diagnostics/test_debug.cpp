@@ -4,7 +4,7 @@
 
 // Uncomment this code if you want to test the functionality.
 // It cannot be tested in unattended mode as it require user interaction
-TEST_CASE("Test if debugger is attached")
+TEST_CASE("TEST - Debug - Debugger Is Attached")
 {
 	//if (!rex::is_debugger_attached())
 	//{

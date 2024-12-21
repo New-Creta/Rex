@@ -13,7 +13,7 @@ void func_with_clear_name()
 	REX_CHECK(context.source_location().line() == 8);
 }
 
-TEST_CASE("Create assert context in a function with a clear name")
+TEST_CASE("TEST - Assert - Create assert context in a function with a clear name")
 {
 	func_with_clear_name();
 }

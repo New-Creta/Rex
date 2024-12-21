@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/input/mouse_down.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Mouse Down Event")
+TEST_CASE("TEST - Events - Mouse Down Event")
 {
   s32 num_quit_events_fired = 0;
   rex::MouseButton mouse_button = rex::MouseButton::Unknown;

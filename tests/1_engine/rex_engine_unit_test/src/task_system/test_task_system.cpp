@@ -5,7 +5,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/atomic.h"
 
-TEST_CASE("Task System")
+TEST_CASE("TEST - Task System - Execution")
 {
   rsl::atomic<s32> x = 0;
   

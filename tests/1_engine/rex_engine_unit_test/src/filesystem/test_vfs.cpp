@@ -28,7 +28,7 @@ namespace rex::test
 	};
 }
 
-TEST_CASE("Test VFS - init & shutdown")
+TEST_CASE("TEST - VFS - init & shutdown")
 {
 	REX_CHECK(rex::path::is_same(rex::vfs::root(), ""));
 	REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), ""));
@@ -51,7 +51,7 @@ TEST_CASE("Test VFS - init & shutdown")
 	REX_CHECK(rex::path::is_same(rex::vfs::current_session_root(), ""));
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath1) == false);
 }
-TEST_CASE("Test VFS - Root Paths")
+TEST_CASE("TEST - VFS - Root Paths")
 {
 	rsl::string_view project_name = "vfs dummy test project";
 	rex::set_project_name(project_name);
@@ -91,7 +91,7 @@ TEST_CASE("Test VFS - Root Paths")
 	REX_CHECK(rex::path::is_under_dir(current_session_root, expected_session_root));
 	rex::directory::del_recursive(new_root_name);
 }
-TEST_CASE("Test VFS - mount")
+TEST_CASE("TEST - VFS - mount")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -119,7 +119,7 @@ TEST_CASE("Test VFS - mount")
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath2));
 	REX_CHECK(rex::path::is_same(rex::vfs::mount_path(rex::MountingPoint::TestPath2), test_path2));
 }
-TEST_CASE("Test VFS - read file")
+TEST_CASE("TEST - VFS - read file")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -151,7 +151,7 @@ TEST_CASE("Test VFS - read file")
 	file_blob = rex::vfs::read_file(rex::MountingPoint::TestPath1, filename);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == expected_content);
 }
-TEST_CASE("Test VFS - read file async")
+TEST_CASE("TEST - VFS - read file async")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -191,7 +191,7 @@ TEST_CASE("Test VFS - read file async")
 	file_blob = rsl::string_view(rex::char_cast(read_request.data()), rex::narrow_cast<s32>(read_request.count().size_in_bytes()));
 	REX_CHECK(file_blob == expected_content);
 }
-TEST_CASE("Test VFS - save to file")
+TEST_CASE("TEST - VFS - save to file")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -235,7 +235,7 @@ TEST_CASE("Test VFS - save to file")
 
 	rex::vfs::delete_file(filepath);
 }
-TEST_CASE("Test VFS - create dir")
+TEST_CASE("TEST - VFS - create dir")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -301,7 +301,7 @@ TEST_CASE("Test VFS - create dir")
 	REX_CHECK(rex::vfs::exists(subdirname) == false);
 	REX_CHECK(rex::vfs::is_dir(subdirname) == false);
 }
-TEST_CASE("Test VFS - create file")
+TEST_CASE("TEST - VFS - create file")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -339,7 +339,7 @@ TEST_CASE("Test VFS - create file")
 
 	rex::vfs::delete_dir_recursive(dirname);
 }
-TEST_CASE("Test VFS - exists")
+TEST_CASE("TEST - VFS - exists")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -353,7 +353,7 @@ TEST_CASE("Test VFS - exists")
 	REX_CHECK(rex::vfs::exists(rex::MountingPoint::TestPath1, rex::path::join("dummy_dir", "dummy_file.txt")));
 
 }
-TEST_CASE("Test VFS - is dir")
+TEST_CASE("TEST - VFS - is dir")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -363,7 +363,7 @@ TEST_CASE("Test VFS - is dir")
 	REX_CHECK(rex::vfs::is_dir(rex::path::join(test_path1, "dummy_dir")));
 	REX_CHECK(rex::vfs::is_dir(rex::MountingPoint::TestPath1, "dummy_dir"));
 }
-TEST_CASE("Test VFS - is file")
+TEST_CASE("TEST - VFS - is file")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -373,7 +373,7 @@ TEST_CASE("Test VFS - is file")
 	REX_CHECK(rex::vfs::is_file(rex::path::join(test_path1, "dummy_dir", "dummy_file.txt")));
 	REX_CHECK(rex::vfs::is_file(rex::MountingPoint::TestPath1, rex::path::join("dummy_dir", "dummy_file.txt")));
 }
-TEST_CASE("Test VFS - abs path")
+TEST_CASE("TEST - VFS - abs path")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
@@ -391,7 +391,7 @@ TEST_CASE("Test VFS - abs path")
 	REX_CHECK(rex::path::abs_path("c:/bar/foo.txt.bar") == "c:/bar/foo.txt.bar");
 	REX_CHECK(rex::path::abs_path("c:/bar/foo") == "c:/bar/foo");
 }
-TEST_CASE("Test VFS - list files")
+TEST_CASE("TEST - VFS - list files")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 	rsl::string_view test_path1 = "vfs_tests";
@@ -410,7 +410,7 @@ TEST_CASE("Test VFS - list files")
 	REX_CHECK(rsl::find_if(files.cbegin(), files.cend(), [&test_path1](rsl::string_view file) {return rex::path::is_same(file, rex::path::join(test_path1, "list_dir", "file2.txt")); }) != files.cend());
 	REX_CHECK(rsl::find_if(files.cbegin(), files.cend(), [&test_path1](rsl::string_view file) {return rex::path::is_same(file, rex::path::join(test_path1, "list_dir", "file3.txt")); }) != files.cend());
 }
-TEST_CASE("Test VFS - list entries")
+TEST_CASE("TEST - VFS - list entries")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 	rsl::string_view test_path1 = "vfs_tests";
@@ -435,7 +435,7 @@ TEST_CASE("Test VFS - list entries")
 	REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [&test_path1](rsl::string_view entry) {return rex::path::is_same(entry, rex::path::join(test_path1, "list_dir", "file2.txt")); }) != entries.cend());
 	REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [&test_path1](rsl::string_view entry) {return rex::path::is_same(entry, rex::path::join(test_path1, "list_dir", "file3.txt")); }) != entries.cend());
 }
-TEST_CASE("Test VFS - list dirs")
+TEST_CASE("TEST - VFS - list dirs")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 	rsl::string_view test_path1 = "vfs_tests";

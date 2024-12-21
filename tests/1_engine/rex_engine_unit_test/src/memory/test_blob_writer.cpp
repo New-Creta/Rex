@@ -4,7 +4,7 @@
 #include "rex_engine/memory/blob.h"
 #include "rex_engine/engine/types.h"
 
-TEST_CASE("BlobWriter - Write to blob")
+TEST_CASE("TEST - BlobWriter - Write to blob")
 {
   auto data = rsl::make_unique<s32[]>(5);
 
@@ -30,7 +30,7 @@ TEST_CASE("BlobWriter - Write to blob")
   REX_CHECK(blob.read<s32>(16) == 5);
 }
 
-TEST_CASE("BlobWriter - Write to blob from offset")
+TEST_CASE("TEST - BlobWriter - Write to blob from offset")
 {
   auto data = rsl::make_unique<s32[]>(5);
 
@@ -55,7 +55,7 @@ TEST_CASE("BlobWriter - Write to blob from offset")
   REX_CHECK(blob.read<s32>(16_bytes) == 5);
 }
 
-TEST_CASE("BlobWriter - Write to blob using ptr and size")
+TEST_CASE("TEST - BlobWriter - Write to blob using ptr and size")
 {
   auto data = rsl::make_unique<s32[]>(5);
 
@@ -88,7 +88,7 @@ TEST_CASE("BlobWriter - Write to blob using ptr and size")
   REX_CHECK(blob.read<s32>(16) == 50);
 }
 
-TEST_CASE("BlobWriter - Write to blob using ptr and size from offset")
+TEST_CASE("TEST - BlobWriter - Write to blob using ptr and size from offset")
 {
   auto data = rsl::make_unique<s32[]>(5);
 

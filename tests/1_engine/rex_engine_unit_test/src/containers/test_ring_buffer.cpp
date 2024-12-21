@@ -2,7 +2,7 @@
 
 #include "rex_engine/containers/ring_buffer.h"
 
-TEST_CASE("Ringbuffer Construction")
+TEST_CASE("TEST - Ringbuffer - Construction")
 {
   rex::RingBuffer<int> buffer(2);
 
@@ -11,7 +11,7 @@ TEST_CASE("Ringbuffer Construction")
   REX_CHECK(buffer.size() == buffer.max_count() * sizeof(int));
 }
 
-TEST_CASE("Ringbuffer sequential writing and reading")
+TEST_CASE("TEST - Ringbuffer - sequential writing and reading")
 {
   rex::RingBuffer<int> buffer(2);
 
@@ -30,7 +30,7 @@ TEST_CASE("Ringbuffer sequential writing and reading")
   REX_CHECK(buffer.count() == 0);
 }
 
-TEST_CASE("Ringbuffer first putting, then getting")
+TEST_CASE("TEST - Ringbuffer - first putting, then getting")
 {
   rex::RingBuffer<int> buffer(2);
 
@@ -59,7 +59,7 @@ TEST_CASE("Ringbuffer first putting, then getting")
 
 }
 
-TEST_CASE("Ringbuffer using peek")
+TEST_CASE("TEST - Ringbuffer - using peek")
 {
   rex::RingBuffer<int> buffer(2);
   buffer.write(1);
@@ -73,7 +73,7 @@ TEST_CASE("Ringbuffer using peek")
   REX_CHECK(buffer.count() == 2);
 }
 
-TEST_CASE("Ringbuffer Resetting")
+TEST_CASE("TEST - Ringbuffer - Resetting")
 {
   rex::RingBuffer<int> buffer(20);
 

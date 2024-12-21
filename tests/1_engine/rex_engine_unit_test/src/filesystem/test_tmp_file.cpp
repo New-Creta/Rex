@@ -5,7 +5,7 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/directory.h"
 
-TEST_CASE("Empty Temp File")
+TEST_CASE("TEST - Temp File - Empty")
 {
   rsl::string filename;
   {
@@ -33,7 +33,7 @@ TEST_CASE("Empty Temp File")
   REX_CHECK(rex::file::exists(filename) == false);
 }
 
-TEST_CASE("Temp File With Text")
+TEST_CASE("TEST - Temp File - With Text")
 {
   rsl::string filename;
   {

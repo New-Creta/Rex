@@ -7,7 +7,7 @@
 
 #include <random>
 
-TEST_CASE("EventSystem - check removal of subscriptions")
+TEST_CASE("TEST - EventSystem - check removal of subscriptions")
 {
   s32 x = 0;
   auto inc_x = [&x](const rex::CharDown& /*evt*/) { ++x; };
@@ -24,7 +24,7 @@ TEST_CASE("EventSystem - check removal of subscriptions")
   REX_CHECK(x == 1);
 }
 
-TEST_CASE("EventSystem - queueing events")
+TEST_CASE("TEST - EventSystem - queueing events")
 {
   s32 x = 0;
   auto inc_x = [&x](const rex::CharDown& /*evt*/) { ++x; };
@@ -51,7 +51,7 @@ TEST_CASE("EventSystem - queueing events")
   rex::event_system().remove_subscription(subscription);
 }
 
-TEST_CASE("EventSystem - immediate firing events")
+TEST_CASE("TEST - EventSystem - immediate firing events")
 {
   s32 x = 0;
   auto inc_x = [&x](const rex::CharDown& /*evt*/)
@@ -81,7 +81,7 @@ TEST_CASE("EventSystem - immediate firing events")
   rex::event_system().remove_subscription(subscription);
 }
 
-TEST_CASE("EventSystem - immediate firing and queing")
+TEST_CASE("TEST - EventSystem - immediate firing and queing")
 {
   s32 x = 0;
   auto inc_x = [&x](const rex::CharDown& /*evt*/) { ++x; };
@@ -111,7 +111,7 @@ TEST_CASE("EventSystem - immediate firing and queing")
   rex::event_system().remove_subscription(subscription);
 }
 
-TEST_CASE("EventSystem - test against data corruption")
+TEST_CASE("TEST - EventSystem - test against data corruption")
 {
   s32 width = 0;
   s32 height = 0;

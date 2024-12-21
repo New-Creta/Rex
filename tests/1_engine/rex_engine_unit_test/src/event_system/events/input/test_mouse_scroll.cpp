@@ -3,7 +3,7 @@
 #include "rex_engine/event_system/events/input/mouse_scroll.h"
 #include "rex_engine/event_system/event_system.h"
 
-TEST_CASE("Mouse Scroll Event")
+TEST_CASE("TEST - Events - Mouse Scroll Event")
 {
   s32 num_quit_events_fired = 0;
   s32 wheel_delta = 0;

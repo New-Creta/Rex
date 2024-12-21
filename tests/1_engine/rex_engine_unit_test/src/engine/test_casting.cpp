@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/casting.h"
 
-TEST_CASE("narrow casting")
+TEST_CASE("TEST - Casting - narrow casting")
 {
 	s32 a = 0x7FFF;
 	s16 b = rex::unsafe_narrow_cast<s16>(a);
@@ -25,7 +25,7 @@ TEST_CASE("narrow casting")
 	REX_CHECK(i == j);
 }
 
-TEST_CASE("sign casting")
+TEST_CASE("TEST - Casting - sign casting")
 {
 	s32 a = 0x7FFFFFFF;
 	u32 b = rex::unsafe_sign_cast<u32>(a);
@@ -52,7 +52,7 @@ TEST_CASE("sign casting")
 	REX_CHECK(k == l);
 }
 
-TEST_CASE("flip sign")
+TEST_CASE("TEST - Casting - flip sign")
 {
 	s32 a = 0x7FFFFFFF;
 	u32 b = rex::unsafe_flip_sign(a);
@@ -79,7 +79,7 @@ TEST_CASE("flip sign")
 	REX_CHECK(k == l);
 }
 
-TEST_CASE("numeric cast")
+TEST_CASE("TEST - Casting - numeric cast")
 {
 	// Smaller to larger integer (same sign)
 	s8 small_int = 42;
@@ -102,7 +102,7 @@ TEST_CASE("numeric cast")
 	REX_CHECK(unsigned_int2 == signed_int2);
 }
 
-TEST_CASE("byte cast")
+TEST_CASE("TEST - Casting - byte cast")
 {
 	s32 x = 0xFFEEDDCC;
 
@@ -113,7 +113,7 @@ TEST_CASE("byte cast")
 	REX_CHECK(bytes[3] == static_cast<rsl::byte>(0xFF));
 }
 
-TEST_CASE("char cast")
+TEST_CASE("TEST - Casting - char cast")
 {
 	s32 x = 0xFFEEDDCC;
 

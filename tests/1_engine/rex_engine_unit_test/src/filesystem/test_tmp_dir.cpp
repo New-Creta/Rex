@@ -5,7 +5,7 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 
-TEST_CASE("Empty Temp Dir")
+TEST_CASE("TEST - Temp Dir - Empty Temp Dir")
 {
   rsl::string dirname;
   {
@@ -30,7 +30,7 @@ TEST_CASE("Empty Temp Dir")
   REX_CHECK(rex::directory::exists(dirname) == false);
 }
 
-TEST_CASE("Temp Dir With Files")
+TEST_CASE("TEST - Temp Dir - With Files")
 {
   rsl::string random_file1 = rex::path::random_filename();
   rsl::string random_file2 = rex::path::random_filename();
@@ -73,7 +73,7 @@ TEST_CASE("Temp Dir With Files")
   REX_CHECK(rex::file::exists(rex::path::join(dirname, random_file2)) == false);
 }
 
-TEST_CASE("Temp Dir With Directories")
+TEST_CASE("TEST - Temp Dir - With Directories")
 {
   rsl::string dirname;
   rsl::string random_dir1 = rex::path::random_dir();
@@ -116,7 +116,7 @@ TEST_CASE("Temp Dir With Directories")
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir2)) == false);
 }
 
-TEST_CASE("Temp Dir With Files And Directories")
+TEST_CASE("TEST - Temp Dir - With Files And Directories")
 {
   rsl::string random_file1 = rex::path::random_filename();
   rsl::string random_file2 = rex::path::random_filename();

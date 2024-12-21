@@ -44,7 +44,7 @@ namespace rex::test
 	}
 }
 
-TEST_CASE("Core Application Construction")
+TEST_CASE("TEST - Core Application - Construction")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 	rex::test::TestCoreApp app(rsl::move(app_creation_params));
@@ -54,7 +54,7 @@ TEST_CASE("Core Application Construction")
 	REX_CHECK(app.is_marked_for_destroy() == false);
 }
 
-TEST_CASE("Core Application Failed Initialization")
+TEST_CASE("TEST - Core Application - Failed Initialization")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 
@@ -72,7 +72,7 @@ TEST_CASE("Core Application Failed Initialization")
 	REX_CHECK(app.is_marked_for_destroy() == false);
 }
 
-TEST_CASE("Core Application Successful Initialization")
+TEST_CASE("TEST - Core Application - Successful Initialization")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 	rex::test::TestCoreApp* app_ptr = nullptr;
@@ -92,7 +92,7 @@ TEST_CASE("Core Application Successful Initialization")
 	REX_CHECK(app.is_marked_for_destroy() == false);
 }
 
-TEST_CASE("Core Application Failed Run")
+TEST_CASE("TEST - Core Application - Failed Run")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 	rex::test::TestCoreApp* app_ptr = nullptr;
@@ -115,7 +115,7 @@ TEST_CASE("Core Application Failed Run")
 
 }
 
-TEST_CASE("Core Application Successful Run")
+TEST_CASE("TEST - Core Application - Successful Run")
 {
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();
 	rex::test::TestCoreApp* app_ptr = nullptr;
@@ -135,8 +135,7 @@ TEST_CASE("Core Application Successful Run")
 	REX_CHECK(app.is_marked_for_destroy() == false);
 }
 
-
-TEST_CASE("Core Application State Checking")
+TEST_CASE("TEST - Core Application - State Checking")
 {
 	rex::test::TestCoreApp* app_ptr = nullptr;
 	rex::ApplicationCreationParams app_creation_params = rex::test::test_core_app_creation_params();

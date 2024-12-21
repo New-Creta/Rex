@@ -2,7 +2,7 @@
 
 #include "rex_engine/gfx/rendering/camera.h"
 
-TEST_CASE("Origin Perspective Camera Construction")
+TEST_CASE("TEST - Camera - Origin Perspective Construction")
 {
 	glm::vec3 pos{};
 	rsl::deg_angle fov = 90_deg;
@@ -24,7 +24,7 @@ TEST_CASE("Origin Perspective Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::perspectiveFov(glm::radians(fov.get()), width, height, near, far));
 }
 
-TEST_CASE("Origin Orthographic Camera Construction")
+TEST_CASE("TEST - Camera - Origin Orthographic Construction")
 {
 	glm::vec3 pos{};
 	rsl::deg_angle fov = 90_deg;
@@ -55,7 +55,7 @@ TEST_CASE("Origin Orthographic Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::ortho(left, right, top, bottom, near, far));
 }
 
-TEST_CASE("Perspective Camera Construction")
+TEST_CASE("TEST - Camera - Perspective Construction")
 {
 	glm::vec3 pos(1.0f, 0.0f, 0.0f);
 	rsl::deg_angle fov = 90_deg;
@@ -77,7 +77,7 @@ TEST_CASE("Perspective Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::perspectiveFov(glm::radians(fov.get()), width, height, near, far));
 }
 
-TEST_CASE("Orthographic Camera Construction")
+TEST_CASE("TEST - Camera - Orthographic Construction")
 {
 	glm::vec3 pos(1.0f, 0.0f, 0.0f);
 	rsl::deg_angle fov = 90_deg;
@@ -109,7 +109,7 @@ TEST_CASE("Orthographic Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::ortho(left, right, top, bottom, near, far));
 }
 
-TEST_CASE("Distant Perspective Camera Construction")
+TEST_CASE("TEST - Camera - Distant Perspective Construction")
 {
 	glm::vec3 pos(10.0f, 0.0f, 0.0f);
 	rsl::deg_angle fov = 90_deg;
@@ -131,7 +131,7 @@ TEST_CASE("Distant Perspective Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::perspectiveFov(glm::radians(fov.get()), width, height, near, far));
 }
 
-TEST_CASE("Distant Orthographic Camera Construction")
+TEST_CASE("TEST - Camera - Distant Orthographic Construction")
 {
 	glm::vec3 pos(10.0f, 0.0f, 0.0f);
 	rsl::deg_angle fov = 90_deg;
@@ -163,8 +163,7 @@ TEST_CASE("Distant Orthographic Camera Construction")
 	REX_CHECK(camera.projection_mat() == glm::ortho(left, right, top, bottom, near, far));
 }
 
-
-TEST_CASE("Switching Between Camera Project Modes")
+TEST_CASE("TEST - Camera - Switching Between Project Modes")
 {
 	glm::vec3 pos{};
 	rsl::deg_angle fov = 90_deg;
