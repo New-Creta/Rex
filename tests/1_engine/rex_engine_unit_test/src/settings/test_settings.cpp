@@ -1,10 +1,12 @@
 #include "rex_unit_test/rex_catch2.h"
 
 #include "rex_engine/settings/settings.h"
-
+#include "rex_engine/filesystem/tmp_cwd.h"
 
 TEST_CASE("TEST - Settings - Settings without headers - with casing")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   rex::settings::load("test_settings.ini");
 
   REX_CHECK(rex::settings::get_int("Test_Int") == 10);
@@ -39,6 +41,8 @@ TEST_CASE("TEST - Settings - Settings without headers - with casing")
 }
 TEST_CASE("TEST - Settings - Settings without headers - without casing")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   rex::settings::load("test_settings.ini");
 
   REX_CHECK(rex::settings::get_int("test_int") == 10);
@@ -73,6 +77,8 @@ TEST_CASE("TEST - Settings - Settings without headers - without casing")
 }
 TEST_CASE("TEST - Settings - Settings with headers - with casing")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   rex::settings::load("test_settings_with_headers.ini");
 
   // First header
@@ -137,6 +143,8 @@ TEST_CASE("TEST - Settings - Settings with headers - with casing")
 }
 TEST_CASE("TEST - Settings - Settings with headers - without casing")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   rex::settings::load("test_settings_with_headers.ini");
 
   // First header

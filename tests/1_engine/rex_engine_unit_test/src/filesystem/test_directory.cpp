@@ -3,9 +3,12 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/tmp_cwd.h"
 
 TEST_CASE("TEST - Directory - Exists")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   REX_CHECK(rex::directory::exists("this_is_a_file.txt") == false);
   REX_CHECK(rex::directory::exists("this_is_a_directory"));
   REX_CHECK(rex::directory::exists(rex::path::random_filename()) == false);
@@ -14,6 +17,8 @@ TEST_CASE("TEST - Directory - Exists")
 
 TEST_CASE("TEST - Directory - List Dirs")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   auto dirs = rex::directory::list_dirs("list_dir");
 
   REX_CHECK(rsl::find_if(dirs.cbegin(), dirs.cend(), [](rsl::string_view dir) {return rex::path::is_same(dir, rex::path::join("list_dir", "folder1")); }) != dirs.cend());
@@ -23,6 +28,8 @@ TEST_CASE("TEST - Directory - List Dirs")
 
 TEST_CASE("TEST - Directory - List Files")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   auto files = rex::directory::list_files("list_dir");
 
   REX_CHECK(rsl::find_if(files.cbegin(), files.cend(), [](rsl::string_view file) {return rex::path::is_same(file, rex::path::join("list_dir", "file1.txt")); }) != files.cend());
@@ -33,6 +40,8 @@ TEST_CASE("TEST - Directory - List Files")
 
 TEST_CASE("TEST - Directory - List Entries")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   auto entries = rex::directory::list_entries("list_dir");
 
   REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [](rsl::string_view entry) {return rex::path::is_same(entry, rex::path::join("list_dir", "folder1")); }) != entries.cend());
@@ -45,6 +54,8 @@ TEST_CASE("TEST - Directory - List Entries")
 
 TEST_CASE("TEST - Directory - List Entries Recursive")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   auto entries = rex::directory::list_entries("list_dir", rex::directory::Recursive::yes);
 
   REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [](rsl::string_view entry) {return rex::path::is_same(entry, rex::path::join("list_dir", "folder1")); }) != entries.cend());
@@ -58,6 +69,8 @@ TEST_CASE("TEST - Directory - List Entries Recursive")
 
 TEST_CASE("TEST - Directory - Recursive Deletion")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   rex::directory::create("root");
   rex::directory::create(rex::path::join("root", "folder"));
   rex::file::create(rex::path::join("root", "folder", "file.txt"));
@@ -69,6 +82,8 @@ TEST_CASE("TEST - Directory - Recursive Deletion")
 
 TEST_CASE("TEST - Directory - Create and Deletion")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   rsl::string random_dirname = rex::path::random_dir();
   rex::Error error = rex::Error::no_error();
 
@@ -114,6 +129,8 @@ TEST_CASE("TEST - Directory - Create and Deletion")
 
 TEST_CASE("TEST - Directory - Copy")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   rsl::string random_dirname = rex::path::random_dir();
   REX_CHECK(rex::directory::exists(random_dirname) == false);
 
@@ -135,6 +152,8 @@ TEST_CASE("TEST - Directory - Copy")
 
 TEST_CASE("TEST - Directory - Move")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   rsl::string random_dirname = rex::path::random_dir();
   REX_CHECK(rex::directory::exists(random_dirname) == false);
 
@@ -155,6 +174,8 @@ TEST_CASE("TEST - Directory - Move")
 
 TEST_CASE("TEST - Directory - Size")
 {
+  rex::TempCwd tmp_cwd("directory_tests");
+
   {
     rsl::memory_size dir_size = rex::directory::size("dir_with_size_of_10_bytes_non_recursive", rex::directory::Recursive::no);
     REX_CHECK(dir_size == 10_bytes);

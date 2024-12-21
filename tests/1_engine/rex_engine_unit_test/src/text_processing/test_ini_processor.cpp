@@ -3,9 +3,12 @@
 #include "rex_engine/text_processing/ini_processor.h"
 
 #include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/tmp_cwd.h"
 
 TEST_CASE("TEST - Ini Processor - no headers")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   const rex::memory::Blob content_blob = rex::file::read_file("test_settings.ini");
   rex::IniProcessor ini_processor = rex::IniProcessor(rex::memory::BlobView(content_blob));
   rex::Error error = ini_processor.process();
@@ -22,6 +25,8 @@ TEST_CASE("TEST - Ini Processor - no headers")
 
 TEST_CASE("TEST - Ini Processor - with headers")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   const rex::memory::Blob content_blob = rex::file::read_file("test_settings_with_headers.ini");
   rex::IniProcessor ini_processor = rex::IniProcessor(rex::memory::BlobView(content_blob));
   rex::Error error = ini_processor.process();
@@ -40,6 +45,8 @@ TEST_CASE("TEST - Ini Processor - with headers")
 
 TEST_CASE("TEST - Ini Processor - error detection")
 {
+  rex::TempCwd tmp_cwd("settings_tests");
+
   {
     const rex::memory::Blob content_blob = rex::file::read_file("invalid_settings_1.ini");
     rex::IniProcessor ini_processor = rex::IniProcessor(rex::memory::BlobView(content_blob));
