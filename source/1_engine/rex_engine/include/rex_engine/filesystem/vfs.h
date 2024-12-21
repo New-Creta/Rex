@@ -77,6 +77,8 @@ namespace rex
     REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
     REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
+    Error create_file(MountingPoint root, rsl::string_view filepath);
+    Error create_file(rsl::string_view filepath);
     Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
     Error save_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
     Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);

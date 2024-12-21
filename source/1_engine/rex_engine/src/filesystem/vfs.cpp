@@ -425,7 +425,15 @@ namespace rex
 
       return request;
     }
-
+    Error create_file(MountingPoint root, rsl::string_view filepath)
+    {
+      const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
+      return rex::file::create(path);
+    }
+    Error create_file(rsl::string_view filepath)
+    {
+      return rex::file::create(filepath);
+    }
     Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
     {
       return save_to_file(root, filepath, text.data(), text.length(), shouldAppend);

@@ -217,6 +217,8 @@ TEST_CASE("Test VFS - save to file")
 	file_blob = rex::vfs::read_file(filepath);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content_appended);
 
+	rex::Error error = rex::Error::no_error();
+	rex::vfs::delete_file(filepath);
 	filename = rex::path::random_filename();
 	filepath = rex::path::join(test_path1, filename);
 
@@ -230,6 +232,8 @@ TEST_CASE("Test VFS - save to file")
 	rex::vfs::save_to_file(rex::MountingPoint::TestPath1, filename, dummy_content, rex::vfs::AppendToFile::yes);
 	file_blob = rex::vfs::read_file(rex::MountingPoint::TestPath1, filename);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content_appended);
+
+	rex::vfs::delete_file(filepath);
 }
 TEST_CASE("Test VFS - create dir")
 {
@@ -296,6 +300,44 @@ TEST_CASE("Test VFS - create dir")
 	REX_CHECK(rex::vfs::is_dir(dirname) == false);
 	REX_CHECK(rex::vfs::exists(subdirname) == false);
 	REX_CHECK(rex::vfs::is_dir(subdirname) == false);
+}
+TEST_CASE("Test VFS - create file")
+{
+	rex::test::ScopedVfsInitialization vfs_init;
+
+	rsl::string_view test_path1 = "vfs_tests";
+	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
+	rsl::string dirname;
+	rsl::string filename;
+	rex::Error error = rex::Error::no_error();
+
+	// Create file under root
+	filename = rex::path::random_filename();
+	error = rex::vfs::create_file(filename);
+	
+	REX_CHECK(error.has_error() == false);
+	REX_CHECK(rex::vfs::is_file(filename));
+	REX_CHECK(rex::vfs::exists(filename));
+	rex::vfs::delete_file(filename);
+
+	// Create file in sub dir
+	// this should fail as the directory isn't created yet
+	dirname = rex::path::random_dir();
+	rsl::string filepath = rex::path::join(dirname, filename);
+	error = rex::vfs::create_file(filepath);
+
+	REX_CHECK(error.has_error());
+	REX_CHECK(rex::vfs::is_file(filepath) == false);
+	REX_CHECK(rex::vfs::exists(filepath) == false);
+
+	// Create the dir, then the file
+	rex::vfs::create_dir(dirname);
+	error = rex::vfs::create_file(filepath);
+	REX_CHECK(error.has_error() == false);
+	REX_CHECK(rex::vfs::is_file(filepath));
+	REX_CHECK(rex::vfs::exists(filepath));
+
+	rex::vfs::delete_dir_recursive(dirname);
 }
 TEST_CASE("Test VFS - exists")
 {
