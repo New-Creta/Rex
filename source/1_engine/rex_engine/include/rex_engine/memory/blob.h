@@ -89,7 +89,7 @@ namespace rex
       // Return the internal data as reinterpreted as something else
       // Useful when you want to avoid reallocating the data
       template <typename T>
-      rsl::unique_array<T> release_as()
+      T release_as()
       {
         static_assert(rsl::is_pod_v<T>, "only pod classes are allowed to be released from blobs");
         REX_ASSERT_X(m_data.count() == sizeof(T), "Release blob content to a type is only allowed if the size of the type is the same as the size of the blob");

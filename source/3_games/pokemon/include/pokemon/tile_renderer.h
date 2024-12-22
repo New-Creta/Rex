@@ -9,7 +9,6 @@
 #include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/graphics.h"
 
-#include "rex_engine/memory/array_view.h"
 #include "rex_engine/gfx/rendering/renderer.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
 

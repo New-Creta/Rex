@@ -5,6 +5,10 @@
 #include "rex_std/bonus/types.h"
 #include "rex_std/memory.h"
 
+#ifdef REX_BUILD_RELEASE
+#define REX_DISABLE_DEBUG_ALLOCATION
+#endif
+
 namespace rex
 {
   inline namespace v1
@@ -13,8 +17,8 @@ namespace rex
     class DebugAllocator
     {
     public:
-      using size_type = typename Allocator::size_type;
-      using pointer   = typename Allocator::pointer;
+      using size_type = typename rsl::allocator_traits<Allocator>::size_type;
+      using pointer   = typename rsl::allocator_traits<Allocator>::pointer;
 
       DebugAllocator()
           : m_allocator(nullptr)
@@ -28,7 +32,7 @@ namespace rex
 
       REX_NO_DISCARD pointer allocate(size_type size)
       {
-#ifndef REX_BUILD_RELEASE
+#ifndef REX_DISABLE_DEBUG_ALLOCATION
         return m_allocator->allocate(size);
 #else
         REX_UNUSED_PARAM(size);
@@ -40,9 +44,9 @@ namespace rex
       // It just allocates the memory, the user is expected to use placement new
       // to initialize the memory for the type
       template <typename T>
-      REX_NO_DISCARD pointer allocate()
+      REX_NO_DISCARD T* allocate()
       {
-        return allocate(sizeof(T));
+        return static_cast<T*>(allocate(sizeof(T)));
       }
       void deallocate(pointer ptr, size_type size)
       {
@@ -77,5 +81,8 @@ namespace rex
     private:
       Allocator* m_allocator;
     };
+
+    template <typename Alloc>
+    DebugAllocator(Alloc)->DebugAllocator<Alloc>;
   } // namespace v1
 } // namespace rex

@@ -27,7 +27,6 @@
 
 #include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/images/image_loader.h"
-#include "rex_engine/memory/array_view.h"
 
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"

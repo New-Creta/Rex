@@ -8,6 +8,7 @@
 
 namespace rex
 {
+  // Type aliases
 #ifdef REX_ENABLE_MEM_TRACKING
   using GlobalAllocator = TrackedAllocator<UntrackedAllocator>;
 #else
@@ -16,12 +17,13 @@ namespace rex
 
   using GlobalDebugAllocator = DebugAllocator<UntrackedAllocator>;
 
+  // Accessors
   GlobalAllocator& global_allocator();
   GlobalDebugAllocator& global_debug_allocator();
 
+  // Global memory allocations
   void* alloc(rsl::memory_size size);
   void dealloc(void* ptr, rsl::memory_size size);
-
   void* debug_alloc(rsl::memory_size size);
   void debug_dealloc(void* ptr, rsl::memory_size size);
 
@@ -32,6 +34,12 @@ namespace rex
     new (mem) T(rsl::forward<Args>(args)...);
     return static_cast<T*>(mem);
   }
+  template <typename T>
+  void dealloc(T* ptr)
+  {
+    ptr->~T();
+    dealloc(ptr, sizeof(T));
+  }
   template <typename T, typename ... Args>
   T* debug_alloc(Args&& ... args)
   {
@@ -39,7 +47,14 @@ namespace rex
     new (mem) T(rsl::forward<Args>(args)...);
     return static_cast<T*>(mem);
   }
+  template <typename T>
+  void debug_dealloc(T* ptr)
+  {
+    ptr->~T();
+    debug_dealloc(ptr, sizeof(T));
+  }
 
+  // Debug Unique Pointer
   template <typename T>
   struct DebugDelete
   {
@@ -54,7 +69,7 @@ namespace rex
     constexpr void operator()(T* ptr) const
     {
       static_assert(sizeof(T) > 0, "can't delete an incomplete type"); // NOLINT(bugprone-sizeof-expression)
-      debug_dealloc(ptr, 0_bytes);
+      debug_dealloc(ptr);
     }
   };
   template <typename T>

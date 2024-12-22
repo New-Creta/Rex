@@ -161,3 +161,34 @@ TEST_CASE("TEST - Blob - writing")
   b.write(&x, sizeof(x), 8);
   REX_CHECK(b.read<s32>(8) == x);
 }
+
+TEST_CASE("Test - Blob - release as array")
+{
+  auto arr = rsl::make_unique<rsl::byte[]>(3);
+  arr[0] = static_cast<rsl::byte>(1);
+  arr[1] = static_cast<rsl::byte>(2);
+  arr[2] = static_cast<rsl::byte>(3);
+
+  rsl::byte* byte_array = arr.get();
+  rex::memory::Blob b(rsl::move(arr));
+
+  rsl::unique_array<rsl::byte> bytes = b.release_as_array<rsl::byte>();
+  REX_CHECK(bytes[0] == rsl::byte(1));
+  REX_CHECK(bytes[1] == rsl::byte(2));
+  REX_CHECK(bytes[2] == rsl::byte(3));
+}
+
+TEST_CASE("Test - Blob - release")
+{
+  auto arr = rsl::make_unique<rsl::byte[]>(4);
+  arr[0] = static_cast<rsl::byte>(1);
+  arr[1] = static_cast<rsl::byte>(2);
+  arr[2] = static_cast<rsl::byte>(3);
+  arr[3] = static_cast<rsl::byte>(4);
+
+  rsl::byte* byte_array = arr.get();
+  rex::memory::Blob b(rsl::move(arr));
+
+  s32 value = b.release_as<s32>();
+  REX_CHECK(value == 0x04030201);
+}
