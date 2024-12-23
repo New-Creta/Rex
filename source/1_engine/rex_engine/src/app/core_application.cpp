@@ -55,7 +55,7 @@ namespace rex
 
     // Log memory usage before initialization has started
     output_debug_string("Memory usage before initialization");
-    log_mem_usage();
+    debug_log_mem_usage();
 
     // this calls our internal init code, to initialize the gui application
     // afterwards it calls into client code and initializes the code there
@@ -68,7 +68,7 @@ namespace rex
 
     // Log memory usage after initialization has finished
     output_debug_string("Memory usage after initialization");
-    log_mem_usage();
+    debug_log_mem_usage();
 
     // calls into gui application update code
     // then calls into the client update code provided by the EngineParams before

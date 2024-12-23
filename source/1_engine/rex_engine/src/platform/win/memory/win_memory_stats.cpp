@@ -13,7 +13,7 @@
 
 namespace rex
 {
-  MemoryStats query_memory_stats()
+  OSMemoryStats query_os_mem_stats()
   {
     // retrieve the memory status from Windows
     MEMORYSTATUSEX memory_status_ex {};
@@ -29,7 +29,7 @@ namespace rex
     GetSystemInfo(&sys_info);
 
     // combine the information all together
-    MemoryStats stats {};
+    OSMemoryStats stats {};
     stats.total_physical_mem = rsl::memory_size(static_cast<card64>(memory_status_ex.ullTotalPhys));
     stats.avail_physical_mem = rsl::memory_size(static_cast<card64>(memory_status_ex.ullAvailPhys));
     stats.total_virtual_mem  = rsl::memory_size(static_cast<card64>(memory_status_ex.ullAvailVirtual));

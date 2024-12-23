@@ -246,7 +246,7 @@ namespace rex
         subscribe_window_events();
 
         output_debug_string("Memory usage before graphics initialization");
-        log_mem_usage();
+        debug_log_mem_usage();
 
         if(!init_gfx())
         {
@@ -255,7 +255,7 @@ namespace rex
         }
 
         output_debug_string("Memory usage after graphics initialization");
-        log_mem_usage();
+        debug_log_mem_usage();
 
         return true;
       }
