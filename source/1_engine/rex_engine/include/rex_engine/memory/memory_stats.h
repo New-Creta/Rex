@@ -12,26 +12,39 @@ namespace rex
 {
   class MemoryHeader;
 
-  // Memory stats coming from the operating system
-  struct OSMemoryStats
+  // Memory stats about the system itself, independent of the process
+  struct SystemMemoryStats
   {
-    // total physical memory
+    // total physical memory in the system
     rsl::memory_size total_physical_mem{};
 
-    // available physical memory
+    // available physical memory in the system (memory that isn't allocated yet)
     rsl::memory_size avail_physical_mem{};
 
-    // total virtual memory available
+    // total virtual memory in the system
     rsl::memory_size total_virtual_mem{};
+
+    // total virtual memory in the system (memory that isn't allocated yet)
+    rsl::memory_size avail_virtual_mem{};
 
     // the page size of the current system, aka how much memory memory is paged to disk
     rsl::memory_size page_size{};
+  };
 
-    // the amount of memory that's currently used by physical memory
+  // Memory stats coming from the operating system about the current process
+  struct ProcessMemoryStats
+  {
+    // the amount of physical memory that's currently used by the process
     rsl::memory_size used_physical_mem{};
 
-    // the amount of memory that's paged out to disk
+    // The peak physical memory usage of the process
+    rsl::memory_size peak_physical_mem{};
+
+    // the amount of virtual memory that's currently used by the process
     rsl::memory_size used_virtual_mem{};
+
+    // The peak virtual memory usage of the process
+    rsl::memory_size peak_virtual_mem{};
 
     // amount of page faults that have occurred
     // Note: this doesn't differentiate between hard and soft page faults
@@ -59,25 +72,17 @@ namespace rex
     UsagePerTag usage_per_tag;
   };
 
-  // Memory stats with information about each tracked allocation 
-  // Useful for debugging individual allocations after the fact and track down leaks
-  struct MemoryAllocationStats
-  {
-    MemoryTrackingStats tracking_stats;
-
-    // A list of all allocation headers. Good for memory allocation debugging
-    rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
-  };
-
   struct MemoryStats
   {
     MemoryTrackingStats mem_tracking_stats;
-    OSMemoryStats os_mem_stats;
+    SystemMemoryStats system_mem_stats;
+    ProcessMemoryStats process_mem_stats;
   };
 
   MemoryTrackingStats query_mem_tracking_stats();
-  OSMemoryStats query_os_mem_stats();
-  MemoryStats query_all_memory_stats();
+  SystemMemoryStats   query_system_mem_stats();
+  ProcessMemoryStats  query_process_mem_stats();
+  MemoryStats         query_all_memory_stats();
 
   void debug_log_mem_usage();
 } // namespace rex

@@ -16,7 +16,8 @@ namespace rex
   {
     MemoryStats stats{};
     stats.mem_tracking_stats = query_mem_tracking_stats();
-    stats.os_mem_stats = query_os_mem_stats();
+    stats.system_mem_stats = query_system_mem_stats();
+    stats.process_mem_stats = query_process_mem_stats();
     return stats;
   }
 
@@ -26,8 +27,8 @@ namespace rex
 
     // The memory manager may not be initialized yet, so we can only log to the debug output who's allocations do not get tracked
     // If a user wants 
-    auto physical_mem_usage = rsl::format("Current used physical memory: {} bytes.", stats.os_mem_stats.used_physical_mem.size_in_bytes());
-    auto virtual_mem_usage = rsl::format("Current used virtual memory: {} bytes.", stats.os_mem_stats.used_virtual_mem.size_in_bytes());
+    auto physical_mem_usage = rsl::format("Current used physical memory: {} bytes.", stats.process_mem_stats.used_physical_mem.size_in_bytes());
+    auto virtual_mem_usage = rsl::format("Current used virtual memory: {} bytes.", stats.process_mem_stats.used_virtual_mem.size_in_bytes());
 
     // Output debug string logging
     output_debug_string(physical_mem_usage);

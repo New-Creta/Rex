@@ -22,6 +22,16 @@ namespace rex
   struct MemoryTrackingStats;
   struct MemoryAllocationStats;
 
+  // Memory stats with information about each tracked allocation 
+  // Useful for debugging individual allocations after the fact and track down leaks
+  struct MemoryAllocationStats
+  {
+    MemoryTrackingStats tracking_stats;
+
+    // A list of all allocation headers. Good for memory allocation debugging
+    rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
+  };
+
   class MemoryTracker
   {
   public:
@@ -52,9 +62,9 @@ namespace rex
     REX_NO_DISCARD MemoryAllocationStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
     REX_NO_DISCARD MemoryAllocationStats get_init_stats();     // deliberate copy as we don't want to have any race conditions when accessing
 
-  private:
     REX_NO_DISCARD MemoryAllocationStats get_stats_for_frame(card32 idx);
 
+  private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_budget;                  // maximum allowed memory usage
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time

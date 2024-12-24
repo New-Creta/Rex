@@ -269,7 +269,7 @@ namespace rex
     stats.usage_per_tag = m_usage_per_tag;
     stats.used_memory = m_mem_usage.value();
     stats.max_used_memory = m_mem_usage.max_value();
-    stats.num_alive_allocations = allocation_headers().size();
+    stats.num_alive_allocations = allocation_info_table().size();
     stats.num_total_allocations = m_num_total_allocations;
 
     return stats;
