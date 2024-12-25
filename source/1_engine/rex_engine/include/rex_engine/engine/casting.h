@@ -211,4 +211,11 @@ namespace rex
   {
     return reinterpret_cast<char8*>(data); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
   }
+
+  // converts an enum to an int
+  template <typename E, rsl::enable_if_t<rsl::is_enum_v<E>, bool> = true>
+  constexpr s32 to_int(E e)
+  {
+    return static_cast<s32>(e);
+  }
 } // namespace rex

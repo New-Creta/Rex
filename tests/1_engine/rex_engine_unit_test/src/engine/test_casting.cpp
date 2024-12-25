@@ -123,3 +123,18 @@ TEST_CASE("TEST - Casting - char cast")
 	REX_CHECK(bytes[2] == static_cast<char8>(0xEE));
 	REX_CHECK(bytes[3] == static_cast<char8>(0xFF));
 }
+
+TEST_CASE("Test - Casting - to int")
+{
+	enum class TestEnum
+	{
+		Zero,
+		One,
+		Two
+	};
+
+	REX_CHECK(rex::to_int(TestEnum::Zero) == 0);
+	REX_CHECK(rex::to_int(TestEnum::One) == 1);
+	REX_CHECK(rex::to_int(TestEnum::Two) == 2);
+	REX_CHECK(rex::to_int((TestEnum)3) == 3);
+}
