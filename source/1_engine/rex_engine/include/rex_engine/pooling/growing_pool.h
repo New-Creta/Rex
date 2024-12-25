@@ -18,8 +18,12 @@ namespace rex
   template <typename PooledObject, typename ... Args>
   class GrowingPool
   {
-    // function taking in the pooled object and returns true if it's free
+    // When looking for an idle object, we loop over all our idle objects and pass them into a function with the following signature
+    // If it returns true, the object is free to take and put into action
     using find_obj_func = rsl::function<bool(const rsl::unique_ptr<PooledObject>&)>;
+
+    // A function taking in variadic arguments and returning a unique pointer of the object we're pooling
+    // They'll be added to the active objects immediateyly as you only want to create a new object if you need one
     using create_new_obj_func = rsl::function<rsl::unique_ptr<PooledObject>(Args&&...)>;
 
   public:
@@ -48,6 +52,15 @@ namespace rex
 
       s32 idx = rsl::distance(m_active_objects.begin(), it);
       transfer_object_between_vectors(idx, m_active_objects, m_idle_objects);
+    }
+
+    s32 num_idle_objects() const
+    {
+      return m_idle_objects.size();
+    }
+    s32 num_active_objects() const
+    {
+      return m_active_objects.size();
     }
 
   private:
