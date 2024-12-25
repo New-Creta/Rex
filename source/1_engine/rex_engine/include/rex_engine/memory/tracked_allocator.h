@@ -44,8 +44,8 @@ namespace rex
   class TrackedAllocator
   {
   public:
-    using size_type = typename Allocator::size_type;
-    using pointer   = typename Allocator::pointer;
+    using size_type = typename rsl::allocator_traits<Allocator>::size_type;
+    using pointer   = typename rsl::allocator_traits<Allocator>::pointer;
 
     explicit TrackedAllocator(Allocator& alloc)
         : m_allocator(rsl::addressof(alloc))

@@ -94,5 +94,6 @@ namespace rex
     MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
-#define REX_MEM_TAG_SCOPE(tag) const MemoryTagScope REX_ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 } // namespace rex
+
+#define REX_MEM_TAG_SCOPE(tag) const rex::MemoryTagScope REX_ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
