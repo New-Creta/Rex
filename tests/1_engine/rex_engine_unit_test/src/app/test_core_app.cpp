@@ -21,7 +21,6 @@ namespace rex::test
 			m_update_func = m_app_creation_params.engine_params.app_update_func;
 			m_shutdown_func = m_app_creation_params.engine_params.app_shutdown_func;
 		}
-
 	protected:
 		bool platform_init() override { return m_init_func(m_app_creation_params); }
 		void platform_update() override { m_update_func(); }
@@ -185,9 +184,13 @@ TEST_CASE("TEST - Core Application - State Checking")
 		REX_CHECK(app_ptr->is_shutting_down() == true);
 	};
 
+	auto start = rsl::chrono::high_resolution_clock::now();
+
 	rex::test::TestCoreApp app(rsl::move(app_creation_params));
 	app_ptr = &app;
 	s32 return_code = app.run();
+
+	auto end = rsl::chrono::high_resolution_clock::now();
 
 	REX_CHECK(return_code == EXIT_SUCCESS);
 	REX_CHECK(app.is_initializing() == false);

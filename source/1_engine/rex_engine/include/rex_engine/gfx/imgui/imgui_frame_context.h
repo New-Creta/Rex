@@ -30,7 +30,7 @@ namespace rex
       ImGuiFrameContext();
 
       // Update the frame context's data based on the draw data and upload this to the gpu.
-      ScopedPoolObject<SyncInfo> update_data(ImDrawData* drawData);
+      ObjectWithDestructionCallback<SyncInfo> update_data(ImDrawData* drawData);
 
       // Return the viewport used for the frame const
       const Viewport& viewport() const;
@@ -47,7 +47,7 @@ namespace rex
       // Incrase the index buffer to a new size
       void increase_index_buffer(s32 newSize);
       // Update the frame context's data to the gpu
-      ScopedPoolObject<SyncInfo> copy_buffer_data(ImDrawData* drawData);
+      ObjectWithDestructionCallback<SyncInfo> copy_buffer_data(ImDrawData* drawData);
 
     private:
       rsl::unique_ptr<VertexBuffer> m_vertex_buffer;

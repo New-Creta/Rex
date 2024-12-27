@@ -24,7 +24,7 @@
 
 #include "rex_std/bonus/utility.h"
 
-#include "rex_engine/pooling/scoped_pool_object.h"
+#include "rex_engine/engine/object_with_destruction_callback.h"
 
 #include "rex_engine/gfx/system/gal.h"
 
@@ -70,11 +70,11 @@ namespace rex
     void render();
 
     // Create a new context used for copying data to the gpu
-    ScopedPoolObject<CopyContext> new_copy_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
+    ObjectWithDestructionCallback<CopyContext> new_copy_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
     // Create a new context used for queueing rendering commands on the gpu
-    ScopedPoolObject<RenderContext> new_render_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
+    ObjectWithDestructionCallback<RenderContext> new_render_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
     // Create a new context used for queueing compute commands on the gpu
-    ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
+    ObjectWithDestructionCallback<ComputeContext> new_compute_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
 
     // Return the current render target of the swapchain
     RenderTarget* swapchain_rt();

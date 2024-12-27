@@ -14,7 +14,7 @@ namespace rex
 			return rsl::string(internalVersion);
 		}
 
-		if (rsl::any_of(internalVersion.cbegin(), internalVersion.cend(), [](char8 c) { return !rsl::is_digit(c) || c == '.'; }))
+		if (rsl::any_of(internalVersion.cbegin(), internalVersion.cend(), [](char8 c) { return !rsl::is_digit(c) && c != '.'; }))
 		{
 			return rsl::string(internalVersion);
 		}

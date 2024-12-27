@@ -23,7 +23,7 @@ namespace rex
 
       // Request a new graphics context, which has for sure finished its commands.
       // If none is found, create a new one
-      ScopedPoolObject<GraphicsContext> request(CommandAllocator* alloc);
+      ObjectWithDestructionCallback<GraphicsContext> request(CommandAllocator* alloc);
 
     private:
       GrowingPool<GraphicsContext, CommandAllocator*> m_context_pool;

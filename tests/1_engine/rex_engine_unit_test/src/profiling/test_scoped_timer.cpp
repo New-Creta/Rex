@@ -12,7 +12,7 @@ TEST_CASE("Test - Instrumentor - Construction")
 
 	REX_CHECK(scoped_timer.name() == timer_name);
 	REX_CHECK(scoped_timer.source_location().file_name() == __FILE__);
-	REX_CHECK(scoped_timer.source_location().line() == 8);
+	REX_CHECK(scoped_timer.source_location().line() == 11);
 }
 
 TEST_CASE("Test - Instrumentor - Timing")

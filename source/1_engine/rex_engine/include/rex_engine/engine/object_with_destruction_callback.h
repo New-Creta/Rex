@@ -9,35 +9,38 @@ namespace rex
   // It'll automatically return it back to the pool when it goes out of scope
   // The pool is responsible of creating the callable to return this object back to itself.
   template <typename T>
-  class ScopedPoolObject
+  class ObjectWithDestructionCallback
   {
-    using return_to_pool_func = rsl::function<void(T*)>;
+    using destruction_callback_func = rsl::function<void(T*)>;
 
   public:
-    ScopedPoolObject() = default;
-    ScopedPoolObject(T* object, return_to_pool_func&& callable)
+    ObjectWithDestructionCallback()
+      : m_object(nullptr)
+      , m_destruction_callback()
+    {}
+    ObjectWithDestructionCallback(T* object, destruction_callback_func&& callable)
       : m_object(object)
-      , m_return_to_pool_callable(rsl::move(callable))
+      , m_destruction_callback(rsl::move(callable))
     {}
 
-    ScopedPoolObject(const ScopedPoolObject&) = delete;
-    ScopedPoolObject(ScopedPoolObject&& other)
+    ObjectWithDestructionCallback(const ObjectWithDestructionCallback&) = delete;
+    ObjectWithDestructionCallback(ObjectWithDestructionCallback&& other)
     {
       m_object = rsl::exchange(other.m_object, nullptr);
-      m_return_to_pool_callable = rsl::move(other.m_return_to_pool_callable);
+      m_destruction_callback = rsl::move(other.m_destruction_callback);
     }
 
-    ~ScopedPoolObject()
+    ~ObjectWithDestructionCallback()
     {
-      return_to_pool();
+      call_destruction_callback();
     }
 
-    ScopedPoolObject& operator=(const ScopedPoolObject&) = delete;
-    ScopedPoolObject& operator=(ScopedPoolObject&& other)
+    ObjectWithDestructionCallback& operator=(const ObjectWithDestructionCallback&) = delete;
+    ObjectWithDestructionCallback& operator=(ObjectWithDestructionCallback&& other)
     {
-      return_to_pool();
+      call_destruction_callback();
       m_object = rsl::exchange(other.m_object, nullptr);
-      m_return_to_pool_callable = rsl::move(other.m_return_to_pool_callable);
+      m_destruction_callback = rsl::move(other.m_destruction_callback);
 
       return *this;
     }
@@ -71,10 +74,10 @@ namespace rex
     // Converts this object into an object holding U instead of T
     // The new object is returned, this object becomes empty
     template <typename U>
-    ScopedPoolObject<U> convert()
+    ObjectWithDestructionCallback<U> convert()
     {
       U* u_ptr = static_cast<U*>(m_object);
-      return ScopedPoolObject<U>(u_ptr, rsl::move(m_return_to_pool_callable));
+      return ObjectWithDestructionCallback<U>(u_ptr, rsl::move(m_destruction_callback));
     }
 
     // Return if we still have an object.
@@ -83,12 +86,13 @@ namespace rex
     {
       return m_object != nullptr;
     }
-    // Return the wrapped object back to the pool it came from
-    void return_to_pool()
+
+    // Call the destruction callback
+    void call_destruction_callback()
     {
-      if (has_object() && m_return_to_pool_callable)
+      if (has_object() && m_destruction_callback)
       {
-        m_return_to_pool_callable(m_object);
+        m_destruction_callback(m_object);
         clear();
       }
     }
@@ -97,11 +101,11 @@ namespace rex
     void clear()
     {
       m_object = nullptr;
-      m_return_to_pool_callable = [](T*) {}; // do nothing
+      m_destruction_callback = [](T*) {}; // do nothing
     }
 
   private:
-    return_to_pool_func m_return_to_pool_callable; // This callable is meant to return this object back to the pool it came from.
+    destruction_callback_func m_destruction_callback; // This callable is meant to return this object back to the pool it came from.
     T* m_object;
   };
 }

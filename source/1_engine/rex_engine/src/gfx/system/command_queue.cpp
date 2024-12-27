@@ -31,7 +31,7 @@ namespace rex
       cpu_wait();
     }
 
-    ScopedPoolObject<SyncInfo> CommandQueue::create_sync_info(u64 fenceValue, Fence* fenceObject)
+    ObjectWithDestructionCallback<SyncInfo> CommandQueue::create_sync_info(u64 fenceValue, Fence* fenceObject)
     {
       return m_sync_info_pool.request(fenceValue, fenceObject);
     }

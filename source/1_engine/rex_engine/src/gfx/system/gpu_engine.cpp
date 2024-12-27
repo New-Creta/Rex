@@ -76,7 +76,7 @@ namespace rex
     }
 
     // Create a new context which is used for copying resources from or to the gpu
-    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
+    ObjectWithDestructionCallback<CopyContext> GpuEngine::new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
     {
       ContextResetData reset_data = create_context_reset_data(pso);
 
@@ -84,7 +84,7 @@ namespace rex
       return base_ctx.convert<CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
-    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(PipelineState* pso, rsl::string_view eventName)
+    ObjectWithDestructionCallback<RenderContext> GpuEngine::new_render_ctx(PipelineState* pso, rsl::string_view eventName)
     {
       ContextResetData reset_data = create_context_reset_data(pso);
 
@@ -92,7 +92,7 @@ namespace rex
       return base_ctx.convert<RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
-    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
+    ObjectWithDestructionCallback<ComputeContext> GpuEngine::new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
     {
       ContextResetData reset_data = create_context_reset_data(pso);
 

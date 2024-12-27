@@ -7,10 +7,14 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/containers/vector_utils.h"
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/pooling/scoped_pool_object.h"
+#include "rex_engine/engine/object_with_destruction_callback.h"
 
 namespace rex
 {
+  // This is a usability type alias but a user is not expected to create this themselves
+  template <typename PooledObject>
+  using ScopedPoolObject = ObjectWithDestructionCallback<PooledObject>;
+
   // The growing pool is a pool structure with the possibility to grow over time
   // An object can be requested, taking in an predicate to query for an idle object
   // If no idle object is found, a new one is constructed with the other parameters passed in
@@ -49,10 +53,10 @@ namespace rex
       return create_new_active_object(rsl::forward<Args>(args)...);
     }
     // Request an object that on destruction automatically returns itself to this pool
-    ScopedPoolObject<PooledObject> request_scoped(const find_obj_func& findIdleObjfunc, Args... args)
+    ObjectWithDestructionCallback<PooledObject> request_scoped(const find_obj_func& findIdleObjfunc, Args... args)
     {
       PooledObject* obj = request(findIdleObjfunc, rsl::forward<Args>(args)...);
-      return ScopedPoolObject<PooledObject>(obj,
+      return ObjectWithDestructionCallback<PooledObject>(obj,
         [this](PooledObject* pooledObj)
         {
           discard(pooledObj);
@@ -93,10 +97,15 @@ namespace rex
 
     // Resize the buffer holding idle objects to support the number objects given
     // If the number is smaller than the current number, a smaller buffer is allocated
-    void resize(s32 newNumIdleObjects)
+    void resize(s32 newNumIdleObjects, Args... args)
     {
-      m_idle_objects.resize(newNumIdleObjects);
+      m_idle_objects.reserve(newNumIdleObjects);
       m_active_objects.reserve(newNumIdleObjects);
+
+      for (s32 i = 0; i < newNumIdleObjects; ++i)
+      {
+        m_idle_objects.emplace_back(rsl::make_unique<PooledObject>(rsl::forward<Args>(args)...));
+      }
     }
 
   private:
@@ -122,6 +131,8 @@ namespace rex
     template <typename ... Args>
     PooledObject* create_new_active_object(Args&&... args)
     {
+      // Increment the array holding the idle objects to avoid a reallocation later
+      m_idle_objects.reserve(m_idle_objects.capacity() + 1);
       return m_active_objects.emplace_back(m_allocate_new_object_func(rsl::forward<Args>(args)...)).get();
     }
 

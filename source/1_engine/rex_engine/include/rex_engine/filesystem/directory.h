@@ -28,6 +28,9 @@ namespace rex
     Error move(rsl::string_view src, rsl::string_view dst);
 
     DEFINE_YES_NO_ENUM(Recursive);
+    // Returns true if the directory is empty, 
+    // as in, it has no files or directories
+    bool is_empty(rsl::string_view path);
     // Get the size of all the files in the directory
     // possible going recursive over all the sub folders as well
     rsl::memory_size size(rsl::string_view path, Recursive goRecursive = Recursive::no);

@@ -2,7 +2,7 @@
 
 #include "rex_std/vector.h"
 
-#include "rex_engine/pooling/scoped_pool_object.h"
+#include "rex_engine/engine/object_with_destruction_callback.h"
 #include "rex_engine/pooling/growing_pool.h"
 #include "rex_engine/gfx/system/sync_info.h"
 
@@ -24,7 +24,7 @@ namespace rex
       SyncInfoPool();
 
       // Returns a new sync info object or create a new one if none can be found
-      ScopedPoolObject<SyncInfo> request(u64 fenceValue, Fence* fenceObject);
+      ObjectWithDestructionCallback<SyncInfo> request(u64 fenceValue, Fence* fenceObject);
 
     private:
       GrowingPool<SyncInfo> m_sync_info_pool;

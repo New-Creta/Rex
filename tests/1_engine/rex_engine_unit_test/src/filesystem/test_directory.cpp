@@ -4,6 +4,7 @@
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/tmp_cwd.h"
+#include "rex_engine/filesystem/tmp_dir.h"
 
 TEST_CASE("TEST - Directory - Exists")
 {
@@ -190,4 +191,15 @@ TEST_CASE("TEST - Directory - Size")
     rsl::memory_size dir_size = rex::directory::size(rex::path::random_dir());
     REX_CHECK(dir_size == 0_bytes);
   }
+}
+
+TEST_CASE("TEST - Directory - Is Empty")
+{
+  rex::TempCwd tmp_cwd("directory_tests");
+  rex::TempDirectory tmp_dir("emppty_dir");
+
+  REX_CHECK(rex::directory::is_empty("non_existing_dir") == true);
+  REX_CHECK(rex::directory::is_empty("empty_dir") == true);
+  REX_CHECK(rex::directory::is_empty("non_empty_dir1") == false);
+  REX_CHECK(rex::directory::is_empty("non_empty_dir2") == false);
 }

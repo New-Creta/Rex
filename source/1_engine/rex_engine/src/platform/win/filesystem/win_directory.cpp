@@ -185,6 +185,42 @@ namespace rex
         : Error::create_with_log(LogDirectory, "Failed to move directory from \"{}\" to \"{}\"", full_src, full_dst);
     }
 
+    // Returns true if the directory is empty, 
+    // as in, it has no files or directories
+    bool is_empty(rsl::string_view path)
+    {
+      WIN32_FIND_DATAA ffd;
+      rsl::string full_path = rex::path::abs_path(path);
+      full_path += "\\*";
+      HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
+
+      // If the path doesn't exist, we pretend that the directory is empty
+      if (find_handle == INVALID_HANDLE_VALUE)
+      {
+        FindClose(find_handle);
+        return true;
+      }
+
+      do // NOLINT(cppcoreguidelines-avoid-do-while)
+      {
+        s32 length = rsl::strlen(ffd.cFileName);
+        const rsl::string_view name(ffd.cFileName, length);
+        if (name == "." || name == "..")
+        {
+          continue;
+        }
+
+        return false;
+      } while (FindNextFileA(find_handle, &ffd) != 0);
+
+      // FindNextfile sets the error to ERROR_NO_MORE_FILES
+      // if there are no more files found
+      // We reset it here to avoid any confusion
+      rex::win::clear_win_errors();
+
+      return true;
+    }
+
     // List all entries under a directory
     rsl::vector<rsl::string> list_entries(rsl::string_view path, Recursive listRecursive)
     {

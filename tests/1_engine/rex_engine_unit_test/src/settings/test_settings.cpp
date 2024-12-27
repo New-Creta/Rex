@@ -233,7 +233,7 @@ TEST_CASE("TEST - Settings - Setting a setting")
   REX_CHECK(rex::settings::get_bool("New_Bool1") == true);
 
   rex::settings::set("new_int2", 20);
-  rex::settings::set("new_float2", 20.0f);
+  rex::settings::set("new_float2", 30.0f);
   rex::settings::set("new_string2", "default");
   rex::settings::set("new_bool2", true);
 
@@ -247,7 +247,7 @@ TEST_CASE("TEST - Settings - Setting a setting")
   REX_CHECK(rex::settings::get_string("new_string2") == "default");
   REX_CHECK(rex::settings::get_bool("new_bool2") == true);
 
-  rex::settings::load("test_settings_with_headers.ini");
+  rex::settings::load("test_settings.ini");
 
   REX_CHECK(rex::settings::get_int("Test_Int") == 10);
   REX_CHECK(rex::settings::get_float("Test_Float") == 10.0f);

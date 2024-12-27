@@ -52,10 +52,10 @@ namespace rex
       virtual ~GraphicsEngine();
 
       // Executes the context and returns the fence value that'll be set when all commands are executed
-      ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* context, WaitForFinish waitForFinish);
+      ObjectWithDestructionCallback<SyncInfo> execute_context(GraphicsContext* context, WaitForFinish waitForFinish);
       
       // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-      ScopedPoolObject<GraphicsContext> new_context(const ContextResetData& resetData, rsl::string_view eventName = "");
+      ObjectWithDestructionCallback<GraphicsContext> new_context(const ContextResetData& resetData, rsl::string_view eventName = "");
 
       // Halt gpu commands from being executed until the sync info object is triggered
       void stall(SyncInfo& syncInfo);
@@ -82,7 +82,7 @@ namespace rex
 
     private:
       // Request a new allocator from the command allocator pool
-      ScopedPoolObject<PooledAllocator> request_allocator();
+      ObjectWithDestructionCallback<PooledAllocator> request_allocator();
 
     private:
       rsl::unique_ptr<CommandQueue> m_command_queue;        // the command queue to submit gpu commands

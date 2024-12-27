@@ -261,7 +261,7 @@ namespace rex
 				g_closed_requests.erase(it, g_closed_requests.end());
 
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        rsl::this_thread::sleep_for(1ms);
+        rsl::this_thread::sleep_for(10ms);
       }
     }
 
@@ -369,8 +369,7 @@ namespace rex
 
       for (const auto& [mount, path] : g_mounted_roots)
       {
-        rsl::memory_size dir_size = rex::directory::size(path, rex::directory::Recursive::yes);
-        if (dir_size == 0)
+        if (!rex::directory::is_empty(path))
         {
           // As soon as we have a path that can be mounted and is expected to be empty on shutdown
           // we have to extend the mount functionality to give a flag to a mount that it can be empty on shutdown

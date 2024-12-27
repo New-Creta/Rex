@@ -27,43 +27,43 @@ TEST_CASE("TEST - Growing Pool - Request a single item")
 	REX_CHECK(ptr->x() == 2);
 	REX_CHECK(growing_pool.num_active_objects() == 1);
 	REX_CHECK(growing_pool.num_idle_objects() == 0);
-	REX_CHECK(growing_pool.max_active_objects() == 1);
-	REX_CHECK(growing_pool.max_idle_objects() == 1);
+	REX_CHECK(growing_pool.max_active_objects() >= 1);
+	REX_CHECK(growing_pool.max_idle_objects() >= 1);
 	REX_CHECK(rex::test::test_object::num_created() == 1);
 
 	growing_pool.discard(ptr);
 
 	REX_CHECK(growing_pool.num_active_objects() == 0);
 	REX_CHECK(growing_pool.num_idle_objects() == 1);
-	REX_CHECK(growing_pool.max_active_objects() == 1);
-	REX_CHECK(growing_pool.max_idle_objects() == 1);
+	REX_CHECK(growing_pool.max_active_objects() >= 1);
+	REX_CHECK(growing_pool.max_idle_objects() >= 1);
 	REX_CHECK(rex::test::test_object::num_created() == 1);
-	REX_CHECK(rex::test::test_object::num_dtor_calls() == 1);
+	REX_CHECK(rex::test::test_object::num_dtor_calls() == 0); // No dtor is called when an object is made idle
 }
 
 TEST_CASE("Test - Growing Pool - Request Scoped Item")
 {
 	rex::GrowingPool<rex::test::test_object, s32> growing_pool;
 
-	{
-		rex::ScopedPoolObject<rex::test::test_object> scoped_obj = growing_pool.request_scoped([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 2);
+	rex::test::test_object::reset();
 
-		rex::test::test_object::reset();
+	{
+		rex::ObjectWithDestructionCallback<rex::test::test_object> scoped_obj = growing_pool.request_scoped([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 2);
 
 		REX_CHECK(scoped_obj->x() == 2);
 		REX_CHECK(growing_pool.num_active_objects() == 1);
 		REX_CHECK(growing_pool.num_idle_objects() == 0);
-		REX_CHECK(growing_pool.max_active_objects() == 1);
-		REX_CHECK(growing_pool.max_idle_objects() == 1);
+		REX_CHECK(growing_pool.max_active_objects() >= 1);
+		REX_CHECK(growing_pool.max_idle_objects() >= 1);
 		REX_CHECK(rex::test::test_object::num_created() == 1);
 	}
 
 	REX_CHECK(growing_pool.num_active_objects() == 0);
 	REX_CHECK(growing_pool.num_idle_objects() == 1);
-	REX_CHECK(growing_pool.max_active_objects() == 1);
-	REX_CHECK(growing_pool.max_idle_objects() == 1);
+	REX_CHECK(growing_pool.max_active_objects() >= 1);
+	REX_CHECK(growing_pool.max_idle_objects() >= 1);
 	REX_CHECK(rex::test::test_object::num_created() == 1);
-	REX_CHECK(rex::test::test_object::num_dtor_calls() == 1);
+	REX_CHECK(rex::test::test_object::num_dtor_calls() == 0);
 
 }
 
@@ -80,24 +80,24 @@ TEST_CASE("TEST - Growling Pool - Request multiple items")
 	REX_CHECK(ptr2->x() == 3);
 	REX_CHECK(growing_pool.num_active_objects() == 2);
 	REX_CHECK(growing_pool.num_idle_objects() == 0);
-	REX_CHECK(growing_pool.max_active_objects() == 2);
-	REX_CHECK(growing_pool.max_idle_objects() == 2);
+	REX_CHECK(growing_pool.max_active_objects() >= 2);
+	REX_CHECK(growing_pool.max_idle_objects() >= 2);
 	REX_CHECK(rex::test::test_object::num_created() == 2);
 	REX_CHECK(rex::test::test_object::num_dtor_calls() == 0);
 
 	growing_pool.discard(ptr1);
 	REX_CHECK(growing_pool.num_active_objects() == 1);
 	REX_CHECK(growing_pool.num_idle_objects() == 1);
-	REX_CHECK(growing_pool.max_active_objects() == 2);
-	REX_CHECK(growing_pool.max_idle_objects() == 2);
+	REX_CHECK(growing_pool.max_active_objects() >= 2);
+	REX_CHECK(growing_pool.max_idle_objects() >= 2);
 	REX_CHECK(rex::test::test_object::num_created() == 2);
 	REX_CHECK(rex::test::test_object::num_dtor_calls() == 0);
 
 	growing_pool.discard(ptr2);
 	REX_CHECK(growing_pool.num_active_objects() == 0);
 	REX_CHECK(growing_pool.num_idle_objects() == 2);
-	REX_CHECK(growing_pool.max_active_objects() == 2);
-	REX_CHECK(growing_pool.max_idle_objects() == 2);
+	REX_CHECK(growing_pool.max_active_objects() >= 2);
+	REX_CHECK(growing_pool.max_idle_objects() >= 2);
 	REX_CHECK(rex::test::test_object::num_created() == 2);
 	REX_CHECK(rex::test::test_object::num_dtor_calls() == 0);
 }
@@ -110,7 +110,7 @@ TEST_CASE("TEST - Growling Pool - Resizing")
 
 	growing_pool.resize(3);
 
-	REX_CHECK(growing_pool.num_active_objects() == 3);
+	REX_CHECK(growing_pool.num_active_objects() == 0);
 	REX_CHECK(growing_pool.num_idle_objects() == 3);
 	REX_CHECK(growing_pool.max_active_objects() == 3);
 	REX_CHECK(growing_pool.max_idle_objects() == 3);

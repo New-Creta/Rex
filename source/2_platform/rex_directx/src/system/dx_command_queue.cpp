@@ -35,7 +35,7 @@ namespace rex
       m_command_queue->Wait(fence, sync_info.fence_val());
     }
 
-    ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish)
+    ObjectWithDestructionCallback<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish)
     {
       ID3D12GraphicsCommandList* cmdlist = cmdlist_from_ctx(ctx);
 

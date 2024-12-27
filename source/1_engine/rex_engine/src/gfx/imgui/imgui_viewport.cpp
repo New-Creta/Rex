@@ -37,7 +37,7 @@ namespace rex
 
       // Update the current frame context with the data for this frame
       ImGuiFrameContext& frame_ctx = current_frame_ctx();
-      ScopedPoolObject<SyncInfo> sync_info = frame_ctx.update_data(draw_data);
+      ObjectWithDestructionCallback<SyncInfo> sync_info = frame_ctx.update_data(draw_data);
 
       // Wait for the data to be updated on the gpu before we start executing render commands
       renderContext->stall(*sync_info);

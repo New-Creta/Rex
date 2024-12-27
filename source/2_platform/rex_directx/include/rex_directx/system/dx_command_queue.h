@@ -34,7 +34,7 @@ namespace rex
       // Execute a context on this command queue
       // Returning a sync object that can be used to make sure
       // another context cannot execute until this context has finished executing
-      ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish) override;
+      ObjectWithDestructionCallback<SyncInfo> execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish) override;
 
       // Return the wrapped directx object
       ID3D12CommandQueue* dx_object();

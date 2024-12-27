@@ -9,13 +9,13 @@ namespace rex
     {}
 
     // Returns a new sync info object or create a new one if none can be found
-    ScopedPoolObject<SyncInfo> SyncInfoPool::request(u64 fenceValue, Fence* fenceObject)
+    ObjectWithDestructionCallback<SyncInfo> SyncInfoPool::request(u64 fenceValue, Fence* fenceObject)
     {
       auto find_free_sync_info = [](const rsl::unique_ptr<SyncInfo>&) { return true; }; // any idle one will do
       SyncInfo* sync_info = m_sync_info_pool.request(find_free_sync_info);
       sync_info->reset(fenceValue, fenceObject);
 
-      ScopedPoolObject<SyncInfo> pooled_sync_info(sync_info,
+      ObjectWithDestructionCallback<SyncInfo> pooled_sync_info(sync_info,
         [this](SyncInfo* syncInfo)
         {
           m_sync_info_pool.discard(syncInfo);

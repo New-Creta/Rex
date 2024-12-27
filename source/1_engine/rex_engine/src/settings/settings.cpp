@@ -104,24 +104,36 @@ namespace rex
     // set s asetting in the global map
     void set(rsl::string_view name, rsl::string_view val)
     {
-      internal::all_settings()[name].assign(val);
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(val);
     }
 
     // Set a setting from an int. This supports adding new settings
     void set(rsl::string_view name, s32 val)
     {
-      internal::all_settings()[name].assign(rsl::to_string(val));
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(rsl::to_string(val));
     }
     // Set a setting from a float. This supports adding new settings
     void set(rsl::string_view name, f32 val)
     {
-      internal::all_settings()[name].assign(rsl::to_string(val));
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(rsl::to_string(val));
     }
     // Set the setting from a bool, This supports adding new settings
-    void set(rsl::string_view name, bool val)
-    {
-      internal::all_settings()[name].assign(rsl::to_string(val));
-    }
+    //void set(rsl::string_view name, bool val)
+    //{
+    //  rsl::string name_lower(name);
+    //  rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+    //  internal::all_settings()[name_lower].assign(rsl::to_string(val));
+    //}
 
     // Load a settings file and adds it settings to the settings
     // This behaves the same as if you can "set" multiple times

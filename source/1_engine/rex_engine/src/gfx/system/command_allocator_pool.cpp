@@ -52,10 +52,8 @@ namespace rex
     {}
 
     // Request a new allocator from the pool, create a new one if one isn't found
-    ScopedPoolObject<PooledAllocator> CommandAllocatorPool::request_allocator(u64 fenceValue)
+    ObjectWithDestructionCallback<PooledAllocator> CommandAllocatorPool::request_allocator(u64 fenceValue)
     {
-      
-
       // Find an allocator who's fence value is equal or higher than the given fence value
       PooledAllocator* alloc = m_pool.request(
         [fenceValue](const rsl::unique_ptr<PooledAllocator>& alloc)
@@ -64,7 +62,7 @@ namespace rex
         });
 
       // Return a scoped pool object with the knowledge how to add it back to the pool
-      return ScopedPoolObject<PooledAllocator>(alloc,
+      return ObjectWithDestructionCallback<PooledAllocator>(alloc,
         [this, fenceValue](PooledAllocator* alloc)
         {
           REX_ASSERT_X(fenceValue < alloc->fence_value(), "Make sure you increase an allocator's fence value before you return it back to the pool");

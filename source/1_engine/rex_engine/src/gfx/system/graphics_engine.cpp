@@ -22,18 +22,18 @@ namespace rex
     }
 
     // Executes the context and returns the fence value that'll be set when all commands are executed
-    ScopedPoolObject<SyncInfo> GraphicsEngine::execute_context(GraphicsContext* context, WaitForFinish waitForFinish)
+    ObjectWithDestructionCallback<SyncInfo> GraphicsEngine::execute_context(GraphicsContext* context, WaitForFinish waitForFinish)
     {
       context->end_profile_event();
       return m_command_queue->execute_context(context, waitForFinish);
     }
     
     // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-    ScopedPoolObject<GraphicsContext> GraphicsEngine::new_context(const ContextResetData& resetData, rsl::string_view eventName)
+    ObjectWithDestructionCallback<GraphicsContext> GraphicsEngine::new_context(const ContextResetData& resetData, rsl::string_view eventName)
     {
       // Find a command alloctor to be used for the context
-      ScopedPoolObject<PooledAllocator> alloc = request_allocator();
-      ScopedPoolObject<GraphicsContext> ctx = m_context_pool.request(alloc->underlying_alloc());
+      ObjectWithDestructionCallback<PooledAllocator> alloc = request_allocator();
+      ObjectWithDestructionCallback<GraphicsContext> ctx = m_context_pool.request(alloc->underlying_alloc());
 
       // Always reset a context, making it ready to be used by a user
       ctx->begin_profile_event(eventName);
@@ -70,7 +70,7 @@ namespace rex
     }
 
     // Request a new allocator from the command allocator pool
-    ScopedPoolObject<PooledAllocator> GraphicsEngine::request_allocator()
+    ObjectWithDestructionCallback<PooledAllocator> GraphicsEngine::request_allocator()
     {
       u64 last_completed_fence = m_command_queue->last_completed_fence();
       return m_command_allocator_pool.request_allocator(last_completed_fence);

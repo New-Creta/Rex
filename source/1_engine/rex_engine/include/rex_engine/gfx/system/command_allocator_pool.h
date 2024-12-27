@@ -4,7 +4,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/pooling/growing_pool.h"
-#include "rex_engine/pooling/scoped_pool_object.h"
+#include "rex_engine/engine/object_with_destruction_callback.h"
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_engine/gfx/system/command_allocator.h"
@@ -47,7 +47,7 @@ namespace rex
       CommandAllocatorPool(GraphicsEngineType type);
 
       // Request a new allocator from the pool, create a new one if one isn't found
-      ScopedPoolObject<PooledAllocator> request_allocator(u64 fenceValue);
+      ObjectWithDestructionCallback<PooledAllocator> request_allocator(u64 fenceValue);
 
     private:
       GrowingPool<PooledAllocator> m_pool;
