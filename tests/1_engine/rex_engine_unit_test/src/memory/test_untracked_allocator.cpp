@@ -3,7 +3,7 @@
 #include "rex_engine/memory/untracked_allocator.h"
 #include "rex_unit_test/test_object.h"
 
-TEST_CASE("TEST - Tracked Allocator - Allocation")
+TEST_CASE("TEST - Untracked Allocator - Allocation")
 {
 	rsl::allocator alloc;
 	rex::UntrackedAllocator untracked_alloc;
@@ -12,11 +12,13 @@ TEST_CASE("TEST - Tracked Allocator - Allocation")
 
 	REX_CHECK(mem != nullptr);
 
-	delete mem;
+	untracked_alloc.deallocate(mem, 10);
 }
 
-TEST_CASE("TEST - Tracked Allocator - Construction")
+TEST_CASE("TEST - Untracked Allocator - Construction")
 {
+	rex::test::test_object::reset();
+
 	rsl::allocator alloc;
 	rex::UntrackedAllocator untracked_alloc;
 
@@ -25,6 +27,11 @@ TEST_CASE("TEST - Tracked Allocator - Construction")
 
 	REX_CHECK(mem != nullptr);
 	REX_CHECK(mem->x() == 1);
+	REX_CHECK(rex::test::test_object::num_created() == 1);
 
-	delete mem;
+	untracked_alloc.destroy(mem);
+	untracked_alloc.deallocate(mem, sizeof(rex::test::test_object));
+
+	REX_CHECK(rex::test::test_object::num_created() == 1);
+	REX_CHECK(rex::test::test_object::num_dtor_calls() == 1);
 }

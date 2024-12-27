@@ -26,7 +26,7 @@ namespace rex
 		rsl::string internal_driver_version;
 		rsl::string user_driver_version;
 		rsl::string driver_date;
-		Vendor vendor_id;
+		Vendor vendor_id = Vendor::Unknown;
 	};
 
 	VideoDriverInfo query_video_driver(rsl::string_view deviceName);

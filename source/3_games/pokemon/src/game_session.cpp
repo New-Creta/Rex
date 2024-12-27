@@ -36,7 +36,7 @@
 #include "pokemon/tileset.h"
 #include "pokemon/poke_map.h"
 
-#include "rex_engine/profiling/instrumentor.h"
+#include "rex_engine/profiling/scoped_timer.h"
 
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/events/input/key_down.h"

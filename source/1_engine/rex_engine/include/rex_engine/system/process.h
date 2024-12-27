@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
+
 namespace rex
 {
   u32 current_process_id();

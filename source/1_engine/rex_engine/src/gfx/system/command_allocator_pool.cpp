@@ -54,6 +54,8 @@ namespace rex
     // Request a new allocator from the pool, create a new one if one isn't found
     ScopedPoolObject<PooledAllocator> CommandAllocatorPool::request_allocator(u64 fenceValue)
     {
+      
+
       // Find an allocator who's fence value is equal or higher than the given fence value
       PooledAllocator* alloc = m_pool.request(
         [fenceValue](const rsl::unique_ptr<PooledAllocator>& alloc)

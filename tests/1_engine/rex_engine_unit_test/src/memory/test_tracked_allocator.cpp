@@ -12,11 +12,15 @@ TEST_CASE("TEST - Tracked Allocator - Allocation")
 
 	REX_CHECK(mem != nullptr);
 
-	delete mem;
+	tracked_alloc.deallocate(mem, 10);
 }
 
 TEST_CASE("TEST - Tracked Allocator - Construction")
 {
+	rex::test::test_object::reset();
+
+	rex::test::test_object::reset();
+
 	rsl::allocator alloc;
 	rex::TrackedAllocator tracked_alloc(alloc);
 
@@ -25,6 +29,12 @@ TEST_CASE("TEST - Tracked Allocator - Construction")
 
 	REX_CHECK(mem != nullptr);
 	REX_CHECK(mem->x() == 1);
+	REX_CHECK(rex::test::test_object::num_created() == 1);
 
-	delete mem;
+	tracked_alloc.destroy(mem);
+	tracked_alloc.deallocate(mem, sizeof(rex::test::test_object));
+
+	REX_CHECK(rex::test::test_object::num_created() == 1);
+	REX_CHECK(rex::test::test_object::num_dtor_calls() == 1);
+
 }

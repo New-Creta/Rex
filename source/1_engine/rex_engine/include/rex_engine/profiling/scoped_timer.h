@@ -28,6 +28,9 @@ namespace rex
 		ScopedTimer(rsl::string_view name, rsl::source_location sourceLoc = rsl::source_location::current());
 		~ScopedTimer();
 
+		rsl::string_view name() const;
+		rsl::source_location source_location() const;
+
 		rsl::chrono::nanoseconds stop();
 
 	private:

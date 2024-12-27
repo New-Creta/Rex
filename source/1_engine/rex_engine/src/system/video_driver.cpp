@@ -1,5 +1,7 @@
 #include "rex_engine/system/video_driver.h"
 
+#include "rex_std/algorithm.h"
+
 namespace rex
 {
 	rsl::string nvidia_unified_version(rsl::string_view internalVersion)
@@ -8,6 +10,11 @@ namespace rex
 		// and moving the version dot. Coincidentally, that's the user-facing string. For example:
 		// 9.18.13.4788 -> 3.4788 -> 347.88
 		if (internalVersion.length() < 6)
+		{
+			return rsl::string(internalVersion);
+		}
+
+		if (rsl::any_of(internalVersion.cbegin(), internalVersion.cend(), [](char8 c) { return !rsl::is_digit(c) || c == '.'; }))
 		{
 			return rsl::string(internalVersion);
 		}

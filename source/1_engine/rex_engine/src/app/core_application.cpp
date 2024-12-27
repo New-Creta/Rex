@@ -13,7 +13,7 @@
 #include "rex_std/bonus/utility.h"
 
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/profiling/instrumentor.h"
+#include "rex_engine/profiling/scoped_timer.h"
 #include "rex_engine/cmdline/cmdline.h"
 
 #include <cstdlib>

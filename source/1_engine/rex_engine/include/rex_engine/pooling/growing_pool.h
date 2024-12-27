@@ -7,6 +7,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/containers/vector_utils.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/pooling/scoped_pool_object.h"
 
 namespace rex
 {
@@ -27,6 +28,9 @@ namespace rex
     using create_new_obj_func = rsl::function<rsl::unique_ptr<PooledObject>(Args&&...)>;
 
   public:
+    GrowingPool()
+      : m_allocate_new_object_func([](Args&& ... args) { return rsl::make_unique<PooledObject>(rsl::forward<Args>(args)...); })
+    {}
     GrowingPool(create_new_obj_func&& createNewObjFunc)
       : m_allocate_new_object_func(rsl::move(createNewObjFunc))
     {}
@@ -44,6 +48,17 @@ namespace rex
       // If no idle object is available, create a new one
       return create_new_active_object(rsl::forward<Args>(args)...);
     }
+    // Request an object that on destruction automatically returns itself to this pool
+    ScopedPoolObject<PooledObject> request_scoped(const find_obj_func& findIdleObjfunc, Args... args)
+    {
+      PooledObject* obj = request(findIdleObjfunc, rsl::forward<Args>(args)...);
+      return ScopedPoolObject<PooledObject>(obj,
+        [this](PooledObject* pooledObj)
+        {
+          discard(pooledObj);
+        });
+    }
+
     // Return previously requested object back to the pool
     void discard(PooledObject* obj)
     {
@@ -54,13 +69,34 @@ namespace rex
       transfer_object_between_vectors(idx, m_active_objects, m_idle_objects);
     }
 
+    // Return the number of idle objects
     s32 num_idle_objects() const
     {
       return m_idle_objects.size();
     }
+    // Return the number of active objects
     s32 num_active_objects() const
     {
       return m_active_objects.size();
+    }
+
+    // Return the maximum number of supported active objects without reallocation
+    s32 max_active_objects() const
+    {
+      return m_active_objects.capacity();
+    }
+    // Return the maximum number of supported idle objects without reallocation
+    s32 max_idle_objects() const
+    {
+      return m_idle_objects.capacity();
+    }
+
+    // Resize the buffer holding idle objects to support the number objects given
+    // If the number is smaller than the current number, a smaller buffer is allocated
+    void resize(s32 newNumIdleObjects)
+    {
+      m_idle_objects.resize(newNumIdleObjects);
+      m_active_objects.reserve(newNumIdleObjects);
     }
 
   private:
@@ -83,7 +119,8 @@ namespace rex
       return rex::transfer_object_between_vectors(idx, m_idle_objects, m_active_objects).get();
     }
     // Create a new object and add it to the active objects
-    PooledObject* create_new_active_object(Args... args)
+    template <typename ... Args>
+    PooledObject* create_new_active_object(Args&&... args)
     {
       return m_active_objects.emplace_back(m_allocate_new_object_func(rsl::forward<Args>(args)...)).get();
     }

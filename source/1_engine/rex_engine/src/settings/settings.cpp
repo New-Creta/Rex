@@ -12,7 +12,7 @@ namespace rex
 {
   namespace settings
   {
-    DEFINE_LOG_CATEGORY(Settings);
+    DEFINE_LOG_CATEGORY(LogSettings);
 
     namespace internal
     {
@@ -91,6 +91,15 @@ namespace rex
 
       return defaultVal;
     }
+    bool get_bool(rsl::string_view name, bool defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stob(get_string(name)).value_or(defaultVal);
+      }
+
+      return defaultVal;
+    }
 
     // set s asetting in the global map
     void set(rsl::string_view name, rsl::string_view val)
@@ -108,6 +117,11 @@ namespace rex
     {
       internal::all_settings()[name].assign(rsl::to_string(val));
     }
+    // Set the setting from a bool, This supports adding new settings
+    void set(rsl::string_view name, bool val)
+    {
+      internal::all_settings()[name].assign(rsl::to_string(val));
+    }
 
     // Load a settings file and adds it settings to the settings
     // This behaves the same as if you can "set" multiple times
@@ -117,17 +131,18 @@ namespace rex
       // of course if the path doesn't exist, we exit early
       if(!file::exists(path))
       {
+        REX_ERROR(LogSettings, "Cannot load settings, file doesn't exist. File: {}", path);
         return;
       }
 
-      // Settings are just plain ini files
+      // LogSettings are just plain ini files
       // so we can use the ini processor here
       memory::Blob settings_data = vfs::read_file(path);
       IniProcessor ini_processor(settings_data);
       Error error                = ini_processor.process();
 
-      REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
-      REX_ERROR_X(Settings, !error, "Error: {}", error.error_msg());
+      REX_ERROR_X(LogSettings, !error, "Invalid settings found in \"{}\"", path);
+      REX_ERROR_X(LogSettings, !error, "Error: {}", error.error_msg());
 
       // Loop over the processed settings and add them to the global map
       for(const rsl::key_value<const rsl::string_view, IniHeaderWithItems>& header_with_items : ini_processor.all_items())

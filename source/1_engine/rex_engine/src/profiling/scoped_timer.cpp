@@ -1,4 +1,4 @@
-#include "rex_engine/profiling/instrumentor.h"
+#include "rex_engine/profiling/scoped_timer.h"
 
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
@@ -109,6 +109,16 @@ namespace rex
 		{
 			stop();
 		}
+	}
+
+	rsl::string_view ScopedTimer::name() const
+	{
+		return m_name;
+	}
+
+	rsl::source_location ScopedTimer::source_location() const
+	{
+		return m_source_location;
 	}
 
 	rsl::chrono::nanoseconds ScopedTimer::stop()
