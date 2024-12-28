@@ -261,7 +261,7 @@ namespace rex
 				g_closed_requests.erase(it, g_closed_requests.end());
 
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        rsl::this_thread::sleep_for(10ms);
+        rsl::this_thread::sleep_for(20ms);
       }
     }
 
