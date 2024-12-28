@@ -838,3 +838,43 @@ TEST_CASE("TEST - Text Processing - remove quotes")
     REX_CHECK(rex::remove_quotes(string) == expected);
   }
 }
+
+TEST_CASE("TEST - Text Processing - to multibyte")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - is null terminated")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - day nr to name")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - day nr to full name")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - day name to nr")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - month nr to name")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - month nr to full name")
+{
+
+}
+
+TEST_CASE("TEST - Text Processing - month name to nr")
+{
+
+}

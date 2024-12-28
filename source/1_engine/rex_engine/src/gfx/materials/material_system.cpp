@@ -4,7 +4,7 @@
 #include "rex_engine/filesystem/vfs.h"
 
 #include "rex_engine/text_processing/text_processing.h"
-#include "rex_engine/text_processing/ini_processor.h"
+#include "rex_engine/text_processing/ini.h"
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/gfx/system/shader_pipeline.h"

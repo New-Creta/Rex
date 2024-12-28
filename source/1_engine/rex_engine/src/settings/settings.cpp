@@ -3,7 +3,8 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/text_processing/ini_processor.h"
+#include "rex_engine/filesystem/path.h"
+#include "rex_engine/text_processing/ini.h"
 #include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/unordered_map.h"
@@ -126,14 +127,6 @@ namespace rex
 
       internal::all_settings()[name_lower].assign(rsl::to_string(val));
     }
-    // Set the setting from a bool, This supports adding new settings
-    //void set(rsl::string_view name, bool val)
-    //{
-    //  rsl::string name_lower(name);
-    //  rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
-
-    //  internal::all_settings()[name_lower].assign(rsl::to_string(val));
-    //}
 
     // Load a settings file and adds it settings to the settings
     // This behaves the same as if you can "set" multiple times
@@ -149,19 +142,21 @@ namespace rex
 
       // LogSettings are just plain ini files
       // so we can use the ini processor here
-      memory::Blob settings_data = vfs::read_file(path);
-      IniProcessor ini_processor(settings_data);
-      Error error                = ini_processor.process();
-
-      REX_ERROR_X(LogSettings, !error, "Invalid settings found in \"{}\"", path);
-      REX_ERROR_X(LogSettings, !error, "Error: {}", error.error_msg());
+      rex::ini::Ini ini_content = rex::ini::read_from_file(path);
+      if (ini_content.is_discarded())
+      {
+        REX_ERROR(LogSettings, "Cannot read settings file {}", rex::path::abs_path(path));
+        REX_ERROR(LogSettings, ini_content.parse_error().error_msg());
+      }
 
       // Loop over the processed settings and add them to the global map
-      for(const rsl::key_value<const rsl::string_view, IniHeaderWithItems>& header_with_items : ini_processor.all_items())
+      rsl::vector<ini::IniBlock> blocks = ini_content.all_blocks();
+
+      for(const ini::IniBlock& block : ini_content.all_blocks())
       {
-        for(const rsl::key_value<const rsl::string_view, rsl::string_view>& item : header_with_items.value.all_items())
+        for (const auto[key, value] : block.all_items())
         {
-          internal::add_new_settings(header_with_items.value.header(), item.key, item.value);
+          internal::add_new_settings(block.header(), key, value);
         }
       }
     }

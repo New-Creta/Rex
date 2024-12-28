@@ -2593,7 +2593,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
         auto it = rsl::find_if(rsl::begin(m), rsl::end(m),                                      \
                                [e](const rsl::key_value<ENUM_TYPE, BasicJsonType>& ej_pair) -> bool  \
         {                                                                                       \
-            return ej_pair.first == e;                                                          \
+            return ej_pair.key == e;                                                          \
         });                                                                                     \
         j = ((it != rsl::end(m)) ? it : rsl::begin(m))->second;                                 \
     }                                                                                           \
@@ -2605,7 +2605,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
         auto it = rsl::find_if(rsl::begin(m), rsl::end(m),                                      \
                                [&j](const rsl::key_value<ENUM_TYPE, BasicJsonType>& ej_pair) -> bool \
         {                                                                                       \
-            return ej_pair.second == j;                                                         \
+            return ej_pair.value == j;                                                         \
         });                                                                                     \
         e = ((it != rsl::end(m)) ? it : rsl::begin(m))->first;                                  \
     }
@@ -4472,9 +4472,9 @@ class exception/* : public rsl::exception*/
                 {
                     for (const auto& element : *current->m_parent->m_data.m_value.object)
                     {
-                        if (&element.second == current)
+                        if (&element.value == current)
                         {
-                            tokens.emplace_back(element.first.c_str());
+                            tokens.emplace_back(element.key.c_str());
                             break;
                         }
                     }
@@ -4542,7 +4542,7 @@ class parse_error : public exception
     static parse_error create(int id_, rsl::size_t byte_, rsl::string_view what_arg, BasicJsonContext context)
     {
         const rsl::string w = concat(exception::name("parse_error", id_), "parse error",
-                                     (byte_ != 0 ? (concat(" at byte ", rsl::to_string(byte_))) : ""),
+                                     (byte_ != 0 ? (concat(" at byte ", rsl::to_string(byte_))) : rsl::string("")),
                                      ": ", exception::diagnostics(context), what_arg);
         return {id_, byte_, w.c_str()};
     }
@@ -4999,7 +4999,7 @@ inline void from_json(const BasicJsonType& j, ConstructibleObjectType& obj)
         rsl::inserter(ret, ret.begin()),
         [](typename BasicJsonType::object_t::value_type const & p)
     {
-        return value_type(p.first, p.second.template get<typename ConstructibleObjectType::mapped_type>());
+        return value_type(p.key, p.value.template get<typename ConstructibleObjectType::mapped_type>());
     });
     obj = rsl::move(ret);
 }
@@ -5817,7 +5817,7 @@ inline void to_json(BasicJsonType& j, const T(&arr)[N]) // NOLINT(cppcoreguideli
 template < typename BasicJsonType, typename T1, typename T2, enable_if_t < rsl::is_constructible<BasicJsonType, T1>::value&& rsl::is_constructible<BasicJsonType, T2>::value, int > = 0 >
 inline void to_json(BasicJsonType& j, const rsl::key_value<T1, T2>& p)
 {
-    j = { p.first, p.second };
+    j = { p.key, p.value };
 }
 
 // for https://github.com/nlohmann/json/pull/1134
@@ -6867,7 +6867,7 @@ class json_sax_dom_parser
                        parsing
     @param[in] allow_exceptions_  whether parse errors yield exceptions
     */
-    explicit json_sax_dom_parser(BasicJsonType& r, const bool allow_exceptions_ = true)
+    explicit json_sax_dom_parser(BasicJsonType& r, const bool allow_exceptions_ = false)
         : root(r), allow_exceptions(allow_exceptions_)
     {}
 
@@ -7033,7 +7033,7 @@ class json_sax_dom_parser
     /// whether a syntax error occurred
     bool errored = false;
     /// whether to throw exceptions in case of errors
-    const bool allow_exceptions = true;
+    const bool allow_exceptions = false;
 };
 
 template<typename BasicJsonType>
@@ -7338,7 +7338,7 @@ class json_sax_dom_callback_parser
     /// callback function
     const parser_callback_t callback = nullptr;
     /// whether to throw exceptions in case of errors
-    const bool allow_exceptions = true;
+    const bool allow_exceptions = false;
     /// a discarded value for the callback
     BasicJsonType discarded = BasicJsonType::value_t::discarded;
 };
@@ -9351,7 +9351,7 @@ class binary_reader
             if (JSON_HEDLEY_UNLIKELY(current != char_traits<char_type>::eof()))
             {
                 return sax->parse_error(chars_read, get_token_string(), parse_error::create(110, chars_read,
-                                        exception_message(input_format, concat("expected end of input; last byte: 0x", get_token_string()), "value"), nullptr));
+                                        exception_message(input_format, concat("expected end of input; last byte: 0x", get_token_string()), rsl::string("value")), nullptr));
             }
         }
 
@@ -9428,7 +9428,7 @@ class binary_reader
         {
             auto last_token = get_token_string();
             return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                    exception_message(input_format_t::bson, concat("string length must be at least 1, is ", rsl::to_string(len)), "string"), nullptr));
+                                    exception_message(input_format_t::bson, concat("string length must be at least 1, is ", rsl::to_string(len)), rsl::string("string")), nullptr));
         }
 
         return get_string(input_format_t::bson, len - static_cast<NumberType>(1), result) && get() != char_traits<char_type>::eof();
@@ -9450,7 +9450,7 @@ class binary_reader
         {
             auto last_token = get_token_string();
             return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                    exception_message(input_format_t::bson, concat("byte array length cannot be negative, is ", rsl::to_string(len)), "binary"), nullptr));
+                                    exception_message(input_format_t::bson, concat("byte array length cannot be negative, is ", rsl::to_string(len)), rsl::string("binary")), nullptr));
         }
 
         // All BSON binary values have a subtype
@@ -9479,7 +9479,7 @@ class binary_reader
             case 0x01: // double
             {
                 double number{};
-                return get_number<double, true>(input_format_t::bson, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number<double, true>(input_format_t::bson, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 0x02: // string
@@ -9530,11 +9530,9 @@ class binary_reader
 
             default: // anything else not supported (yet)
             {
-                rsl::array<char, 3> cr{{}};
-                static_cast<void>((rsl::snprintf)(cr.data(), cr.size(), "%.2hhX", static_cast<unsigned char>(element_type))); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                const rsl::string cr_str{cr.data()};
-                return sax->parse_error(element_type_parse_position, cr_str,
-                                        parse_error::create(114, element_type_parse_position, concat("Unsupported BSON record type 0x", cr_str), nullptr));
+              auto fmt = rsl::format("{:#x}", static_cast<unsigned char>(element_type));
+              return sax->parse_error(element_type_parse_position, rsl::string(fmt),
+                                        parse_error::create(114, element_type_parse_position, concat("Unsupported BSON record type 0x", rsl::string(fmt)), nullptr));
             }
         }
     }
@@ -9663,7 +9661,7 @@ class binary_reader
 
             case 0x19: // Unsigned integer (two-byte uint16_t follows)
             {
-                rsl::uint16_t number{};
+                rsl::uint16 number{};
                 return get_number(input_format_t::cbor, number) && sax->number_unsigned(number);
             }
 
@@ -9704,7 +9702,7 @@ class binary_reader
             case 0x35:
             case 0x36:
             case 0x37:
-                return sax->number_integer(static_cast<rsl::int8_t>(0x20 - 1 - current));
+                return sax->number_integer(static_cast<rsl::int8>(0x20 - 1 - current));
 
             case 0x38: // Negative integer (one-byte uint8 follows)
             {
@@ -9714,7 +9712,7 @@ class binary_reader
 
             case 0x39: // Negative integer -1-n (two-byte uint16_t follows)
             {
-                rsl::uint16_t number{};
+                rsl::uint16 number{};
                 return get_number(input_format_t::cbor, number) && sax->number_integer(static_cast<number_integer_t>(-1) - number);
             }
 
@@ -9837,7 +9835,7 @@ class binary_reader
 
             case 0x99: // array (two-byte uint16_t for n follow)
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::cbor, len) && get_cbor_array(static_cast<rsl::size_t>(len), tag_handler);
             }
 
@@ -9891,7 +9889,7 @@ class binary_reader
 
             case 0xB9: // map (two-byte uint16_t for n follow)
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::cbor, len) && get_cbor_object(static_cast<rsl::size_t>(len), tag_handler);
             }
 
@@ -9936,7 +9934,7 @@ class binary_reader
                     {
                         auto last_token = get_token_string();
                         return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                                exception_message(input_format_t::cbor, concat("invalid byte: 0x", last_token), "value"), nullptr));
+                                                exception_message(input_format_t::cbor, concat("invalid byte: 0x", last_token), rsl::string("value")), nullptr));
                     }
 
                     case cbor_tag_handler_t::ignore:
@@ -9952,7 +9950,7 @@ class binary_reader
                             }
                             case 0xD9:
                             {
-                                rsl::uint16_t subtype_to_ignore{};
+                                rsl::uint16 subtype_to_ignore{};
                                 get_number(input_format_t::cbor, subtype_to_ignore);
                                 break;
                             }
@@ -9989,7 +9987,7 @@ class binary_reader
                             }
                             case 0xD9:
                             {
-                                rsl::uint16_t subtype{};
+                                rsl::uint16 subtype{};
                                 get_number(input_format_t::cbor, subtype);
                                 b.set_subtype(detail::conditional_static_cast<typename binary_t::subtype_type>(subtype));
                                 break;
@@ -10064,37 +10062,37 @@ class binary_reader
                     switch (exp)
                     {
                         case 0:
-                            return rsl::ldexp(mant, -24);
+                            return ::ldexp(mant, -24);
                         case 31:
                             return (mant == 0)
                             ? rsl::numeric_limits<double>::infinity()
-                            : rsl::numeric_limits<double>::quiet_NaN();
+                            : rsl::numeric_limits<double>::quiet_nan();
                         default:
-                            return rsl::ldexp(mant + 1024, exp - 25);
+                            return ::ldexp(mant + 1024, exp - 25);
                     }
                 }();
                 return sax->number_float((half & 0x8000u) != 0
                                          ? static_cast<number_float_t>(-val)
-                                         : static_cast<number_float_t>(val), "");
+                                         : static_cast<number_float_t>(val), rsl::string(""));
             }
 
             case 0xFA: // Single-Precision Float (four-byte IEEE 754)
             {
                 float number{};
-                return get_number(input_format_t::cbor, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format_t::cbor, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 0xFB: // Double-Precision Float (eight-byte IEEE 754)
             {
                 double number{};
-                return get_number(input_format_t::cbor, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format_t::cbor, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             default: // anything else (0xFF is handled inside the other types)
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                        exception_message(input_format_t::cbor, concat("invalid byte: 0x", last_token), "value"), nullptr));
+                                        exception_message(input_format_t::cbor, concat("invalid byte: 0x", last_token), rsl::string("value")), nullptr));
             }
         }
     }
@@ -10156,7 +10154,7 @@ class binary_reader
 
             case 0x79: // UTF-8 string (two-byte uint16_t for n follow)
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::cbor, len) && get_string(input_format_t::cbor, len, result);
             }
 
@@ -10190,7 +10188,7 @@ class binary_reader
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read,
-                                        exception_message(input_format_t::cbor, concat("expected length specification (0x60-0x7B) or indefinite string type (0x7F); last byte: 0x", last_token), "string"), nullptr));
+                                        exception_message(input_format_t::cbor, concat("expected length specification (0x60-0x7B) or indefinite string type (0x7F); last byte: 0x", last_token), rsl::string("string")), nullptr));
             }
         }
     }
@@ -10253,7 +10251,7 @@ class binary_reader
 
             case 0x59: // Binary data (two-byte uint16_t for n follow)
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::cbor, len) &&
                        get_binary(input_format_t::cbor, len, result);
             }
@@ -10290,7 +10288,7 @@ class binary_reader
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read,
-                                        exception_message(input_format_t::cbor, concat("expected length specification (0x40-0x5B) or indefinite binary array type (0x5F); last byte: 0x", last_token), "binary"), nullptr));
+                                        exception_message(input_format_t::cbor, concat("expected length specification (0x40-0x5B) or indefinite binary array type (0x5F); last byte: 0x", last_token), rsl::string("binary")), nullptr));
             }
         }
     }
@@ -10641,13 +10639,13 @@ class binary_reader
             case 0xCA: // float 32
             {
                 float number{};
-                return get_number(input_format_t::msgpack, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format_t::msgpack, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 0xCB: // float 64
             {
                 double number{};
-                return get_number(input_format_t::msgpack, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format_t::msgpack, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 0xCC: // uint 8
@@ -10658,7 +10656,7 @@ class binary_reader
 
             case 0xCD: // uint 16
             {
-                rsl::uint16_t number{};
+                rsl::uint16 number{};
                 return get_number(input_format_t::msgpack, number) && sax->number_unsigned(number);
             }
 
@@ -10676,13 +10674,13 @@ class binary_reader
 
             case 0xD0: // int 8
             {
-                rsl::int8_t number{};
+                rsl::int8 number{};
                 return get_number(input_format_t::msgpack, number) && sax->number_integer(number);
             }
 
             case 0xD1: // int 16
             {
-                rsl::int16_t number{};
+                rsl::int16 number{};
                 return get_number(input_format_t::msgpack, number) && sax->number_integer(number);
             }
 
@@ -10700,7 +10698,7 @@ class binary_reader
 
             case 0xDC: // array 16
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::msgpack, len) && get_msgpack_array(static_cast<rsl::size_t>(len));
             }
 
@@ -10712,7 +10710,7 @@ class binary_reader
 
             case 0xDE: // map 16
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::msgpack, len) && get_msgpack_object(static_cast<rsl::size_t>(len));
             }
 
@@ -10755,13 +10753,13 @@ class binary_reader
             case 0xFD:
             case 0xFE:
             case 0xFF:
-                return sax->number_integer(static_cast<rsl::int8_t>(current));
+                return sax->number_integer(static_cast<rsl::int8>(current));
 
             default: // anything else
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                        exception_message(input_format_t::msgpack, concat("invalid byte: 0x", last_token), "value"), nullptr));
+                                        exception_message(input_format_t::msgpack, concat("invalid byte: 0x", last_token), rsl::string("value")), nullptr));
             }
         }
     }
@@ -10830,7 +10828,7 @@ class binary_reader
 
             case 0xDA: // str 16
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::msgpack, len) && get_string(input_format_t::msgpack, len, result);
             }
 
@@ -10844,7 +10842,7 @@ class binary_reader
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read,
-                                        exception_message(input_format_t::msgpack, concat("expected length specification (0xA0-0xBF, 0xD9-0xDB); last byte: 0x", last_token), "string"), nullptr));
+                                        exception_message(input_format_t::msgpack, concat("expected length specification (0xA0-0xBF, 0xD9-0xDB); last byte: 0x", last_token), rsl::string("string")), nullptr));
             }
         }
     }
@@ -10862,7 +10860,7 @@ class binary_reader
     bool get_msgpack_binary(binary_t& result)
     {
         // helper function to set the subtype
-        auto assign_and_return_true = [&result](rsl::int8_t subtype)
+        auto assign_and_return_true = [&result](rsl::int8 subtype)
         {
             result.set_subtype(static_cast<rsl::uint8>(subtype));
             return true;
@@ -10879,7 +10877,7 @@ class binary_reader
 
             case 0xC5: // bin 16
             {
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format_t::msgpack, len) &&
                        get_binary(input_format_t::msgpack, len, result);
             }
@@ -10894,7 +10892,7 @@ class binary_reader
             case 0xC7: // ext 8
             {
                 rsl::uint8 len{};
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, len) &&
                        get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, len, result) &&
@@ -10903,8 +10901,8 @@ class binary_reader
 
             case 0xC8: // ext 16
             {
-                rsl::uint16_t len{};
-                rsl::int8_t subtype{};
+                rsl::uint16 len{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, len) &&
                        get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, len, result) &&
@@ -10914,7 +10912,7 @@ class binary_reader
             case 0xC9: // ext 32
             {
                 rsl::uint32 len{};
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, len) &&
                        get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, len, result) &&
@@ -10923,7 +10921,7 @@ class binary_reader
 
             case 0xD4: // fixext 1
             {
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, 1, result) &&
                        assign_and_return_true(subtype);
@@ -10931,7 +10929,7 @@ class binary_reader
 
             case 0xD5: // fixext 2
             {
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, 2, result) &&
                        assign_and_return_true(subtype);
@@ -10939,7 +10937,7 @@ class binary_reader
 
             case 0xD6: // fixext 4
             {
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, 4, result) &&
                        assign_and_return_true(subtype);
@@ -10947,7 +10945,7 @@ class binary_reader
 
             case 0xD7: // fixext 8
             {
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, 8, result) &&
                        assign_and_return_true(subtype);
@@ -10955,7 +10953,7 @@ class binary_reader
 
             case 0xD8: // fixext 16
             {
-                rsl::int8_t subtype{};
+                rsl::int8 subtype{};
                 return get_number(input_format_t::msgpack, subtype) &&
                        get_binary(input_format_t::msgpack, 16, result) &&
                        assign_and_return_true(subtype);
@@ -11070,13 +11068,13 @@ class binary_reader
 
             case 'i':
             {
-                rsl::int8_t len{};
+                rsl::int8 len{};
                 return get_number(input_format, len) && get_string(input_format, len, result);
             }
 
             case 'I':
             {
-                rsl::int16_t len{};
+                rsl::int16 len{};
                 return get_number(input_format, len) && get_string(input_format, len, result);
             }
 
@@ -11098,7 +11096,7 @@ class binary_reader
                 {
                     break;
                 }
-                rsl::uint16_t len{};
+                rsl::uint16 len{};
                 return get_number(input_format, len) && get_string(input_format, len, result);
             }
 
@@ -11136,7 +11134,7 @@ class binary_reader
         {
             message = "expected length type specification (U, i, u, I, m, l, M, L); last byte: 0x" + last_token;
         }
-        return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, "string"), nullptr));
+        return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, rsl::string("string")), nullptr));
     }
 
     /*!
@@ -11154,15 +11152,15 @@ class binary_reader
             return false;
         }
 
-        if (size_and_type.first != npos)
+        if (size_and_type.key != npos)
         {
-            if (size_and_type.second != 0)
+            if (size_and_type.value != 0)
             {
-                if (size_and_type.second != 'N')
+                if (size_and_type.value != 'N')
                 {
-                    for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                    for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                     {
-                        if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_value(dimlen, no_ndarray, size_and_type.second)))
+                        if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_value(dimlen, no_ndarray, size_and_type.value)))
                         {
                             return false;
                         }
@@ -11172,7 +11170,7 @@ class binary_reader
             }
             else
             {
-                for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_value(dimlen, no_ndarray)))
                     {
@@ -11230,7 +11228,7 @@ class binary_reader
 
             case 'i':
             {
-                rsl::int8_t number{};
+                rsl::int8 number{};
                 if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
                 {
                     return false;
@@ -11238,7 +11236,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("count in an optimized container must be positive"), rsl::string("size")), nullptr));
                 }
                 result = static_cast<rsl::size_t>(number); // NOLINT(bugprone-signed-char-misuse,cert-str34-c): number is not a char
                 return true;
@@ -11246,7 +11244,7 @@ class binary_reader
 
             case 'I':
             {
-                rsl::int16_t number{};
+                rsl::int16 number{};
                 if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
                 {
                     return false;
@@ -11254,7 +11252,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("count in an optimized container must be positive"), rsl::string("size")), nullptr));
                 }
                 result = static_cast<rsl::size_t>(number);
                 return true;
@@ -11270,7 +11268,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("count in an optimized container must be positive"), rsl::string("size")), nullptr));
                 }
                 result = static_cast<rsl::size_t>(number);
                 return true;
@@ -11286,12 +11284,12 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("count in an optimized container must be positive"), rsl::string("size")), nullptr));
                 }
                 if (!value_in_range_of<rsl::size_t>(number))
                 {
                     return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408,
-                                            exception_message(input_format, "integer value overflow", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("integer value overflow"), rsl::string("size")), nullptr));
                 }
                 result = static_cast<rsl::size_t>(number);
                 return true;
@@ -11303,7 +11301,7 @@ class binary_reader
                 {
                     break;
                 }
-                rsl::uint16_t number{};
+                rsl::uint16 number{};
                 if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
                 {
                     return false;
@@ -11341,7 +11339,7 @@ class binary_reader
                 if (!value_in_range_of<rsl::size_t>(number))
                 {
                     return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408,
-                                            exception_message(input_format, "integer value overflow", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("integer value overflow"), rsl::string("size")), nullptr));
                 }
                 result = detail::conditional_static_cast<rsl::size_t>(number);
                 return true;
@@ -11355,7 +11353,7 @@ class binary_reader
                 }
                 if (is_ndarray) // ndarray dimensional vector can only contain integers, and can not embed another array
                 {
-                    return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read, exception_message(input_format, "ndarray dimensional vector is not allowed", "size"), nullptr));
+                    return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read, exception_message(input_format, rsl::string("ndarray dimensional vector is not allowed"), rsl::string("size")), nullptr));
                 }
                 rsl::vector<size_t> dim;
                 if (JSON_HEDLEY_UNLIKELY(!get_ubjson_ndarray_size(dim)))
@@ -11378,7 +11376,7 @@ class binary_reader
                         }
                     }
 
-                    string_t key = "_ArraySize_";
+                    string_t key("_ArraySize_");
                     if (JSON_HEDLEY_UNLIKELY(!sax->start_object(3) || !sax->key(key) || !sax->start_array(dim.size())))
                     {
                         return false;
@@ -11389,7 +11387,7 @@ class binary_reader
                         result *= i;
                         if (result == 0 || result == npos) // because dim elements shall not have zeros, result = 0 means overflow happened; it also can't be npos as it is used to initialize size in get_ubjson_size_type()
                         {
-                            return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408, exception_message(input_format, "excessive ndarray size caused overflow", "size"), nullptr));
+                            return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408, exception_message(input_format, rsl::string("excessive ndarray size caused overflow"), rsl::string("size")), nullptr));
                         }
                         if (JSON_HEDLEY_UNLIKELY(!sax->number_unsigned(static_cast<number_unsigned_t>(i))))
                         {
@@ -11417,7 +11415,7 @@ class binary_reader
         {
             message = "expected length type specification (U, i, u, I, m, l, M, L) after '#'; last byte: 0x" + last_token;
         }
-        return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, "size"), nullptr));
+        return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, rsl::string("size")), nullptr));
     }
 
     /*!
@@ -11433,21 +11431,21 @@ class binary_reader
     */
     bool get_ubjson_size_type(rsl::key_value<rsl::size_t, char_int_type>& result, bool inside_ndarray = false)
     {
-        result.first = npos; // size
-        result.second = 0; // type
+        result.key = npos; // size
+        result.value = 0; // type
         bool is_ndarray = false;
 
         get_ignore_noop();
 
         if (current == '$')
         {
-            result.second = get();  // must not ignore 'N', because 'N' maybe the type
+            result.value = get();  // must not ignore 'N', because 'N' maybe the type
             if (input_format == input_format_t::bjdata
-                    && JSON_HEDLEY_UNLIKELY(rsl::binary_search(bjd_optimized_type_markers.begin(), bjd_optimized_type_markers.end(), result.second)))
+                    && JSON_HEDLEY_UNLIKELY(rsl::binary_search(bjd_optimized_type_markers.begin(), bjd_optimized_type_markers.end(), result.value)))
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                        exception_message(input_format, concat("marker 0x", last_token, " is not a permitted optimized array type"), "type"), nullptr));
+                                        exception_message(input_format, concat("marker 0x", last_token, " is not a permitted optimized array type"), rsl::string("type")), nullptr));
             }
 
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "type")))
@@ -11464,29 +11462,29 @@ class binary_reader
                 }
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                        exception_message(input_format, concat("expected '#' after type information; last byte: 0x", last_token), "size"), nullptr));
+                                        exception_message(input_format, concat("expected '#' after type information; last byte: 0x", last_token), rsl::string("size")), nullptr));
             }
 
-            const bool is_error = get_ubjson_size_value(result.first, is_ndarray);
+            const bool is_error = get_ubjson_size_value(result.key, is_ndarray);
             if (input_format == input_format_t::bjdata && is_ndarray)
             {
                 if (inside_ndarray)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(112, chars_read,
-                                            exception_message(input_format, "ndarray can not be recursive", "size"), nullptr));
+                                            exception_message(input_format, rsl::string("ndarray can not be recursive"), rsl::string("size")), nullptr));
                 }
-                result.second |= (1 << 8); // use bit 8 to indicate ndarray, all UBJSON and BJData markers should be ASCII letters
+                result.value |= (1 << 8); // use bit 8 to indicate ndarray, all UBJSON and BJData markers should be ASCII letters
             }
             return is_error;
         }
 
         if (current == '#')
         {
-            const bool is_error = get_ubjson_size_value(result.first, is_ndarray);
+            const bool is_error = get_ubjson_size_value(result.key, is_ndarray);
             if (input_format == input_format_t::bjdata && is_ndarray)
             {
                 return sax->parse_error(chars_read, get_token_string(), parse_error::create(112, chars_read,
-                                        exception_message(input_format, "ndarray requires both type and size", "size"), nullptr));
+                                        exception_message(input_format, rsl::string("ndarray requires both type and size"), rsl::string("size")), nullptr));
             }
             return is_error;
         }
@@ -11521,13 +11519,13 @@ class binary_reader
 
             case 'i':
             {
-                rsl::int8_t number{};
+                rsl::int8 number{};
                 return get_number(input_format, number) && sax->number_integer(number);
             }
 
             case 'I':
             {
-                rsl::int16_t number{};
+                rsl::int16 number{};
                 return get_number(input_format, number) && sax->number_integer(number);
             }
 
@@ -11549,7 +11547,7 @@ class binary_reader
                 {
                     break;
                 }
-                rsl::uint16_t number{};
+                rsl::uint16 number{};
                 return get_number(input_format, number) && sax->number_unsigned(number);
             }
 
@@ -11611,30 +11609,30 @@ class binary_reader
                     switch (exp)
                     {
                         case 0:
-                            return rsl::ldexp(mant, -24);
+                            return ::ldexp(mant, -24);
                         case 31:
                             return (mant == 0)
                             ? rsl::numeric_limits<double>::infinity()
-                            : rsl::numeric_limits<double>::quiet_NaN();
+                            : rsl::numeric_limits<double>::quiet_nan();
                         default:
-                            return rsl::ldexp(mant + 1024, exp - 25);
+                            return ::ldexp(mant + 1024, exp - 25);
                     }
                 }();
                 return sax->number_float((half & 0x8000u) != 0
                                          ? static_cast<number_float_t>(-val)
-                                         : static_cast<number_float_t>(val), "");
+                                         : static_cast<number_float_t>(val), rsl::string(""));
             }
 
             case 'd':
             {
                 float number{};
-                return get_number(input_format, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 'D':
             {
                 double number{};
-                return get_number(input_format, number) && sax->number_float(static_cast<number_float_t>(number), "");
+                return get_number(input_format, number) && sax->number_float(static_cast<number_float_t>(number), rsl::string(""));
             }
 
             case 'H':
@@ -11653,7 +11651,7 @@ class binary_reader
                 {
                     auto last_token = get_token_string();
                     return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read,
-                                            exception_message(input_format, concat("byte after 'C' must be in range 0x00..0x7F; last byte: 0x", last_token), "char"), nullptr));
+                                            exception_message(input_format, concat("byte after 'C' must be in range 0x00..0x7F; last byte: 0x", last_token), rsl::string("char")), nullptr));
                 }
                 string_t s(1, static_cast<typename string_t::value_type>(current));
                 return sax->string(s);
@@ -11675,7 +11673,7 @@ class binary_reader
                 break;
         }
         auto last_token = get_token_string();
-        return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read, exception_message(input_format, "invalid byte: 0x" + last_token, "value"), nullptr));
+        return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read, exception_message(input_format, "invalid byte: 0x" + last_token, rsl::string("value")), nullptr));
     }
 
     /*!
@@ -11689,44 +11687,44 @@ class binary_reader
             return false;
         }
 
-        // if bit-8 of size_and_type.second is set to 1, encode bjdata ndarray as an object in JData annotated array format (https://github.com/NeuroJSON/jdata):
+        // if bit-8 of size_and_type.value is set to 1, encode bjdata ndarray as an object in JData annotated array format (https://github.com/NeuroJSON/jdata):
         // {"_ArrayType_" : "typeid", "_ArraySize_" : [n1, n2, ...], "_ArrayData_" : [v1, v2, ...]}
 
-        if (input_format == input_format_t::bjdata && size_and_type.first != npos && (size_and_type.second & (1 << 8)) != 0)
+        if (input_format == input_format_t::bjdata && size_and_type.key != npos && (size_and_type.value & (1 << 8)) != 0)
         {
-            size_and_type.second &= ~(static_cast<char_int_type>(1) << 8);  // use bit 8 to indicate ndarray, here we remove the bit to restore the type marker
-            auto it = rsl::lower_bound(bjd_types_map.begin(), bjd_types_map.end(), size_and_type.second, [](const bjd_type & p, char_int_type t)
+            size_and_type.value &= ~(static_cast<char_int_type>(1) << 8);  // use bit 8 to indicate ndarray, here we remove the bit to restore the type marker
+            auto it = rsl::lower_bound(bjd_types_map.begin(), bjd_types_map.end(), size_and_type.value, [](const bjd_type & p, char_int_type t)
             {
-                return p.first < t;
+                return p.key < t;
             });
-            string_t key = "_ArrayType_";
-            if (JSON_HEDLEY_UNLIKELY(it == bjd_types_map.end() || it->first != size_and_type.second))
+            string_t key("_ArrayType_");
+            if (JSON_HEDLEY_UNLIKELY(it == bjd_types_map.end() || it->key != size_and_type.value))
             {
                 auto last_token = get_token_string();
                 return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                        exception_message(input_format, "invalid byte: 0x" + last_token, "type"), nullptr));
+                                        exception_message(input_format, "invalid byte: 0x" + last_token, rsl::string("type")), nullptr));
             }
 
-            string_t type = it->second; // sax->string() takes a reference
+            string_t type = it->value; // sax->string() takes a reference
             if (JSON_HEDLEY_UNLIKELY(!sax->key(key) || !sax->string(type)))
             {
                 return false;
             }
 
-            if (size_and_type.second == 'C')
+            if (size_and_type.value == 'C')
             {
-                size_and_type.second = 'U';
+                size_and_type.value = 'U';
             }
 
-            key = "_ArrayData_";
-            if (JSON_HEDLEY_UNLIKELY(!sax->key(key) || !sax->start_array(size_and_type.first) ))
+            key.assign("_ArrayData_");
+            if (JSON_HEDLEY_UNLIKELY(!sax->key(key) || !sax->start_array(size_and_type.key) ))
             {
                 return false;
             }
 
-            for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+            for (rsl::size_t i = 0; i < size_and_type.key; ++i)
             {
-                if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
+                if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.value)))
                 {
                     return false;
                 }
@@ -11735,20 +11733,20 @@ class binary_reader
             return (sax->end_array() && sax->end_object());
         }
 
-        if (size_and_type.first != npos)
+        if (size_and_type.key != npos)
         {
-            if (JSON_HEDLEY_UNLIKELY(!sax->start_array(size_and_type.first)))
+            if (JSON_HEDLEY_UNLIKELY(!sax->start_array(size_and_type.key)))
             {
                 return false;
             }
 
-            if (size_and_type.second != 0)
+            if (size_and_type.value != 0)
             {
-                if (size_and_type.second != 'N')
+                if (size_and_type.value != 'N')
                 {
-                    for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                    for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                     {
-                        if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
+                        if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.value)))
                         {
                             return false;
                         }
@@ -11757,7 +11755,7 @@ class binary_reader
             }
             else
             {
-                for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!parse_ubjson_internal()))
                     {
@@ -11798,30 +11796,30 @@ class binary_reader
         }
 
         // do not accept ND-array size in objects in BJData
-        if (input_format == input_format_t::bjdata && size_and_type.first != npos && (size_and_type.second & (1 << 8)) != 0)
+        if (input_format == input_format_t::bjdata && size_and_type.key != npos && (size_and_type.value & (1 << 8)) != 0)
         {
             auto last_token = get_token_string();
             return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                    exception_message(input_format, "BJData object does not support ND-array size in optimized format", "object"), nullptr));
+                                    exception_message(input_format, rsl::string("BJData object does not support ND-array size in optimized format"), rsl::string("object")), nullptr));
         }
 
         string_t key;
-        if (size_and_type.first != npos)
+        if (size_and_type.key != npos)
         {
-            if (JSON_HEDLEY_UNLIKELY(!sax->start_object(size_and_type.first)))
+            if (JSON_HEDLEY_UNLIKELY(!sax->start_object(size_and_type.key)))
             {
                 return false;
             }
 
-            if (size_and_type.second != 0)
+            if (size_and_type.value != 0)
             {
-                for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_string(key) || !sax->key(key)))
                     {
                         return false;
                     }
-                    if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
+                    if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.value)))
                     {
                         return false;
                     }
@@ -11830,7 +11828,7 @@ class binary_reader
             }
             else
             {
-                for (rsl::size_t i = 0; i < size_and_type.first; ++i)
+                for (rsl::size_t i = 0; i < size_and_type.key; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_string(key) || !sax->key(key)))
                     {
@@ -11907,7 +11905,7 @@ class binary_reader
         if (JSON_HEDLEY_UNLIKELY(result_remainder != token_type::end_of_input))
         {
             return sax->parse_error(chars_read, number_string, parse_error::create(115, chars_read,
-                                    exception_message(input_format, concat("invalid number text: ", number_lexer.get_token_string()), "high-precision number"), nullptr));
+                                    exception_message(input_format, concat("invalid number text: ", number_lexer.get_token_string()), rsl::string("high-precision number")), nullptr));
         }
 
         switch (result_number)
@@ -11934,7 +11932,7 @@ class binary_reader
             case token_type::literal_or_value:
             default:
                 return sax->parse_error(chars_read, number_string, parse_error::create(115, chars_read,
-                                        exception_message(input_format, concat("invalid number text: ", number_lexer.get_token_string()), "high-precision number"), nullptr));
+                                        exception_message(input_format, concat("invalid number text: ", number_lexer.get_token_string()), rsl::string("high-precision number")), nullptr));
         }
     }
 
@@ -12091,8 +12089,8 @@ class binary_reader
     {
         if (JSON_HEDLEY_UNLIKELY(current == char_traits<char_type>::eof()))
         {
-            return sax->parse_error(chars_read, "<end of file>",
-                                    parse_error::create(110, chars_read, exception_message(format, "unexpected end of input", context), nullptr));
+            return sax->parse_error(chars_read, rsl::string("<end of file>"),
+                                    parse_error::create(110, chars_read, exception_message(format, rsl::string("unexpected end of input"), rsl::string(context)), nullptr));
         }
         return true;
     }
@@ -12102,9 +12100,8 @@ class binary_reader
     */
     rsl::string get_token_string() const
     {
-        rsl::array<char, 3> cr{{}};
-        static_cast<void>((rsl::snprintf)(cr.data(), cr.size(), "%.2hhX", static_cast<unsigned char>(current))); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-        return rsl::string{cr.data()};
+      auto fmt = rsl::format("{:#x}", static_cast<unsigned char>(current));
+      return rsl::string(fmt);
     }
 
     /*!
@@ -12117,7 +12114,7 @@ class binary_reader
                                   const rsl::string& detail,
                                   const rsl::string& context) const
     {
-        rsl::string error_msg = "syntax error while parsing ";
+        rsl::string error_msg("syntax error while parsing ");
 
         switch (format)
         {
@@ -12356,7 +12353,7 @@ class parser
             {
                 sdp.parse_error(m_lexer.get_position(),
                                 m_lexer.get_token_string(),
-                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_of_input, "value"), nullptr));
+                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_of_input, rsl::string("value")), nullptr));
             }
 
             // in case of an error, return discarded value
@@ -12394,7 +12391,7 @@ class parser
         {
             return sax->parse_error(m_lexer.get_position(),
                                     m_lexer.get_token_string(),
-                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_of_input, "value"), nullptr));
+                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_of_input, rsl::string("value")), nullptr));
         }
 
         return result;
@@ -12440,7 +12437,7 @@ class parser
                         {
                             return sax->parse_error(m_lexer.get_position(),
                                                     m_lexer.get_token_string(),
-                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, "object key"), nullptr));
+                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, rsl::string("object key")), nullptr));
                         }
                         if (JSON_HEDLEY_UNLIKELY(!sax->key(m_lexer.get_string())))
                         {
@@ -12452,7 +12449,7 @@ class parser
                         {
                             return sax->parse_error(m_lexer.get_position(),
                                                     m_lexer.get_token_string(),
-                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, "object separator"), nullptr));
+                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, rsl::string("object separator")), nullptr));
                         }
 
                         // remember we are now inside an object
@@ -12565,7 +12562,7 @@ class parser
                         // using "uninitialized" to avoid "expected" message
                         return sax->parse_error(m_lexer.get_position(),
                                                 m_lexer.get_token_string(),
-                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::uninitialized, "value"), nullptr));
+                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::uninitialized, rsl::string("value")), nullptr));
                     }
                     case token_type::end_of_input:
                     {
@@ -12579,7 +12576,7 @@ class parser
 
                         return sax->parse_error(m_lexer.get_position(),
                                                 m_lexer.get_token_string(),
-                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::literal_or_value, "value"), nullptr));
+                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::literal_or_value, rsl::string("value")), nullptr));
                     }
                     case token_type::uninitialized:
                     case token_type::end_array:
@@ -12591,7 +12588,7 @@ class parser
                     {
                         return sax->parse_error(m_lexer.get_position(),
                                                 m_lexer.get_token_string(),
-                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::literal_or_value, "value"), nullptr));
+                                                parse_error::create(101, m_lexer.get_position(), exception_message(token_type::literal_or_value, rsl::string("value")), nullptr));
                     }
                 }
             }
@@ -12738,7 +12735,7 @@ class parser
     /// the lexer
     lexer_t m_lexer;
     /// whether to throw exceptions in case of errors
-    const bool allow_exceptions = true;
+    const bool allow_exceptions = false;
 };
 
 }  // namespace detail
@@ -14644,7 +14641,7 @@ class json_pointer
                     // iterate object and use keys as reference string
                     for (const auto& element : *value.m_data.m_value.object)
                     {
-                        flatten(detail::concat(reference_string, '/', detail::escape(element.first)), element.second, result);
+                        flatten(detail::concat(reference_string, '/', detail::escape(element.key)), element.value, result);
                     }
                 }
                 break;
@@ -14691,16 +14688,16 @@ class json_pointer
         // iterate the JSON object values
         for (const auto& element : *value.m_data.m_value.object)
         {
-            if (JSON_HEDLEY_UNLIKELY(!element.second.is_primitive()))
+            if (JSON_HEDLEY_UNLIKELY(!element.value.is_primitive()))
             {
-                JSON_THROW(detail::type_error::create(315, "values in object must be primitive", &element.second));
+                JSON_THROW(detail::type_error::create(315, "values in object must be primitive", &element.value));
             }
 
             // assign value to reference pointed to by JSON pointer; Note that if
             // the JSON pointer is "" (i.e., points to the whole value), function
             // get_and_create returns a reference to result itself. An assignment
             // will then create a primitive value.
-            json_pointer(element.first).get_and_create(result) = element.second;
+            json_pointer(element.key).get_and_create(result) = element.value;
         }
 
         return result;
@@ -15229,10 +15226,10 @@ class binary_writer
                         oa->write_character(to_char_type(0x18));
                         write_number(static_cast<rsl::uint8>(j.m_data.m_value.number_integer));
                     }
-                    else if (j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                    else if (j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::uint16>::max)())
                     {
                         oa->write_character(to_char_type(0x19));
-                        write_number(static_cast<rsl::uint16_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::uint16>(j.m_data.m_value.number_integer));
                     }
                     else if (j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::uint32>::max)())
                     {
@@ -15259,10 +15256,10 @@ class binary_writer
                         oa->write_character(to_char_type(0x38));
                         write_number(static_cast<rsl::uint8>(positive_number));
                     }
-                    else if (positive_number <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                    else if (positive_number <= (rsl::numeric_limits<rsl::uint16>::max)())
                     {
                         oa->write_character(to_char_type(0x39));
-                        write_number(static_cast<rsl::uint16_t>(positive_number));
+                        write_number(static_cast<rsl::uint16>(positive_number));
                     }
                     else if (positive_number <= (rsl::numeric_limits<rsl::uint32>::max)())
                     {
@@ -15289,10 +15286,10 @@ class binary_writer
                     oa->write_character(to_char_type(0x18));
                     write_number(static_cast<rsl::uint8>(j.m_data.m_value.number_unsigned));
                 }
-                else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     oa->write_character(to_char_type(0x19));
-                    write_number(static_cast<rsl::uint16_t>(j.m_data.m_value.number_unsigned));
+                    write_number(static_cast<rsl::uint16>(j.m_data.m_value.number_unsigned));
                 }
                 else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15343,10 +15340,10 @@ class binary_writer
                     oa->write_character(to_char_type(0x78));
                     write_number(static_cast<rsl::uint8>(N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     oa->write_character(to_char_type(0x79));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15381,10 +15378,10 @@ class binary_writer
                     oa->write_character(to_char_type(0x98));
                     write_number(static_cast<rsl::uint8>(N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     oa->write_character(to_char_type(0x99));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15416,10 +15413,10 @@ class binary_writer
                         write_number(static_cast<rsl::uint8>(0xd8));
                         write_number(static_cast<rsl::uint8>(j.m_data.m_value.binary->subtype()));
                     }
-                    else if (j.m_data.m_value.binary->subtype() <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                    else if (j.m_data.m_value.binary->subtype() <= (rsl::numeric_limits<rsl::uint16>::max)())
                     {
                         write_number(static_cast<rsl::uint8>(0xd9));
-                        write_number(static_cast<rsl::uint16_t>(j.m_data.m_value.binary->subtype()));
+                        write_number(static_cast<rsl::uint16>(j.m_data.m_value.binary->subtype()));
                     }
                     else if (j.m_data.m_value.binary->subtype() <= (rsl::numeric_limits<rsl::uint32>::max)())
                     {
@@ -15444,10 +15441,10 @@ class binary_writer
                     oa->write_character(to_char_type(0x58));
                     write_number(static_cast<rsl::uint8>(N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     oa->write_character(to_char_type(0x59));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15483,10 +15480,10 @@ class binary_writer
                     oa->write_character(to_char_type(0xB8));
                     write_number(static_cast<rsl::uint8>(N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     oa->write_character(to_char_type(0xB9));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15504,8 +15501,8 @@ class binary_writer
                 // step 2: write each element
                 for (const auto& el : *j.m_data.m_value.object)
                 {
-                    write_cbor(el.first);
-                    write_cbor(el.second);
+                    write_cbor(el.key);
+                    write_cbor(el.value);
                 }
                 break;
             }
@@ -15555,11 +15552,11 @@ class binary_writer
                         oa->write_character(to_char_type(0xCC));
                         write_number(static_cast<rsl::uint8>(j.m_data.m_value.number_integer));
                     }
-                    else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                    else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16>::max)())
                     {
                         // uint 16
                         oa->write_character(to_char_type(0xCD));
-                        write_number(static_cast<rsl::uint16_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::uint16>(j.m_data.m_value.number_integer));
                     }
                     else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint32>::max)())
                     {
@@ -15579,21 +15576,21 @@ class binary_writer
                     if (j.m_data.m_value.number_integer >= -32)
                     {
                         // negative fixnum
-                        write_number(static_cast<rsl::int8_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::int8>(j.m_data.m_value.number_integer));
                     }
-                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int8_t>::min)() &&
-                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int8_t>::max)())
+                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int8>::min)() &&
+                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int8>::max)())
                     {
                         // int 8
                         oa->write_character(to_char_type(0xD0));
-                        write_number(static_cast<rsl::int8_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::int8>(j.m_data.m_value.number_integer));
                     }
-                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int16_t>::min)() &&
-                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int16_t>::max)())
+                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int16>::min)() &&
+                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int16>::max)())
                     {
                         // int 16
                         oa->write_character(to_char_type(0xD1));
-                        write_number(static_cast<rsl::int16_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::int16>(j.m_data.m_value.number_integer));
                     }
                     else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int32>::min)() &&
                              j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int32>::max)())
@@ -15626,11 +15623,11 @@ class binary_writer
                     oa->write_character(to_char_type(0xCC));
                     write_number(static_cast<rsl::uint8>(j.m_data.m_value.number_integer));
                 }
-                else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     // uint 16
                     oa->write_character(to_char_type(0xCD));
-                    write_number(static_cast<rsl::uint16_t>(j.m_data.m_value.number_integer));
+                    write_number(static_cast<rsl::uint16>(j.m_data.m_value.number_integer));
                 }
                 else if (j.m_data.m_value.number_unsigned <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15668,11 +15665,11 @@ class binary_writer
                     oa->write_character(to_char_type(0xD9));
                     write_number(static_cast<rsl::uint8>(N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     // str 16
                     oa->write_character(to_char_type(0xDA));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15697,11 +15694,11 @@ class binary_writer
                     // fixarray
                     write_number(static_cast<rsl::uint8>(0x90 | N));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     // array 16
                     oa->write_character(to_char_type(0xDC));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15768,14 +15765,14 @@ class binary_writer
                         write_number(static_cast<rsl::uint8>(N));
                     }
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     const rsl::uint8 output_type = use_ext
                                                      ? 0xC8 // ext 16
                                                      : 0xC5; // bin 16
 
                     oa->write_character(to_char_type(output_type));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15790,7 +15787,7 @@ class binary_writer
                 // step 1.5: if this is an ext type, write the subtype
                 if (use_ext)
                 {
-                    write_number(static_cast<rsl::int8_t>(j.m_data.m_value.binary->subtype()));
+                    write_number(static_cast<rsl::int8>(j.m_data.m_value.binary->subtype()));
                 }
 
                 // step 2: write the byte string
@@ -15810,11 +15807,11 @@ class binary_writer
                     // fixmap
                     write_number(static_cast<rsl::uint8>(0x80 | (N & 0xF)));
                 }
-                else if (N <= (rsl::numeric_limits<rsl::uint16_t>::max)())
+                else if (N <= (rsl::numeric_limits<rsl::uint16>::max)())
                 {
                     // map 16
                     oa->write_character(to_char_type(0xDE));
-                    write_number(static_cast<rsl::uint16_t>(N));
+                    write_number(static_cast<rsl::uint16>(N));
                 }
                 else if (N <= (rsl::numeric_limits<rsl::uint32>::max)())
                 {
@@ -15826,8 +15823,8 @@ class binary_writer
                 // step 2: write each element
                 for (const auto& el : *j.m_data.m_value.object)
                 {
-                    write_msgpack(el.first);
-                    write_msgpack(el.second);
+                    write_msgpack(el.key);
+                    write_msgpack(el.value);
                 }
                 break;
             }
@@ -16036,11 +16033,11 @@ class binary_writer
 
                 for (const auto& el : *j.m_data.m_value.object)
                 {
-                    write_number_with_ubjson_prefix(el.first.size(), true, use_bjdata);
+                    write_number_with_ubjson_prefix(el.key.size(), true, use_bjdata);
                     oa->write_characters(
-                        reinterpret_cast<const CharType*>(el.first.c_str()),
-                        el.first.size());
-                    write_ubjson(el.second, use_count, use_type, prefix_required, use_bjdata);
+                        reinterpret_cast<const CharType*>(el.key.c_str()),
+                        el.key.size());
+                    write_ubjson(el.value, use_count, use_type, prefix_required, use_bjdata);
                 }
 
                 if (!use_count)
@@ -16370,7 +16367,7 @@ class binary_writer
         const rsl::size_t document_size = rsl::accumulate(value.begin(), value.end(), static_cast<rsl::size_t>(0),
                                           [](size_t result, const typename BasicJsonType::object_t::value_type & el)
         {
-            return result += calc_bson_element_size(el.first, el.second);
+            return result += calc_bson_element_size(el.key, el.value);
         });
 
         return sizeof(rsl::int32) + document_size + 1ul;
@@ -16386,7 +16383,7 @@ class binary_writer
 
         for (const auto& el : value)
         {
-            write_bson_element(el.first, el.second);
+            write_bson_element(el.key, el.value);
         }
 
         oa->write_character(to_char_type(0x00));
@@ -16445,7 +16442,7 @@ class binary_writer
                                          const bool add_prefix,
                                          const bool use_bjdata)
     {
-        if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int8_t>::max)()))
+        if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int8>::max)()))
         {
             if (add_prefix)
             {
@@ -16461,13 +16458,13 @@ class binary_writer
             }
             write_number(static_cast<rsl::uint8>(n), use_bjdata);
         }
-        else if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int16_t>::max)()))
+        else if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int16>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('I'));  // int16
             }
-            write_number(static_cast<rsl::int16_t>(n), use_bjdata);
+            write_number(static_cast<rsl::int16>(n), use_bjdata);
         }
         else if (use_bjdata && n <= static_cast<uint64>((rsl::numeric_limits<uint16_t>::max)()))
         {
@@ -16475,7 +16472,7 @@ class binary_writer
             {
                 oa->write_character(to_char_type('u'));  // uint16 - bjdata only
             }
-            write_number(static_cast<rsl::uint16_t>(n), use_bjdata);
+            write_number(static_cast<rsl::uint16>(n), use_bjdata);
         }
         else if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32>::max)()))
         {
@@ -16533,13 +16530,13 @@ class binary_writer
                                          const bool add_prefix,
                                          const bool use_bjdata)
     {
-        if ((rsl::numeric_limits<rsl::int8_t>::min)() <= n && n <= (rsl::numeric_limits<rsl::int8_t>::max)())
+        if ((rsl::numeric_limits<rsl::int8>::min)() <= n && n <= (rsl::numeric_limits<rsl::int8>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('i'));  // int8
             }
-            write_number(static_cast<rsl::int8_t>(n), use_bjdata);
+            write_number(static_cast<rsl::int8>(n), use_bjdata);
         }
         else if (static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint8>::min)()) <= n && n <= static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint8>::max)()))
         {
@@ -16549,15 +16546,15 @@ class binary_writer
             }
             write_number(static_cast<rsl::uint8>(n), use_bjdata);
         }
-        else if ((rsl::numeric_limits<rsl::int16_t>::min)() <= n && n <= (rsl::numeric_limits<rsl::int16_t>::max)())
+        else if ((rsl::numeric_limits<rsl::int16>::min)() <= n && n <= (rsl::numeric_limits<rsl::int16>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('I'));  // int16
             }
-            write_number(static_cast<rsl::int16_t>(n), use_bjdata);
+            write_number(static_cast<rsl::int16>(n), use_bjdata);
         }
-        else if (use_bjdata && (static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint16_t>::min)()) <= n && n <= static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint16_t>::max)())))
+        else if (use_bjdata && (static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint16>::min)()) <= n && n <= static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint16>::max)())))
         {
             if (add_prefix)
             {
@@ -16622,7 +16619,7 @@ class binary_writer
 
             case value_t::number_integer:
             {
-                if ((rsl::numeric_limits<rsl::int8_t>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int8_t>::max)())
+                if ((rsl::numeric_limits<rsl::int8>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int8>::max)())
                 {
                     return 'i';
                 }
@@ -16630,11 +16627,11 @@ class binary_writer
                 {
                     return 'U';
                 }
-                if ((rsl::numeric_limits<rsl::int16_t>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int16_t>::max)())
+                if ((rsl::numeric_limits<rsl::int16>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int16>::max)())
                 {
                     return 'I';
                 }
-                if (use_bjdata && ((rsl::numeric_limits<rsl::uint16_t>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::uint16_t>::max)()))
+                if (use_bjdata && ((rsl::numeric_limits<rsl::uint16>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::uint16>::max)()))
                 {
                     return 'u';
                 }
@@ -16656,7 +16653,7 @@ class binary_writer
 
             case value_t::number_unsigned:
             {
-                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int8_t>::max)()))
+                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int8>::max)()))
                 {
                     return 'i';
                 }
@@ -16664,11 +16661,11 @@ class binary_writer
                 {
                     return 'U';
                 }
-                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int16_t>::max)()))
+                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int16>::max)()))
                 {
                     return 'I';
                 }
-                if (use_bjdata && j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::uint16_t>::max)()))
+                if (use_bjdata && j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::uint16>::max)()))
                 {
                     return 'u';
                 }
@@ -16771,21 +16768,21 @@ class binary_writer
         {
             for (const auto& el : value.at(key))
             {
-                write_number(static_cast<rsl::int8_t>(el.m_data.m_value.number_integer), true);
+                write_number(static_cast<rsl::int8>(el.m_data.m_value.number_integer), true);
             }
         }
         else if (dtype == 'u')
         {
             for (const auto& el : value.at(key))
             {
-                write_number(static_cast<rsl::uint16_t>(el.m_data.m_value.number_unsigned), true);
+                write_number(static_cast<rsl::uint16>(el.m_data.m_value.number_unsigned), true);
             }
         }
         else if (dtype == 'I')
         {
             for (const auto& el : value.at(key))
             {
-                write_number(static_cast<rsl::int16_t>(el.m_data.m_value.number_integer), true);
+                write_number(static_cast<rsl::int16>(el.m_data.m_value.number_integer), true);
             }
         }
         else if (dtype == 'm')
@@ -18545,15 +18542,15 @@ class serializer
                                 {
                                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                                     static_cast<void>((rsl::snprintf)(string_buffer.data() + bytes, 7, "\\u%04x",
-                                                                      static_cast<rsl::uint16_t>(codepoint)));
+                                                                      static_cast<rsl::uint16>(codepoint)));
                                     bytes += 6;
                                 }
                                 else
                                 {
                                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                                     static_cast<void>((rsl::snprintf)(string_buffer.data() + bytes, 13, "\\u%04x\\u%04x",
-                                                                      static_cast<rsl::uint16_t>(0xD7C0u + (codepoint >> 10u)),
-                                                                      static_cast<rsl::uint16_t>(0xDC00u + (codepoint & 0x3FFu))));
+                                                                      static_cast<rsl::uint16>(0xD7C0u + (codepoint >> 10u)),
+                                                                      static_cast<rsl::uint16>(0xDC00u + (codepoint & 0x3FFu))));
                                     bytes += 12;
                                 }
                             }
@@ -19155,14 +19152,14 @@ template <class Key, class T, class IgnoredLess = rsl::less<Key>,
 
     T& operator[](const key_type& key)
     {
-        return emplace(key, T{}).first->second;
+        return emplace(key, T{}).key->second;
     }
 
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_key_type<key_compare, key_type, KeyType>::value, int> = 0>
     T & operator[](KeyType && key)
     {
-        return emplace(rsl::forward<KeyType>(key), T{}).first->second;
+        return emplace(rsl::forward<KeyType>(key), T{}).key->second;
     }
 
     const T& operator[](const key_type& key) const
@@ -19397,14 +19394,14 @@ template <class Key, class T, class IgnoredLess = rsl::less<Key>,
 
     rsl::key_value<iterator, bool> insert( value_type&& value )
     {
-        return emplace(value.first, rsl::move(value.second));
+        return emplace(value.key, rsl::move(value.value));
     }
 
     rsl::key_value<iterator, bool> insert( const value_type& value )
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
-            if (m_compare(it->first, value.first))
+            if (m_compare(it->first, value.key))
             {
                 return {it, false};
             }
@@ -19522,7 +19519,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     static ::nlohmann::detail::parser<basic_json, InputAdapterType> parser(
         InputAdapterType adapter,
         detail::parser_callback_t<basic_json>cb = nullptr,
-        const bool allow_exceptions = true,
+        const bool allow_exceptions = false,
         const bool ignore_comments = false
                                  )
     {
@@ -20107,7 +20104,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             {
                 for (auto& element : *m_data.m_value.object)
                 {
-                    element.second.m_parent = this;
+                    element.value.m_parent = this;
                 }
                 break;
             }
@@ -21574,7 +21571,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             auto result = m_data.m_value.object->emplace(rsl::forward<KeyType>(key), nullptr);
-            return set_parent(result.first->second);
+            return set_parent(result.key->second);
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
@@ -22560,7 +22557,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
         // add element to object
         auto res = m_data.m_value.object->insert(val);
-        set_parent(res.first->second);
+        set_parent(res.key->second);
     }
 
     /// @brief add an object to an object
@@ -22641,14 +22638,14 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
         // add element to array (perfect forwarding)
         auto res = m_data.m_value.object->emplace(rsl::forward<Args>(args)...);
-        set_parent(res.first->second);
+        set_parent(res.key->second);
 
         // create result iterator and set iterator to the result of emplace
         auto it = begin();
-        it.m_it.object_iterator = res.first;
+        it.m_it.object_iterator = res.key;
 
         // return pair of iterator and boolean
-        return {it, res.second};
+        return {it, res.value};
     }
 
     /// Helper for insertion of an iterator
@@ -23048,8 +23045,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // an operation is computed as an odd number of inverses of others
     static bool compares_unordered(const_reference lhs, const_reference rhs, bool inverse = false) noexcept
     {
-        if ((lhs.is_number_float() && rsl::isnan(lhs.m_data.m_value.number_float) && rhs.is_number())
-                || (rhs.is_number_float() && rsl::isnan(rhs.m_data.m_value.number_float) && lhs.is_number()))
+        if ((lhs.is_number_float() && rsl::is_nan(lhs.m_data.m_value.number_float) && rhs.is_number())
+                || (rhs.is_number_float() && rsl::is_nan(rhs.m_data.m_value.number_float) && lhs.is_number()))
         {
             return true;
         }
@@ -23406,7 +23403,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json parse(InputType&& i,
                             const parser_callback_t cb = nullptr,
-                            const bool allow_exceptions = true,
+                            const bool allow_exceptions = false,
                             const bool ignore_comments = false)
     {
         basic_json result;
@@ -23421,7 +23418,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     static basic_json parse(IteratorType first,
                             IteratorType last,
                             const parser_callback_t cb = nullptr,
-                            const bool allow_exceptions = true,
+                            const bool allow_exceptions = false,
                             const bool ignore_comments = false)
     {
         basic_json result;
@@ -23433,7 +23430,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, parse(ptr, ptr + len))
     static basic_json parse(detail::span_input_adapter&& i,
                             const parser_callback_t cb = nullptr,
-                            const bool allow_exceptions = true,
+                            const bool allow_exceptions = false,
                             const bool ignore_comments = false)
     {
         basic_json result;
@@ -23753,7 +23750,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_cbor(InputType&& i,
                                 const bool strict = true,
-                                const bool allow_exceptions = true,
+                                const bool allow_exceptions = false,
                                 const cbor_tag_handler_t tag_handler = cbor_tag_handler_t::error)
     {
         basic_json result;
@@ -23769,7 +23766,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_cbor(IteratorType first, IteratorType last,
                                 const bool strict = true,
-                                const bool allow_exceptions = true,
+                                const bool allow_exceptions = false,
                                 const cbor_tag_handler_t tag_handler = cbor_tag_handler_t::error)
     {
         basic_json result;
@@ -23784,7 +23781,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_cbor(ptr, ptr + len))
     static basic_json from_cbor(const T* ptr, rsl::size_t len,
                                 const bool strict = true,
-                                const bool allow_exceptions = true,
+                                const bool allow_exceptions = false,
                                 const cbor_tag_handler_t tag_handler = cbor_tag_handler_t::error)
     {
         return from_cbor(ptr, ptr + len, strict, allow_exceptions, tag_handler);
@@ -23794,7 +23791,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_cbor(ptr, ptr + len))
     static basic_json from_cbor(detail::span_input_adapter&& i,
                                 const bool strict = true,
-                                const bool allow_exceptions = true,
+                                const bool allow_exceptions = false,
                                 const cbor_tag_handler_t tag_handler = cbor_tag_handler_t::error)
     {
         basic_json result;
@@ -23811,7 +23808,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_msgpack(InputType&& i,
                                    const bool strict = true,
-                                   const bool allow_exceptions = true)
+                                   const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23826,7 +23823,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_msgpack(IteratorType first, IteratorType last,
                                    const bool strict = true,
-                                   const bool allow_exceptions = true)
+                                   const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23840,7 +23837,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_msgpack(ptr, ptr + len))
     static basic_json from_msgpack(const T* ptr, rsl::size_t len,
                                    const bool strict = true,
-                                   const bool allow_exceptions = true)
+                                   const bool allow_exceptions = false)
     {
         return from_msgpack(ptr, ptr + len, strict, allow_exceptions);
     }
@@ -23849,7 +23846,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_msgpack(ptr, ptr + len))
     static basic_json from_msgpack(detail::span_input_adapter&& i,
                                    const bool strict = true,
-                                   const bool allow_exceptions = true)
+                                   const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23865,7 +23862,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_ubjson(InputType&& i,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23880,7 +23877,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_ubjson(IteratorType first, IteratorType last,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23894,7 +23891,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_ubjson(ptr, ptr + len))
     static basic_json from_ubjson(const T* ptr, rsl::size_t len,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         return from_ubjson(ptr, ptr + len, strict, allow_exceptions);
     }
@@ -23903,7 +23900,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_ubjson(ptr, ptr + len))
     static basic_json from_ubjson(detail::span_input_adapter&& i,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23919,7 +23916,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_bjdata(InputType&& i,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23934,7 +23931,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_bjdata(IteratorType first, IteratorType last,
                                   const bool strict = true,
-                                  const bool allow_exceptions = true)
+                                  const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23949,7 +23946,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_bson(InputType&& i,
                                 const bool strict = true,
-                                const bool allow_exceptions = true)
+                                const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23964,7 +23961,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json from_bson(IteratorType first, IteratorType last,
                                 const bool strict = true,
-                                const bool allow_exceptions = true)
+                                const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);
@@ -23978,7 +23975,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_bson(ptr, ptr + len))
     static basic_json from_bson(const T* ptr, rsl::size_t len,
                                 const bool strict = true,
-                                const bool allow_exceptions = true)
+                                const bool allow_exceptions = false)
     {
         return from_bson(ptr, ptr + len, strict, allow_exceptions);
     }
@@ -23987,7 +23984,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     JSON_HEDLEY_DEPRECATED_FOR(3.8.0, from_bson(ptr, ptr + len))
     static basic_json from_bson(detail::span_input_adapter&& i,
                                 const bool strict = true,
-                                const bool allow_exceptions = true)
+                                const bool allow_exceptions = false)
     {
         basic_json result;
         detail::json_sax_dom_parser<basic_json> sdp(result, allow_exceptions);

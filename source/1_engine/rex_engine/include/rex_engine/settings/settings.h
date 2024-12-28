@@ -25,8 +25,10 @@ namespace rex
     void set(rsl::string_view name, s32 val);
     // Set a setting from a float. This supports adding new settings
     void set(rsl::string_view name, f32 val);
-    // Set the setting from a bool, This supports adding new settings
-    //void set(rsl::string_view name, bool val);
+    // No setter for bool is provided
+    // because it'd be used when using a string literal
+    // without it, the string_view overload is used
+    // and for bools the integer one is used
     
     // Load a settings file and adds it settings to the settings
     // This behaves the same as if you can "set" multiple times
