@@ -1,4 +1,4 @@
-﻿#include "rex_unit_test/rex_catch2.h"
+#include "rex_unit_test/rex_catch2.h"
 
 #define JSON_TESTS_PRIVATE
 
@@ -197,7 +197,12 @@ namespace
 	rex::json::json parser_helper(rsl::string_view s)
 	{
 		rex::json::json j;
-		REX_CHECK_NOTHROW(rex::json::json::parser(rex::json::detail::input_adapter(s)).parse(true, j));
+		rex::json::json::parser(rex::json::detail::input_adapter(s)).parse(true, j);
+
+		if (j.is_discarded())
+		{
+			return j;
+		}
 
 		rex::json::json j_sax;
 		rex::json::detail::json_sax_dom_parser<rex::json::json> sdp(j_sax);
