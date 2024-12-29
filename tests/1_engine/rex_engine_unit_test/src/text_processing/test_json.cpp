@@ -220,7 +220,7 @@ namespace
 
 		// 1. parse s without exceptions
 		rex::json::json j;
-		REX_CHECK_NOTHROW(rex::json::json::parser(nlohmann::detail::input_adapter(s), nullptr, false).parse(true, j));
+		rex::json::json::parser(nlohmann::detail::input_adapter(s), nullptr, false).parse(true, j);
 		const bool ok_noexcept = !j.is_discarded();
 
 		// 2. accept s
@@ -231,7 +231,7 @@ namespace
 
 		// 4. parse with SAX (compare with relaxed accept result)
 		SaxEventLogger el;
-		REX_CHECK_NOTHROW(rex::json::json::sax_parse(s, &el, rex::json::json::input_format_t::json, false));
+		rex::json::json::sax_parse(s, &el, rex::json::json::input_format_t::json, false);
 		REX_CHECK(rex::json::json::parser(nlohmann::detail::input_adapter(s)).accept(false) == !el.errored);
 
 		// 5. parse with simple callback
@@ -260,11 +260,11 @@ namespace
 		rex::json::json _;
 
 		// parse/accept with default parser
-		REX_CHECK_NOTHROW(rex::json::json::parse(s));
+		rex::json::json::parse(s);
 		REX_CHECK(rex::json::json::accept(s));
 
 		// parse/accept while skipping comments
-		REX_CHECK_NOTHROW(rex::json::json::parse(s, nullptr, false, true));
+		rex::json::json::parse(s, nullptr, false, true);
 		REX_CHECK(rex::json::json::accept(s, true));
 
 		rsl::vector<rsl::string> json_with_comments;
@@ -568,7 +568,7 @@ TEST_CASE("parser class")
 			SECTION("overflow")
 			{
 				// overflows during parsing yield an exception
-				REX_CHECK(parser_helper("1.18973e+4932").empty());
+				REX_CHECK(parser_helper("1.18973e+4932").is_discarded());
 			}
 
 			SECTION("invalid numbers")
@@ -1599,7 +1599,7 @@ TEST_CASE("parser class")
 	SECTION("error messages for comments")
 	{
 		rex::json::json _;
-		REX_CHECK(rex::json::json::parse("/a", nullptr, true, true).is_discarded() == true);
-		REX_CHECK(rex::json::json::parse("/*", nullptr, true, true).is_discarded() == true);
+		REX_CHECK(rex::json::json::parse("/a", nullptr, false, true).is_discarded() == true);
+		REX_CHECK(rex::json::json::parse("/*", nullptr, false, true).is_discarded() == true);
 	}
 }
