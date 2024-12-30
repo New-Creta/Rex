@@ -11,5 +11,18 @@ TEST_CASE("TEST - Interval - Timing")
   using namespace rsl::chrono_literals;
   rsl::this_thread::sleep_for(1ms);
 
-  REX_CHECK(interval.value() > 0);
+  REX_CHECK(interval.milliseconds() > 0);
+  REX_CHECK(interval.seconds() > 0);
+}
+
+TEST_CASE("TEST - Interval - Resetting")
+{
+  rex::Interval interval{};
+
+  using namespace rsl::chrono_literals;
+  rsl::this_thread::sleep_for(1ms);
+
+  interval.reset();
+  REX_CHECK(interval.milliseconds() == 0);
+  REX_CHECK(interval.seconds() == 0);
 }

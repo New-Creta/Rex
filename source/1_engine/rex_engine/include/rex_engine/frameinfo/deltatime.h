@@ -13,7 +13,7 @@ namespace rex
     //-------------------------------------------------------------------------
     DeltaTime()
         : m_last_time_point(rsl::chrono::steady_clock::now())
-        , m_current_time_point(rsl::chrono::steady_clock::now() - m_last_time_point)
+        , m_time_since_last_timepoint(rsl::chrono::steady_clock::now() - m_last_time_point)
     {
     }
 
@@ -22,23 +22,23 @@ namespace rex
     {
       const rsl::chrono::steady_clock::time_point current = rsl::chrono::steady_clock::now();
 
-      m_current_time_point = fmiliseconds(current - m_last_time_point);
+      m_time_since_last_timepoint = fmiliseconds(current - m_last_time_point);
       m_last_time_point    = current;
     }
 
     //--------------------------------------------------------------------------------------------
     float to_seconds() const
     {
-      return fseconds {m_current_time_point}.count();
+      return fseconds {m_time_since_last_timepoint}.count();
     }
     //--------------------------------------------------------------------------------------------
     float to_milliseconds() const
     {
-      return m_current_time_point.count();
+      return m_time_since_last_timepoint.count();
     }
 
   private:
     rsl::chrono::steady_clock::time_point m_last_time_point;
-    fmiliseconds m_current_time_point;
+    fmiliseconds m_time_since_last_timepoint;
   };
 } // namespace rex

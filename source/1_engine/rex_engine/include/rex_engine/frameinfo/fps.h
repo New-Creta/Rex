@@ -22,12 +22,12 @@ namespace rex
     {
       // if 1 second has elapsed, reset the timer and start over
       using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-      if(m_fps_interval.value() > rsl::chrono::duration_cast<rsl::chrono::milliseconds>(1s).count())
+      if(m_fps_interval.milliseconds() > rsl::chrono::duration_cast<rsl::chrono::milliseconds>(1s).count())
       {
         m_fps = m_fps_count;
 
         m_fps_count    = 0;
-        m_fps_interval = Interval();
+        m_fps_interval.reset();
       }
 
       ++m_fps_count;

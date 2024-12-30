@@ -6,5 +6,6 @@
 
 namespace rex
 {
+  rsl::string timepoint_str(rsl::time_point timepoint);
   rsl::string current_timepoint_str();
 }
