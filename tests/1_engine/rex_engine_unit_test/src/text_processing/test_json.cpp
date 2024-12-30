@@ -290,59 +290,59 @@ namespace
 
 } // namespace
 
-TEST_CASE("parser class")
+TEST_CASE("TEST - Text Processing - Json")
 {
-	SECTION("parse")
+	SECTION("SECTION - parse")
 	{
-		SECTION("null")
+		SECTION("SECTION - null")
 		{
 			REX_CHECK(parser_helper("null") == rex::json::json(nullptr));
 		}
 
-		SECTION("true")
+		SECTION("SECTION - true")
 		{
 			REX_CHECK(parser_helper("true") == rex::json::json(true));
 		}
 
-		SECTION("false")
+		SECTION("SECTION - false")
 		{
 			REX_CHECK(parser_helper("false") == rex::json::json(false));
 		}
 
-		SECTION("array")
+		SECTION("SECTION - array")
 		{
-			SECTION("empty array")
+			SECTION("SECTION - empty array")
 			{
 				REX_CHECK(parser_helper("[]") == rex::json::json(rex::json::json::value_t::array));
 				REX_CHECK(parser_helper("[ ]") == rex::json::json(rex::json::json::value_t::array));
 			}
 
-			SECTION("nonempty array")
+			SECTION("SECTION - nonempty array")
 			{
 				REX_CHECK(parser_helper("[true, false, null]") == rex::json::json({ true, false, nullptr }));
 			}
 		}
 
-		SECTION("object")
+		SECTION("SECTION - object")
 		{
-			SECTION("empty object")
+			SECTION("SECTION - empty object")
 			{
 				REX_CHECK(parser_helper("{}") == rex::json::json(rex::json::json::value_t::object));
 				REX_CHECK(parser_helper("{ }") == rex::json::json(rex::json::json::value_t::object));
 			}
 
-			SECTION("nonempty object")
+			SECTION("SECTION - nonempty object")
 			{
 				REX_CHECK(parser_helper("{\"\": true, \"one\": 1, \"two\": null}") == rex::json::json({ {"", true}, {"one", 1}, {"two", nullptr} }));
 			}
 		}
 
-		SECTION("string")
+		SECTION("SECTION - string")
 		{
 			// empty string
 			REX_CHECK(parser_helper("\"\"") == rex::json::json(rex::json::json::value_t::string));
 
-			SECTION("errors")
+			SECTION("SECTION - errors")
 			{
 				// error: tab in string
 				REX_CHECK(parser_helper("\"\t\"").is_discarded() == true);
@@ -388,7 +388,7 @@ TEST_CASE("parser class")
 				REX_CHECK(parser_helper("\"\x1e\"").is_discarded() == true);
 				REX_CHECK(parser_helper("\"\x1f\"").is_discarded() == true);
 
-				SECTION("additional test for null byte")
+				SECTION("SECTION - additional test for null byte")
 				{
 					// The test above for the null byte is wrong, because passing
 					// a string to the parser only reads int until it encounters
@@ -401,7 +401,7 @@ TEST_CASE("parser class")
 				}
 			}
 
-			SECTION("escaped")
+			SECTION("SECTION - escaped")
 			{
 				// quotation mark "\""
 				auto r1 = R"("\"")"_json;
@@ -441,11 +441,11 @@ TEST_CASE("parser class")
 			}
 		}
 
-		SECTION("number")
+		SECTION("SECTION - number")
 		{
-			SECTION("integers")
+			SECTION("SECTION - integers")
 			{
-				SECTION("without exponent")
+				SECTION("SECTION - without exponent")
 				{
 					REX_CHECK(parser_helper("-128") == rex::json::json(-128));
 					REX_CHECK(parser_helper("-0") == rex::json::json(-0));
@@ -453,7 +453,7 @@ TEST_CASE("parser class")
 					REX_CHECK(parser_helper("128") == rex::json::json(128));
 				}
 
-				SECTION("with exponent")
+				SECTION("SECTION - with exponent")
 				{
 					REX_CHECK(parser_helper("0e1") == rex::json::json(0e1));
 					REX_CHECK(parser_helper("0E1") == rex::json::json(0e1));
@@ -514,7 +514,7 @@ TEST_CASE("parser class")
 					REX_CHECK(parser_helper("10E-9") == rex::json::json(10e-9));
 				}
 
-				SECTION("edge cases")
+				SECTION("SECTION - edge cases")
 				{
 					// From RFC8259, Section 6:
 					// Note that when such software is used, numbers that are
@@ -528,7 +528,7 @@ TEST_CASE("parser class")
 					REX_CHECK(parser_helper("9007199254740991").get<int64_t>() == 9007199254740991);
 				}
 
-				SECTION("over the edge cases")  // issue #178 - Integer conversion to unsigned (incorrect handling of 64-bit integers)
+				SECTION("SECTION - over the edge cases")  // issue #178 - Integer conversion to unsigned (incorrect handling of 64-bit integers)
 				{
 					// While RFC8259, Section 6 specifies a preference for support
 					// for ranges in range of IEEE 754-2008 binary64 (double precision)
@@ -546,9 +546,9 @@ TEST_CASE("parser class")
 				}
 			}
 
-			SECTION("floating-point")
+			SECTION("SECTION - floating-point")
 			{
-				SECTION("without exponent")
+				SECTION("SECTION - without exponent")
 				{
 					REX_CHECK(parser_helper("-128.5") == rex::json::json(-128.5));
 					REX_CHECK(parser_helper("0.999") == rex::json::json(0.999));
@@ -556,7 +556,7 @@ TEST_CASE("parser class")
 					REX_CHECK(parser_helper("-0.0") == rex::json::json(-0.0));
 				}
 
-				SECTION("with exponent")
+				SECTION("SECTION - with exponent")
 				{
 					REX_CHECK(parser_helper("-128.5E3") == rex::json::json(-128.5E3));
 					REX_CHECK(parser_helper("-128.5E-3") == rex::json::json(-128.5E-3));
@@ -565,13 +565,13 @@ TEST_CASE("parser class")
 				}
 			}
 
-			SECTION("overflow")
+			SECTION("SECTION - overflow")
 			{
 				// overflows during parsing yield an exception
 				REX_CHECK(parser_helper("1.18973e+4932").is_discarded());
 			}
 
-			SECTION("invalid numbers")
+			SECTION("SECTION - invalid numbers")
 			{
 				// numbers must not begin with "+"
 				REX_CHECK(parser_helper("+1").is_discarded() == true);
@@ -598,57 +598,57 @@ TEST_CASE("parser class")
 		}
 	}
 
-	SECTION("accept")
+	SECTION("SECTION - accept")
 	{
-		SECTION("null")
+		SECTION("SECTION - null")
 		{
 			REX_CHECK(accept_helper("null"));
 		}
 
-		SECTION("true")
+		SECTION("SECTION - true")
 		{
 			REX_CHECK(accept_helper("true"));
 		}
 
-		SECTION("false")
+		SECTION("SECTION - false")
 		{
 			REX_CHECK(accept_helper("false"));
 		}
 
-		SECTION("array")
+		SECTION("SECTION - array")
 		{
-			SECTION("empty array")
+			SECTION("SECTION - empty array")
 			{
 				REX_CHECK(accept_helper("[]"));
 				REX_CHECK(accept_helper("[ ]"));
 			}
 
-			SECTION("nonempty array")
+			SECTION("SECTION - nonempty array")
 			{
 				REX_CHECK(accept_helper("[true, false, null]"));
 			}
 		}
 
-		SECTION("object")
+		SECTION("SECTION - object")
 		{
-			SECTION("empty object")
+			SECTION("SECTION - empty object")
 			{
 				REX_CHECK(accept_helper("{}"));
 				REX_CHECK(accept_helper("{ }"));
 			}
 
-			SECTION("nonempty object")
+			SECTION("SECTION - nonempty object")
 			{
 				REX_CHECK(accept_helper("{\"\": true, \"one\": 1, \"two\": null}"));
 			}
 		}
 
-		SECTION("string")
+		SECTION("SECTION - string")
 		{
 			// empty string
 			REX_CHECK(accept_helper("\"\""));
 
-			SECTION("errors")
+			SECTION("SECTION - errors")
 			{
 				// error: tab in string
 				REX_CHECK(accept_helper("\"\t\"") == false);
@@ -695,7 +695,7 @@ TEST_CASE("parser class")
 				REX_CHECK(accept_helper("\"\x1f\"") == false);
 			}
 
-			SECTION("escaped")
+			SECTION("SECTION - escaped")
 			{
 				// quotation mark "\""
 				auto r1 = R"("\"")"_json;
@@ -735,11 +735,11 @@ TEST_CASE("parser class")
 			}
 		}
 
-		SECTION("number")
+		SECTION("SECTION - number")
 		{
-			SECTION("integers")
+			SECTION("SECTION - integers")
 			{
-				SECTION("without exponent")
+				SECTION("SECTION - without exponent")
 				{
 					REX_CHECK(accept_helper("-128"));
 					REX_CHECK(accept_helper("-0"));
@@ -747,7 +747,7 @@ TEST_CASE("parser class")
 					REX_CHECK(accept_helper("128"));
 				}
 
-				SECTION("with exponent")
+				SECTION("SECTION - with exponent")
 				{
 					REX_CHECK(accept_helper("0e1"));
 					REX_CHECK(accept_helper("0E1"));
@@ -777,7 +777,7 @@ TEST_CASE("parser class")
 					REX_CHECK(accept_helper("-0E123"));
 				}
 
-				SECTION("edge cases")
+				SECTION("SECTION - edge cases")
 				{
 					// From RFC8259, Section 6:
 					// Note that when such software is used, numbers that are
@@ -791,7 +791,7 @@ TEST_CASE("parser class")
 					REX_CHECK(accept_helper("9007199254740991"));
 				}
 
-				SECTION("over the edge cases")  // issue #178 - Integer conversion to unsigned (incorrect handling of 64-bit integers)
+				SECTION("SECTION - over the edge cases")  // issue #178 - Integer conversion to unsigned (incorrect handling of 64-bit integers)
 				{
 					// While RFC8259, Section 6 specifies a preference for support
 					// for ranges in range of IEEE 754-2008 binary64 (double precision)
@@ -809,9 +809,9 @@ TEST_CASE("parser class")
 				}
 			}
 
-			SECTION("floating-point")
+			SECTION("SECTION - floating-point")
 			{
-				SECTION("without exponent")
+				SECTION("SECTION - without exponent")
 				{
 					REX_CHECK(accept_helper("-128.5"));
 					REX_CHECK(accept_helper("0.999"));
@@ -819,7 +819,7 @@ TEST_CASE("parser class")
 					REX_CHECK(accept_helper("-0.0"));
 				}
 
-				SECTION("with exponent")
+				SECTION("SECTION - with exponent")
 				{
 					REX_CHECK(accept_helper("-128.5E3"));
 					REX_CHECK(accept_helper("-128.5E-3"));
@@ -828,13 +828,13 @@ TEST_CASE("parser class")
 				}
 			}
 
-			SECTION("overflow")
+			SECTION("SECTION - overflow")
 			{
 				// overflows during parsing
 				REX_CHECK(!accept_helper("1.18973e+4932"));
 			}
 
-			SECTION("invalid numbers")
+			SECTION("SECTION - invalid numbers")
 			{
 				REX_CHECK(accept_helper("01") == false);
 				REX_CHECK(accept_helper("--1") == false);
@@ -860,7 +860,7 @@ TEST_CASE("parser class")
 		}
 	}
 
-	SECTION("parse errors")
+	SECTION("SECTION - parse errors")
 	{
 		// unexpected end of number
 		REX_CHECK(parser_helper("0.").is_discarded() == true);
@@ -1076,7 +1076,7 @@ TEST_CASE("parser class")
 		REX_CHECK(rex::json::json::parse("\"\\uD80C\\uFFFF\"").is_discarded() == true);
 	}
 
-	SECTION("parse errors (accept)")
+	SECTION("SECTION - parse errors (accept)")
 	{
 		// unexpected end of number
 		REX_CHECK(accept_helper("0.") == false);
@@ -1265,7 +1265,7 @@ TEST_CASE("parser class")
 		REX_CHECK(accept_helper("\"\\uD80C\\uFFFF\"") == false);
 	}
 
-	SECTION("tests found by mutate++")
+	SECTION("SECTION - tests found by mutate++")
 	{
 		// test case to make sure no comma precedes the first key
 		REX_CHECK(parser_helper("{,\"key\": false}").is_discarded() == true);
@@ -1284,7 +1284,7 @@ TEST_CASE("parser class")
 		}
 	}
 
-	SECTION("callback function")
+	SECTION("SECTION - callback function")
 	{
 		const auto* s_object = R"(
             {
@@ -1311,7 +1311,7 @@ TEST_CASE("parser class")
             ]
         )";
 
-		SECTION("filter nothing")
+		SECTION("SECTION - filter nothing")
 		{
 			rex::json::json j_object = rex::json::json::parse(s_object, [](int /*unused*/, rex::json::json::parse_event_t /*unused*/, const rex::json::json& /*unused*/) noexcept
 				{
@@ -1328,7 +1328,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j_array == rex::json::json({ 1, 2, {3, 4, 5}, 4, 5 }));
 		}
 
-		SECTION("filter everything")
+		SECTION("SECTION - filter everything")
 		{
 			rex::json::json const j_object = rex::json::json::parse(s_object, [](int /*unused*/, rex::json::json::parse_event_t /*unused*/, const rex::json::json& /*unused*/) noexcept
 				{
@@ -1347,7 +1347,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j_array.is_null());
 		}
 
-		SECTION("filter specific element")
+		SECTION("SECTION - filter specific element")
 		{
 			rex::json::json j_object = rex::json::json::parse(s_object, [](int /*unused*/, rex::json::json::parse_event_t event, const rex::json::json& j) noexcept
 				{
@@ -1365,7 +1365,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j_array == rex::json::json({ 1, {3, 4, 5}, 4, 5 }));
 		}
 
-		SECTION("filter object in array")
+		SECTION("SECTION - filter object in array")
 		{
 			rex::json::json j_filtered1 = rex::json::json::parse(structured_array, [](int /*unused*/, rex::json::json::parse_event_t e, const rex::json::json& parsed)
 				{
@@ -1386,9 +1386,9 @@ TEST_CASE("parser class")
 			REX_CHECK(j_filtered2 == rex::json::json({ 1 }));
 		}
 
-		SECTION("filter specific events")
+		SECTION("SECTION - filter specific events")
 		{
-			SECTION("first closing event")
+			SECTION("SECTION - first closing event")
 			{
 				{
 					rex::json::json j_object = rex::json::json::parse(s_object, [](int /*unused*/, rex::json::json::parse_event_t e, const rex::json::json& /*unused*/) noexcept
@@ -1426,7 +1426,7 @@ TEST_CASE("parser class")
 			}
 		}
 
-		SECTION("special cases")
+		SECTION("SECTION - special cases")
 		{
 			// the following test cases cover the situation in which an empty
 			// object and array is discarded only after the closing character
@@ -1446,9 +1446,9 @@ TEST_CASE("parser class")
 		}
 	}
 
-	SECTION("constructing from contiguous containers")
+	SECTION("SECTION - constructing from contiguous containers")
 	{
-		SECTION("from rsl::vector")
+		SECTION("SECTION - from rsl::vector")
 		{
 			rsl::vector<uint8_t> v = { 't', 'r', 'u', 'e' };
 			rex::json::json j;
@@ -1456,7 +1456,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j == rex::json::json(true));
 		}
 
-		SECTION("from rsl::array")
+		SECTION("SECTION - from rsl::array")
 		{
 			rsl::array<uint8_t, 5> v{ {'t', 'r', 'u', 'e'} };
 			rex::json::json j;
@@ -1464,7 +1464,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j == rex::json::json(true));
 		}
 
-		SECTION("from array")
+		SECTION("SECTION - from array")
 		{
 			uint8_t v[] = { 't', 'r', 'u', 'e' }; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 			rex::json::json j;
@@ -1472,12 +1472,12 @@ TEST_CASE("parser class")
 			REX_CHECK(j == rex::json::json(true));
 		}
 
-		SECTION("from char literal")
+		SECTION("SECTION - from char literal")
 		{
 			REX_CHECK(parser_helper("true") == rex::json::json(true));
 		}
 
-		SECTION("from rsl::string")
+		SECTION("SECTION - from rsl::string")
 		{
 			rsl::string v = { 't', 'r', 'u', 'e' };
 			rex::json::json j;
@@ -1485,7 +1485,7 @@ TEST_CASE("parser class")
 			REX_CHECK(j == rex::json::json(true));
 		}
 
-		SECTION("from rsl::initializer_list")
+		SECTION("SECTION - from rsl::initializer_list")
 		{
 			rsl::initializer_list<uint8_t> const v = { 't', 'r', 'u', 'e' };
 			rex::json::json j;
@@ -1494,7 +1494,7 @@ TEST_CASE("parser class")
 		}
 
 		// To implement when valarray is implemented
-		//SECTION("from rsl::valarray")
+		//SECTION("SECTION - from rsl::valarray")
 		//{
 		//	rsl::valarray<uint8_t> v = { 't', 'r', 'u', 'e' };
 		//	rex::json::json j;
@@ -1503,9 +1503,9 @@ TEST_CASE("parser class")
 		//}
 	}
 
-	SECTION("improve test coverage")
+	SECTION("SECTION - improve test coverage")
 	{
-		SECTION("parser with callback")
+		SECTION("SECTION - parser with callback")
 		{
 			rex::json::json::parser_callback_t const cb = [](int /*unused*/, rex::json::json::parse_event_t /*unused*/, rex::json::json& /*unused*/) noexcept
 			{
@@ -1520,75 +1520,75 @@ TEST_CASE("parser class")
 			REX_CHECK(rex::json::json::parse("1.18973e+4932", cb).is_discarded() == true);
 		}
 
-		SECTION("SAX parser")
+		SECTION("SECTION - SAX parser")
 		{
-			SECTION("} without value")
+			SECTION("SECTION - } without value")
 			{
 				SaxCountdown s(1);
 				REX_CHECK(rex::json::json::sax_parse("{}", &s) == false);
 			}
 
-			SECTION("} with value")
+			SECTION("SECTION - } with value")
 			{
 				SaxCountdown s(3);
 				REX_CHECK(rex::json::json::sax_parse("{\"k1\": true}", &s) == false);
 			}
 
-			SECTION("second key")
+			SECTION("SECTION - second key")
 			{
 				SaxCountdown s(3);
 				REX_CHECK(rex::json::json::sax_parse("{\"k1\": true, \"k2\": false}", &s) == false);
 			}
 
-			SECTION("] without value")
+			SECTION("SECTION - ] without value")
 			{
 				SaxCountdown s(1);
 				REX_CHECK(rex::json::json::sax_parse("[]", &s) == false);
 			}
 
-			SECTION("] with value")
+			SECTION("SECTION - ] with value")
 			{
 				SaxCountdown s(2);
 				REX_CHECK(rex::json::json::sax_parse("[1]", &s) == false);
 			}
 
-			SECTION("float")
+			SECTION("SECTION - float")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("3.14", &s) == false);
 			}
 
-			SECTION("false")
+			SECTION("SECTION - false")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("false", &s) == false);
 			}
 
-			SECTION("null")
+			SECTION("SECTION - null")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("null", &s) == false);
 			}
 
-			SECTION("true")
+			SECTION("SECTION - true")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("true", &s) == false);
 			}
 
-			SECTION("unsigned")
+			SECTION("SECTION - unsigned")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("12", &s) == false);
 			}
 
-			SECTION("integer")
+			SECTION("SECTION - integer")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("-12", &s) == false);
 			}
 
-			SECTION("string")
+			SECTION("SECTION - string")
 			{
 				SaxCountdown s(0);
 				REX_CHECK(rex::json::json::sax_parse("\"foo\"", &s) == false);
@@ -1596,7 +1596,7 @@ TEST_CASE("parser class")
 		}
 	}
 
-	SECTION("error messages for comments")
+	SECTION("SECTION - error messages for comments")
 	{
 		rex::json::json _;
 		REX_CHECK(rex::json::json::parse("/a", nullptr, false, true).is_discarded() == true);

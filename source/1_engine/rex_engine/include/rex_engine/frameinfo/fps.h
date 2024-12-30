@@ -2,6 +2,7 @@
 
 #include "rex_engine/timing/interval.h"
 #include "rex_std/chrono.h"
+#include "rex_std/algorithm.h"
 
 namespace rex
 {
@@ -19,11 +20,8 @@ namespace rex
     //--------------------------------------------------------------------------------------------
     void update()
     {
-      // keep incrementing the counter until 1 second has elapsed
-      ++m_fps_count;
-      using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-
       // if 1 second has elapsed, reset the timer and start over
+      using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
       if(m_fps_interval.value() > rsl::chrono::duration_cast<rsl::chrono::milliseconds>(1s).count())
       {
         m_fps = m_fps_count;
@@ -31,6 +29,8 @@ namespace rex
         m_fps_count    = 0;
         m_fps_interval = Interval();
       }
+
+      ++m_fps_count;
     }
 
     //--------------------------------------------------------------------------------------------

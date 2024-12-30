@@ -23,7 +23,7 @@ namespace rex
 
   void AssertMtx::unlock()
   {
-    REX_ASSERT_X(m_is_locked, "Assert lock was unlocked when trying to get locked");
+    REX_ASSERT_X(m_is_locked, "Assert lock was already unlocked when trying to unlock");
     m_is_locked = false;
   }
 

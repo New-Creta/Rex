@@ -38,7 +38,7 @@ namespace rex
   rsl::string_view remove_quotes(rsl::string_view path);
 
   // converts a wide character string to a multi byte character string
-  rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size);
+  rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t length);
 
   // returns true if the character after the string view is '\0'
   bool is_null_terminated(rsl::string_view string);

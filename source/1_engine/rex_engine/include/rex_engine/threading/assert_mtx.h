@@ -9,6 +9,12 @@ namespace rex
   {
   public:
     AssertMtx();
+    AssertMtx(const AssertMtx&) = delete;
+    AssertMtx(AssertMtx&&) = delete;
+    ~AssertMtx() = default;
+
+    AssertMtx& operator=(const AssertMtx&) = delete;
+    AssertMtx& operator=(AssertMtx&&) = delete;
 
     bool try_lock();
 

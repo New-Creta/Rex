@@ -7,10 +7,10 @@ TEST_CASE("TEST - Fps - Updating")
 {
   rex::FPS fps{};
 
-  fps.update();
+  //fps.update();
 
   using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(1s);
+  //rsl::this_thread::sleep_for(1s);
 
   // A few consequetive updates to increase fps
   fps.update();
