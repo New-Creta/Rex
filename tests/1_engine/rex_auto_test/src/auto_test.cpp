@@ -46,7 +46,7 @@ namespace rex
   {
     rsl::optional<rsl::string_view> cmdline = rex::cmdline::get_argument("AutoTest");
 
-    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline. Commandline: {}");
+    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline.");
 
     rsl::vector<auto_test::AutoTest> auto_tests = auto_test::auto_test_entry();
 
