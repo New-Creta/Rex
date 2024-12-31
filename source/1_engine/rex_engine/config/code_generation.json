@@ -7,7 +7,8 @@
       "Global",
       "Engine",
       "FileIO",
-      "StringPool"
+      "StringPool",
+      "Renderer"
     ]
   },
   "MountingPoints": {
@@ -18,6 +19,7 @@
       "Logs /*Folder where all logs go*/",
       "EngineSettings /*Root directory of engine settings*/",
       "EngineMaterials /*Root directory of engine settings*/",
+      "EngineShaders /*Root directory of engine shaders*/",
       "EngineRoot /*Root directory of engine files*/",
       "ProjectRoot /*Root directory of the current project*/",
       "SessionsRoot /*Root directory of all sessions*/",
