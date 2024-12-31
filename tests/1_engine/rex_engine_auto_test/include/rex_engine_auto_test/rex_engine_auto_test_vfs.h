@@ -7,7 +7,7 @@ namespace rex
 
   namespace auto_tests
   {
-    bool initialize();
+    bool initialize(const ApplicationCreationParams&);
     void update();
     void shutdown();
 

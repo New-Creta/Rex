@@ -7,7 +7,7 @@ namespace rex
   class QuitApp : public Event<QuitApp>
   {
   public:
-    QuitApp(rsl::string_view reason, s32 exitCode = 0)
+    explicit QuitApp(rsl::string_view reason, s32 exitCode = 0)
       : m_reason(reason)
       , m_exit_code(exitCode)
     {}

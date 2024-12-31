@@ -8,13 +8,15 @@
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
 
+#include "rex_engine/event_system/events/app/quit_app.h"
+
 namespace rex
 {
   namespace auto_tests
   {
     DEFINE_LOG_CATEGORY(LogVfsAutoTest);
 
-    bool initialize()
+    bool initialize(const rex::ApplicationCreationParams& /*appCreationParams*/)
     {
       bool result = true;
 
@@ -40,7 +42,7 @@ namespace rex
     void update()
     {
       // We don't need to do any further testing, so as soon as initialization succeeds, we can exit here
-      rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
+      rex::event_system().enqueue_event(rex::QuitApp("Exiting VFS Autotest"));
     }
     void shutdown()
     {
