@@ -22,6 +22,8 @@ namespace rex
 
       void run(internal::thread_work_func&& func, void* arg = nullptr);
 
+      const internal::Thread* thread() const;
+
     private:
       void return_me_to_thread_pool();
 

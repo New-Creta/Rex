@@ -64,10 +64,10 @@ namespace rex
   namespace sys_info
   {
     // Returns the number of physical cores on the system
-    s32 number_physical_cores();
+    s32 num_physical_cores();
 
     // Returns the number of logical processors
-    s32 number_logical_processors();
+    s32 num_logical_processors();
   } // namespace sys_info
 } // namespace rex
 
