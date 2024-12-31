@@ -369,7 +369,7 @@ namespace rex
 
       for (const auto& [mount, path] : g_mounted_roots)
       {
-        if (!rex::directory::is_empty(path))
+        if (rex::directory::is_empty(path))
         {
           // As soon as we have a path that can be mounted and is expected to be empty on shutdown
           // we have to extend the mount functionality to give a flag to a mount that it can be empty on shutdown
