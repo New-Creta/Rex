@@ -42,6 +42,7 @@ namespace rex
     bool is_running() const;
     bool is_marked_for_destroy() const;
     bool is_shutting_down() const;
+    rsl::string_view app_name() const;
 
   protected:
     virtual bool platform_init()     = 0;
@@ -60,6 +61,7 @@ namespace rex
 
   private:
     StateController<ApplicationState> m_app_state;
+    rsl::string m_app_name;
     s32 m_exit_code;
   };
 } // namespace rex

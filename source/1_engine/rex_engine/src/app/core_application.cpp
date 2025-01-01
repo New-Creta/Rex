@@ -34,8 +34,9 @@ namespace rex
   } // namespace globals
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& /*engineParams*/)
+  CoreApplication::CoreApplication(const EngineParams& engineParams)
 		: m_app_state(ApplicationState::Created)
+    , m_app_name(engineParams.app_name)
     , m_exit_code(0)
   {
   }
@@ -127,6 +128,11 @@ namespace rex
   bool CoreApplication::is_shutting_down() const
   {
     return m_app_state.has_state(ApplicationState::ShuttingDown);
+  }
+  //--------------------------------------------------------------------------------------------
+  rsl::string_view CoreApplication::app_name() const
+  {
+    return m_app_name;
   }
 
   //--------------------------------------------------------------------------------------------

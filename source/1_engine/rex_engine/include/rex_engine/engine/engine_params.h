@@ -17,6 +17,8 @@ namespace rex
     init_func app_init_func         = nullptr;
     update_func app_update_func     = nullptr;
     shutdown_func app_shutdown_func = nullptr;
+
+    rsl::string app_name = rsl::string("default app name");
   };
 
   // We need to define these params here so that we can use everywhere
@@ -24,8 +26,8 @@ namespace rex
   {
     s32 window_width              = 1280;
     s32 window_height             = 720;
-    rsl::string_view window_title = "Application";
     bool fullscreen               = false;
+    rsl::string window_title;     // If empty, it'll use the app name
 
     s32 max_render_commands  = (rsl::numeric_limits<s16>::max)(); // value taken out of thin air, has no special meaning.
     s32 max_frames_in_flight = 3;
