@@ -1026,19 +1026,6 @@ public class TestProject : BasicCPPProject
     }
   }
 
-  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
-  {
-    base.SetupConfigSettings(conf, target);
-
-    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
-
-    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
-    {
-      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
-    }
-  }
-
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
     conf.Output = Configuration.OutputType.Exe;

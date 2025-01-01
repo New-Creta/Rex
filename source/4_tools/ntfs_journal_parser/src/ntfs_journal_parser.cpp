@@ -44,7 +44,7 @@ namespace rex
     app_params.engine_params.app_update_func = ntfs_journal::update;
     app_params.engine_params.app_shutdown_func = ntfs_journal::shutdown;
 
-    app_params.create_window = false;
+    app_params.is_gui_app = false;
 
     return app_params;
   }

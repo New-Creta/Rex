@@ -40,7 +40,7 @@ namespace rex
         : engine_params()
         , platform_params(&platformParams)
         , gui_params()
-        , create_window(false)
+        , is_gui_app(false)
     {
     }
 
@@ -48,6 +48,6 @@ namespace rex
     EngineParams engine_params;
     PlatformCreationParams* platform_params;
     GuiParams gui_params;
-    bool create_window;
+    bool is_gui_app;
   };
 } // namespace rex

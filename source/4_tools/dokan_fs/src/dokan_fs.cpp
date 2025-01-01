@@ -1769,7 +1769,7 @@ namespace rex
     app_params.engine_params.app_update_func   = dokan_fs::update;
     app_params.engine_params.app_shutdown_func = dokan_fs::shutdown;
 
-    app_params.create_window = false;
+    app_params.is_gui_app = false;
 
     return app_params;
   }

@@ -134,7 +134,7 @@ namespace regina
     app_params.engine_params.app_init_func     = create_editor;
     app_params.engine_params.app_update_func   = update_editor;
     app_params.engine_params.app_shutdown_func = destroy_editor;
-    app_params.create_window                   = true;
+    app_params.is_gui_app                   = true;
 
     return app_params;
   }

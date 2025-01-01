@@ -44,6 +44,8 @@ namespace rex
 
   rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams& platformParams)
   {
+    // Make sure logging is initalized before we do anything else
+
     rsl::optional<rsl::string_view> cmdline = rex::cmdline::get_argument("AutoTest");
 
     REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline.");

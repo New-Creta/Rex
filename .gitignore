@@ -38,3 +38,4 @@ crash-*
 *.dmp
 data/_sessions/
 data/imgui.ini
+data/RexEngineAutoTest/_sessions/

@@ -50,7 +50,7 @@ namespace rex
     app_params.engine_params.app_update_func = proj_fs::update;
     app_params.engine_params.app_shutdown_func = proj_fs::shutdown;
 
-    app_params.create_window = false;
+    app_params.is_gui_app = false;
 
     return app_params;
   }

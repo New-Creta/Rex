@@ -15,12 +15,17 @@
 #include <processenv.h>
 
 //-------------------------------------------------------------------------
-int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, int nShowCmd)
+int rex_win_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, int nShowCmd)
 {
   // some systems need to be set up even before we get into the app entry function
   // commandline, logging and the vfs need to get set up before hand so the user has 
   // access to these system when they're setting up their app
   rex::internal::pre_app_entry(lpCmdLine);
+
+  // The following log line needs to be here as the app result is logged using the same log category
+  // If we log something now already (before the vfs gets uninitialized), the log path remains cached
+  // If we wouldn't log anything before the vfs gets uninitialized, the program would crash as it can't decude the log path
+  REX_INFO(LogWindows, "Starting Windows entrypoint");
 
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
@@ -37,7 +42,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
   {
     rex::ApplicationCreationParams app_params = rex::app_entry(creation_params);
 
-    if(app_params.create_window)
+    if(app_params.is_gui_app)
     {
       // this doesn't initialize anything but simply prepares the application for initialization
       rex::win::GuiApplication application(rsl::move(app_params));
@@ -72,7 +77,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-  return rex_entry(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+  return rex_win_entry(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 }
 
 // main is always the entry point.
@@ -91,7 +96,7 @@ int main()
     show_window = SW_SHOWNORMAL;
   }
 
-  const int result = rex_entry(GetModuleHandle(nullptr), nullptr, GetCommandLineA(), show_window);
+  const int result = rex_win_entry(GetModuleHandle(nullptr), nullptr, GetCommandLineA(), show_window);
 
   return result;
 }
