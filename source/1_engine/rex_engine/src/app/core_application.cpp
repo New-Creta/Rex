@@ -37,6 +37,8 @@ namespace rex
     vfs::shutdown();
 
     cmdline::shutdown();
+
+    mut_globals().single_frame_allocator.reset();
   }
 
   //--------------------------------------------------------------------------------------------
@@ -131,6 +133,8 @@ namespace rex
   {
     m_app_state.change_state(ApplicationState::Initializing);
 
+    init_globals();
+
     // Loads the mounts of the engine
     // this will make it easier to access files under these paths
     // in the future
@@ -168,8 +172,6 @@ namespace rex
   void CoreApplication::shutdown()
   {
     platform_shutdown();
-
-    // nothing to implement
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::mark_for_destroy(s32 exitCode)

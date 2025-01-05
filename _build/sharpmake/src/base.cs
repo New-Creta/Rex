@@ -553,6 +553,13 @@ public abstract class BasicCPPProject : Project
   {
     // Nothing to implement
   }
+  protected void AddPrivateIncludeIfExists(RexConfiguration conf, string path)
+  {
+    if (Directory.Exists(path))
+    {
+      conf.IncludePrivatePaths.Add(path);
+    }
+  }
   #endregion
 
   // Sets up the project to use clang tools when enabled.
@@ -795,13 +802,6 @@ public abstract class BasicCPPProject : Project
     }
 
     return false;
-  }
-  private void AddPrivateIncludeIfExists(RexConfiguration conf, string path)
-  {
-    if (Directory.Exists(path))
-    {
-      conf.IncludePrivatePaths.Add(path);
-    }
   }
   // Make sharpmake aware of the shader paths
   private void SetupDataPaths()

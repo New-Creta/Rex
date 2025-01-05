@@ -19,6 +19,8 @@ namespace rex
 		// If the max frame number is reached, the internal allocator gets reset
 		void adv_frame();
 
+		s32 max_frames() const;
+
 	private:
 		// The number of frames it keeps memory active
 		s32 m_max_frames;

@@ -31,4 +31,9 @@ namespace rex
 		}
 	}
 
+	s32 FrameBasedAllocator::max_frames() const
+	{
+		return m_max_frames;
+	}
+
 }

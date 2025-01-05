@@ -19,4 +19,6 @@ namespace rex
 	// - No pure global variables
 	// All engine globals are accessed through the below func
 	const Globals& globals();
+
+	void set_single_frame_alloc(rsl::unique_ptr<FrameBasedAllocator> singleFrameAlloc);
 }
