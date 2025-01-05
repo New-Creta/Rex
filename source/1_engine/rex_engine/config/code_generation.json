@@ -2,7 +2,7 @@
   "MemoryTags": {
     "Type": "Enum",
     "ClassName": "MemoryTag",
-    "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h",
+    "Filepath": "1_engine/rex_engine/include/public/rex_engine/memory/memory_tags.h",
     "Content": [
       "Global",
       "Engine",
@@ -14,7 +14,7 @@
   "MountingPoints": {
     "Type": "Enum",
     "ClassName": "MountingPoint",
-    "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h",
+    "Filepath": "1_engine/rex_engine/include/public/rex_engine/filesystem/mounting_point.h",
     "Content": [
       "Logs /*Folder where all logs go*/",
       "EngineSettings /*Root directory of engine settings*/",
@@ -34,7 +34,7 @@
     "Includes": [
       "rex_engine/cmdline/cmdline.h"
     ],
-    "Filepath": "1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h",
+    "Filepath": "1_engine/rex_engine/include/public/rex_engine/cmdline/cmd_args.h",
     "Content": [
       "\"Root\", \"The directory to initialize the vfs with. this is similar as setting the working root directory\"",
       "\"Help\", \"This will list all command line arguments for the executable\"",

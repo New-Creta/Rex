@@ -383,8 +383,14 @@ public abstract class BasicCPPProject : Project
     }
 
     // We always add the include folder of the project to its include paths
-    AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include");
-    AddPrivateIncludeIfExists(conf, $@"{SourceRootPath}\include_private");
+    if (AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include\public"))
+    {
+      AddPrivateIncludeIfExists(conf, $@"{SourceRootPath}\include\private");
+    }
+    else
+    {
+      AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include");
+    }
   }
   // Setup rules that need to be defined based on optimization settings
   // This usually means adding or removing defines, but other options are available as well.
@@ -780,12 +786,15 @@ public abstract class BasicCPPProject : Project
   }
 
   // Add the include path to the configuration, if the path exists
-  private void AddPublicIncludeIfExists(RexConfiguration conf, string path)
+  private bool AddPublicIncludeIfExists(RexConfiguration conf, string path)
   {
     if (Directory.Exists(path))
     {
       conf.IncludePaths.Add(path);
+      return true;
     }
+
+    return false;
   }
   private void AddPrivateIncludeIfExists(RexConfiguration conf, string path)
   {
