@@ -5,6 +5,8 @@
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"
 
+#include "rex_engine/settings/settings.h"
+
 namespace rex
 {
   namespace win
@@ -34,7 +36,11 @@ namespace rex
     template <typename WinObject, typename Func>
     WinObject call_to_win32_api(Func func, DWord errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
     {
-      check_for_win_errors(file, function, lineNr);
+      if (rex::settings::get_bool("DebugWindowsCalls"))
+      {
+        check_for_win_errors(file, function, lineNr);
+      }
+
       WinObject obj = func();
       rex::win::WinCall(ErrorSuccess(errorSuccess), winFunc, file, function, lineNr);
       return obj;

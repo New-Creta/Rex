@@ -1,0 +1,15 @@
+#include "rex_engine/diagnostics/log.h"
+
+#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/engine/project.h"
+
+#include "rex_std/format.h"
+
+namespace rex
+{
+	rsl::string log_path()
+	{
+		return rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), rsl::format("{}.log", project_name()));
+	}
+}
