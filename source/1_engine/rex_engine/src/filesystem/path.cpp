@@ -157,15 +157,24 @@ namespace rex
         return true;
       }
 
-      SplitResult split_origin_res = split_origin(path);
-      const rsl::vector<rsl::string_view> splitted = rsl::split(split_origin_res.tail, "/\\");
+      path = remove_drive(path);
       
-      for (rsl::string_view subpath : splitted)
-      {
-        if (!is_valid_filename(subpath))
+      bool has_invalid_chars = rsl::any_of(path.cbegin(), path.cend(),
+        [](char8 c)
         {
-          return false;
-        }
+          return rsl::find(invalid_path_chars().cbegin(), invalid_path_chars().cend(), c) != invalid_path_chars().cend();
+        });
+
+      if (has_invalid_chars)
+      {
+        return false;
+      }
+
+      rsl::string_view filename = path::filename(path);
+      bool has_invalid_name = rsl::any_of(invalid_path_names().cbegin(), invalid_path_names().cend(), [filename](rsl::string_view invalid_name) { return invalid_name == filename; });
+      if (has_invalid_name)
+      {
+        return false;
       }
 
       return true;
@@ -255,6 +264,16 @@ namespace rex
       // return the substring of the filename, without the extension
       return file_name.substr(0, count);
     }
+    // Returns the fullpath without the drive, if it's present
+    rsl::string_view remove_drive(rsl::string_view path)
+    {
+      if (is_absolute(path))
+      {
+        return path.substr(path.find_first_of("/\\"));
+      }
+
+      return path;
+    }
     // Returns the absolute path for the given path
     TempString abs_path(rsl::string_view path)
     {
@@ -271,14 +290,14 @@ namespace rex
         res.replace("\\", "/");
         if (abs_needs_drive() && !has_drive(res))
         {
-          TempString cwd = path::cwd();
+          rsl::string_view cwd = path::cwd();
           res.insert(0, cwd.substr(0, 2)); // This prepends the drive letter and colon
         }
         return res;
       }
 
       // Get the current working directory and prepend it to the path
-      TempString current_dir = path::cwd();
+      rsl::string_view current_dir = path::cwd();
       TempString res         = path::join(current_dir, path);
       return res.replace("\\", "/");
     }

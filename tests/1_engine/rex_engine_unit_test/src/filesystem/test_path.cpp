@@ -151,6 +151,11 @@ TEST_CASE("TEST - Path - Get Stem")
 	REX_CHECK(rex::path::stem("bar/foo") == "foo");
 }
 
+TEST_CASE("TESt - Path - Remove Drive")
+{
+	REX_CHECK(false);
+}
+
 TEST_CASE("TEST - Path - Absolute Path")
 {
 	rex::TempCwd tmp_cwd("path_tests");

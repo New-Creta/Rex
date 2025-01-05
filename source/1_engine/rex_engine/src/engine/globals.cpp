@@ -22,4 +22,15 @@ namespace rex
 		REX_ASSERT_X(singleFrameAlloc->max_frames() == 1, "A single frame allocator may only have 1 frame active");
 		g_globals.single_frame_allocator = rsl::move(singleFrameAlloc);
 	}
+
+	void set_current_marker(s32 offset)
+	{
+		g_globals.single_frame_allocator->set_marker(offset);
+	}
+	s32 get_marker()
+	{
+		return g_globals.single_frame_allocator->get_marker();
+	}
+
+
 }

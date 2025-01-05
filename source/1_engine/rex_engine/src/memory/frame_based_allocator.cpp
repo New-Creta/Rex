@@ -2,6 +2,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+#include "rex_engine/engine/globals.h"
+
 namespace rex
 {
 	FrameBasedAllocator::FrameBasedAllocator(rsl::memory_size size, s32 maxFrames)
@@ -21,6 +23,14 @@ namespace rex
 		m_stack_allocator.deallocate(ptr, 0);
 	}
 
+	void FrameBasedAllocator::set_marker(s32 offset)
+	{
+		m_stack_allocator.set_marker(offset);
+	}
+	s32 FrameBasedAllocator::get_marker()
+	{
+		return m_stack_allocator.current_marker();
+	}
 	void FrameBasedAllocator::adv_frame()
 	{
 		++m_current_frame;
@@ -34,6 +44,29 @@ namespace rex
 	s32 FrameBasedAllocator::max_frames() const
 	{
 		return m_max_frames;
+	}
+
+	TempHeapScope::TempHeapScope()
+	{
+		m_is_released = false;
+		m_marker = get_marker();
+	}
+	TempHeapScope::~TempHeapScope()
+	{
+		if (!m_is_released)
+		{
+			set_current_marker(m_marker);
+		}
+	}
+
+	void TempHeapScope::reset_to(s32 offsetFromMarker)
+	{
+		set_current_marker(m_marker + offsetFromMarker);
+		release();
+	}
+	void TempHeapScope::release()
+	{
+		m_is_released = true;
 	}
 
 }

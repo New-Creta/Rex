@@ -7,6 +7,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/engine/constants.h"
 #include "rex_engine/engine/debug_types.h"
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/chrono.h"
 #include "rex_std/memory.h"
@@ -37,7 +38,7 @@ namespace rex
       PatternFormatter clone() const;
 
     private:
-      using Formatters = rex::DebugVector<rsl::unique_ptr<details::FlagFormatter>>;
+      using Formatters = rex::DebugVector<unique_debug_ptr<details::FlagFormatter>>;
 
       template <typename Padder>
       void handle_flag_impl(char flag, details::PaddingInfo padding);

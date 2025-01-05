@@ -8,6 +8,8 @@
 
 #include "rex_engine/string/tmp_string.h"
 
+#include "rex_engine/engine/globals.h"
+
 namespace rex
 {
   namespace path
@@ -37,7 +39,7 @@ namespace rex
     // -------------------------------------------------------------------------
     
     // Returns the current working directory
-    TempString cwd();
+    rsl::string_view cwd();
 
     // Sets a new working directory and returns the old one
     // A valid and existing path is expected or an assert is raised
@@ -146,12 +148,17 @@ namespace rex
     TempString join(PathLikeTypes&&... paths)
     {
       TempString res;
+      TempHeapScope tmp_heap_scope;
+      res.reserve(max_path_length());
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
 
       if(!res.empty())
       {
         res.pop_back(); // remove the last seperation char
       }
+
+      tmp_heap_scope.reset_to(res.size() + 1);
+
       return res;
     }
 
@@ -174,6 +181,8 @@ namespace rex
     rsl::string_view filename(rsl::string_view path);
     // Returns the filename of the given path without its extension
     rsl::string_view stem(rsl::string_view path);
+    // Returns the fullpath without the drive, if it's present
+    rsl::string_view remove_drive(rsl::string_view path);
     // Returns the absolute path for the given path
     TempString abs_path(rsl::string_view path);
     // Retruns the root directory path of the given path

@@ -291,6 +291,7 @@ namespace rex
 
     void set_root_paths()
     {
+      rex::TempHeapScope tmp_heap_scope{};
       g_root_paths.engine_root.assign(path::join(vfs::root(), "rex"));
       g_root_paths.editor_root.assign(path::join(vfs::root(), "regina"));
       g_root_paths.project_root.assign(path::join(vfs::root(), project_name()));
@@ -321,6 +322,7 @@ namespace rex
 
     void set_root(rsl::string_view root)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       if(root.empty())
       {
         g_root = rex::path::cwd();
@@ -342,6 +344,7 @@ namespace rex
 
     void mount(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       rsl::string_view full_path = vfs::abs_path(path);
 
       REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_mounted_roots.at(root));
@@ -387,6 +390,7 @@ namespace rex
 
     memory::Blob read_file(MountingPoint root, rsl::string_view filepath)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       filepath               = path::remove_quotes(filepath);
       rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
       return read_file(path);
@@ -394,6 +398,7 @@ namespace rex
 
     ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       filepath                            = path::remove_quotes(filepath);
       rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
       return read_file_async(path);
@@ -402,6 +407,7 @@ namespace rex
     ReadRequest read_file_async(rsl::string_view filepath)
     {
       const rsl::unique_lock lock(g_read_request_mutex);
+      rex::TempHeapScope tmp_heap_scope{};
 
       // If we already have a request for this file, add a new request to signal to the queued request
       auto it = g_queued_requests.find(filepath);
@@ -426,23 +432,28 @@ namespace rex
     }
     Error create_file(MountingPoint root, rsl::string_view filepath)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
       return rex::file::create(path);
     }
     Error create_file(rsl::string_view filepath)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return rex::file::create(filepath);
     }
     Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return save_to_file(root, filepath, text.data(), text.length(), shouldAppend);
     }
     Error save_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return save_to_file(filepath, text.data(), text.length(), shouldAppend);
     }
     Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       filepath = path::remove_quotes(filepath);
 
       const rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
@@ -451,6 +462,7 @@ namespace rex
 
     Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       filepath = path::remove_quotes(filepath);
 
       const rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
@@ -459,11 +471,13 @@ namespace rex
 
     Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
     Error create_dir(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -471,6 +485,7 @@ namespace rex
     }
     bool exists(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
       rsl::string_view fullpath = abs_path(path);
 
@@ -478,6 +493,7 @@ namespace rex
     }
     bool exists(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -486,6 +502,7 @@ namespace rex
 
     bool is_dir(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -493,6 +510,7 @@ namespace rex
     }
     bool is_dir(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
       rsl::string_view fullpath = abs_path(path);
       
@@ -500,6 +518,7 @@ namespace rex
     }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -507,6 +526,7 @@ namespace rex
     }
     bool is_file(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
       rsl::string_view fullpath = abs_path(path);
 
@@ -550,6 +570,7 @@ namespace rex
 
     rsl::vector<rsl::string> list_dirs(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -557,6 +578,7 @@ namespace rex
     }
     rsl::vector<rsl::string> list_entries(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -564,6 +586,7 @@ namespace rex
     }
     rsl::vector<rsl::string> list_files(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view filepath = path::join(g_mounted_roots.at(root), path);
@@ -571,19 +594,23 @@ namespace rex
     }
     rsl::vector<rsl::string> list_dirs(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return directory::list_dirs(path);
     }
     rsl::vector<rsl::string> list_entries(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return directory::list_entries(path);
     }
     rsl::vector<rsl::string> list_files(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       return directory::list_files(path);
     }
 
     Error delete_dir(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view fullpath = path::join(g_mounted_roots.at(root), path);
@@ -596,6 +623,7 @@ namespace rex
     }
     Error delete_dir_recursive(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view fullpath = path::join(g_mounted_roots.at(root), path);
@@ -608,6 +636,7 @@ namespace rex
     }
     Error delete_file(MountingPoint root, rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       path = path::remove_quotes(path);
 
       const rsl::string_view fullpath = path::join(g_mounted_roots.at(root), path);
@@ -621,12 +650,14 @@ namespace rex
 
     memory::Blob read_file(rsl::string_view filepath)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(filepath);
       return rex::file::read_file(fullpath);
     }
 
     Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(filepath);
       if (shouldAppend)
       {
@@ -640,28 +671,33 @@ namespace rex
 
     Error create_dir(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(path);
       return directory::create(fullpath);
     }
 
     Error create_dirs(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(path);
       return directory::create_recursive(fullpath);
     }
 
     Error delete_dir(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(path);
       return directory::del(fullpath);
     }
     Error delete_dir_recursive(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(path);
       return directory::del_recursive(fullpath);
     }
     Error delete_file(rsl::string_view path)
     {
+      rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(path);
       return file::del(fullpath);
     }

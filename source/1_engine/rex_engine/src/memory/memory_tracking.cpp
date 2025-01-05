@@ -278,7 +278,6 @@ namespace rex
 
   MemoryAllocationStats MemoryTracker::current_allocation_stats()
   {
-    const rsl::unique_lock lock(m_mem_tracking_mutex);
     MemoryAllocationStats stats {};
     stats.tracking_stats = current_tracking_stats();
     stats.allocation_headers = allocation_headers();

@@ -63,15 +63,23 @@ namespace rex
         err = GetLastError();
         return ReparseTag::None;
       }
+
+      rsl::string g_cached_wd;
     } // namespace internal
 
     // Returns the current working directory
-    TempString cwd()
+    rsl::string_view cwd()
     {
       rsl::medium_stack_string current_dir;
       GetCurrentDirectoryA(current_dir.max_size(), current_dir.data()); // NOLINT(readability-static-accessed-through-instance)
       current_dir.reset_null_termination_offset();
-      return TempString(current_dir).replace("\\", "/");
+
+      if (current_dir != internal::g_cached_wd)
+      {
+        internal::g_cached_wd.assign(current_dir);
+      }
+
+      return internal::g_cached_wd;
     }
     // Sets a new working directory and returns the old one
     // A valid and existing path is expected or an assert is raised
@@ -82,10 +90,10 @@ namespace rex
       REX_ASSERT_X(is_valid_path(fulldir), "dir is not a valid path, cannot change the working directory. Dir: {}", fulldir);
       REX_ASSERT_X(directory::exists(fulldir), "dir specified for working dir doesn't exist. This is not allowed. Dir: {}", fulldir);
 
-      TempString cwd = path::cwd();
+      rsl::string_view cwd = path::cwd();
       SetCurrentDirectoryA(fulldir.data());
 
-      return cwd;
+      return TempString(cwd);
     }
     // Returns the path of the current user's temp folder
     TempString temp_path()

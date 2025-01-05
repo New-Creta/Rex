@@ -9,6 +9,8 @@
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
 
+#include "rex_engine/engine/mutable_globals.h"
+
 namespace rex
 {
   namespace internal
@@ -57,6 +59,10 @@ namespace rex
       {
         attach_debugger();
       }
+
+      // Assign a very small buffer to the single frame allocator so it can be used
+      // It'll be overwritten later
+      rex::mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(1_mib, 1);
 
       // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.

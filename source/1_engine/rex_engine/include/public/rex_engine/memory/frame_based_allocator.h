@@ -15,6 +15,9 @@ namespace rex
 		void* allocate(s32 size);
 		void deallocate(void* ptr);
 
+		void set_marker(s32 offset);
+		s32 get_marker();
+
 		// Advance the allocator 1 frame
 		// If the max frame number is reached, the internal allocator gets reset
 		void adv_frame();
@@ -26,5 +29,19 @@ namespace rex
 		s32 m_max_frames;
 		s32 m_current_frame;
 		rsl::stack_allocator m_stack_allocator;
+	};
+
+	class TempHeapScope
+	{
+	public:
+		TempHeapScope();
+		~TempHeapScope();
+
+		void reset_to(s32 offsetFromMarker);
+		void release();
+
+	private:
+		s32 m_marker;
+		bool m_is_released;
 	};
 }

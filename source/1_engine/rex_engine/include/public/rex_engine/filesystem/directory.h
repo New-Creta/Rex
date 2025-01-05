@@ -34,6 +34,13 @@ namespace rex
     // Get the size of all the files in the directory
     // possible going recursive over all the sub folders as well
     rsl::memory_size size(rsl::string_view path, Recursive goRecursive = Recursive::no);
+    // List the number of entries under a directory
+    s32 num_entries(rsl::string_view path, Recursive goRecursive = Recursive::no);
+    // List the number of directories under a directory
+    s32 num_dirs(rsl::string_view path);
+    // List the number of files under a directory
+    s32 num_files(rsl::string_view path);
+
     // List all entries under a directory
     rsl::vector<rsl::string> list_entries(rsl::string_view path, Recursive listRecursive = Recursive::no);
     // List all directories under a directory

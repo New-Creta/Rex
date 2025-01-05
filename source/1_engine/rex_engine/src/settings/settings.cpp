@@ -50,11 +50,12 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_setting(rsl::string_view name)
       {
-        rsl::string name_lower(name.length(), '\0');
+        TempString name_lower(name.length(), '\0');
         rsl::to_lower(name.data(), name_lower.data(), name.length());
-        if (all_settings().contains(name_lower))
+        rsl::string_view name_lower_view = name_lower;
+        if (all_settings().contains(name_lower_view))
         {
-          return all_settings().at(name_lower);
+          return all_settings().at(name_lower_view);
         }
         return rsl::nullopt;
       }
