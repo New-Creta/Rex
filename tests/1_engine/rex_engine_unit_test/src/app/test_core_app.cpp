@@ -37,7 +37,7 @@ namespace rex::test
 	{
 		rex::ApplicationCreationParams app_params(PlatformCreationParams{});
 
-		app_params.gui_params.window_title = "test core app";
+		app_params.gui_params.window_title.assign("test core app");
 
 		return app_params;
 	}

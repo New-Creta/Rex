@@ -16,22 +16,13 @@
 #include "rex_engine/profiling/scoped_timer.h"
 #include "rex_engine/cmdline/cmdline.h"
 
+#include "rex_engine/engine/mutable_globals.h"
+
 #include <cstdlib>
 
 namespace rex
 {
   DEFINE_LOG_CATEGORY(LogCoreApp);
-
-  namespace globals
-  {
-    FrameInfo g_frame_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-
-    //-------------------------------------------------------------------------
-    const FrameInfo& frame_info()
-    {
-      return g_frame_info;
-    }
-  } // namespace globals
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams)
@@ -151,7 +142,9 @@ namespace rex
     // - vfs needs to be initialized
     load_settings();
 
-    globals::g_frame_info.update();
+    rex::mut_globals().frame_info.update();
+
+    REX_INFO(LogCoreApp, "core engine systems initialized");
     const bool res = platform_init();
 
     // Some settings get overriden in the editor and the project
@@ -167,7 +160,7 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::update()
   {
-    globals::g_frame_info.update();
+    rex::mut_globals().frame_info.update();
 
     platform_update();
   }
@@ -227,6 +220,12 @@ namespace rex
     {
       settings::load(file);
     }
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::init_globals()
+  {
+    mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(settings::get_int("SingleFrameAllocatorSize", 1_mib), 1);
   }
 
 } // namespace rex

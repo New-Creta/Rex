@@ -1,6 +1,6 @@
 // NOLINTBEGIN
 
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "rex_unit_test/catch2/catch.hpp"
 
 #define REX_CATCH_REGISTER_REPORTER(name, reporterType)                                                                                                                                                                                                \
@@ -13,5 +13,10 @@
         CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION
 
 REX_CATCH_REGISTER_REPORTER("console", ConsoleReporter)
+
+int main(int argc, char* argv[])
+{
+  return Catch::Session().run(argc, argv);
+}
 
 // NOLINTEND

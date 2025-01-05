@@ -136,7 +136,7 @@ TEST_CASE("TEST - File - Saving")
   rex::TempCwd tmp_cwd("file_tests");
 
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::save_to_file(dummy_file, dummy_content.data(), dummy_content.length());
 
   const rex::memory::Blob file_data = rex::file::read_file(dummy_file);
@@ -152,7 +152,7 @@ TEST_CASE("TEST - File - Append Line")
   rex::TempCwd tmp_cwd("file_tests");
 
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::append_line(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -183,7 +183,7 @@ TEST_CASE("TEST - File - Append Lines")
   rsl::vector<rsl::string> lines;
   lines.emplace_back(dummy_content);
 
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::append_lines(dummy_file, lines);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -224,7 +224,7 @@ TEST_CASE("TEST - File - Append Text")
   rex::TempCwd tmp_cwd("file_tests");
 
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::append_text(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -247,7 +247,7 @@ TEST_CASE("TEST - File - Truncation")
   rex::TempCwd tmp_cwd("file_tests");
 
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::append_text(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -280,7 +280,7 @@ TEST_CASE("TEST - File - Copy No Overwrite")
   rex::memory::Blob file_content = rex::file::read_file(start_file);
   rsl::string_view file_content_as_string = rex::memory::blob_to_string_view(file_content);
 
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
 
   REX_CHECK(file_content.data() != nullptr);
   REX_CHECK(file_content.size() == 26);
@@ -309,7 +309,7 @@ TEST_CASE("TEST - File - Copy With Overwrite")
   rex::memory::Blob file_content = rex::file::read_file(start_file);
   rsl::string_view file_content_as_string = rex::memory::blob_to_string_view(file_content);
 
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
 
   REX_CHECK(file_content.data() != nullptr);
   REX_CHECK(file_content.size() == 26);
@@ -348,12 +348,12 @@ TEST_CASE("TEST - File - Move To Non Existing")
   rex::TempCwd tmp_cwd("file_tests");
 
   const rsl::string_view og_file = "test_file.txt";
-  rsl::string start_file = rex::path::random_filename();
+  rex::TempString start_file = rex::path::random_filename();
   rex::file::copy(og_file, start_file);
   rex::memory::Blob file_content = rex::file::read_file(start_file);
   rsl::string_view file_content_as_string = rex::memory::blob_to_string_view(file_content);
 
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
 
   REX_CHECK(file_content.data() != nullptr);
   REX_CHECK(file_content.size() == 26);
@@ -380,12 +380,12 @@ TEST_CASE("TEST - File - Move File To Existing")
   rex::TempCwd tmp_cwd("file_tests");
 
   const rsl::string_view og_file = "test_file.txt";
-  rsl::string start_file = rex::path::random_filename();
+  rex::TempString start_file = rex::path::random_filename();
   rex::file::copy(og_file, start_file);
   rex::memory::Blob file_content = rex::file::read_file(start_file);
   rsl::string_view file_content_as_string = rex::memory::blob_to_string_view(file_content);
 
-  rsl::string dummy_file = rex::path::random_filename();
+  rex::TempString dummy_file = rex::path::random_filename();
   rex::file::create(dummy_file);
 
   REX_CHECK(file_content.data() != nullptr);
@@ -413,7 +413,7 @@ TEST_CASE("TEST - File - Creation And Deletion")
 {
   rex::TempCwd tmp_cwd("file_tests");
 
-  rsl::string filename = rex::path::random_filename();
+  rex::TempString filename = rex::path::random_filename();
 
   rex::file::create(filename);
 
@@ -428,7 +428,7 @@ TEST_CASE("TEST - File - Read Only Checking")
 {
   rex::TempCwd tmp_cwd("file_tests");
 
-  rsl::string filename = rex::path::random_filename();
+  rex::TempString filename = rex::path::random_filename();
 
   rex::file::create(filename);
   REX_CHECK(rex::file::is_readonly(filename) == false);

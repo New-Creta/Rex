@@ -6,6 +6,8 @@
 #include "rex_std/bonus/utility.h"
 #include "rex_engine/engine/types.h"
 
+#include "rex_engine/string/tmp_string.h"
+
 namespace rex
 {
   namespace path
@@ -35,18 +37,18 @@ namespace rex
     // -------------------------------------------------------------------------
     
     // Returns the current working directory
-    rsl::string cwd();
+    TempString cwd();
 
     // Sets a new working directory and returns the old one
     // A valid and existing path is expected or an assert is raised
-    rsl::string set_cwd(rsl::string_view dir);
+    TempString set_cwd(rsl::string_view dir);
 
     // Returns the path of the current user's temp folder
-    rsl::string temp_path();
+    TempString temp_path();
 
     // For symlinks, returns the path the link points to
     // Otherwise returns the input
-    rsl::string real_path(rsl::string_view path);
+    TempString real_path(rsl::string_view path);
 
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path);
@@ -85,21 +87,21 @@ namespace rex
 
     namespace internal
     {
-      void join_string_view(rsl::string& str, rsl::string_view arg);
+      void join_string_view(TempString& str, rsl::string_view arg);
       template <typename Enum, rsl::enable_if_t<rsl::is_enum_v<Enum>, bool> = true>
-      void join_enum(rsl::string& str, Enum e)
+      void join_enum(TempString& str, Enum e)
       {
         rsl::string_view enum_name = rsl::enum_refl::enum_name(e);
         join_impl(str, enum_name);
       }
       template <typename PathLikeType>
-      void join_path_like(rsl::string& str, PathLikeType&& arg)
+      void join_path_like(TempString& str, PathLikeType&& arg)
       {
         join_string_view(str, rsl::string_view(rsl::forward<PathLikeType>(arg))); // NOLINT(google-readability-casting)
       }
 
       template <typename PathLikeType>
-      void join_impl(rsl::string& str, PathLikeType&& firstArg)
+      void join_impl(TempString& str, PathLikeType&& firstArg)
       {
         if constexpr (rsl::is_same_v<rsl::string_view, PathLikeType>)
         {
@@ -116,7 +118,7 @@ namespace rex
       }
 
       template <typename PathLikeType, typename... Args>
-      void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)
+      void join_impl(TempString& str, PathLikeType&& firstArg, Args&&... args)
       {
         join_impl(str, rsl::forward<PathLikeType>(firstArg));
         join_impl(str, rsl::forward<Args>(args)...);          // append the rest
@@ -129,7 +131,7 @@ namespace rex
     constexpr s32 max_path_length()
     {
       // MAX_PATH on Windows is 260 by default
-      // You switch a flag to support longer paths (bugged in Windows 11 though)
+      // You can switch a flag to support longer paths (bugged in Windows 11 though)
       // https://answers.microsoft.com/en-us/windows/forum/all/long-file-path-issues-in-windows-11-pro-with/0c440721-e35a-4b58-9f5a-645656768f9d
       // but by default this is disabled
       return 256;
@@ -141,9 +143,9 @@ namespace rex
     const rsl::vector<char8>& invalid_path_chars();
     // Join multiple paths together
     template <typename... PathLikeTypes>
-    rsl::string join(PathLikeTypes&&... paths)
+    TempString join(PathLikeTypes&&... paths)
     {
-      rsl::string res;
+      TempString res;
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
 
       if(!res.empty())
@@ -163,7 +165,7 @@ namespace rex
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed
     // if the path doesn't have an extension, the extension specified gets appended
-    rsl::string change_extension(rsl::string_view path, rsl::string_view extension);
+    TempString change_extension(rsl::string_view path, rsl::string_view extension);
     // Returns the directory path of the given path
     rsl::string_view dir_name(rsl::string_view path);
     // Returns the extension of the given path
@@ -173,22 +175,22 @@ namespace rex
     // Returns the filename of the given path without its extension
     rsl::string_view stem(rsl::string_view path);
     // Returns the absolute path for the given path
-    rsl::string abs_path(rsl::string_view path);
+    TempString abs_path(rsl::string_view path);
     // Retruns the root directory path of the given path
     rsl::string_view path_root(rsl::string_view path);
     // Returns a random directory, but doesn't create it
-    rsl::string random_dir();
+    TempString random_dir();
     // Returns a random filename, but doesn't create it
-    rsl::string random_filename();
+    TempString random_filename();
     // Returns the longest common sub-path of each pathname in the sequence
     rsl::string_view common_path(const rsl::vector<rsl::string_view>& paths);
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
-    rsl::string norm_path(rsl::string_view path);
+    TempString norm_path(rsl::string_view path);
     // Returns a relative path to path, starting from the current working directory
-    rsl::string rel_path(rsl::string_view path);
+    TempString rel_path(rsl::string_view path);
     // Returns a relative path to path, starting from the start directory
-    rsl::string rel_path(rsl::string_view path, rsl::string_view start);
+    TempString rel_path(rsl::string_view path, rsl::string_view start);
     // Returns if the given path has an extension
     bool has_extension(rsl::string_view path);
     // Returns if the given path is a relative path

@@ -39,7 +39,7 @@ TEST_CASE("TEST - VFS - init & shutdown")
 	rex::vfs::init();
 
 	REX_CHECK(rex::path::is_same(rex::vfs::root(), rex::path::cwd()));
-	rsl::string test_path1 = rex::path::join(rex::vfs::current_session_root(), "test_path1");
+	rex::TempString test_path1 = rex::path::join(rex::vfs::current_session_root(), "test_path1");
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath1));
 
@@ -63,7 +63,7 @@ TEST_CASE("TEST - VFS - Root Paths")
 	REX_CHECK(rex::path::is_same(rex::vfs::project_root(), rex::path::join(rex::path::cwd(), project_name)));
 	REX_CHECK(rex::path::is_same(rex::vfs::sessions_root(), rex::path::join(rex::path::cwd(), "_sessions")));
 
-	rsl::string expected_session_root = rex::path::join(rex::path::cwd(), "_sessions", project_name);
+	rex::TempString expected_session_root = rex::path::join(rex::path::cwd(), "_sessions", project_name);
 	REX_CHECK(rex::path::is_same(rex::vfs::project_sessions_root(), expected_session_root));
 
 	// We can't accurately test the current session path as this is time based
@@ -72,7 +72,7 @@ TEST_CASE("TEST - VFS - Root Paths")
 	REX_CHECK(rex::path::is_same(current_session_root, expected_session_root) == false);
 	REX_CHECK(rex::path::is_under_dir(current_session_root, expected_session_root));
 
-	rsl::string new_root_name = rex::path::random_dir();
+	rex::TempString new_root_name = rex::path::random_dir();
 	rex::directory::create(new_root_name);
 	rex::vfs::set_root(new_root_name);
 
@@ -101,8 +101,8 @@ TEST_CASE("TEST - VFS - mount")
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath2) == false);
 	REX_CHECK(rex::vfs::is_mounted(rex::MountingPoint::TestPath3) == false);
 
-	rsl::string test_path1 = rex::path::join(rex::vfs::current_session_root(), "test_path1");
-	rsl::string test_path2 = rex::path::join(rex::vfs::current_session_root(), "test_path2");
+	rex::TempString test_path1 = rex::path::join(rex::vfs::current_session_root(), "test_path1");
+	rex::TempString test_path2 = rex::path::join(rex::vfs::current_session_root(), "test_path2");
 
 	REX_CHECK(!rex::directory::exists(test_path1));
 	REX_CHECK(!rex::directory::exists(test_path2));
@@ -127,7 +127,7 @@ TEST_CASE("TEST - VFS - read file")
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
 
 	rsl::string_view filename = "vfs_test_file.txt";
-	rsl::string filepath = rex::path::join(test_path1, filename);
+	rex::TempString filepath = rex::path::join(test_path1, filename);
 	
 	rsl::string_view expected_content = "this is a test file";
 
@@ -159,7 +159,7 @@ TEST_CASE("TEST - VFS - read file async")
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
 
 	rsl::string_view filename = "vfs_test_file.txt";
-	rsl::string filepath = rex::path::join(test_path1, filename);
+	rex::TempString filepath = rex::path::join(test_path1, filename);
 
 	rsl::string_view expected_content = "this is a test file";
 
@@ -198,8 +198,8 @@ TEST_CASE("TEST - VFS - save to file")
 	rsl::string_view test_path1 = "vfs_tests";
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
 
-	rsl::string filename = rex::path::random_filename();
-	rsl::string filepath = rex::path::join(test_path1, filename);
+	rex::TempString filename = rex::path::random_filename();
+	rex::TempString filepath = rex::path::join(test_path1, filename);
 
 	rsl::string_view dummy_content = "this is some dummy content";
 
@@ -211,7 +211,7 @@ TEST_CASE("TEST - VFS - save to file")
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content);
 
 	// Save a file using just the filepath, with appending
-	rsl::string dummy_content_appended(dummy_content);
+	rex::TempString dummy_content_appended(dummy_content);
 	dummy_content_appended += dummy_content;
 	rex::vfs::save_to_file(filepath, dummy_content, rex::vfs::AppendToFile::yes);
 	file_blob = rex::vfs::read_file(filepath);
@@ -241,8 +241,8 @@ TEST_CASE("TEST - VFS - create dir")
 
 	rsl::string_view test_path1 = "vfs_tests";
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
-	rsl::string dirname;
-	rsl::string subdirname;
+	rex::TempString dirname;
+	rex::TempString subdirname;
 
 	// Create a single directory and delete it
 	dirname = rex::path::random_dir();
@@ -307,8 +307,8 @@ TEST_CASE("TEST - VFS - create file")
 
 	rsl::string_view test_path1 = "vfs_tests";
 	rex::vfs::mount(rex::MountingPoint::TestPath1, test_path1);
-	rsl::string dirname;
-	rsl::string filename;
+	rex::TempString dirname;
+	rex::TempString filename;
 	rex::Error error = rex::Error::no_error();
 
 	// Create file under root
@@ -323,7 +323,7 @@ TEST_CASE("TEST - VFS - create file")
 	// Create file in sub dir
 	// this should fail as the directory isn't created yet
 	dirname = rex::path::random_dir();
-	rsl::string filepath = rex::path::join(dirname, filename);
+	rex::TempString filepath = rex::path::join(dirname, filename);
 	error = rex::vfs::create_file(filepath);
 
 	REX_CHECK(error.has_error());
@@ -377,7 +377,7 @@ TEST_CASE("TEST - VFS - abs path")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
-	rsl::string cwd = rex::path::cwd();
+	rex::TempString cwd = rex::path::cwd();
 
 	REX_CHECK(rex::path::abs_path("foo.txt") == rex::path::join(cwd, "foo.txt"));
 	REX_CHECK(rex::path::abs_path("foo.txt.bar") == rex::path::join(cwd, "foo.txt.bar"));

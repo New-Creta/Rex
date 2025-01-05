@@ -155,7 +155,7 @@ TEST_CASE("TEST - Path - Absolute Path")
 {
 	rex::TempCwd tmp_cwd("path_tests");
 
-	rsl::string cwd = rex::path::cwd();
+	rex::TempString cwd = rex::path::cwd();
 
 	REX_CHECK(rex::path::abs_path("foo.txt") == rex::path::join(cwd, "foo.txt"));
 	REX_CHECK(rex::path::abs_path("foo.txt.bar") == rex::path::join(cwd, "foo.txt.bar"));
@@ -241,7 +241,7 @@ TEST_CASE("TEST - Path - Real Path")
 	rex::TempCwd tmp_cwd("path_tests");
 
 	// Make sure that the working directory is set correctly here
-	rsl::string real_path = rex::path::real_path("shortcut_to_foo.txt.lnk");
+	rex::TempString real_path = rex::path::real_path("shortcut_to_foo.txt.lnk");
 	rsl::to_lower(real_path.cbegin(), real_path.begin(), real_path.size());
 	REX_CHECK(real_path.ends_with(rex::path::join("rexengineunittest", "foo.txt")));
 }
@@ -311,15 +311,15 @@ TEST_CASE("TEST - Path - Relative Path")
 	rsl::string_view rel_path = "path/to/dir";
 	s32 expected_depth = rex::path::abs_depth(rex::path::cwd());
 	expected_depth += rex::path::depth(rel_path);
-	rsl::string rel_to_root;
+	rex::TempString rel_to_root;
 	for (s32 i = 0; i < expected_depth; ++i)
 	{
 		rel_to_root = rex::path::join(rel_to_root, "..");
 	}
 
-	rsl::string abs_path = rex::path::abs_path(rel_path);
+	rex::TempString abs_path = rex::path::abs_path(rel_path);
 	rex::path::SplitResult split_res = rex::path::split_origin(abs_path);
-	rsl::string cwd_drive(rex::path::split_origin(rex::path::cwd()).head);
+	rex::TempString cwd_drive(rex::path::split_origin(rex::path::cwd()).head);
 
 	REX_CHECK(rex::path::is_same(rex::path::rel_path("/path//to//dir/", "/"), rex::path::join("path", "to", "dir")));
 	REX_CHECK(rex::path::is_same(rex::path::rel_path("/", rel_path), rel_to_root));
@@ -448,7 +448,7 @@ TEST_CASE("TEST - Path - Has Extension")
 
 	// This is a special edge case, but it caused a bug before
 	// We need to have a string view that points to actual data, but has a length of 0
-	rsl::string abs_path("C:\\Windows\\System32\\file.dll");
+	rex::TempString abs_path("C:\\Windows\\System32\\file.dll");
 	rsl::string_view abs_path_view(abs_path.data(), 0);
 	REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
@@ -471,7 +471,7 @@ TEST_CASE("TEST - Path - Is Absolute")
 
 	// This is a special edge case, but it caused a bug before
 	// We need to have a string view that points to actual data, but has a length of 0
-	rsl::string abs_path("C:\\Windows\\System32\\file.dll");
+	rex::TempString abs_path("C:\\Windows\\System32\\file.dll");
 	rsl::string_view abs_path_view(abs_path.data(), 0);
 	REX_CHECK(rex::path::is_absolute(abs_path_view) == false);
 }
@@ -494,7 +494,7 @@ TEST_CASE("TEST - Path - Is Relative")
 
 	// This is a special edge case, but it caused a bug before
 	// We need to have a string view that points to actual data, but has a length of 0
-	rsl::string abs_path("../relative/path/file.txt");
+	rex::TempString abs_path("../relative/path/file.txt");
 	rsl::string_view abs_path_view(abs_path.data(), 0);
 	REX_CHECK(rex::path::has_extension(abs_path_view) == false);
 }
@@ -732,7 +732,7 @@ TEST_CASE("TEST - Path - Depth")
 	REX_CHECK(rex::path::depth("/path/./to/dir") == 0);
 	REX_CHECK(rex::path::depth("/path/../to/dir") == 0);
 
-	rsl::string cwd_drive(rex::path::split_origin(rex::path::cwd()).head);
+	rex::TempString cwd_drive(rex::path::split_origin(rex::path::cwd()).head);
 
 	// Windows absolute path
 	REX_CHECK(rex::path::depth("d:") == 0);
@@ -743,7 +743,7 @@ TEST_CASE("TEST - Path - Depth")
 
 	// Testing absolute depth
 
-	rsl::string cwd = rex::path::cwd();
+	rex::TempString cwd = rex::path::cwd();
 	s32 cwd_depth = rex::path::abs_depth(cwd);
 
 	REX_CHECK(rex::path::abs_depth("") == cwd_depth);
@@ -834,9 +834,9 @@ TEST_CASE("TEST - Path - Set Working Directory")
 {
 	rex::TempCwd tmp_cwd("path_tests");
 
-	rsl::string cwd = rex::path::cwd();
+	rex::TempString cwd = rex::path::cwd();
 
-	rsl::string old_wd = rex::path::set_cwd("");
+	rex::TempString old_wd = rex::path::set_cwd("");
 	REX_CHECK(rex::path::is_same(old_wd, cwd));
 	REX_CHECK(rex::path::is_same(rex::path::cwd(), cwd));
 

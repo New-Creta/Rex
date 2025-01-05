@@ -8,7 +8,7 @@ namespace rex
 {
   TempDirectory::TempDirectory(rsl::string_view root)
   {
-    m_dirname = path::abs_path(path::join(root, path::random_dir()));
+    m_dirname.assign(path::abs_path(path::join(root, path::random_dir())));
     directory::create(m_dirname);
   }
 

@@ -85,7 +85,7 @@ TEST_CASE("TEST - Directory - Create and Deletion")
 {
   rex::TempCwd tmp_cwd("directory_tests");
 
-  rsl::string random_dirname = rex::path::random_dir();
+  rex::TempString random_dirname = rex::path::random_dir();
   rex::Error error = rex::Error::no_error();
 
   // Create a random empty directory
@@ -107,7 +107,7 @@ TEST_CASE("TEST - Directory - Create and Deletion")
   REX_CHECK(rex::directory::exists(random_dirname) == true);
   REX_CHECK(error.has_error() == false);
 
-  rsl::string random_sub_directory = rex::path::join(random_dirname, rex::path::random_dir());
+  rex::TempString random_sub_directory = rex::path::join(random_dirname, rex::path::random_dir());
   error = rex::directory::create(random_sub_directory);
   REX_CHECK(rex::directory::exists(random_sub_directory) == true);
   REX_CHECK(error.has_error() == false);
@@ -132,13 +132,13 @@ TEST_CASE("TEST - Directory - Copy")
 {
   rex::TempCwd tmp_cwd("directory_tests");
 
-  rsl::string random_dirname = rex::path::random_dir();
+  rex::TempString random_dirname = rex::path::random_dir();
   REX_CHECK(rex::directory::exists(random_dirname) == false);
 
   rex::directory::create(random_dirname);
   REX_CHECK(rex::directory::exists(random_dirname) == true);
   
-  rsl::string random_dirname2 = rex::path::random_dir();
+  rex::TempString random_dirname2 = rex::path::random_dir();
   rex::directory::copy(random_dirname, random_dirname2);
 
   REX_CHECK(rex::directory::exists(random_dirname) == true);
@@ -155,13 +155,13 @@ TEST_CASE("TEST - Directory - Move")
 {
   rex::TempCwd tmp_cwd("directory_tests");
 
-  rsl::string random_dirname = rex::path::random_dir();
+  rex::TempString random_dirname = rex::path::random_dir();
   REX_CHECK(rex::directory::exists(random_dirname) == false);
 
   rex::directory::create(random_dirname);
   REX_CHECK(rex::directory::exists(random_dirname) == true);
 
-  rsl::string random_dirname2 = rex::path::random_dir();
+  rex::TempString random_dirname2 = rex::path::random_dir();
   rex::directory::move(random_dirname, random_dirname2);
 
   REX_CHECK(rex::directory::exists(random_dirname) == false);

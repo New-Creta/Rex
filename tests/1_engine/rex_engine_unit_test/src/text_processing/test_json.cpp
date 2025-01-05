@@ -283,7 +283,7 @@ namespace
 			REX_CHECK(rex::json::json::parse(json_with_comment).is_discarded() == true);
 			REX_CHECK(!rex::json::json::accept(json_with_comment));
 
-			REX_CHECK_NOTHROW(rex::json::json::parse(json_with_comment, nullptr, false, true));
+			rex::json::json::parse(json_with_comment, nullptr, false, true);
 			REX_CHECK(rex::json::json::accept(json_with_comment, true));
 		}
 	}

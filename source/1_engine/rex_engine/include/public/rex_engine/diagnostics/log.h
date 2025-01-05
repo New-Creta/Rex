@@ -1,11 +1,11 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_std/string.h"
+#include "rex_engine/string/tmp_string.h"
 
 DEFINE_LOG_CATEGORY(LogEngine);
 
 namespace rex
 {
-	rsl::string log_path();
+	TempString log_path();
 }

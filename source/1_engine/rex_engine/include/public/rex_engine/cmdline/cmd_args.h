@@ -17,13 +17,18 @@ namespace rex
     cmdline::Argument{ "BreakOnBoot", "Break on boot so you can attach a debugger", "RexEngine" },
     cmdline::Argument{ "AttachOnBoot", "Attach the debugger on boot", "RexEngine" },
  
-    // cmdline::Argument values for Regina - using code generation key: 'CommandLineArgs'
-    cmdline::Argument{ "project", "The project to load by the editor", "Regina" },
+    // cmdline::Argument values for RexEngineUnitTest - using code generation key: 'CommandLineArgs'
+    cmdline::Argument{ "ExampleArgument", "Example argument, not used for anything other than testing if it works.", "RexEngineUnitTest" },
+    cmdline::Argument{ "ExampleArgument2", "Example argument, not used for anything other than testing if it works.", "RexEngineUnitTest" },
+    cmdline::Argument{ "ExampleArgumentWithEqual", "Example argument with equal sign. not used for anything other than testing if it works", "RexEngineUnitTest" },
  
     // cmdline::Argument values for Pokemon - using code generation key: 'CommandLineArgs'
     cmdline::Argument{ "StartLevel", "The level to load on start.", "Pokemon" },
     cmdline::Argument{ "StartMap", "The map to load on start.", "Pokemon" },
     cmdline::Argument{ "StartupSaveFile", "The startup save file to load instead of the default one.", "Pokemon" },
+ 
+    // cmdline::Argument values for Regina - using code generation key: 'CommandLineArgs'
+    cmdline::Argument{ "project", "The project to load by the editor", "Regina" },
  
   };
 } // namespace rex

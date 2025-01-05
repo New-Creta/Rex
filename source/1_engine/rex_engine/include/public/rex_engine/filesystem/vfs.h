@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/defines.h"
+#include "rex_engine/string/tmp_string.h"
 #include "rex_engine/filesystem/mounting_point.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/read_request.h"
@@ -95,8 +96,8 @@ namespace rex
     bool is_dir(rsl::string_view path);
     bool is_file(MountingPoint root, rsl::string_view path);
     bool is_file(rsl::string_view path);
-    rsl::string abs_path(rsl::string_view path);
-    rsl::string abs_path(MountingPoint root, rsl::string_view path);
+    TempString abs_path(rsl::string_view path);
+    TempString abs_path(MountingPoint root, rsl::string_view path);
 
     rsl::string_view mount_path(MountingPoint mount);
     bool is_mounted(MountingPoint mount);

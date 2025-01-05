@@ -110,7 +110,7 @@ namespace rex
       }
       else
       {
-        rsl::string crash_dump_path = path::join(vfs::current_session_root(), "crash.dmp");
+        TempString crash_dump_path = path::join(vfs::current_session_root(), "crash.dmp");
         create_dump(crash_dump_path, exception_info);
         REX_ERROR(CrashHandlingLog, "Created crash dump at: {}", crash_dump_path);
       }

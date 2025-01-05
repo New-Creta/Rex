@@ -23,7 +23,7 @@
 #include "rex_engine/components/transform_component.h"
 #include "rex_engine/gfx/system/shader_library.h"
 
-#include "rex_engine/images/stb_image.h"
+#include "rex_engine/images/internal/stb_image.h"
 
 namespace regina
 {
@@ -41,8 +41,8 @@ namespace regina
     m_primitive_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "default.material"));
 
     s32 x, y, channels;
-    stbi_uc* data = stbi_load("D:\\Engines\\Rex\\data\\Pokemon\\Map\\Kanto\\old\\celadon_city.png", &x, &y, &channels, 4);
-    m_pokemon_texture = rex::gfx::gal::create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
+    stbi_uc* data = stbi_load(rex::path::join(rex::vfs::project_root(), "dev", "maps", "kanto", "old", "celadon_city.png").data(), &x, &y, &channels, 4);
+    m_pokemon_texture = rex::gfx::gal()->create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
 
     // Sampler is currently hardcoded
     rex::gfx::SamplerDesc desc{};
@@ -60,7 +60,7 @@ namespace regina
     desc.register_space = 0;
     desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
 
-    m_pokemon_sampler = rex::gfx::gal::create_sampler2d(desc);
+    m_pokemon_sampler = rex::gfx::gal()->create_sampler2d(desc);
 
     m_primitive_material->set("default_sampler", m_pokemon_sampler.get());
     m_primitive_material->set("default_texture", m_pokemon_texture.get());

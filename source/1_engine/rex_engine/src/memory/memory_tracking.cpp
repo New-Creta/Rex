@@ -12,6 +12,7 @@
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/types.h"
+#include "rex_engine/engine/globals.h"
 
 namespace rex
 {
@@ -124,7 +125,7 @@ namespace rex
 
     rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
     rex::MemoryHeader* dbg_header_addr   = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-    const card32 frame_idx               = globals::frame_info().index();
+    const card32 frame_idx               = rex::globals().frame_info.index();
     const CallStack callstack            = current_callstack();
 
     // track the callstack, if we this callstack allocated memory before

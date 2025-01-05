@@ -1,6 +1,7 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/cmdline/cmdline.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/internal/details/diag_thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"
@@ -110,7 +111,7 @@ namespace rex
       // If the logging system has been initialized, we log to files as well
       if(g_enable_file_sinks)
       {
-        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), rsl::format("{}.log", project_name())), true));
+        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::log_path(), true));
       }
 
       rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;

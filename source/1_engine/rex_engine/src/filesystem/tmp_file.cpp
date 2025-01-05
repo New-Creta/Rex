@@ -7,7 +7,7 @@ namespace rex
 {
   TempFile::TempFile(rsl::string_view directory)
   {
-    m_filepath = path::abs_path(path::join(directory, path::random_filename()));
+    m_filepath.assign(path::abs_path(path::join(directory, path::random_filename())));
     file::create(m_filepath);
   }
 

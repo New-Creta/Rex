@@ -75,6 +75,8 @@ namespace rex
           return result;
         }
 
+        REX_INFO(LogWindows, "Pre user entry systems initialized");
+
         // call client code so it can get initialized
         result = m_on_initialize(m_app_creation_params);
 
@@ -90,6 +92,8 @@ namespace rex
           REX_ERROR(LogWindows, "Post user initialization failed. exiting.");
           return result;
         }
+
+        REX_INFO(LogWindows, "All engine systems initialized");
 
         return result;
       }

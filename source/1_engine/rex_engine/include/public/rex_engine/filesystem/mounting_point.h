@@ -19,6 +19,11 @@ namespace rex
     ProjectSessionsRoot /*Root directory of all sessions of this project*/,
     Session /*Root directory of the current session*/,
  
+    // MountingPoint values for RexEngineUnitTest
+    TestPath1,
+    TestPath2,
+    TestPath3,
+ 
     // MountingPoint values for Pokemon
     Maps,
     Tilesets,

@@ -13,13 +13,6 @@ namespace rex
   class FrameInfo;
   struct EngineParams;
 
-  // to make it accessible throughout the code
-  // client API can call this function to access the frame info
-  namespace globals
-  {
-    const FrameInfo& frame_info();
-  } // namespace globals
-
   class CoreApplication
   {
   public:
@@ -56,8 +49,10 @@ namespace rex
     void mark_for_destroy(s32 exitCode);
     void loop();
 
+    // Initialization
     void mount_engine_paths();
     void load_settings();
+    void init_globals();
 
   private:
     StateController<ApplicationState> m_app_state;

@@ -20,7 +20,7 @@ namespace rex
     namespace internal
     {
       // concat the arg to the string in filepath format
-      void join_string_view(rsl::string& str, rsl::string_view arg)
+      void join_string_view(TempString& str, rsl::string_view arg)
       {
         if(arg.empty())
         {
@@ -65,7 +65,7 @@ namespace rex
 
       // Fills a string with a number of random characters
       // This is useful for creating random filenames and directories
-      void fill_with_random_chars(rsl::string& str, card32 numCharsToFill)
+      void fill_with_random_chars(TempString& str, card32 numCharsToFill)
       {
         rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
         for(card32 i = 0; i < numCharsToFill; ++i)
@@ -187,7 +187,7 @@ namespace rex
         return false;
       }
 
-      rsl::string filename_lower(filename);
+      TempString filename_lower(filename);
       rsl::to_lower(filename_lower.cbegin(), filename_lower.begin(), filename_lower.length());
       if (rsl::find(invalid_path_names().cbegin(), invalid_path_names().cend(), filename_lower) != invalid_path_names().cend())
       {
@@ -206,12 +206,12 @@ namespace rex
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed
     // if the path doesn't have an extension, the extension specified gets appended
-    rsl::string change_extension(rsl::string_view path, rsl::string_view extension)
+    TempString change_extension(rsl::string_view path, rsl::string_view extension)
     {
       const SplitResult split_res = split_ext(path);
 
       // use the extension split to store the path without the extension
-      rsl::string res(split_res.head);
+      TempString res(split_res.head);
 
       // Add a dot if the provided one doesn't have one
       if(!extension.empty() && !extension.starts_with('.'))
@@ -256,30 +256,30 @@ namespace rex
       return file_name.substr(0, count);
     }
     // Returns the absolute path for the given path
-    rsl::string abs_path(rsl::string_view path)
+    TempString abs_path(rsl::string_view path)
     {
       // if the path is invalid, we can't properly make it an absolute path
       if (!is_valid_path(path))
       {
-        return rsl::string(path);
+        return TempString(path);
       }
 
       // If the path is already absolute, just return it
       if(is_absolute(path))
       {
-        rsl::string res(path);
+        TempString res(path);
         res.replace("\\", "/");
         if (abs_needs_drive() && !has_drive(res))
         {
-          rsl::string cwd = path::cwd();
+          TempString cwd = path::cwd();
           res.insert(0, cwd.substr(0, 2)); // This prepends the drive letter and colon
         }
         return res;
       }
 
       // Get the current working directory and prepend it to the path
-      rsl::string current_dir = path::cwd();
-      rsl::string res         = path::join(current_dir, path);
+      TempString current_dir = path::cwd();
+      TempString res         = path::join(current_dir, path);
       return res.replace("\\", "/");
     }
     // Returns the root directory path of the given path
@@ -295,11 +295,11 @@ namespace rex
       return "";
     }
     // Returns a random directory, but doesn't create it
-    rsl::string random_dir()
+    TempString random_dir()
     {
       // create a directory name of 8 random characters
       const card32 num_dirname_chars = 8;
-      rsl::string result;
+      TempString result;
 
       do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
@@ -314,11 +314,11 @@ namespace rex
       return result;
     }
     // Returns a random filename, but doesn't create it
-    rsl::string random_filename()
+    TempString random_filename()
     {
       const card32 num_stem_chars = 8;
       const card32 num_ext_chars  = 3;
-      rsl::string result;
+      TempString result;
 
       do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
@@ -389,7 +389,7 @@ namespace rex
 
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
-    rsl::string norm_path(rsl::string_view path)
+    TempString norm_path(rsl::string_view path)
     {
       const rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
       rsl::vector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
@@ -421,7 +421,7 @@ namespace rex
       }
 
       // join everything back together and return the result
-      rsl::string res;
+      TempString res;
 
       // For linux systems, an absolute path starts with a slash, and we need to add it back
       if (path.starts_with("/") || path.starts_with("\\"))
@@ -439,28 +439,28 @@ namespace rex
       return res;
     }
     // Returns a relative path to path, starting from the current working directory
-    rsl::string rel_path(rsl::string_view path)
+    TempString rel_path(rsl::string_view path)
     {
       return rel_path(path, cwd());
     }
     // Returns a relative path to path, starting from the start directory
-    rsl::string rel_path(rsl::string_view path, rsl::string_view root)
+    TempString rel_path(rsl::string_view path, rsl::string_view root)
     {
       // Return a path that can be appended to root and you'd get the path that "path" points to
 
       // Get rid of all unnecessary path tokens, making parsing of the path easier
-      rsl::string norm_path  = path::norm_path(path);
-      rsl::string norm_root = path::norm_path(root);
+      TempString norm_path  = path::norm_path(path);
+      TempString norm_root = path::norm_path(root);
 
       // If both paths are empty, just return an empty path
       if(norm_path.empty() && norm_root.empty())
       {
-        return rsl::string("");
+        return TempString("");
       }
 
       // Convert both path to their absolute paths, so its even easier to parse
-			rsl::string abs_norm_path = abs_path(norm_path);
-			rsl::string abs_norm_root = abs_path(norm_root);
+			TempString abs_norm_path = abs_path(norm_path);
+			TempString abs_norm_root = abs_path(norm_root);
 
       // Make them lower case so we ignore any casing during string comparison
       rsl::to_lower(abs_norm_path.cbegin(), abs_norm_path.begin(), abs_norm_path.size());
@@ -469,7 +469,7 @@ namespace rex
       // If both paths are equal, return an empty string
       if (is_same(abs_norm_path, abs_norm_root))
       {
-        return rsl::string("");
+        return TempString("");
       }
 
       // If paths are pointing to different root
@@ -488,7 +488,7 @@ namespace rex
       rsl::string_view diff_in_root = abs_norm_root.substr(common.length());
 
       s32 num_parent_dir_tokens = depth(diff_in_root);
-      rsl::string result;
+      TempString result;
 			for (card32 i = 0; i < num_parent_dir_tokens; ++i)
 			{
 				result = path::join(result, "..");
@@ -517,7 +517,7 @@ namespace rex
     // Returns if a file is under a certain directory
     bool is_under_dir(rsl::string_view path, rsl::string_view dir)
     {
-      rsl::string relative_path = rel_path(path, dir);
+      TempString relative_path = rel_path(path, dir);
       return !relative_path.starts_with("..");
     }
 
@@ -547,8 +547,8 @@ namespace rex
     {
       // simply convert the files into their actual files on disk
       // then do a string wise comparison
-      rsl::string real_path1 = real_path(path1);
-      rsl::string real_path2 = real_path(path2);
+      TempString real_path1 = real_path(path1);
+      TempString real_path2 = real_path(path2);
 
       rsl::to_lower(real_path1.cbegin(), real_path1.begin(), real_path1.size());
       rsl::to_lower(real_path2.cbegin(), real_path2.begin(), real_path2.size());
@@ -627,7 +627,7 @@ namespace rex
     }
     s32 abs_depth(rsl::string_view path)
     {
-      rsl::string fullpath = abs_path(norm_path(path));
+      TempString fullpath = abs_path(norm_path(path));
 
       if (is_root(fullpath))
       {
@@ -675,8 +675,8 @@ namespace rex
     }
     bool has_same_root(rsl::string_view lhs, rsl::string_view rhs)
     {
-      rsl::string lhs_fullpath = abs_path(lhs);
-      rsl::string rhs_fullpath = abs_path(rhs);
+      TempString lhs_fullpath = abs_path(lhs);
+      TempString rhs_fullpath = abs_path(rhs);
 
       SplitResult lhs_split = split_origin(lhs_fullpath);
       SplitResult rhs_split = split_origin(rhs_fullpath);
