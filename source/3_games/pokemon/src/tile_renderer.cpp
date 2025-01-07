@@ -234,8 +234,8 @@ namespace pokemon
     render_pass_desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
 
     // Assign the shaders used for the tile renderer
-    render_pass_desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::load(rex::path::join(rex::vfs::project_root(), "retail", "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-    render_pass_desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::load(rex::path::join(rex::vfs::project_root(), "retail", "shaders", "render_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+    render_pass_desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::load(rex::path::join(rex::vfs::project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
+    render_pass_desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::load(rex::path::join(rex::vfs::project_root(), "shaders", "render_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
 
     render_pass_desc.pso_desc.input_layout =
     {

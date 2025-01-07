@@ -333,6 +333,7 @@ public abstract class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Compiler.FunctionLevelLinking.Disable);
     conf.Options.Add(Options.Vc.Compiler.FloatingPointExceptions.Disable);
     conf.Options.Add(Options.Vc.Compiler.OpenMP.Disable);
+    conf.Options.Add(Options.Vc.Compiler.BigObj.Enable);
 
     if (!ProjectGen.Settings.UnityBuildsDisabled)
     {

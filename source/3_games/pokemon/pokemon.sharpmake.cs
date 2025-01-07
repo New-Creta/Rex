@@ -14,7 +14,7 @@ public class PokemonProject : GameProject
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
 
-    DataPath = Path.Combine(Globals.Root, "data", "pokemon", "retail");
+    DataPath = Path.Combine(Globals.Root, "data", "pokemon");
   }
 
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
