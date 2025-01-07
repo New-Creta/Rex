@@ -83,7 +83,7 @@ namespace rex
 
     void post_app_shutdown()
     {
-
+      mut_globals().single_frame_allocator.reset();
     }
   } // namespace internal
 } // namespace rex

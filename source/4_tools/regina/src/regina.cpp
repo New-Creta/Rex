@@ -51,6 +51,9 @@ namespace regina
       {
         create_new_project();
       }
+
+      m_content_manager = rsl::make_unique<ContentManager>();
+      m_content_manager->add_content(rex::vfs::project_root());
     }
 
     void update()
@@ -79,8 +82,7 @@ namespace regina
     }
     void show_content_browser()
     {
-      m_content_manager = rsl::make_unique<ContentManager>();
-      m_content_manager->add_content(rex::vfs::project_root());
+
     }
     void create_new_project()
     {
@@ -115,7 +117,7 @@ namespace regina
     }
 
     // verify that the project path actually exist
-    rsl::string project_filepath = rex::vfs::abs_path(rex::path::join(projectName, project_filename));
+    rex::TempString project_filepath = rex::vfs::abs_path(rex::path::join(projectName, project_filename));
     if (!rex::vfs::is_file(project_filepath))
     {
       REX_ERROR(LogRegina, "Project \"{}\" does not exist", project_filepath);

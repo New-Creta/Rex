@@ -6,6 +6,8 @@
 
 #include "rex_engine/memory/memory_tracking.h"
 
+#include "rex_engine/memory/memory_stats.h"
+
 namespace regina
 {
 	DEFINE_LOG_CATEGORY(LogContentManager);
@@ -19,25 +21,8 @@ namespace regina
 	{
 		REX_INFO(LogContentManager, "Adding directory {}", directory);
 
-		auto current_tracking_stats = rex::mem_tracker().current_tracking_stats();
-
 		rsl::vector<rsl::string> entries = rex::directory::list_entries(directory, rex::directory::Recursive::yes);
 
-		auto new_tracking_stats = rex::mem_tracker().current_tracking_stats();
-
-		REX_INFO(LogContentManager, "Content manager caused {} allocations", new_tracking_stats.num_total_allocations - current_tracking_stats.num_total_allocations);
-
-		for (rsl::string_view entry : entries)
-		{
- 			if (rex::directory::exists(entry))
-			{
-				REX_INFO(LogContentManager, "Found directory: {}", entry);
-			}
-			else
-			{
-				REX_INFO(LogContentManager, "Found file: {}", entry);
-			}
-		}
 	}
 
 }

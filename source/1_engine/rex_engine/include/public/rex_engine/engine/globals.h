@@ -21,4 +21,6 @@ namespace rex
 	const Globals& globals();
 
 	void set_single_frame_alloc(rsl::unique_ptr<FrameBasedAllocator> singleFrameAlloc);
+	void set_current_marker(s32 offset);
+	s32 get_marker();
 }
