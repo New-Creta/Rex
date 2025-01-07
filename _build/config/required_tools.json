@@ -110,7 +110,7 @@
     "config_name": "sharpmake_path",
     "archive_name": "Sharpmake",
     "num_zip_files": 1,
-    "version" : "sharpmake-0.21.1-r0.25"
+    "version" : "sharpmake-0.21.1-r0.26"
   },
   "llvm_profdata" : 
   {
