@@ -37,8 +37,6 @@ namespace rex
     vfs::shutdown();
 
     cmdline::shutdown();
-
-    mut_globals().single_frame_allocator.reset();
   }
 
   //--------------------------------------------------------------------------------------------
