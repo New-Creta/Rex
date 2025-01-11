@@ -1,0 +1,167 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONDINER_COOK
+	const_export CELADONDINER_MIDDLE_AGED_WOMAN
+	const_export CELADONDINER_MIDDLE_AGED_MAN
+	const_export CELADONDINER_FISHER
+	const_export CELADONDINER_GYM_GUIDE
+
+CeladonDiner_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 11
+	warp_event  4,  7, LAST_MAP, 11
+
+	def_bg_events
+
+	def_object_events
+	object_event  8,  5, SPRITE_COOK, WALK, LEFT_RIGHT, TEXT_CELADONDINER_COOK
+	object_event  7,  2, SPRITE_MIDDLE_AGED_WOMAN, STAY, NONE, TEXT_CELADONDINER_MIDDLE_AGED_WOMAN
+	object_event  1,  4, SPRITE_MIDDLE_AGED_MAN, STAY, DOWN, TEXT_CELADONDINER_MIDDLE_AGED_MAN
+	object_event  5,  3, SPRITE_FISHER, STAY, RIGHT, TEXT_CELADONDINER_FISHER
+	object_event  0,  1, SPRITE_GYM_GUIDE, STAY, DOWN, TEXT_CELADONDINER_GYM_GUIDE
+
+	def_warps_to CELADON_DINER
+
+
+-- MAP HEADER --
+
+	map_header CeladonDiner, CELADON_DINER, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonDinerCookText::
+	text "Hi!"
+
+	para "We're taking a"
+	line "break now."
+	done
+
+_CeladonDinerMiddleAgedWomanText::
+	text "My #MON are"
+	line "weak, so I often"
+	cont "have to go to the"
+	cont "DRUG STORE."
+	done
+
+_CeladonDinerMiddleAgedManText::
+	text "Psst! There's a"
+	line "basement under"
+	cont "the GAME CORNER."
+	done
+
+_CeladonDinerFisherText::
+	text "Munch..."
+
+	para "The man at that"
+	line "table lost it all"
+	cont "at the slots."
+	done
+
+_CeladonDinerGymGuideImFlatOutBustedText::
+	text "Go ahead! Laugh!"
+
+	para "I'm flat out"
+	line "busted!"
+
+	para "No more slots for"
+	line "me! I'm going"
+	cont "straight!"
+
+	para "Here! I won't be"
+	line "needing this any-"
+	cont "more!"
+	prompt
+
+_CeladonDinerGymGuideReceivedCoinCaseText::
+	text "<PLAYER> received"
+	line "a @"
+	text_ram wStringBuffer
+	text "!@"
+	text_end
+
+_CeladonDinerGymGuideCoinCaseNoRoomText::
+	text "Make room for"
+	line "this!"
+	done
+
+_CeladonDinerGymGuideWinItBackText::
+	text "I always thought"
+	line "I was going to"
+	cont "win it back..."
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonDiner_Script:
+	call EnableAutoTextBoxDrawing
+	ret
+
+CeladonDiner_TextPointers:
+	def_text_pointers
+	dw_const CeladonDinerCookText,            TEXT_CELADONDINER_COOK
+	dw_const CeladonDinerMiddleAgedWomanText, TEXT_CELADONDINER_MIDDLE_AGED_WOMAN
+	dw_const CeladonDinerMiddleAgedManText,   TEXT_CELADONDINER_MIDDLE_AGED_MAN
+	dw_const CeladonDinerFisherText,          TEXT_CELADONDINER_FISHER
+	dw_const CeladonDinerGymGuideText,        TEXT_CELADONDINER_GYM_GUIDE
+
+CeladonDinerCookText:
+	text_far _CeladonDinerCookText
+	text_end
+
+CeladonDinerMiddleAgedWomanText:
+	text_far _CeladonDinerMiddleAgedWomanText
+	text_end
+
+CeladonDinerMiddleAgedManText:
+	text_far _CeladonDinerMiddleAgedManText
+	text_end
+
+CeladonDinerFisherText:
+	text_far _CeladonDinerFisherText
+	text_end
+
+CeladonDinerGymGuideText:
+	text_asm
+	CheckEvent EVENT_GOT_COIN_CASE
+	jr nz, .got_item
+	ld hl, .ImFlatOutBustedText
+	call PrintText
+	lb bc, COIN_CASE, 1
+	call GiveItem
+	jr nc, .bag_full
+	SetEvent EVENT_GOT_COIN_CASE
+	ld hl, .ReceivedCoinCaseText
+	call PrintText
+	jr .done
+.bag_full
+	ld hl, .CoinCaseNoRoomText
+	call PrintText
+	jr .done
+.got_item
+	ld hl, .WinItBackText
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.ImFlatOutBustedText:
+	text_far _CeladonDinerGymGuideImFlatOutBustedText
+	text_end
+
+.ReceivedCoinCaseText:
+	text_far _CeladonDinerGymGuideReceivedCoinCaseText
+	sound_get_key_item
+	text_end
+
+.CoinCaseNoRoomText:
+	text_far _CeladonDinerGymGuideCoinCaseNoRoomText
+	text_end
+
+.WinItBackText:
+	text_far _CeladonDinerGymGuideWinItBackText
+	text_end
