@@ -1,0 +1,223 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export POKEMONMANSION2F_SUPER_NERD
+	const_export POKEMONMANSION2F_CALCIUM
+	const_export POKEMONMANSION2F_DIARY1
+	const_export POKEMONMANSION2F_DIARY2
+
+PokemonMansion2F_Object:
+	db $1 ; border block
+
+	def_warp_events
+	warp_event  5, 10, POKEMON_MANSION_1F, 5
+	warp_event  7, 10, POKEMON_MANSION_3F, 1
+	warp_event 25, 14, POKEMON_MANSION_3F, 3
+	warp_event  6,  1, POKEMON_MANSION_3F, 2
+
+	def_bg_events
+
+	def_object_events
+	object_event  3, 17, SPRITE_SUPER_NERD, WALK, LEFT_RIGHT, TEXT_POKEMONMANSION2F_SUPER_NERD, OPP_BURGLAR, 7
+	object_event 28,  7, SPRITE_POKE_BALL, STAY, NONE, TEXT_POKEMONMANSION2F_CALCIUM, CALCIUM
+	object_event 18,  2, SPRITE_POKEDEX, STAY, NONE, TEXT_POKEMONMANSION2F_DIARY1
+	object_event  3, 22, SPRITE_POKEDEX, STAY, NONE, TEXT_POKEMONMANSION2F_DIARY2
+
+	def_warps_to POKEMON_MANSION_2F
+
+
+-- MAP HEADER --
+
+	map_header PokemonMansion2F, POKEMON_MANSION_2F, FACILITY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_PokemonMansion2FSuperNerdBattleText::
+	text "I can't get out!"
+	line "This old place is"
+	cont "one big puzzle!"
+	done
+
+_PokemonMansion2FSuperNerdEndBattleText::
+	text "Oh no!"
+	line "My bag of loot!"
+	prompt
+
+_PokemonMansion2FSuperNerdAfterBattleText::
+	text "Switches open and"
+	line "close alternating"
+	cont "sets of doors!"
+	done
+
+_PokemonMansion2FDiary1Text::
+	text "Diary: July 5"
+	line "Guyana,"
+	cont "South America"
+
+	para "A new #MON was"
+	line "discovered deep"
+	cont "in the jungle."
+	done
+
+_PokemonMansion2FDiary2Text::
+	text "Diary: July 10"
+	line "We christened the"
+	cont "newly discovered"
+	cont "#MON, MEW."
+	done
+
+_PokemonMansion2FSwitchText::
+	text "A secret switch!"
+
+	para "Press it?"
+	done
+
+_PokemonMansion2FSwitchPressedText::
+	text "Who wouldn't?"
+	prompt
+
+_PokemonMansion2FSwitchNotPressedText::
+	text "Not quite yet!"
+	done
+
+
+-- MAP SCRIPT --
+
+PokemonMansion2F_Script:
+	call Mansion2CheckReplaceSwitchDoorBlocks
+	call EnableAutoTextBoxDrawing
+	ld hl, Mansion2TrainerHeaders
+	ld de, PokemonMansion2F_ScriptPointers
+	ld a, [wPokemonMansion2FCurScript]
+	call ExecuteCurMapScriptInTable
+	ld [wPokemonMansion2FCurScript], a
+	ret
+
+Mansion2CheckReplaceSwitchDoorBlocks:
+	ld hl, wCurrentMapScriptFlags
+	bit 5, [hl]
+	res 5, [hl]
+	ret z
+	CheckEvent EVENT_MANSION_SWITCH_ON
+	jr nz, .switchTurnedOn
+	ld a, $e
+	lb bc, 2, 4
+	call Mansion2ReplaceBlock
+	ld a, $54
+	lb bc, 4, 9
+	call Mansion2ReplaceBlock
+	ld a, $5f
+	lb bc, 11, 3
+	call Mansion2ReplaceBlock
+	ret
+.switchTurnedOn
+	ld a, $5f
+	lb bc, 2, 4
+	call Mansion2ReplaceBlock
+	ld a, $e
+	lb bc, 4, 9
+	call Mansion2ReplaceBlock
+	ld a, $e
+	lb bc, 11, 3
+	call Mansion2ReplaceBlock
+	ret
+
+Mansion2ReplaceBlock:
+	ld [wNewTileBlockID], a
+	predef_jump ReplaceTileBlock
+
+Mansion2Script_Switches::
+	ld a, [wSpritePlayerStateData1FacingDirection]
+	cp SPRITE_FACING_UP
+	ret nz
+	xor a
+	ldh [hJoyHeld], a
+	ld a, TEXT_POKEMONMANSION2F_SWITCH
+	ldh [hSpriteIndexOrTextID], a
+	jp DisplayTextID
+
+PokemonMansion2F_ScriptPointers:
+	def_script_pointers
+	dw_const CheckFightingMapTrainers,              SCRIPT_POKEMONMANSION2F_DEFAULT
+	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_POKEMONMANSION2F_START_BATTLE
+	dw_const EndTrainerBattle,                      SCRIPT_POKEMONMANSION2F_END_BATTLE
+
+PokemonMansion2F_TextPointers:
+	def_text_pointers
+	dw_const PokemonMansion2FSuperNerdText, TEXT_POKEMONMANSION2F_SUPER_NERD
+	dw_const PickUpItemText,                TEXT_POKEMONMANSION2F_CALCIUM
+	dw_const PokemonMansion2FDiary1Text,    TEXT_POKEMONMANSION2F_DIARY1
+	dw_const PokemonMansion2FDiary2Text,    TEXT_POKEMONMANSION2F_DIARY2
+	dw_const PokemonMansion2FSwitchText,    TEXT_POKEMONMANSION2F_SWITCH
+
+Mansion2TrainerHeaders:
+	def_trainers
+Mansion2TrainerHeader0:
+	trainer EVENT_BEAT_MANSION_2_TRAINER_0, 0, PokemonMansion2FSuperNerdBattleText, PokemonMansion2FSuperNerdEndBattleText, PokemonMansion2FSuperNerdAfterBattleText
+	db -1 ; end
+
+PokemonMansion2FSuperNerdText:
+	text_asm
+	ld hl, Mansion2TrainerHeader0
+	call TalkToTrainer
+	jp TextScriptEnd
+
+PokemonMansion2FSuperNerdBattleText:
+	text_far _PokemonMansion2FSuperNerdBattleText
+	text_end
+
+PokemonMansion2FSuperNerdEndBattleText:
+	text_far _PokemonMansion2FSuperNerdEndBattleText
+	text_end
+
+PokemonMansion2FSuperNerdAfterBattleText:
+	text_far _PokemonMansion2FSuperNerdAfterBattleText
+	text_end
+
+PokemonMansion2FDiary1Text:
+	text_far _PokemonMansion2FDiary1Text
+	text_end
+
+PokemonMansion2FDiary2Text:
+	text_far _PokemonMansion2FDiary2Text
+	text_end
+
+PokemonMansion2FSwitchText:
+	text_asm
+	ld hl, .Text
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .not_pressed
+	ld a, $1
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	ld hl, wCurrentMapScriptFlags
+	set 5, [hl]
+	ld hl, .PressedText
+	call PrintText
+	ld a, SFX_GO_INSIDE
+	call PlaySound
+	CheckAndSetEvent EVENT_MANSION_SWITCH_ON
+	jr z, .done
+	ResetEventReuseHL EVENT_MANSION_SWITCH_ON
+	jr .done
+.not_pressed
+	ld hl, .NotPressed
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.Text:
+	text_far _PokemonMansion2FSwitchText
+	text_end
+
+.PressedText:
+	text_far _PokemonMansion2FSwitchPressedText
+	text_end
+
+.NotPressed:
+	text_far _PokemonMansion2FSwitchNotPressedText
+	text_end

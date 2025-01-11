@@ -1,0 +1,177 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export LAVENDERTOWN_LITTLE_GIRL
+	const_export LAVENDERTOWN_COOLTRAINER_M
+	const_export LAVENDERTOWN_SUPER_NERD
+
+LavenderTown_Object:
+	db $2c ; border block
+
+	def_warp_events
+	warp_event  3,  5, LAVENDER_POKECENTER, 1
+	warp_event 14,  5, POKEMON_TOWER_1F, 1
+	warp_event  7,  9, MR_FUJIS_HOUSE, 1
+	warp_event 15, 13, LAVENDER_MART, 1
+	warp_event  3, 13, LAVENDER_CUBONE_HOUSE, 1
+	warp_event  7, 13, NAME_RATERS_HOUSE, 1
+
+	def_bg_events
+	bg_event 11,  9, TEXT_LAVENDERTOWN_SIGN
+	bg_event  9,  3, TEXT_LAVENDERTOWN_SILPH_SCOPE_SIGN
+	bg_event 16, 13, TEXT_LAVENDERTOWN_MART_SIGN
+	bg_event  4,  5, TEXT_LAVENDERTOWN_POKECENTER_SIGN
+	bg_event  5,  9, TEXT_LAVENDERTOWN_POKEMON_HOUSE_SIGN
+	bg_event 17,  7, TEXT_LAVENDERTOWN_POKEMON_TOWER_SIGN
+
+	def_object_events
+	object_event 15,  9, SPRITE_LITTLE_GIRL, WALK, ANY_DIR, TEXT_LAVENDERTOWN_LITTLE_GIRL
+	object_event  9, 10, SPRITE_COOLTRAINER_M, STAY, NONE, TEXT_LAVENDERTOWN_COOLTRAINER_M
+	object_event  8,  7, SPRITE_SUPER_NERD, WALK, LEFT_RIGHT, TEXT_LAVENDERTOWN_SUPER_NERD
+
+	def_warps_to LAVENDER_TOWN
+
+
+-- MAP HEADER --
+
+	map_header LavenderTown, LAVENDER_TOWN, OVERWORLD, NORTH | SOUTH | WEST
+	connection north, Route10, ROUTE_10, 0
+	connection south, Route12, ROUTE_12, 0
+	connection west, Route8, ROUTE_8, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_LavenderTownLittleGirlDoYouBelieveInGhostsText::
+	text "Do you believe in"
+	line "GHOSTs?"
+	done
+
+_LavenderTownLittleGirlSoThereAreBelieversText::
+	text "Really? So there"
+	line "are believers..."
+	done
+
+_LavenderTownLittleGirlHaHaGuessNotText::
+	text "Hahaha, I guess"
+	line "not."
+
+	para "That white hand"
+	line "on your shoulder,"
+	cont "it's not real."
+	done
+
+_LavenderTownCooltrainerMText::
+	text "This town is known"
+	line "as the grave site"
+	cont "of #MON."
+
+	para "Memorial services"
+	line "are held in"
+	cont "#MON TOWER."
+	done
+
+_LavenderTownSuperNerdText::
+	text "GHOSTs appeared"
+	line "in #MON TOWER."
+
+	para "I think they're"
+	line "the spirits of"
+	cont "#MON that the"
+	cont "ROCKETs killed."
+	done
+
+_LavenderTownSignText::
+	text "LAVENDER TOWN"
+	line "The Noble Purple"
+	cont "Town"
+	done
+
+_LavenderTownSilphScopeSignText::
+	text "New SILPH SCOPE!"
+
+	para "Make the Invisible"
+	line "Plain to See!"
+
+	para "SILPH CO."
+	done
+
+_LavenderTownPokemonHouseSignText::
+	text "LAVENDER VOLUNTEER"
+	line "#MON HOUSE"
+	done
+
+_LavenderTownPokemonTowerSignText::
+	text "May the Souls of"
+	line "#MON Rest Easy"
+	cont "#MON TOWER"
+	done
+
+
+-- MAP SCRIPT --
+
+LavenderTown_Script:
+	jp EnableAutoTextBoxDrawing
+
+LavenderTown_TextPointers:
+	def_text_pointers
+	dw_const LavenderTownLittleGirlText,       TEXT_LAVENDERTOWN_LITTLE_GIRL
+	dw_const LavenderTownCooltrainerMText,     TEXT_LAVENDERTOWN_COOLTRAINER_M
+	dw_const LavenderTownSuperNerdText,        TEXT_LAVENDERTOWN_SUPER_NERD
+	dw_const LavenderTownSignText,             TEXT_LAVENDERTOWN_SIGN
+	dw_const LavenderTownSilphScopeSignText,   TEXT_LAVENDERTOWN_SILPH_SCOPE_SIGN
+	dw_const MartSignText,                     TEXT_LAVENDERTOWN_MART_SIGN
+	dw_const PokeCenterSignText,               TEXT_LAVENDERTOWN_POKECENTER_SIGN
+	dw_const LavenderTownPokemonHouseSignText, TEXT_LAVENDERTOWN_POKEMON_HOUSE_SIGN
+	dw_const LavenderTownPokemonTowerSignText, TEXT_LAVENDERTOWN_POKEMON_TOWER_SIGN
+
+LavenderTownLittleGirlText:
+	text_asm
+	ld hl, .DoYouBelieveInGhostsText
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	ld hl, .HaHaGuessNotText
+	jr nz, .got_text
+	ld hl, .SoThereAreBelieversText
+.got_text
+	call PrintText
+	jp TextScriptEnd
+
+.DoYouBelieveInGhostsText:
+	text_far _LavenderTownLittleGirlDoYouBelieveInGhostsText
+	text_end
+
+.SoThereAreBelieversText:
+	text_far _LavenderTownLittleGirlSoThereAreBelieversText
+	text_end
+
+.HaHaGuessNotText:
+	text_far _LavenderTownLittleGirlHaHaGuessNotText
+	text_end
+
+LavenderTownCooltrainerMText:
+	text_far _LavenderTownCooltrainerMText
+	text_end
+
+LavenderTownSuperNerdText:
+	text_far _LavenderTownSuperNerdText
+	text_end
+
+LavenderTownSignText:
+	text_far _LavenderTownSignText
+	text_end
+
+LavenderTownSilphScopeSignText:
+	text_far _LavenderTownSilphScopeSignText
+	text_end
+
+LavenderTownPokemonHouseSignText:
+	text_far _LavenderTownPokemonHouseSignText
+	text_end
+
+LavenderTownPokemonTowerSignText:
+	text_far _LavenderTownPokemonTowerSignText
+	text_end

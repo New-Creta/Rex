@@ -1,0 +1,185 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export MTMOONPOKECENTER_NURSE
+	const_export MTMOONPOKECENTER_YOUNGSTER
+	const_export MTMOONPOKECENTER_GENTLEMAN
+	const_export MTMOONPOKECENTER_MAGIKARP_SALESMAN
+	const_export MTMOONPOKECENTER_CLIPBOARD
+	const_export MTMOONPOKECENTER_LINK_RECEPTIONIST
+
+MtMoonPokecenter_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  4,  7, LAST_MAP, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  1, SPRITE_NURSE, STAY, DOWN, TEXT_MTMOONPOKECENTER_NURSE
+	object_event  4,  3, SPRITE_YOUNGSTER, STAY, UP, TEXT_MTMOONPOKECENTER_YOUNGSTER
+	object_event  7,  3, SPRITE_GENTLEMAN, STAY, UP, TEXT_MTMOONPOKECENTER_GENTLEMAN
+	object_event 10,  6, SPRITE_MIDDLE_AGED_MAN, WALK, LEFT_RIGHT, TEXT_MTMOONPOKECENTER_MAGIKARP_SALESMAN
+	object_event  7,  2, SPRITE_CLIPBOARD, STAY, NONE, TEXT_MTMOONPOKECENTER_CLIPBOARD
+	object_event 11,  2, SPRITE_LINK_RECEPTIONIST, STAY, DOWN, TEXT_MTMOONPOKECENTER_LINK_RECEPTIONIST
+
+	def_warps_to MT_MOON_POKECENTER
+
+
+-- MAP HEADER --
+
+	map_header MtMoonPokecenter, MT_MOON_POKECENTER, POKECENTER, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_MtMoonPokecenterYoungsterText::
+	text "I've 6 # BALLs"
+	line "set in my belt."
+
+	para "At most, you can"
+	line "carry 6 #MON."
+	done
+
+_MtMoonPokecenterGentlemanText::
+	text "TEAM ROCKET"
+	line "attacks CERULEAN"
+	cont "citizens..."
+
+	para "TEAM ROCKET is"
+	line "always in the"
+	cont "news!"
+	done
+
+_MtMoonPokecenterMagikarpSalesmanIGotADealText::
+	text "MAN: Hello, there!"
+	line "Have I got a deal"
+	cont "just for you!"
+
+	para "I'll let you have"
+	line "a swell MAGIKARP"
+	cont "for just ¥500!"
+	cont "What do you say?"
+	done
+
+_MtMoonPokecenterMagikarpSalesmanNoText::
+	text "No? I'm only"
+	line "doing this as a"
+	cont "favor to you!"
+	done
+
+_MtMoonPokecenterMagikarpSalesmanNoMoneyText::
+	text "You'll need more"
+	line "money than that!"
+	done
+
+_MtMoonPokecenterMagikarpSalesmanNoRefundsText::
+	text "MAN: Well, I don't"
+	line "give refunds!"
+	done
+
+_MtMoonPokecenterClipboardText::
+	text_start
+	done
+
+
+-- MAP SCRIPT --
+
+MtMoonPokecenter_Script:
+	call Serial_TryEstablishingExternallyClockedConnection
+	jp EnableAutoTextBoxDrawing
+
+MtMoonPokecenter_TextPointers:
+	def_text_pointers
+	dw_const MtMoonPokecenterNurseText,            TEXT_MTMOONPOKECENTER_NURSE
+	dw_const MtMoonPokecenterYoungsterText,        TEXT_MTMOONPOKECENTER_YOUNGSTER
+	dw_const MtMoonPokecenterGentlemanText,        TEXT_MTMOONPOKECENTER_GENTLEMAN
+	dw_const MtMoonPokecenterMagikarpSalesmanText, TEXT_MTMOONPOKECENTER_MAGIKARP_SALESMAN
+	dw_const MtMoonPokecenterClipboardText,        TEXT_MTMOONPOKECENTER_CLIPBOARD
+	dw_const MtMoonPokecenterLinkReceptionistText, TEXT_MTMOONPOKECENTER_LINK_RECEPTIONIST
+
+MtMoonPokecenterNurseText:
+	script_pokecenter_nurse
+
+MtMoonPokecenterYoungsterText:
+	text_far _MtMoonPokecenterYoungsterText
+	text_end
+
+MtMoonPokecenterGentlemanText:
+	text_far _MtMoonPokecenterGentlemanText
+	text_end
+
+MtMoonPokecenterMagikarpSalesmanText:
+	text_asm
+	CheckEvent EVENT_BOUGHT_MAGIKARP, 1
+	jp c, .alreadyBoughtMagikarp
+	ld hl, .IGotADealText
+	call PrintText
+	ld a, MONEY_BOX
+	ld [wTextBoxID], a
+	call DisplayTextBoxID
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jp nz, .choseNo
+	ldh [hMoney], a
+	ldh [hMoney + 2], a
+	ld a, $5
+	ldh [hMoney + 1], a
+	call HasEnoughMoney
+	jr nc, .enoughMoney
+	ld hl, .NoMoneyText
+	jr .printText
+.enoughMoney
+	lb bc, MAGIKARP, 5
+	call GivePokemon
+	jr nc, .done
+	xor a
+	ld [wPriceTemp], a
+	ld [wPriceTemp + 2], a
+	ld a, $5
+	ld [wPriceTemp + 1], a
+	ld hl, wPriceTemp + 2
+	ld de, wPlayerMoney + 2
+	ld c, $3
+	predef SubBCDPredef
+	ld a, MONEY_BOX
+	ld [wTextBoxID], a
+	call DisplayTextBoxID
+	SetEvent EVENT_BOUGHT_MAGIKARP
+	jr .done
+.choseNo
+	ld hl, .NoText
+	jr .printText
+.alreadyBoughtMagikarp
+	ld hl, .NoRefundsText
+.printText
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.IGotADealText
+	text_far _MtMoonPokecenterMagikarpSalesmanIGotADealText
+	text_end
+
+.NoText
+	text_far _MtMoonPokecenterMagikarpSalesmanNoText
+	text_end
+
+.NoMoneyText
+	text_far _MtMoonPokecenterMagikarpSalesmanNoMoneyText
+	text_end
+
+.NoRefundsText
+	text_far _MtMoonPokecenterMagikarpSalesmanNoRefundsText
+	text_end
+
+MtMoonPokecenterClipboardText:
+	text_far _MtMoonPokecenterClipboardText
+	text_end
+
+MtMoonPokecenterLinkReceptionistText:
+	script_cable_club_receptionist

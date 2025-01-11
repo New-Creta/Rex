@@ -1,0 +1,31 @@
+-- MAP OBJECT --
+
+DiglettsCave_Object:
+	db $19 ; border block
+
+	def_warp_events
+	warp_event  5,  5, DIGLETTS_CAVE_ROUTE_2, 3
+	warp_event 37, 31, DIGLETTS_CAVE_ROUTE_11, 3
+
+	def_bg_events
+
+	def_object_events
+
+	def_warps_to DIGLETTS_CAVE
+
+
+-- MAP HEADER --
+
+	map_header DiglettsCave, DIGLETTS_CAVE, CAVERN, 0
+	end_map_header
+
+
+-- MAP SCRIPT --
+
+DiglettsCave_Script:
+	jp EnableAutoTextBoxDrawing
+
+DiglettsCave_TextPointers:
+	def_text_pointers
+
+	text_end ; unused

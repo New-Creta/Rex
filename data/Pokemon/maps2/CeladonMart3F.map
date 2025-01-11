@@ -1,0 +1,256 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMART3F_CLERK
+	const_export CELADONMART3F_GAMEBOY_KID1
+	const_export CELADONMART3F_GAMEBOY_KID2
+	const_export CELADONMART3F_GAMEBOY_KID3
+	const_export CELADONMART3F_LITTLE_BOY
+
+CeladonMart3F_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event 12,  1, CELADON_MART_4F, 1
+	warp_event 16,  1, CELADON_MART_2F, 2
+	warp_event  1,  1, CELADON_MART_ELEVATOR, 1
+
+	def_bg_events
+	bg_event  2,  4, TEXT_CELADONMART3F_SNES1
+	bg_event  3,  4, TEXT_CELADONMART3F_RPG
+	bg_event  5,  4, TEXT_CELADONMART3F_SNES2
+	bg_event  6,  4, TEXT_CELADONMART3F_SPORTS_GAME
+	bg_event  2,  6, TEXT_CELADONMART3F_SNES3
+	bg_event  3,  6, TEXT_CELADONMART3F_PUZZLE_GAME
+	bg_event  5,  6, TEXT_CELADONMART3F_SNES4
+	bg_event  6,  6, TEXT_CELADONMART3F_FIGHTING_GAME
+	bg_event 14,  1, TEXT_CELADONMART3F_CURRENT_FLOOR_SIGN
+	bg_event  4,  1, TEXT_CELADONMART3F_POKEMON_POSTER1
+	bg_event  6,  1, TEXT_CELADONMART3F_POKEMON_POSTER2
+	bg_event 10,  1, TEXT_CELADONMART3F_POKEMON_POSTER3
+
+	def_object_events
+	object_event 16,  5, SPRITE_CLERK, STAY, NONE, TEXT_CELADONMART3F_CLERK
+	object_event 11,  6, SPRITE_GAMEBOY_KID, STAY, RIGHT, TEXT_CELADONMART3F_GAMEBOY_KID1
+	object_event  7,  2, SPRITE_GAMEBOY_KID, STAY, DOWN, TEXT_CELADONMART3F_GAMEBOY_KID2
+	object_event  8,  2, SPRITE_GAMEBOY_KID, STAY, DOWN, TEXT_CELADONMART3F_GAMEBOY_KID3
+	object_event  2,  5, SPRITE_LITTLE_BOY, STAY, UP, TEXT_CELADONMART3F_LITTLE_BOY
+
+	def_warps_to CELADON_MART_3F
+
+
+-- MAP HEADER --
+
+	map_header CeladonMart3F, CELADON_MART_3F, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMart3FClerkTM18PreReceiveText::
+	text "Oh, hi! I finally"
+	line "finished #MON!"
+
+	para "Not done yet?"
+	line "This might be"
+	cont "useful!"
+	prompt
+
+_CeladonMart3FClerkReceivedTM18Text::
+	text "<PLAYER> received"
+	line "@"
+	text_ram wStringBuffer
+	text "!@"
+	text_end
+
+_CeladonMart3FClerkTM18ExplanationText::
+	text "TM18 is COUNTER!"
+	line "Not like the one"
+	cont "I'm leaning on,"
+	cont "mind you!"
+	done
+
+_CeladonMart3FClerkTM18NoRoomText::
+	text "Your pack is full"
+	line "of items!"
+	done
+
+_CeladonMart3FGameBoyKid1Text::
+	text "Captured #MON"
+	line "are registered"
+	cont "with an ID No."
+	cont "and OT, the name"
+	cont "of the Original"
+	cont "Trainer that"
+	cont "caught it!"
+	done
+
+_CeladonMart3FGameBoyKid2Text::
+	text "All right!"
+
+	para "My buddy's going"
+	line "to trade me his"
+	cont "KANGASKHAN for my"
+	cont "GRAVELER!"
+	done
+
+_CeladonMart3FGameBoyKid3Text::
+	text "Come on GRAVELER!"
+
+	para "I love GRAVELER!"
+	line "I collect them!"
+
+	para "Huh?"
+
+	para "GRAVELER turned"
+	line "into a different"
+	cont "#MON!"
+	done
+
+_CeladonMart3FLittleBoyText::
+	text "You can identify"
+	line "#MON you got"
+	cont "in trades by"
+	cont "their ID Numbers!"
+	done
+
+_CeladonMart3FSNESText::
+	text "It's an SNES!"
+	done
+
+_CeladonMart3FRPGText::
+	text "An RPG! There's"
+	line "no time for that!"
+	done
+
+_CeladonMart3FSportsGameText::
+	text "A sports game!"
+	line "Dad'll like that!"
+	done
+
+_CeladonMart3FPuzzleGameText::
+	text "A puzzle game!"
+	line "Looks addictive!"
+	done
+
+_CeladonMart3FFightingGameText::
+	text "A fighting game!"
+	line "Looks tough!"
+	done
+
+_CeladonMart3FCurrentFloorSignText::
+	text "3F: TV GAME SHOP"
+	done
+
+_CeladonMart3FPokemonPosterText::
+	text "Red and Blue!"
+	line "Both are #MON!"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMart3F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMart3F_TextPointers:
+	def_text_pointers
+	dw_const CeladonMart3FClerkText,            TEXT_CELADONMART3F_CLERK
+	dw_const CeladonMart3FGameBoyKid1Text,      TEXT_CELADONMART3F_GAMEBOY_KID1
+	dw_const CeladonMart3FGameBoyKid2Text,      TEXT_CELADONMART3F_GAMEBOY_KID2
+	dw_const CeladonMart3FGameBoyKid3Text,      TEXT_CELADONMART3F_GAMEBOY_KID3
+	dw_const CeladonMart3FLittleBoyText,        TEXT_CELADONMART3F_LITTLE_BOY
+	dw_const CeladonMart3FSNESText,             TEXT_CELADONMART3F_SNES1
+	dw_const CeladonMart3FRPGText,              TEXT_CELADONMART3F_RPG
+	dw_const CeladonMart3FSNESText,             TEXT_CELADONMART3F_SNES2
+	dw_const CeladonMart3FSportsGameText,       TEXT_CELADONMART3F_SPORTS_GAME
+	dw_const CeladonMart3FSNESText,             TEXT_CELADONMART3F_SNES3
+	dw_const CeladonMart3FPuzzleGameText,       TEXT_CELADONMART3F_PUZZLE_GAME
+	dw_const CeladonMart3FSNESText,             TEXT_CELADONMART3F_SNES4
+	dw_const CeladonMart3FFightingGameText,     TEXT_CELADONMART3F_FIGHTING_GAME
+	dw_const CeladonMart3FCurrentFloorSignText, TEXT_CELADONMART3F_CURRENT_FLOOR_SIGN
+	dw_const CeladonMart3FPokemonPosterText,    TEXT_CELADONMART3F_POKEMON_POSTER1
+	dw_const CeladonMart3FPokemonPosterText,    TEXT_CELADONMART3F_POKEMON_POSTER2
+	dw_const CeladonMart3FPokemonPosterText,    TEXT_CELADONMART3F_POKEMON_POSTER3
+
+CeladonMart3FClerkText:
+	text_asm
+	CheckEvent EVENT_GOT_TM18
+	jr nz, .got_item
+	ld hl, .TM18PreReceiveText
+	call PrintText
+	lb bc, TM_COUNTER, 1
+	call GiveItem
+	jr nc, .bag_full
+	SetEvent EVENT_GOT_TM18
+	ld hl, .ReceivedTM18Text
+	jr .done
+.bag_full
+	ld hl, .TM18NoRoomText
+	jr .done
+.got_item
+	ld hl, .TM18ExplanationText
+.done
+	call PrintText
+	jp TextScriptEnd
+
+.TM18PreReceiveText:
+	text_far _CeladonMart3FClerkTM18PreReceiveText
+	text_end
+
+.ReceivedTM18Text:
+	text_far _CeladonMart3FClerkReceivedTM18Text
+	sound_get_item_1
+	text_end
+
+.TM18ExplanationText:
+	text_far _CeladonMart3FClerkTM18ExplanationText
+	text_end
+
+.TM18NoRoomText:
+	text_far _CeladonMart3FClerkTM18NoRoomText
+	text_end
+
+CeladonMart3FGameBoyKid1Text:
+	text_far _CeladonMart3FGameBoyKid1Text
+	text_end
+
+CeladonMart3FGameBoyKid2Text:
+	text_far _CeladonMart3FGameBoyKid2Text
+	text_end
+
+CeladonMart3FGameBoyKid3Text:
+	text_far _CeladonMart3FGameBoyKid3Text
+	text_end
+
+CeladonMart3FLittleBoyText:
+	text_far _CeladonMart3FLittleBoyText
+	text_end
+
+CeladonMart3FSNESText:
+	text_far _CeladonMart3FSNESText
+	text_end
+
+CeladonMart3FRPGText:
+	text_far _CeladonMart3FRPGText
+	text_end
+
+CeladonMart3FSportsGameText:
+	text_far _CeladonMart3FSportsGameText
+	text_end
+
+CeladonMart3FPuzzleGameText:
+	text_far _CeladonMart3FPuzzleGameText
+	text_end
+
+CeladonMart3FFightingGameText:
+	text_far _CeladonMart3FFightingGameText
+	text_end
+
+CeladonMart3FCurrentFloorSignText:
+	text_far _CeladonMart3FCurrentFloorSignText
+	text_end
+
+CeladonMart3FPokemonPosterText:
+	text_far _CeladonMart3FPokemonPosterText
+	text_end

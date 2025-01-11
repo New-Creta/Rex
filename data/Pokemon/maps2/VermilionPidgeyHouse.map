@@ -1,0 +1,83 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export VERMILIONPIDGEYHOUSE_YOUNGSTER
+	const_export VERMILIONPIDGEYHOUSE_PIDGEY
+	const_export VERMILIONPIDGEYHOUSE_LETTER
+
+VermilionPidgeyHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 5
+	warp_event  3,  7, LAST_MAP, 5
+
+	def_bg_events
+
+	def_object_events
+	object_event  5,  3, SPRITE_YOUNGSTER, STAY, LEFT, TEXT_VERMILIONPIDGEYHOUSE_YOUNGSTER
+	object_event  3,  5, SPRITE_BIRD, WALK, LEFT_RIGHT, TEXT_VERMILIONPIDGEYHOUSE_PIDGEY
+	object_event  4,  3, SPRITE_PAPER, STAY, NONE, TEXT_VERMILIONPIDGEYHOUSE_LETTER
+
+	def_warps_to VERMILION_PIDGEY_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header VermilionPidgeyHouse, VERMILION_PIDGEY_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_VermilionPidgeyHouseYoungsterText::
+	text "I'm getting my"
+	line "PIDGEY to fly a"
+	cont "letter to SAFFRON"
+	cont "in the north!"
+	done
+
+_VermilionPidgeyHousePidgeyText::
+	text "PIDGEY: Kurukkoo!@"
+	text_end
+
+_VermilionPidgeyHouseLetterText::
+	text "Dear PIPPI, I hope"
+	line "to see you soon."
+
+	para "I heard SAFFRON"
+	line "has problems with"
+	cont "TEAM ROCKET."
+
+	para "VERMILION appears"
+	line "to be safe."
+	done
+
+
+-- MAP SCRIPT --
+
+VermilionPidgeyHouse_Script:
+	call EnableAutoTextBoxDrawing
+	ret
+
+VermilionPidgeyHouse_TextPointers:
+	def_text_pointers
+	dw_const VermilionPidgeyHouseYoungsterText, TEXT_VERMILIONPIDGEYHOUSE_YOUNGSTER
+	dw_const VermilionPidgeyHousePidgeyText,    TEXT_VERMILIONPIDGEYHOUSE_PIDGEY
+	dw_const VermilionPidgeyHouseLetterText,    TEXT_VERMILIONPIDGEYHOUSE_LETTER
+
+VermilionPidgeyHouseYoungsterText:
+	text_far _VermilionPidgeyHouseYoungsterText
+	text_end
+
+VermilionPidgeyHousePidgeyText:
+	text_far _VermilionPidgeyHousePidgeyText
+	text_asm
+	ld a, PIDGEY
+	call PlayCry
+	call WaitForSoundToFinish
+	jp TextScriptEnd
+
+VermilionPidgeyHouseLetterText:
+	text_far _VermilionPidgeyHouseLetterText
+	text_end

@@ -1,0 +1,151 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export ROUTE22GATE_GUARD
+
+Route22Gate_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  4,  7, LAST_MAP, 1
+	warp_event  5,  7, LAST_MAP, 1
+	warp_event  4,  0, LAST_MAP, 1
+	warp_event  5,  0, LAST_MAP, 2
+
+	def_bg_events
+
+	def_object_events
+	object_event  6,  2, SPRITE_GUARD, STAY, LEFT, TEXT_ROUTE22GATE_GUARD
+
+	def_warps_to ROUTE_22_GATE
+
+
+-- MAP HEADER --
+
+	map_header Route22Gate, ROUTE_22_GATE, GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_Route22GateGuardNoBoulderbadgeText::
+	text "Only truly skilled"
+	line "trainers are"
+	cont "allowed through."
+
+	para "You don't have the"
+	line "BOULDERBADGE yet!@"
+	text_end
+
+_Route22GateGuardICantLetYouPassText::
+	text_start
+
+	para "The rules are"
+	line "rules. I can't"
+	cont "let you pass."
+	done
+
+_Route22GateGuardGoRightAheadText::
+	text "Oh! That is the"
+	line "BOULDERBADGE!"
+	cont "Go right ahead!@"
+	text_end
+
+
+-- MAP SCRIPT --
+
+Route22Gate_Script:
+	call EnableAutoTextBoxDrawing
+	ld hl, Route22Gate_ScriptPointers
+	ld a, [wRoute22GateCurScript]
+	call CallFunctionInTable
+	ld a, [wYCoord]
+	cp 4
+	ld a, ROUTE_23
+	jr c, .set_last_map
+	ld a, ROUTE_22
+.set_last_map
+	ld [wLastMap], a
+	ret
+
+Route22Gate_ScriptPointers:
+	def_script_pointers
+	dw_const Route22GateDefaultScript,      SCRIPT_ROUTE22GATE_DEFAULT
+	dw_const Route22GatePlayerMovingScript, SCRIPT_ROUTE22GATE_PLAYER_MOVING
+	dw_const Route22GateNoopScript,         SCRIPT_ROUTE22GATE_NOOP
+
+Route22GateDefaultScript:
+	ld hl, Route22GateScriptCoords
+	call ArePlayerCoordsInArray
+	ret nc
+	xor a
+	ldh [hJoyHeld], a
+	ld a, TEXT_ROUTE22GATE_GUARD
+	ldh [hSpriteIndexOrTextID], a
+	jp DisplayTextID
+
+Route22GateScriptCoords:
+	dbmapcoord  4,  2
+	dbmapcoord  5,  2
+	db -1 ; end
+
+Route22GateMovePlayerDownScript:
+	ld a, $1
+	ld [wSimulatedJoypadStatesIndex], a
+	ld a, D_DOWN
+	ld [wSimulatedJoypadStatesEnd], a
+	ld [wSpritePlayerStateData1FacingDirection], a
+	ld [wJoyIgnore], a
+	jp StartSimulatingJoypadStates
+
+Route22GatePlayerMovingScript:
+	ld a, [wSimulatedJoypadStatesIndex]
+	and a
+	ret nz
+	xor a
+	ld [wJoyIgnore], a
+	call Delay3
+	ld a, SCRIPT_ROUTE22GATE_DEFAULT
+	ld [wRoute22GateCurScript], a
+Route22GateNoopScript:
+	ret
+
+Route22Gate_TextPointers:
+	def_text_pointers
+	dw_const Route22GateGuardText, TEXT_ROUTE22GATE_GUARD
+
+Route22GateGuardText:
+	text_asm
+	ld a, [wObtainedBadges]
+	bit BIT_BOULDERBADGE, a
+	jr nz, .has_boulderbadge
+	ld hl, Route22GateGuardNoBoulderbadgeText
+	call PrintText
+	call Route22GateMovePlayerDownScript
+	ld a, SCRIPT_ROUTE22GATE_PLAYER_MOVING
+	jr .set_current_script
+.has_boulderbadge
+	ld hl, Route22GateGuardGoRightAheadText
+	call PrintText
+	ld a, SCRIPT_ROUTE22GATE_NOOP
+.set_current_script
+	ld [wRoute22GateCurScript], a
+	jp TextScriptEnd
+
+Route22GateGuardNoBoulderbadgeText:
+	text_far _Route22GateGuardNoBoulderbadgeText
+	text_asm
+	ld a, SFX_DENIED
+	call PlaySoundWaitForCurrent
+	call WaitForSoundToFinish
+	ld hl, Route22GateGuardICantLetYouPassText
+	ret
+
+Route22GateGuardICantLetYouPassText:
+	text_far _Route22GateGuardICantLetYouPassText
+	text_end
+
+Route22GateGuardGoRightAheadText:
+	text_far _Route22GateGuardGoRightAheadText
+	sound_get_item_1
+	text_end

@@ -1,0 +1,70 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export GAMECORNERPRIZEROOM_BALDING_GUY
+	const_export GAMECORNERPRIZEROOM_GAMBLER
+
+GameCornerPrizeRoom_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event  4,  7, LAST_MAP, 10
+	warp_event  5,  7, LAST_MAP, 10
+
+	def_bg_events
+	bg_event  2,  2, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_1
+	bg_event  4,  2, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_2
+	bg_event  6,  2, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_3
+
+	def_object_events
+	object_event  1,  4, SPRITE_BALDING_GUY, STAY, NONE, TEXT_GAMECORNERPRIZEROOM_BALDING_GUY
+	object_event  7,  3, SPRITE_GAMBLER, WALK, LEFT_RIGHT, TEXT_GAMECORNERPRIZEROOM_GAMBLER
+
+	def_warps_to GAME_CORNER_PRIZE_ROOM
+
+
+-- MAP HEADER --
+
+	map_header GameCornerPrizeRoom, GAME_CORNER_PRIZE_ROOM, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_GameCornerPrizeRoomBaldingGuyText::
+	text "I sure do fancy"
+	line "that PORYGON!"
+
+	para "But, it's hard to"
+	line "win at slots!"
+	done
+
+_GameCornerPrizeRoomGamblerText::
+	text "I had a major"
+	line "haul today!"
+	done
+
+
+-- MAP SCRIPT --
+
+GameCornerPrizeRoom_Script:
+	jp EnableAutoTextBoxDrawing
+
+GameCornerPrizeRoom_TextPointers:
+	def_text_pointers
+	dw_const GameCornerPrizeRoomBaldingGuyText,  TEXT_GAMECORNERPRIZEROOM_BALDING_GUY
+	dw_const GameCornerPrizeRoomGamblerText,     TEXT_GAMECORNERPRIZEROOM_GAMBLER
+	dw_const GameCornerPRizeRoomPrizeVendorText, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_1
+	dw_const GameCornerPRizeRoomPrizeVendorText, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_2
+	dw_const GameCornerPRizeRoomPrizeVendorText, TEXT_GAMECORNERPRIZEROOM_PRIZE_VENDOR_3
+
+GameCornerPrizeRoomBaldingGuyText:
+	text_far _GameCornerPrizeRoomBaldingGuyText
+	text_end
+
+GameCornerPrizeRoomGamblerText:
+	text_far _GameCornerPrizeRoomGamblerText
+	text_end
+
+GameCornerPRizeRoomPrizeVendorText:
+	script_prize_vendor

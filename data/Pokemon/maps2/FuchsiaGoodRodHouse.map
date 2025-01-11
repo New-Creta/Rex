@@ -1,0 +1,77 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export FUCHSIAGOODRODHOUSE_FISHING_GURU
+
+FuchsiaGoodRodHouse_Object:
+	db $c ; border block
+
+	def_warp_events
+	warp_event  2,  0, LAST_MAP, 9
+	warp_event  2,  7, LAST_MAP, 8
+	warp_event  3,  7, LAST_MAP, 8
+
+	def_bg_events
+
+	def_object_events
+	object_event  5,  3, SPRITE_FISHING_GURU, STAY, RIGHT, TEXT_FUCHSIAGOODRODHOUSE_FISHING_GURU
+
+	def_warps_to FUCHSIA_GOOD_ROD_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header FuchsiaGoodRodHouse, FUCHSIA_GOOD_ROD_HOUSE, SHIP, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_FuchsiaGoodRodHouseFishingGuruText::
+	text "I'm the FISHING"
+	line "GURU's older"
+	cont "brother!"
+
+	para "I simply Looove"
+	line "fishing!"
+
+	para "Do you like to"
+	line "fish?"
+	done
+
+_FuchsiaGoodRodHouseFishingGuruReceivedGoodRodText::
+	text "Grand! I like"
+	line "your style!"
+
+	para "Take this and"
+	line "fish, young one!"
+
+	para "<PLAYER> received"
+	line "a @"
+	text_ram wStringBuffer
+	text "!@"
+	text_end
+
+_FuchsiaGoodRodHouseFishingGuruThatsSoDisappointingText::
+	text "Oh... That's so"
+	line "disappointing..."
+	done
+
+_FuchsiaGoodRodHouseFishingGuruHowAreTheFishText::
+	text "Hello there,"
+	line "<PLAYER>!"
+
+	para "How are the fish"
+	line "biting?"
+	done
+
+_FuchsiaGoodRodHouseFishingGuruNoRoomText::
+	text "Oh no!"
+
+	para "You have no room"
+	line "for my gift!"
+	done
+
+
+-- MAP SCRIPT --
+

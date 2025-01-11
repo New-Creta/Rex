@@ -1,0 +1,242 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export COPYCATSHOUSE2F_COPYCAT
+	const_export COPYCATSHOUSE2F_DODUO
+	const_export COPYCATSHOUSE2F_MONSTER
+	const_export COPYCATSHOUSE2F_BIRD
+	const_export COPYCATSHOUSE2F_FAIRY
+
+CopycatsHouse2F_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  7,  1, COPYCATS_HOUSE_1F, 3
+
+	def_bg_events
+	bg_event  3,  5, TEXT_COPYCATSHOUSE2F_SNES
+	bg_event  0,  1, TEXT_COPYCATSHOUSE2F_PC
+
+	def_object_events
+	object_event  4,  3, SPRITE_BRUNETTE_GIRL, WALK, ANY_DIR, TEXT_COPYCATSHOUSE2F_COPYCAT
+	object_event  4,  6, SPRITE_BIRD, WALK, LEFT_RIGHT, TEXT_COPYCATSHOUSE2F_DODUO
+	object_event  5,  1, SPRITE_MONSTER, STAY, DOWN, TEXT_COPYCATSHOUSE2F_MONSTER
+	object_event  2,  0, SPRITE_BIRD, STAY, DOWN, TEXT_COPYCATSHOUSE2F_BIRD
+	object_event  1,  6, SPRITE_FAIRY, STAY, RIGHT, TEXT_COPYCATSHOUSE2F_FAIRY
+
+	def_warps_to COPYCATS_HOUSE_2F
+
+
+-- MAP HEADER --
+
+	map_header CopycatsHouse2F, COPYCATS_HOUSE_2F, REDS_HOUSE_2, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CopycatsHouse2FCopycatDoYouLikePokemonText::
+	text "<PLAYER>: Hi! Do"
+	line "you like #MON?"
+
+	para "<PLAYER>: Uh no, I"
+	line "just asked you."
+
+	para "<PLAYER>: Huh?"
+	line "You're strange!"
+
+	para "COPYCAT: Hmm?"
+	line "Quit mimicking?"
+
+	para "But, that's my"
+	line "favorite hobby!"
+	prompt
+
+_CopycatsHouse2FCopycatTM31PreReceiveText::
+	text "Oh wow!"
+	line "A # DOLL!"
+
+	para "For me?"
+	line "Thank you!"
+
+	para "You can have"
+	line "this, then!"
+	prompt
+
+_CopycatsHouse2FCopycatReceivedTM31Text::
+	text "<PLAYER> received"
+	line "@"
+	text_ram wStringBuffer
+	text "!@"
+	text_end
+
+_CopycatsHouse2FCopycatTM31Explanation1Text::
+	text_start
+
+	para "TM31 contains my"
+	line "favorite, MIMIC!"
+
+	para "Use it on a good"
+	line "#MON!@"
+	text_end
+
+_CopycatsHouse2FCopycatTM31Explanation2Text::
+	text "<PLAYER>: Hi!"
+	line "Thanks for TM31!"
+
+	para "<PLAYER>: Pardon?"
+
+	para "<PLAYER>: Is it"
+	line "that fun to mimic"
+	cont "my every move?"
+
+	para "COPYCAT: You bet!"
+	line "It's a scream!"
+	done
+
+_CopycatsHouse2FCopycatTM31NoRoomText::
+	text "Don't you want"
+	line "this?@"
+	text_end
+
+_CopycatsHouse2FDoduoText::
+	text "DODUO: Giiih!"
+
+	para "MIRROR MIRROR ON"
+	line "THE WALL, WHO IS"
+	cont "THE FAIREST ONE"
+	cont "OF ALL?"
+	done
+
+_CopycatsHouse2FRareDollText::
+	text "This is a rare"
+	line "#MON! Huh?"
+	cont "It's only a doll!"
+	done
+
+_CopycatsHouse2FSNESText::
+	text "A game with MARIO"
+	line "wearing a bucket"
+	cont "on his head!"
+	done
+
+_CopycatsHouse2FPCMySecretsText::
+	text "..."
+
+	para "My Secrets!"
+
+	para "Skill: Mimicry!"
+	line "Hobby: Collecting"
+	cont "dolls!"
+	cont "Favorite #MON:"
+	cont "CLEFAIRY!"
+	done
+
+_CopycatsHouse2FPCCantSeeText::
+	text "Huh? Can't see!"
+	done
+
+
+-- MAP SCRIPT --
+
+CopycatsHouse2F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CopycatsHouse2F_TextPointers:
+	def_text_pointers
+	dw_const CopycatsHouse2FCopycatText,      TEXT_COPYCATSHOUSE2F_COPYCAT
+	dw_const CopycatsHouse2FDoduoText,        TEXT_COPYCATSHOUSE2F_DODUO
+	dw_const CopycatsHouse2FRareDollText,     TEXT_COPYCATSHOUSE2F_MONSTER
+	dw_const CopycatsHouse2FRareDollText,     TEXT_COPYCATSHOUSE2F_BIRD
+	dw_const CopycatsHouse2FRareDollText,     TEXT_COPYCATSHOUSE2F_FAIRY
+	dw_const CopycatsHouse2FSNESText,         TEXT_COPYCATSHOUSE2F_SNES
+	dw_const CopycatsHouse2FPCText,           TEXT_COPYCATSHOUSE2F_PC
+
+CopycatsHouse2FCopycatText:
+	text_asm
+	CheckEvent EVENT_GOT_TM31
+	jr nz, .got_item
+	ld a, TRUE
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	ld hl, .DoYouLikePokemonText
+	call PrintText
+	ld b, POKE_DOLL
+	call IsItemInBag
+	jr z, .done
+	ld hl, .TM31PreReceiveText
+	call PrintText
+	lb bc, TM_MIMIC, 1
+	call GiveItem
+	jr nc, .bag_full
+	ld hl, .ReceivedTM31Text
+	call PrintText
+	ld a, POKE_DOLL
+	ldh [hItemToRemoveID], a
+	farcall RemoveItemByID
+	SetEvent EVENT_GOT_TM31
+	jr .done
+.bag_full
+	ld hl, .TM31NoRoomText
+	call PrintText
+	jr .done
+.got_item
+	ld hl, .TM31Explanation2Text
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.DoYouLikePokemonText:
+	text_far _CopycatsHouse2FCopycatDoYouLikePokemonText
+	text_end
+
+.TM31PreReceiveText:
+	text_far _CopycatsHouse2FCopycatTM31PreReceiveText
+	text_end
+
+.ReceivedTM31Text:
+	text_far _CopycatsHouse2FCopycatReceivedTM31Text
+	sound_get_item_1
+.TM31Explanation1Text:
+	text_far _CopycatsHouse2FCopycatTM31Explanation1Text
+	text_waitbutton
+	text_end
+
+.TM31Explanation2Text:
+	text_far _CopycatsHouse2FCopycatTM31Explanation2Text
+	text_end
+
+.TM31NoRoomText:
+	text_far _CopycatsHouse2FCopycatTM31NoRoomText
+	text_waitbutton
+	text_end
+
+CopycatsHouse2FDoduoText:
+	text_far _CopycatsHouse2FDoduoText
+	text_end
+
+CopycatsHouse2FRareDollText:
+	text_far _CopycatsHouse2FRareDollText
+	text_end
+
+CopycatsHouse2FSNESText:
+	text_far _CopycatsHouse2FSNESText
+	text_end
+
+CopycatsHouse2FPCText:
+	text_asm
+	ld a, [wSpritePlayerStateData1FacingDirection]
+	cp SPRITE_FACING_UP
+	ld hl, .CantSeeText
+	jr nz, .notUp
+	ld hl, .MySecretsText
+.notUp
+	call PrintText
+	jp TextScriptEnd
+
+.MySecretsText:
+	text_far _CopycatsHouse2FPCMySecretsText
+	text_end
+
+.CantSeeText:
+	text_far _CopycatsHouse2FPCCantSeeText
+	text_end

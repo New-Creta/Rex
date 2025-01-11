@@ -1,0 +1,84 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export PEWTERMART_CLERK
+	const_export PEWTERMART_YOUNGSTER
+	const_export PEWTERMART_SUPER_NERD
+
+PewterMart_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 5
+	warp_event  4,  7, LAST_MAP, 5
+
+	def_bg_events
+
+	def_object_events
+	object_event  0,  5, SPRITE_CLERK, STAY, RIGHT, TEXT_PEWTERMART_CLERK
+	object_event  3,  3, SPRITE_YOUNGSTER, WALK, UP_DOWN, TEXT_PEWTERMART_YOUNGSTER
+	object_event  5,  5, SPRITE_SUPER_NERD, STAY, NONE, TEXT_PEWTERMART_SUPER_NERD
+
+	def_warps_to PEWTER_MART
+
+
+-- MAP HEADER --
+
+	map_header PewterMart, PEWTER_MART, MART, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_PewterMartYoungsterText::
+	text "A shady, old man"
+	line "got me to buy"
+	cont "this really weird"
+	cont "fish #MON!"
+
+	para "It's totally weak"
+	line "and it cost ¥500!"
+	done
+
+_PewterMartSuperNerdText::
+	text "Good things can"
+	line "happen if you"
+	cont "raise #MON"
+	cont "diligently, even"
+	cont "the weak ones!"
+	done
+
+
+-- MAP SCRIPT --
+
+PewterMart_Script:
+	call EnableAutoTextBoxDrawing
+	ld a, TRUE
+	ld [wAutoTextBoxDrawingControl], a
+	ret
+
+PewterMart_TextPointers:
+	def_text_pointers
+	dw_const PewterMartClerkText,     TEXT_PEWTERMART_CLERK
+	dw_const PewterMartYoungsterText, TEXT_PEWTERMART_YOUNGSTER
+	dw_const PewterMartSuperNerdText, TEXT_PEWTERMART_SUPER_NERD
+
+PewterMartYoungsterText:
+	text_asm
+	ld hl, .Text
+	call PrintText
+	jp TextScriptEnd
+
+.Text:
+	text_far _PewterMartYoungsterText
+	text_end
+
+PewterMartSuperNerdText:
+	text_asm
+	ld hl, .Text
+	call PrintText
+	jp TextScriptEnd
+
+.Text:
+	text_far _PewterMartSuperNerdText
+	text_end

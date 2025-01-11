@@ -1,0 +1,83 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CINNABARPOKECENTER_NURSE
+	const_export CINNABARPOKECENTER_COOLTRAINER_F
+	const_export CINNABARPOKECENTER_GENTLEMAN
+	const_export CINNABARPOKECENTER_LINK_RECEPTIONIST
+
+CinnabarPokecenter_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 4
+	warp_event  4,  7, LAST_MAP, 4
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  1, SPRITE_NURSE, STAY, DOWN, TEXT_CINNABARPOKECENTER_NURSE
+	object_event  9,  4, SPRITE_COOLTRAINER_F, WALK, ANY_DIR, TEXT_CINNABARPOKECENTER_COOLTRAINER_F
+	object_event  2,  6, SPRITE_GENTLEMAN, STAY, NONE, TEXT_CINNABARPOKECENTER_GENTLEMAN
+	object_event 11,  2, SPRITE_LINK_RECEPTIONIST, STAY, DOWN, TEXT_CINNABARPOKECENTER_LINK_RECEPTIONIST
+
+	def_warps_to CINNABAR_POKECENTER
+
+
+-- MAP HEADER --
+
+	map_header CinnabarPokecenter, CINNABAR_POKECENTER, POKECENTER, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CinnabarPokecenterCooltrainerFText::
+	text "You can cancel"
+	line "evolution."
+
+	para "When a #MON is"
+	line "evolving, you can"
+	cont "stop it and leave"
+	cont "it the way it is."
+	done
+
+_CinnabarPokecenterGentlemanText::
+	text "Do you have any"
+	line "friends?"
+
+	para "#MON you get"
+	line "in trades grow"
+	cont "very quickly."
+
+	para "I think it's"
+	line "worth a try!"
+	done
+
+
+-- MAP SCRIPT --
+
+CinnabarPokecenter_Script:
+	call Serial_TryEstablishingExternallyClockedConnection
+	jp EnableAutoTextBoxDrawing
+
+CinnabarPokecenter_TextPointers:
+	def_text_pointers
+	dw_const CinnabarPokecenterNurseText,            TEXT_CINNABARPOKECENTER_NURSE
+	dw_const CinnabarPokecenterCooltrainerFText,     TEXT_CINNABARPOKECENTER_COOLTRAINER_F
+	dw_const CinnabarPokecenterGentlemanText,        TEXT_CINNABARPOKECENTER_GENTLEMAN
+	dw_const CinnabarPokecenterLinkReceptionistText, TEXT_CINNABARPOKECENTER_LINK_RECEPTIONIST
+
+CinnabarPokecenterNurseText:
+	script_pokecenter_nurse
+
+CinnabarPokecenterCooltrainerFText:
+	text_far _CinnabarPokecenterCooltrainerFText
+	text_end
+
+CinnabarPokecenterGentlemanText:
+	text_far _CinnabarPokecenterGentlemanText
+	text_end
+
+CinnabarPokecenterLinkReceptionistText:
+	script_cable_club_receptionist

@@ -1,0 +1,86 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CERULEANPOKECENTER_NURSE
+	const_export CERULEANPOKECENTER_SUPER_NERD
+	const_export CERULEANPOKECENTER_GENTLEMAN
+	const_export CERULEANPOKECENTER_LINK_RECEPTIONIST
+
+CeruleanPokecenter_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 3
+	warp_event  4,  7, LAST_MAP, 3
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  1, SPRITE_NURSE, STAY, DOWN, TEXT_CERULEANPOKECENTER_NURSE
+	object_event 10,  5, SPRITE_SUPER_NERD, WALK, ANY_DIR, TEXT_CERULEANPOKECENTER_SUPER_NERD
+	object_event  4,  3, SPRITE_GENTLEMAN, STAY, DOWN, TEXT_CERULEANPOKECENTER_GENTLEMAN
+	object_event 11,  2, SPRITE_LINK_RECEPTIONIST, STAY, DOWN, TEXT_CERULEANPOKECENTER_LINK_RECEPTIONIST
+
+	def_warps_to CERULEAN_POKECENTER
+
+
+-- MAP HEADER --
+
+	map_header CeruleanPokecenter, CERULEAN_POKECENTER, POKECENTER, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeruleanPokecenterSuperNerdText::
+	text "That BILL!"
+
+	para "I heard that"
+	line "he'll do whatever"
+	cont "it takes to get"
+	cont "rare #MON!"
+	done
+
+_CeruleanPokecenterGentlemanText::
+	text "Have you heard"
+	line "about BILL?"
+
+	para "Everyone calls"
+	line "him a #MANIAC!"
+
+	para "I think people"
+	line "are just jealous"
+	cont "of BILL, though."
+
+	para "Who wouldn't want"
+	line "to boast about"
+	cont "their #MON?"
+	done
+
+
+-- MAP SCRIPT --
+
+CeruleanPokecenter_Script:
+	call Serial_TryEstablishingExternallyClockedConnection
+	jp EnableAutoTextBoxDrawing
+
+CeruleanPokecenter_TextPointers:
+	def_text_pointers
+	dw_const CeruleanPokecenterNurseText,            TEXT_CERULEANPOKECENTER_NURSE
+	dw_const CeruleanPokecenterSuperNerdText,        TEXT_CERULEANPOKECENTER_SUPER_NERD
+	dw_const CeruleanPokecenterGentlemanText,        TEXT_CERULEANPOKECENTER_GENTLEMAN
+	dw_const CeruleanPokecenterLinkReceptionistText, TEXT_CERULEANPOKECENTER_LINK_RECEPTIONIST
+
+CeruleanPokecenterLinkReceptionistText:
+	script_cable_club_receptionist
+
+CeruleanPokecenterNurseText:
+	script_pokecenter_nurse
+
+CeruleanPokecenterSuperNerdText:
+	text_far _CeruleanPokecenterSuperNerdText
+	text_end
+
+CeruleanPokecenterGentlemanText:
+	text_far _CeruleanPokecenterGentlemanText
+	text_end

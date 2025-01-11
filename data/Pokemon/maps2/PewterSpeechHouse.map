@@ -1,0 +1,68 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export PEWTERSPEECHHOUSE_GAMBLER
+	const_export PEWTERSPEECHHOUSE_YOUNGSTER
+
+PewterSpeechHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 6
+	warp_event  3,  7, LAST_MAP, 6
+
+	def_bg_events
+
+	def_object_events
+	object_event  2,  3, SPRITE_GAMBLER, STAY, RIGHT, TEXT_PEWTERSPEECHHOUSE_GAMBLER
+	object_event  4,  5, SPRITE_YOUNGSTER, STAY, NONE, TEXT_PEWTERSPEECHHOUSE_YOUNGSTER
+
+	def_warps_to PEWTER_SPEECH_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header PewterSpeechHouse, PEWTER_SPEECH_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_PewterSpeechHouseGamblerText::
+	text "#MON learn new"
+	line "techniques as"
+	cont "they grow!"
+
+	para "But, some moves"
+	line "must be taught by"
+	cont "the trainer!"
+	done
+
+_PewterSpeechHouseYoungsterText::
+	text "#MON become"
+	line "easier to catch"
+	cont "when they are"
+	cont "hurt or asleep!"
+
+	para "But, it's not a"
+	line "sure thing!"
+	done
+
+
+-- MAP SCRIPT --
+
+PewterSpeechHouse_Script:
+	jp EnableAutoTextBoxDrawing
+
+PewterSpeechHouse_TextPointers:
+	def_text_pointers
+	dw_const PewterSpeechHouseGamblerText,   TEXT_PEWTERSPEECHHOUSE_GAMBLER
+	dw_const PewterSpeechHouseYoungsterText, TEXT_PEWTERSPEECHHOUSE_YOUNGSTER
+
+PewterSpeechHouseGamblerText:
+	text_far _PewterSpeechHouseGamblerText
+	text_end
+
+PewterSpeechHouseYoungsterText:
+	text_far _PewterSpeechHouseYoungsterText
+	text_end

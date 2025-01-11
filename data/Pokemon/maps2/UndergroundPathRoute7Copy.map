@@ -1,0 +1,95 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export UNDERGROUNDPATHROUTE7COPY_UNUSED_GIRL
+	const_export UNDERGROUNDPATHROUTE7COPY_UNUSED_MIDDLE_AGED_MAN
+
+UndergroundPathRoute7Copy_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 6
+	warp_event  4,  7, LAST_MAP, 6
+	warp_event  4,  4, UNDERGROUND_PATH_WEST_EAST, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  2, SPRITE_GIRL, STAY, NONE, TEXT_UNDERGROUNDPATHROUTE7COPY_UNUSED_GIRL
+	object_event  2,  4, SPRITE_MIDDLE_AGED_MAN, STAY, NONE, TEXT_UNDERGROUNDPATHROUTE7COPY_UNUSED_MIDDLE_AGED_MAN
+
+	def_warps_to UNDERGROUND_PATH_ROUTE_7_COPY
+
+
+-- MAP HEADER --
+
+	map_header UndergroundPathRoute7Copy, UNDERGROUND_PATH_ROUTE_7, GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_UndergroundPathRoute7CopyUnusedGirlText::
+	text "I want to shop at"
+	line "the dept. store"
+	cont "in CELADON but..."
+
+	para "There are so many"
+	line "rough looking"
+	cont "people there."
+	done
+
+_UndergroundPathRoute7CopyUnusedTeamRocketHadAHideoutText::
+	text "TEAM ROCKET had a"
+	line "secret hideout in"
+	cont "CELADON CITY?"
+	done
+
+_UndergroundPathRoute7CopyUnusedMiddleAgedManText::
+	text "You're here to"
+	line "shop in CELADON?"
+
+	para "Just step outside"
+	line "and head west!"
+	done
+
+_UndergroundPathRoute7CopyUnusedGoesUnderSaffronText::
+	text "The UNDERGROUND"
+	line "PATH goes beneath"
+	cont "SAFFRON and leads"
+	cont "to LAVENDER."
+
+	para "If you're heading"
+	line "to CERULEAN, go"
+	cont "to the building"
+	cont "across the road."
+	done
+
+
+-- MAP SCRIPT --
+
+UndergroundPathRoute7Copy_Script:
+	ld a, ROUTE_7
+	ld [wLastMap], a
+	ret
+
+UndergroundPathRoute7Copy_TextPointers:
+	def_text_pointers
+	dw_const UndergroundPathRoute7CopyUnusedGirlText,          TEXT_UNDERGROUNDPATHROUTE7COPY_UNUSED_GIRL
+	dw_const UndergroundPathRoute7CopyUnusedMiddleAgedManText, TEXT_UNDERGROUNDPATHROUTE7COPY_UNUSED_MIDDLE_AGED_MAN
+
+UndergroundPathRoute7CopyUnusedGirlText:
+	text_far _UndergroundPathRoute7CopyUnusedGirlText
+	text_end
+
+UndergroundPathRoute7CopyUnusedTeamRocketHadAHideoutText:
+	text_far _UndergroundPathRoute7CopyUnusedTeamRocketHadAHideoutText
+	text_end
+
+UndergroundPathRoute7CopyUnusedMiddleAgedManText:
+	text_far _UndergroundPathRoute7CopyUnusedMiddleAgedManText
+	text_end
+
+UndergroundPathRoute7CopyUnusedGoesUnderSaffronText:
+	text_far _UndergroundPathRoute7CopyUnusedGoesUnderSaffronText
+	text_end

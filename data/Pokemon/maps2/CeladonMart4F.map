@@ -1,0 +1,85 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMART4F_CLERK
+	const_export CELADONMART4F_SUPER_NERD
+	const_export CELADONMART4F_YOUNGSTER
+
+CeladonMart4F_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event 12,  1, CELADON_MART_3F, 1
+	warp_event 16,  1, CELADON_MART_5F, 2
+	warp_event  1,  1, CELADON_MART_ELEVATOR, 1
+
+	def_bg_events
+	bg_event 14,  1, TEXT_CELADONMART4F_CURRENT_FLOOR_SIGN
+
+	def_object_events
+	object_event  5,  7, SPRITE_CLERK, STAY, NONE, TEXT_CELADONMART4F_CLERK
+	object_event 15,  5, SPRITE_SUPER_NERD, WALK, LEFT_RIGHT, TEXT_CELADONMART4F_SUPER_NERD
+	object_event  5,  2, SPRITE_YOUNGSTER, WALK, LEFT_RIGHT, TEXT_CELADONMART4F_YOUNGSTER
+
+	def_warps_to CELADON_MART_4F
+
+
+-- MAP HEADER --
+
+	map_header CeladonMart4F, CELADON_MART_4F, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMart4FSuperNerdText::
+	text "I'm getting a"
+	line "# DOLL for my"
+	cont "girl friend!"
+	done
+
+_CeladonMart4FYoungsterText::
+	text "I heard something"
+	line "useful."
+
+	para "You can run from"
+	line "wild #MON by"
+	cont "distracting them"
+	cont "with a # DOLL!"
+	done
+
+_CeladonMart4FCurrentFloorSignText::
+	text "Express yourself"
+	line "with gifts!"
+
+	para "4F: WISEMAN GIFTS"
+
+	para "Evolution Special!"
+	line "Element STONEs on"
+	cont "sale now!"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMart4F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMart4F_TextPointers:
+	def_text_pointers
+	dw_const CeladonMart4FClerkText,            TEXT_CELADONMART4F_CLERK
+	dw_const CeladonMart4FSuperNerdText,        TEXT_CELADONMART4F_SUPER_NERD
+	dw_const CeladonMart4FYoungsterText,        TEXT_CELADONMART4F_YOUNGSTER
+	dw_const CeladonMart4FCurrentFloorSignText, TEXT_CELADONMART4F_CURRENT_FLOOR_SIGN
+
+CeladonMart4FSuperNerdText:
+	text_far _CeladonMart4FSuperNerdText
+	text_end
+
+CeladonMart4FYoungsterText:
+	text_far _CeladonMart4FYoungsterText
+	text_end
+
+CeladonMart4FCurrentFloorSignText:
+	text_far _CeladonMart4FCurrentFloorSignText
+	text_end

@@ -1,0 +1,181 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMANSION3F_PROGRAMMER
+	const_export CELADONMANSION3F_GRAPHIC_ARTIST
+	const_export CELADONMANSION3F_WRITER
+	const_export CELADONMANSION3F_GAME_DESIGNER
+
+CeladonMansion3F_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event  6,  1, CELADON_MANSION_2F, 1
+	warp_event  7,  1, CELADON_MANSION_ROOF, 1
+	warp_event  2,  1, CELADON_MANSION_ROOF, 2
+	warp_event  4,  1, CELADON_MANSION_2F, 4
+
+	def_bg_events
+	bg_event  1,  3, TEXT_CELADONMANSION3F_GAME_PROGRAM_PC
+	bg_event  4,  3, TEXT_CELADONMANSION3F_PLAYING_GAME_PC
+	bg_event  1,  6, TEXT_CELADONMANSION3F_GAME_SCRIPT_PC
+	bg_event  4,  9, TEXT_CELADONMANSION3F_DEV_ROOM_SIGN
+
+	def_object_events
+	object_event  0,  4, SPRITE_BIKE_SHOP_CLERK, STAY, UP, TEXT_CELADONMANSION3F_PROGRAMMER
+	object_event  3,  4, SPRITE_CLERK, STAY, UP, TEXT_CELADONMANSION3F_GRAPHIC_ARTIST
+	object_event  0,  7, SPRITE_SUPER_NERD, STAY, UP, TEXT_CELADONMANSION3F_WRITER
+	object_event  2,  3, SPRITE_SILPH_WORKER_M, STAY, NONE, TEXT_CELADONMANSION3F_GAME_DESIGNER
+
+	def_warps_to CELADON_MANSION_3F
+
+
+-- MAP HEADER --
+
+	map_header CeladonMansion3F, CELADON_MANSION_3F, MANSION, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMansion3FProgrammerText::
+	text "Me? I'm the"
+	line "programmer!"
+	done
+
+_CeladonMansion3FGraphicArtistText::
+	text "I'm the graphic"
+	line "artist!"
+	cont "I drew you!"
+	done
+
+_CeladonMansion3FWriterText::
+	text "I wrote the story!"
+	line "Isn't ERIKA cute?"
+
+	para "I like MISTY a"
+	line "lot too!"
+
+	para "Oh, and SABRINA,"
+	line "I like her!"
+	done
+
+_CeladonMansion3FGameDesignerText::
+	text "Is that right?"
+
+	para "I'm the game"
+	line "designer!"
+
+	para "Filling up your"
+	line "#DEX is tough,"
+	cont "but don't quit!"
+
+	para "When you finish,"
+	line "come tell me!"
+	done
+
+_CeladonMansion3FGameDesignerCompletedDexText::
+	text "Wow! Excellent!"
+	line "You completed"
+	cont "your #DEX!"
+	cont "Congratulations!"
+	cont "...@"
+	text_end
+
+_CeladonMansion3FGameProgramPCText::
+	text "It's the game"
+	line "program! Messing"
+	cont "with it could bug"
+	cont "out the game!"
+	done
+
+_CeladonMansion3FPlayingGamePCText::
+	text "Someone's playing"
+	line "a game instead of"
+	cont "working!"
+	done
+
+_CeladonMansion3FGameScriptPCText::
+	text "It's the script!"
+	line "Better not look"
+	cont "at the ending!"
+	done
+
+_CeladonMansion3FDevRoomSignText::
+	text "GAME FREAK"
+	line "Development Room"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMansion3F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMansion3F_TextPointers:
+	def_text_pointers
+	dw_const CeladonMansion3FProgrammerText,     TEXT_CELADONMANSION3F_PROGRAMMER
+	dw_const CeladonMansion3FGraphicArtistText,  TEXT_CELADONMANSION3F_GRAPHIC_ARTIST
+	dw_const CeladonMansion3FWriterText,         TEXT_CELADONMANSION3F_WRITER
+	dw_const CeladonMansion3FGameDesignerText,   TEXT_CELADONMANSION3F_GAME_DESIGNER
+	dw_const CeladonMansion3FGameProgramPCText,  TEXT_CELADONMANSION3F_GAME_PROGRAM_PC
+	dw_const CeladonMansion3FPlayingGamePCText,  TEXT_CELADONMANSION3F_PLAYING_GAME_PC
+	dw_const CeladonMansion3FGameScriptPCText,   TEXT_CELADONMANSION3F_GAME_SCRIPT_PC
+	dw_const CeladonMansion3FDevRoomSignText,    TEXT_CELADONMANSION3F_DEV_ROOM_SIGN
+
+CeladonMansion3FProgrammerText:
+	text_far _CeladonMansion3FProgrammerText
+	text_end
+
+CeladonMansion3FGraphicArtistText:
+	text_far _CeladonMansion3FGraphicArtistText
+	text_end
+
+CeladonMansion3FWriterText:
+	text_far _CeladonMansion3FWriterText
+	text_end
+
+CeladonMansion3FGameDesignerText:
+	text_asm
+	ld hl, wPokedexOwned
+	ld b, wPokedexOwnedEnd - wPokedexOwned
+	call CountSetBits
+	ld a, [wNumSetBits]
+	cp NUM_POKEMON - 1 ; discount Mew
+	jr nc, .completed_dex
+	ld hl, .Text
+	jr .done
+.completed_dex
+	ld hl, .CompletedDexText
+.done
+	call PrintText
+	jp TextScriptEnd
+
+.Text:
+	text_far _CeladonMansion3FGameDesignerText
+	text_end
+
+.CompletedDexText:
+	text_far _CeladonMansion3FGameDesignerCompletedDexText
+	text_promptbutton
+	text_asm
+	callfar DisplayDiploma
+	ld a, TRUE
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	jp TextScriptEnd
+
+CeladonMansion3FGameProgramPCText:
+	text_far _CeladonMansion3FGameProgramPCText
+	text_end
+
+CeladonMansion3FPlayingGamePCText:
+	text_far _CeladonMansion3FPlayingGamePCText
+	text_end
+
+CeladonMansion3FGameScriptPCText:
+	text_far _CeladonMansion3FGameScriptPCText
+	text_end
+
+CeladonMansion3FDevRoomSignText:
+	text_far _CeladonMansion3FDevRoomSignText
+	text_end

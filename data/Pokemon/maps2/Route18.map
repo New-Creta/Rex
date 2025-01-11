@@ -1,0 +1,194 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export ROUTE18_COOLTRAINER_M1
+	const_export ROUTE18_COOLTRAINER_M2
+	const_export ROUTE18_COOLTRAINER_M3
+
+Route18_Object:
+	db $43 ; border block
+
+	def_warp_events
+	warp_event 33,  8, ROUTE_18_GATE_1F, 1
+	warp_event 33,  9, ROUTE_18_GATE_1F, 2
+	warp_event 40,  8, ROUTE_18_GATE_1F, 3
+	warp_event 40,  9, ROUTE_18_GATE_1F, 4
+
+	def_bg_events
+	bg_event 43,  7, TEXT_ROUTE18_SIGN
+	bg_event 33,  5, TEXT_ROUTE18_CYCLING_ROAD_SIGN
+
+	def_object_events
+	object_event 36, 11, SPRITE_COOLTRAINER_M, STAY, RIGHT, TEXT_ROUTE18_COOLTRAINER_M1, OPP_BIRD_KEEPER, 8
+	object_event 40, 15, SPRITE_COOLTRAINER_M, STAY, LEFT, TEXT_ROUTE18_COOLTRAINER_M2, OPP_BIRD_KEEPER, 9
+	object_event 42, 13, SPRITE_COOLTRAINER_M, STAY, LEFT, TEXT_ROUTE18_COOLTRAINER_M3, OPP_BIRD_KEEPER, 10
+
+	def_warps_to ROUTE_18
+
+
+-- MAP HEADER --
+
+	map_header Route18, ROUTE_18, OVERWORLD, NORTH | EAST
+	connection north, Route17, ROUTE_17, 0
+	connection east, FuchsiaCity, FUCHSIA_CITY, -4
+	end_map_header
+
+
+-- MAP TEXT --
+
+_Route18CooltrainerM1BattleText::
+	text "I always check"
+	line "every grassy area"
+	cont "for new #MON."
+	done
+
+_Route18CooltrainerM1EndBattleText::
+	text "Tch!"
+	prompt
+
+_Route18CooltrainerM1AfterBattleText::
+	text "I wish I had a"
+	line "BIKE!"
+	done
+
+_Route18CooltrainerM2BattleText::
+	text "Kurukkoo!"
+	line "How do you like"
+	cont "my bird call?"
+	done
+
+_Route18CooltrainerM2EndBattleText::
+	text "I"
+	line "had to bug you!"
+	prompt
+
+_Route18CooltrainerM2AfterBattleText::
+	text "I also collect sea"
+	line "#MON on"
+	cont "weekends!"
+	done
+
+_Route18CooltrainerM3BattleText::
+	text "This is my turf!"
+	line "Get out of here!"
+	done
+
+_Route18CooltrainerM3EndBattleText::
+	text "Darn!"
+	prompt
+
+_Route18CooltrainerM3AfterBattleText::
+	text "This is my fave"
+	line "#MON hunting"
+	cont "area!"
+	done
+
+_Route18SignText::
+	text "ROUTE 18"
+	line "CELADON CITY -"
+	cont "FUCHSIA CITY"
+	done
+
+_Route18CyclingRoadSignText::
+	text "CYCLING ROAD"
+	line "No pedestrians"
+	cont "permitted!"
+	done
+
+
+-- MAP SCRIPT --
+
+Route18_Script:
+	call EnableAutoTextBoxDrawing
+	ld hl, Route18TrainerHeaders
+	ld de, Route18_ScriptPointers
+	ld a, [wRoute18CurScript]
+	call ExecuteCurMapScriptInTable
+	ld [wRoute18CurScript], a
+	ret
+
+Route18_ScriptPointers:
+	def_script_pointers
+	dw_const CheckFightingMapTrainers,              SCRIPT_ROUTE18_DEFAULT
+	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_ROUTE18_START_BATTLE
+	dw_const EndTrainerBattle,                      SCRIPT_ROUTE18_END_BATTLE
+
+Route18_TextPointers:
+	def_text_pointers
+	dw_const Route18CooltrainerM1Text,   TEXT_ROUTE18_COOLTRAINER_M1
+	dw_const Route18CooltrainerM2Text,   TEXT_ROUTE18_COOLTRAINER_M2
+	dw_const Route18CooltrainerM3Text,   TEXT_ROUTE18_COOLTRAINER_M3
+	dw_const Route18SignText,            TEXT_ROUTE18_SIGN
+	dw_const Route18CyclingRoadSignText, TEXT_ROUTE18_CYCLING_ROAD_SIGN
+
+Route18TrainerHeaders:
+	def_trainers
+Route18TrainerHeader0:
+	trainer EVENT_BEAT_ROUTE_18_TRAINER_0, 3, Route18CooltrainerM1BattleText, Route18CooltrainerM1EndBattleText, Route18CooltrainerM1AfterBattleText
+Route18TrainerHeader1:
+	trainer EVENT_BEAT_ROUTE_18_TRAINER_1, 3, Route18CooltrainerM2BattleText, Route18CooltrainerM2EndBattleText, Route18CooltrainerM2AfterBattleText
+Route18TrainerHeader2:
+	trainer EVENT_BEAT_ROUTE_18_TRAINER_2, 4, Route18CooltrainerM3BattleText, Route18CooltrainerM3EndBattleText, Route18CooltrainerM3AfterBattleText
+	db -1 ; end
+
+Route18CooltrainerM1Text:
+	text_asm
+	ld hl, Route18TrainerHeader0
+	call TalkToTrainer
+	jp TextScriptEnd
+
+Route18CooltrainerM1BattleText:
+	text_far _Route18CooltrainerM1BattleText
+	text_end
+
+Route18CooltrainerM1EndBattleText:
+	text_far _Route18CooltrainerM1EndBattleText
+	text_end
+
+Route18CooltrainerM1AfterBattleText:
+	text_far _Route18CooltrainerM1AfterBattleText
+	text_end
+
+Route18CooltrainerM2Text:
+	text_asm
+	ld hl, Route18TrainerHeader1
+	call TalkToTrainer
+	jp TextScriptEnd
+
+Route18CooltrainerM2BattleText:
+	text_far _Route18CooltrainerM2BattleText
+	text_end
+
+Route18CooltrainerM2EndBattleText:
+	text_far _Route18CooltrainerM2EndBattleText
+	text_end
+
+Route18CooltrainerM2AfterBattleText:
+	text_far _Route18CooltrainerM2AfterBattleText
+	text_end
+
+Route18CooltrainerM3Text:
+	text_asm
+	ld hl, Route18TrainerHeader2
+	call TalkToTrainer
+	jp TextScriptEnd
+
+Route18CooltrainerM3BattleText:
+	text_far _Route18CooltrainerM3BattleText
+	text_end
+
+Route18CooltrainerM3EndBattleText:
+	text_far _Route18CooltrainerM3EndBattleText
+	text_end
+
+Route18CooltrainerM3AfterBattleText:
+	text_far _Route18CooltrainerM3AfterBattleText
+	text_end
+
+Route18SignText:
+	text_far _Route18SignText
+	text_end
+
+Route18CyclingRoadSignText:
+	text_far _Route18CyclingRoadSignText
+	text_end

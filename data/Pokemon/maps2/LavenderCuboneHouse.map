@@ -1,0 +1,95 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export LAVENDERCUBONEHOUSE_CUBONE
+	const_export LAVENDERCUBONEHOUSE_BRUNETTE_GIRL
+
+LavenderCuboneHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 5
+	warp_event  3,  7, LAST_MAP, 5
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  5, SPRITE_MONSTER, STAY, UP, TEXT_LAVENDERCUBONEHOUSE_CUBONE
+	object_event  2,  4, SPRITE_BRUNETTE_GIRL, STAY, RIGHT, TEXT_LAVENDERCUBONEHOUSE_BRUNETTE_GIRL
+
+	def_warps_to LAVENDER_CUBONE_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header LavenderCuboneHouse, LAVENDER_CUBONE_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_LavenderCuboneHouseCuboneText::
+	text "CUBONE: Kyarugoo!@"
+	text_end
+
+_LavenderCuboneHouseBrunetteGirlPoorCubonesMotherText::
+	text "I hate those"
+	line "horrible ROCKETs!"
+
+	para "That poor CUBONE's"
+	line "mother..."
+
+	para "It was killed"
+	line "trying to escape"
+	cont "from TEAM ROCKET!"
+	done
+
+_LavenderCuboneHouseBrunetteGirlGhostIsGoneText::
+	text "The GHOST of"
+	line "#MON TOWER is"
+	cont "gone!"
+
+	para "Someone must have"
+	line "soothed its"
+	cont "restless soul!"
+	done
+
+
+-- MAP SCRIPT --
+
+LavenderCuboneHouse_Script:
+	call EnableAutoTextBoxDrawing
+	ret
+
+LavenderCuboneHouse_TextPointers:
+	def_text_pointers
+	dw_const LavenderCuboneHouseCuboneText,       TEXT_LAVENDERCUBONEHOUSE_CUBONE
+	dw_const LavenderCuboneHouseBrunetteGirlText, TEXT_LAVENDERCUBONEHOUSE_BRUNETTE_GIRL
+
+LavenderCuboneHouseCuboneText:
+	text_far _LavenderCuboneHouseCuboneText
+	text_asm
+	ld a, CUBONE
+	call PlayCry
+	jp TextScriptEnd
+
+LavenderCuboneHouseBrunetteGirlText:
+	text_asm
+	CheckEvent EVENT_RESCUED_MR_FUJI
+	jr nz, .rescued_mr_fuji
+	ld hl, .PoorCubonesMotherText
+	call PrintText
+	jr .done
+.rescued_mr_fuji
+	ld hl, .TheGhostIsGoneText
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.PoorCubonesMotherText:
+	text_far _LavenderCuboneHouseBrunetteGirlPoorCubonesMotherText
+	text_end
+
+.TheGhostIsGoneText:
+	text_far _LavenderCuboneHouseBrunetteGirlGhostIsGoneText
+	text_end

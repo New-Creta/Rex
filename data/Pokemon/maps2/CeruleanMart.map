@@ -1,0 +1,71 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CERULEANMART_CLERK
+	const_export CERULEANMART_COOLTRAINER_M
+	const_export CERULEANMART_COOLTRAINER_F
+
+CeruleanMart_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 6
+	warp_event  4,  7, LAST_MAP, 6
+
+	def_bg_events
+
+	def_object_events
+	object_event  0,  5, SPRITE_CLERK, STAY, RIGHT, TEXT_CERULEANMART_CLERK
+	object_event  3,  4, SPRITE_COOLTRAINER_M, WALK, UP_DOWN, TEXT_CERULEANMART_COOLTRAINER_M
+	object_event  6,  2, SPRITE_COOLTRAINER_F, WALK, LEFT_RIGHT, TEXT_CERULEANMART_COOLTRAINER_F
+
+	def_warps_to CERULEAN_MART
+
+
+-- MAP HEADER --
+
+	map_header CeruleanMart, CERULEAN_MART, MART, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeruleanMartCooltrainerMText::
+	text "Use REPEL to keep"
+	line "bugs and weak"
+	cont "#MON away."
+
+	para "Put your strongest"
+	line "#MON at the"
+	cont "top of the list"
+	cont "for best results!"
+	done
+
+_CeruleanMartCooltrainerFText::
+	text "Have you seen any"
+	line "RARE CANDY?"
+
+	para "It's supposed to"
+	line "make #MON go"
+	cont "up one level!"
+	done
+
+
+-- MAP SCRIPT --
+
+CeruleanMart_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeruleanMart_TextPointers:
+	def_text_pointers
+	dw_const CeruleanMartClerkText,        TEXT_CERULEANMART_CLERK
+	dw_const CeruleanMartCooltrainerMText, TEXT_CERULEANMART_COOLTRAINER_M
+	dw_const CeruleanMartCooltrainerFText, TEXT_CERULEANMART_COOLTRAINER_F
+
+CeruleanMartCooltrainerMText:
+	text_far _CeruleanMartCooltrainerMText
+	text_end
+
+CeruleanMartCooltrainerFText:
+	text_far _CeruleanMartCooltrainerFText
+	text_end

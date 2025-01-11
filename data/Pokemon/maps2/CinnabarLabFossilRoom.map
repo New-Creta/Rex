@@ -1,0 +1,222 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CINNABARLABFOSSILROOM_SCIENTIST1
+	const_export CINNABARLABFOSSILROOM_SCIENTIST2
+
+CinnabarLabFossilRoom_Object:
+	db $17 ; border block
+
+	def_warp_events
+	warp_event  2,  7, CINNABAR_LAB, 5
+	warp_event  3,  7, CINNABAR_LAB, 5
+
+	def_bg_events
+
+	def_object_events
+	object_event  5,  2, SPRITE_SCIENTIST, WALK, LEFT_RIGHT, TEXT_CINNABARLABFOSSILROOM_SCIENTIST1
+	object_event  7,  6, SPRITE_SCIENTIST, STAY, UP, TEXT_CINNABARLABFOSSILROOM_SCIENTIST2
+
+	def_warps_to CINNABAR_LAB_FOSSIL_ROOM
+
+
+-- MAP HEADER --
+
+	map_header CinnabarLabFossilRoom, CINNABAR_LAB_FOSSIL_ROOM, LAB, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CinnabarLabFossilRoomScientist1Text::
+	text "Hiya!"
+
+	para "I am important"
+	line "doctor!"
+
+	para "I study here rare"
+	line "#MON fossils!"
+
+	para "You! Have you a"
+	line "fossil for me?"
+	prompt
+
+_CinnabarLabFossilRoomScientist1NoFossilsText::
+	text "No! Is too bad!"
+	done
+
+_CinnabarLabFossilRoomScientist1GoForAWalkText::
+	text "I take a little"
+	line "time!"
+
+	para "You go for walk a"
+	line "little while!"
+	done
+
+_CinnabarLabFossilRoomScientist1FossilIsBackToLifeText::
+	text "Where were you?"
+
+	para "Your fossil is"
+	line "back to life!"
+
+	para "It was @"
+	text_ram wStringBuffer
+	text_start
+	line "like I think!"
+	prompt
+
+_CinnabarLabFossilRoomScientist1SeesFossilText::
+	text "Oh! That is"
+	line "@"
+	text_ram wcd6d
+	text "!"
+
+	para "It is fossil of"
+	line "@"
+	text_ram wStringBuffer
+	text ", a"
+	cont "#MON that is"
+	cont "already extinct!"
+
+	para "My Resurrection"
+	line "Machine will make"
+	cont "that #MON live"
+	cont "again!"
+	done
+
+_CinnabarLabFossilRoomScientist1TakesFossilText::
+	text "So! You hurry and"
+	line "give me that!"
+
+	para "<PLAYER> handed"
+	line "over @"
+	text_ram wcd6d
+	text "!"
+	prompt
+
+_CinnabarLabFossilRoomScientist1GoForAWalkText2::
+	text "I take a little"
+	line "time!"
+
+	para "You go for walk a"
+	line "little while!"
+	done
+
+_CinnabarLabFossilRoomScientist1ComeAgainText::
+	text "Aiyah! You come"
+	line "again!"
+	done
+
+
+-- MAP SCRIPT --
+
+CinnabarLabFossilRoom_Script:
+	jp EnableAutoTextBoxDrawing
+
+CinnabarLabFossilRoom_TextPointers:
+	def_text_pointers
+	dw_const CinnabarLabFossilRoomScientist1Text, TEXT_CINNABARLABFOSSILROOM_SCIENTIST1
+	dw_const CinnabarLabFossilRoomScientist2Text, TEXT_CINNABARLABFOSSILROOM_SCIENTIST2
+
+Lab4Script_GetFossilsInBag:
+; construct a list of all fossils in the player's bag
+	xor a
+	ld [wFilteredBagItemsCount], a
+	ld de, wFilteredBagItems
+	ld hl, FossilsList
+.loop
+	ld a, [hli]
+	and a
+	jr z, .done
+	push hl
+	push de
+	ld [wd11e], a
+	ld b, a
+	predef GetQuantityOfItemInBag
+	pop de
+	pop hl
+	ld a, b
+	and a
+	jr z, .loop
+
+	; A fossil's in the bag
+	ld a, [wd11e]
+	ld [de], a
+	inc de
+	push hl
+	ld hl, wFilteredBagItemsCount
+	inc [hl]
+	pop hl
+	jr .loop
+.done
+	ld a, $ff
+	ld [de], a
+	ret
+
+FossilsList:
+	db DOME_FOSSIL
+	db HELIX_FOSSIL
+	db OLD_AMBER
+	db 0 ; end
+
+CinnabarLabFossilRoomScientist1Text:
+	text_asm
+	CheckEvent EVENT_GAVE_FOSSIL_TO_LAB
+	jr nz, .check_done_reviving
+	ld hl, .Text
+	call PrintText
+	call Lab4Script_GetFossilsInBag
+	ld a, [wFilteredBagItemsCount]
+	and a
+	jr z, .no_fossils
+	farcall GiveFossilToCinnabarLab
+	jr .done
+.no_fossils
+	ld hl, .NoFossilsText
+	call PrintText
+.done
+	jp TextScriptEnd
+.check_done_reviving
+	CheckEventAfterBranchReuseA EVENT_LAB_STILL_REVIVING_FOSSIL, EVENT_GAVE_FOSSIL_TO_LAB
+	jr z, .done_reviving
+	ld hl, .GoForAWalkText
+	call PrintText
+	jr .done
+.done_reviving
+	call LoadFossilItemAndMonNameBank1D
+	ld hl, .FossilIsBackToLifeText
+	call PrintText
+	SetEvent EVENT_LAB_HANDING_OVER_FOSSIL_MON
+	ld a, [wFossilMon]
+	ld b, a
+	ld c, 30
+	call GivePokemon
+	jr nc, .done
+	ResetEvents EVENT_GAVE_FOSSIL_TO_LAB, EVENT_LAB_STILL_REVIVING_FOSSIL, EVENT_LAB_HANDING_OVER_FOSSIL_MON
+	jr .done
+
+.Text:
+	text_far _CinnabarLabFossilRoomScientist1Text
+	text_end
+
+.NoFossilsText:
+	text_far _CinnabarLabFossilRoomScientist1NoFossilsText
+	text_end
+
+.GoForAWalkText:
+	text_far _CinnabarLabFossilRoomScientist1GoForAWalkText
+	text_end
+
+.FossilIsBackToLifeText:
+	text_far _CinnabarLabFossilRoomScientist1FossilIsBackToLifeText
+	text_end
+
+CinnabarLabFossilRoomScientist2Text:
+	text_asm
+	ld a, TRADE_FOR_SAILOR
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+	jp TextScriptEnd
+
+LoadFossilItemAndMonNameBank1D:
+	farjp LoadFossilItemAndMonName

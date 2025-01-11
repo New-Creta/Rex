@@ -1,0 +1,82 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export SEAFOAMISLANDSB1F_BOULDER1
+	const_export SEAFOAMISLANDSB1F_BOULDER2
+
+SeafoamIslandsB1F_Object:
+	db $7d ; border block
+
+	def_warp_events
+	warp_event  4,  2, SEAFOAM_ISLANDS_B2F, 1
+	warp_event  7,  5, SEAFOAM_ISLANDS_1F, 5
+	warp_event 13,  7, SEAFOAM_ISLANDS_B2F, 3
+	warp_event 19, 15, SEAFOAM_ISLANDS_B2F, 4
+	warp_event 23, 15, SEAFOAM_ISLANDS_1F, 7
+	warp_event 25, 11, SEAFOAM_ISLANDS_B2F, 6
+	warp_event 25,  3, SEAFOAM_ISLANDS_1F, 6
+
+	def_bg_events
+
+	def_object_events
+	object_event 17,  6, SPRITE_BOULDER, STAY, BOULDER_MOVEMENT_BYTE_2, TEXT_SEAFOAMISLANDSB1F_BOULDER1
+	object_event 22,  6, SPRITE_BOULDER, STAY, BOULDER_MOVEMENT_BYTE_2, TEXT_SEAFOAMISLANDSB1F_BOULDER2
+
+	def_warps_to SEAFOAM_ISLANDS_B1F
+
+
+-- MAP HEADER --
+
+	map_header SeafoamIslandsB1F, SEAFOAM_ISLANDS_B1F, CAVERN, 0
+	end_map_header
+
+
+-- MAP SCRIPT --
+
+SeafoamIslandsB1F_Script:
+	call EnableAutoTextBoxDrawing
+	ld hl, wFlags_0xcd60
+	bit 7, [hl]
+	res 7, [hl]
+	jr z, .noBoulderWasPushed
+	ld hl, Seafoam2HolesCoords
+	call CheckBoulderCoords
+	ret nc
+	EventFlagAddress hl, EVENT_SEAFOAM2_BOULDER1_DOWN_HOLE
+	ld a, [wCoordIndex]
+	cp $1
+	jr nz, .boulder2FellDownHole
+	SetEventReuseHL EVENT_SEAFOAM2_BOULDER1_DOWN_HOLE
+	ld a, HS_SEAFOAM_ISLANDS_B1F_BOULDER_1
+	ld [wObjectToHide], a
+	ld a, HS_SEAFOAM_ISLANDS_B2F_BOULDER_1
+	ld [wObjectToShow], a
+	jr .hideAndShowBoulderObjects
+.boulder2FellDownHole
+	SetEventAfterBranchReuseHL EVENT_SEAFOAM2_BOULDER2_DOWN_HOLE, EVENT_SEAFOAM2_BOULDER1_DOWN_HOLE
+	ld a, HS_SEAFOAM_ISLANDS_B1F_BOULDER_2
+	ld [wObjectToHide], a
+	ld a, HS_SEAFOAM_ISLANDS_B2F_BOULDER_2
+	ld [wObjectToShow], a
+.hideAndShowBoulderObjects
+	ld a, [wObjectToHide]
+	ld [wMissableObjectIndex], a
+	predef HideObject
+	ld a, [wObjectToShow]
+	ld [wMissableObjectIndex], a
+	predef_jump ShowObject
+.noBoulderWasPushed
+	ld a, SEAFOAM_ISLANDS_B2F
+	ld [wDungeonWarpDestinationMap], a
+	ld hl, Seafoam2HolesCoords
+	jp IsPlayerOnDungeonWarp
+
+Seafoam2HolesCoords:
+	dbmapcoord 18,  6
+	dbmapcoord 23,  6
+	db -1 ; end
+
+SeafoamIslandsB1F_TextPointers:
+	def_text_pointers
+	dw_const BoulderText, TEXT_SEAFOAMISLANDSB1F_BOULDER1
+	dw_const BoulderText, TEXT_SEAFOAMISLANDSB1F_BOULDER2

@@ -1,0 +1,66 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export FUCHSIAMART_CLERK
+	const_export FUCHSIAMART_MIDDLE_AGED_MAN
+	const_export FUCHSIAMART_COOLTRAINER_F
+
+FuchsiaMart_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  4,  7, LAST_MAP, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  0,  5, SPRITE_CLERK, STAY, RIGHT, TEXT_FUCHSIAMART_CLERK
+	object_event  4,  2, SPRITE_MIDDLE_AGED_MAN, STAY, NONE, TEXT_FUCHSIAMART_MIDDLE_AGED_MAN
+	object_event  6,  5, SPRITE_COOLTRAINER_F, WALK, UP_DOWN, TEXT_FUCHSIAMART_COOLTRAINER_F
+
+	def_warps_to FUCHSIA_MART
+
+
+-- MAP HEADER --
+
+	map_header FuchsiaMart, FUCHSIA_MART, MART, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_FuchsiaMartMiddleAgedManText::
+	text "Do you have a"
+	line "SAFARI ZONE flag?"
+
+	para "What about cards"
+	line "or calendars?"
+	done
+
+_FuchsiaMartCooltrainerFText::
+	text "Did you try X"
+	line "SPEED? It speeds"
+	cont "up a #MON in"
+	cont "battle!"
+	done
+
+
+-- MAP SCRIPT --
+
+FuchsiaMart_Script:
+	jp EnableAutoTextBoxDrawing
+
+FuchsiaMart_TextPointers:
+	def_text_pointers
+	dw_const FuchsiaMartClerkText,         TEXT_FUCHSIAMART_CLERK
+	dw_const FuchsiaMartMiddleAgedManText, TEXT_FUCHSIAMART_MIDDLE_AGED_MAN
+	dw_const FuchsiaMartCooltrainerFText,  TEXT_FUCHSIAMART_COOLTRAINER_F
+
+FuchsiaMartMiddleAgedManText:
+	text_far _FuchsiaMartMiddleAgedManText
+	text_end
+
+FuchsiaMartCooltrainerFText:
+	text_far _FuchsiaMartCooltrainerFText
+	text_end

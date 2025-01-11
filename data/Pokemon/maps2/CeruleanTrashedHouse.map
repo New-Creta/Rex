@@ -1,0 +1,112 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CERULEANTRASHEDHOUSE_FISHING_GURU
+	const_export CERULEANTRASHEDHOUSE_GIRL
+
+CeruleanTrashedHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 1
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  3,  0, LAST_MAP, 8
+
+	def_bg_events
+	bg_event  3,  0, TEXT_CERULEANTRASHEDHOUSE_WALL_HOLE
+
+	def_object_events
+	object_event  2,  1, SPRITE_FISHING_GURU, STAY, DOWN, TEXT_CERULEANTRASHEDHOUSE_FISHING_GURU
+	object_event  5,  6, SPRITE_GIRL, WALK, LEFT_RIGHT, TEXT_CERULEANTRASHEDHOUSE_GIRL
+
+	def_warps_to CERULEAN_TRASHED_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header CeruleanTrashedHouse, CERULEAN_TRASHED_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeruleanTrashedHouseFishingGuruTheyStoleATMText::
+	text "Those miserable"
+	line "ROCKETs!"
+
+	para "Look what they"
+	line "did here!"
+
+	para "They stole a TM"
+	line "for teaching"
+	cont "#MON how to"
+	cont "DIG holes!"
+
+	para "That cost me a"
+	line "bundle, it did!"
+	done
+
+_CeruleanTrashedHouseFishingGuruWhatsLostIsLostText::
+	text "I figure what's"
+	line "lost is lost!"
+
+	para "I decided to teach"
+	line "DIGLETT how to"
+	cont "DIG without a TM!"
+	done
+
+_CeruleanTrashedHouseGirlText::
+	text "TEAM ROCKET must"
+	line "be trying to DIG"
+	cont "their way into no"
+	cont "good!"
+	done
+
+_CeruleanTrashedHouseWallHoleText::
+	text "TEAM ROCKET left"
+	line "a way out!"
+	done
+
+
+-- MAP SCRIPT --
+
+CeruleanTrashedHouse_Script:
+	call EnableAutoTextBoxDrawing
+	ret
+
+CeruleanTrashedHouse_TextPointers:
+	def_text_pointers
+	dw_const CeruleanTrashedHouseFishingGuruText, TEXT_CERULEANTRASHEDHOUSE_FISHING_GURU
+	dw_const CeruleanTrashedHouseGirlText,        TEXT_CERULEANTRASHEDHOUSE_GIRL
+	dw_const CeruleanTrashedHouseWallHoleText,    TEXT_CERULEANTRASHEDHOUSE_WALL_HOLE
+
+CeruleanTrashedHouseFishingGuruText:
+	text_asm
+	ld b, TM_DIG
+	predef GetQuantityOfItemInBag
+	and b
+	jr z, .no_dig_tm
+	ld hl, .WhatsLostIsLostText
+	call PrintText
+	jr .done
+.no_dig_tm
+	ld hl, .TheyStoleATMText
+	call PrintText
+.done
+	jp TextScriptEnd
+
+.TheyStoleATMText:
+	text_far _CeruleanTrashedHouseFishingGuruTheyStoleATMText
+	text_end
+
+.WhatsLostIsLostText:
+	text_far _CeruleanTrashedHouseFishingGuruWhatsLostIsLostText
+	text_end
+
+CeruleanTrashedHouseGirlText:
+	text_far _CeruleanTrashedHouseGirlText
+	text_end
+
+CeruleanTrashedHouseWallHoleText:
+	text_far _CeruleanTrashedHouseWallHoleText
+	text_end

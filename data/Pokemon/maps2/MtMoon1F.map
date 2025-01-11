@@ -1,0 +1,358 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export MTMOON1F_HIKER
+	const_export MTMOON1F_YOUNGSTER1
+	const_export MTMOON1F_COOLTRAINER_F1
+	const_export MTMOON1F_SUPER_NERD
+	const_export MTMOON1F_COOLTRAINER_F2
+	const_export MTMOON1F_YOUNGSTER2
+	const_export MTMOON1F_YOUNGSTER3
+	const_export MTMOON1F_POTION1
+	const_export MTMOON1F_MOON_STONE
+	const_export MTMOON1F_RARE_CANDY
+	const_export MTMOON1F_ESCAPE_ROPE
+	const_export MTMOON1F_POTION2
+	const_export MTMOON1F_TM_WATER_GUN
+
+MtMoon1F_Object:
+	db $3 ; border block
+
+	def_warp_events
+	warp_event 14, 35, LAST_MAP, 2
+	warp_event 15, 35, LAST_MAP, 2
+	warp_event  5,  5, MT_MOON_B1F, 1
+	warp_event 17, 11, MT_MOON_B1F, 3
+	warp_event 25, 15, MT_MOON_B1F, 4
+
+	def_bg_events
+	bg_event 15, 23, TEXT_MTMOON1F_BEWARE_ZUBAT_SIGN
+
+	def_object_events
+	object_event  5,  6, SPRITE_HIKER, STAY, DOWN, TEXT_MTMOON1F_HIKER, OPP_HIKER, 1
+	object_event 12, 16, SPRITE_YOUNGSTER, STAY, RIGHT, TEXT_MTMOON1F_YOUNGSTER1, OPP_YOUNGSTER, 3
+	object_event 30,  4, SPRITE_COOLTRAINER_F, STAY, DOWN, TEXT_MTMOON1F_COOLTRAINER_F1, OPP_LASS, 5
+	object_event 24, 31, SPRITE_SUPER_NERD, STAY, UP, TEXT_MTMOON1F_SUPER_NERD, OPP_SUPER_NERD, 1
+	object_event 16, 23, SPRITE_COOLTRAINER_F, STAY, DOWN, TEXT_MTMOON1F_COOLTRAINER_F2, OPP_LASS, 6
+	object_event  7, 22, SPRITE_YOUNGSTER, STAY, DOWN, TEXT_MTMOON1F_YOUNGSTER2, OPP_BUG_CATCHER, 7
+	object_event 30, 27, SPRITE_YOUNGSTER, STAY, RIGHT, TEXT_MTMOON1F_YOUNGSTER3, OPP_BUG_CATCHER, 8
+	object_event  2, 20, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_POTION1, POTION
+	object_event  2,  2, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_MOON_STONE, MOON_STONE
+	object_event 35, 31, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_RARE_CANDY, RARE_CANDY
+	object_event 36, 23, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_ESCAPE_ROPE, ESCAPE_ROPE
+	object_event 20, 33, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_POTION2, POTION
+	object_event  5, 32, SPRITE_POKE_BALL, STAY, NONE, TEXT_MTMOON1F_TM_WATER_GUN, TM_WATER_GUN
+
+	def_warps_to MT_MOON_1F
+
+
+-- MAP HEADER --
+
+	map_header MtMoon1F, MT_MOON_1F, CAVERN, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_MtMoon1FHikerBattleText::
+	text "WHOA! You shocked"
+	line "me! Oh, you're"
+	cont "just a kid!"
+	done
+
+_MtMoon1FHikerEndBattleText::
+	text "Wow!"
+	line "Shocked again!"
+	prompt
+
+_MtMoon1FHikerAfterBattleText::
+	text "Kids like you"
+	line "shouldn't be"
+	cont "here!"
+	done
+
+_MtMoon1FYoungster1BattleText::
+	text "Did you come to"
+	line "explore too?"
+	done
+
+_MtMoon1FYoungster1EndBattleText::
+	text "Losing"
+	line "stinks!"
+	prompt
+
+_MtMoon1FYoungster1AfterBattleText::
+	text "I came down here"
+	line "to show off to"
+	cont "girls."
+	done
+
+_MtMoon1FCooltrainerF1BattleText::
+	text "Wow! It's way"
+	line "bigger in here"
+	cont "than I thought!"
+	done
+
+_MtMoon1FCooltrainerF1EndBattleText::
+	text "Oh!"
+	line "I lost it!"
+	prompt
+
+_MtMoon1FCooltrainerF1AfterBattleText::
+	text "How do you get"
+	line "out of here?"
+	done
+
+_MtMoon1FSuperNerdBattleText::
+	text "What! Don't sneak"
+	line "up on me!"
+	done
+
+_MtMoon1FSuperNerdEndBattleText::
+	text "My"
+	line "#MON won't do!"
+	prompt
+
+_MtMoon1FSuperNerdAfterBattleText::
+	text "I have to find"
+	line "stronger #MON."
+	done
+
+_MtMoon1FCooltrainerF2BattleText::
+	text "What? I'm waiting"
+	line "for my friends to"
+	cont "find me here."
+	done
+
+_MtMoon1FCooltrainerF2EndBattleText::
+	text "I lost?"
+	prompt
+
+_MtMoon1FCooltrainerF2AfterBattleText::
+	text "I heard there are"
+	line "some very rare"
+	cont "fossils here."
+	done
+
+_MtMoon1FYoungster2BattleText::
+	text "Suspicious men"
+	line "are in the cave."
+	cont "What about you?"
+	done
+
+_MtMoon1FYoungster2EndBattleText::
+	text "You"
+	line "got me!"
+	prompt
+
+_MtMoon1FYoungster2AfterBattleText::
+	text "I saw them! I'm"
+	line "sure they're from"
+	cont "TEAM ROCKET!"
+	done
+
+_MtMoon1FYoungster3BattleText::
+	text "Go through this"
+	line "cave to get to"
+	cont "CERULEAN CITY!"
+	done
+
+_MtMoon1FYoungster3EndBattleText::
+	text "I"
+	line "lost."
+	prompt
+
+_MtMoon1FYoungster3AfterBattleText::
+	text "ZUBAT is tough!"
+	line "But, it can be"
+	cont "useful if you"
+	cont "catch one."
+	done
+
+_MtMoon1FBewareZubatSign::
+	text "Beware! ZUBAT is"
+	line "a blood sucker!"
+	done
+
+
+-- MAP SCRIPT --
+
+MtMoon1F_Script:
+	call EnableAutoTextBoxDrawing
+	ld hl, MtMoon1TrainerHeaders
+	ld de, MtMoon1F_ScriptPointers
+	ld a, [wMtMoon1FCurScript]
+	call ExecuteCurMapScriptInTable
+	ld [wMtMoon1FCurScript], a
+	ret
+
+MtMoon1F_ScriptPointers:
+	def_script_pointers
+	dw_const CheckFightingMapTrainers,              SCRIPT_MTMOON1F_DEFAULT
+	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_MTMOON1F_START_BATTLE
+	dw_const EndTrainerBattle,                      SCRIPT_MTMOON1F_END_BATTLE
+
+MtMoon1F_TextPointers:
+	def_text_pointers
+	dw_const MtMoon1FHikerText,         TEXT_MTMOON1F_HIKER
+	dw_const MtMoon1FYoungster1Text,    TEXT_MTMOON1F_YOUNGSTER1
+	dw_const MtMoon1FCooltrainerF1Text, TEXT_MTMOON1F_COOLTRAINER_F1
+	dw_const MtMoon1FSuperNerdText,     TEXT_MTMOON1F_SUPER_NERD
+	dw_const MtMoon1FCooltrainerF2Text, TEXT_MTMOON1F_COOLTRAINER_F2
+	dw_const MtMoon1FYoungster2Text,    TEXT_MTMOON1F_YOUNGSTER2
+	dw_const MtMoon1FYoungster3Text,    TEXT_MTMOON1F_YOUNGSTER3
+	dw_const PickUpItemText,            TEXT_MTMOON1F_POTION1
+	dw_const PickUpItemText,            TEXT_MTMOON1F_MOON_STONE
+	dw_const PickUpItemText,            TEXT_MTMOON1F_RARE_CANDY
+	dw_const PickUpItemText,            TEXT_MTMOON1F_ESCAPE_ROPE
+	dw_const PickUpItemText,            TEXT_MTMOON1F_POTION2
+	dw_const PickUpItemText,            TEXT_MTMOON1F_TM_WATER_GUN
+	dw_const MtMoon1FBewareZubatSign,   TEXT_MTMOON1F_BEWARE_ZUBAT_SIGN
+
+MtMoon1TrainerHeaders:
+	def_trainers
+MtMoon1TrainerHeader0:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_0, 2, MtMoon1FHikerBattleText, MtMoon1FHikerEndBattleText, MtMoon1FHikerAfterBattleText
+MtMoon1TrainerHeader1:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_1, 3, MtMoon1FYoungster1BattleText, MtMoon1FYoungster1EndBattleText, MtMoon1FYoungster1AfterBattleText
+MtMoon1TrainerHeader2:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_2, 3, MtMoon1FCooltrainerF1BattleText, MtMoon1FCooltrainerF1EndBattleText, MtMoon1FCooltrainerF1AfterBattleText
+MtMoon1TrainerHeader3:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_3, 3, MtMoon1FSuperNerdBattleText, MtMoon1FSuperNerdEndBattleText, MtMoon1FSuperNerdAfterBattleText
+MtMoon1TrainerHeader4:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_4, 3, MtMoon1FCooltrainerF2BattleText, MtMoon1FCooltrainerF2EndBattleText, MtMoon1FCooltrainerF2AfterBattleText
+MtMoon1TrainerHeader5:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_5, 3, MtMoon1FYoungster2BattleText, MtMoon1FYoungster2EndBattleText, MtMoon1FYoungster2AfterBattleText
+MtMoon1TrainerHeader6:
+	trainer EVENT_BEAT_MT_MOON_1_TRAINER_6, 3, MtMoon1FYoungster3BattleText, MtMoon1FYoungster3EndBattleText, MtMoon1FYoungster3AfterBattleText
+	db -1 ; end
+
+MtMoon1FHikerText:
+	text_asm
+	ld hl, MtMoon1TrainerHeader0
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FYoungster1Text:
+	text_asm
+	ld hl, MtMoon1TrainerHeader1
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FCooltrainerF1Text:
+	text_asm
+	ld hl, MtMoon1TrainerHeader2
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FSuperNerdText:
+	text_asm
+	ld hl, MtMoon1TrainerHeader3
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FCooltrainerF2Text:
+	text_asm
+	ld hl, MtMoon1TrainerHeader4
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FYoungster2Text:
+	text_asm
+	ld hl, MtMoon1TrainerHeader5
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FYoungster3Text:
+	text_asm
+	ld hl, MtMoon1TrainerHeader6
+	call TalkToTrainer
+	jp TextScriptEnd
+
+MtMoon1FHikerBattleText:
+	text_far _MtMoon1FHikerBattleText
+	text_end
+
+MtMoon1FHikerEndBattleText:
+	text_far _MtMoon1FHikerEndBattleText
+	text_end
+
+MtMoon1FHikerAfterBattleText:
+	text_far _MtMoon1FHikerAfterBattleText
+	text_end
+
+MtMoon1FYoungster1BattleText:
+	text_far _MtMoon1FYoungster1BattleText
+	text_end
+
+MtMoon1FYoungster1EndBattleText:
+	text_far _MtMoon1FYoungster1EndBattleText
+	text_end
+
+MtMoon1FYoungster1AfterBattleText:
+	text_far _MtMoon1FYoungster1AfterBattleText
+	text_end
+
+MtMoon1FCooltrainerF1BattleText:
+	text_far _MtMoon1FCooltrainerF1BattleText
+	text_end
+
+MtMoon1FCooltrainerF1EndBattleText:
+	text_far _MtMoon1FCooltrainerF1EndBattleText
+	text_end
+
+MtMoon1FCooltrainerF1AfterBattleText:
+	text_far _MtMoon1FCooltrainerF1AfterBattleText
+	text_end
+
+MtMoon1FSuperNerdBattleText:
+	text_far _MtMoon1FSuperNerdBattleText
+	text_end
+
+MtMoon1FSuperNerdEndBattleText:
+	text_far _MtMoon1FSuperNerdEndBattleText
+	text_end
+
+MtMoon1FSuperNerdAfterBattleText:
+	text_far _MtMoon1FSuperNerdAfterBattleText
+	text_end
+
+MtMoon1FCooltrainerF2BattleText:
+	text_far _MtMoon1FCooltrainerF2BattleText
+	text_end
+
+MtMoon1FCooltrainerF2EndBattleText:
+	text_far _MtMoon1FCooltrainerF2EndBattleText
+	text_end
+
+MtMoon1FCooltrainerF2AfterBattleText:
+	text_far _MtMoon1FCooltrainerF2AfterBattleText
+	text_end
+
+MtMoon1FYoungster2BattleText:
+	text_far _MtMoon1FYoungster2BattleText
+	text_end
+
+MtMoon1FYoungster2EndBattleText:
+	text_far _MtMoon1FYoungster2EndBattleText
+	text_end
+
+MtMoon1FYoungster2AfterBattleText:
+	text_far _MtMoon1FYoungster2AfterBattleText
+	text_end
+
+MtMoon1FYoungster3BattleText:
+	text_far _MtMoon1FYoungster3BattleText
+	text_end
+
+MtMoon1FYoungster3EndBattleText:
+	text_far _MtMoon1FYoungster3EndBattleText
+	text_end
+
+MtMoon1FYoungster3AfterBattleText:
+	text_far _MtMoon1FYoungster3AfterBattleText
+	text_end
+
+MtMoon1FBewareZubatSign:
+	text_far _MtMoon1FBewareZubatSign
+	text_end

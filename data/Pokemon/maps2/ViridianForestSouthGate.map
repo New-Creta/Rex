@@ -1,0 +1,64 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export VIRIDIANFORESTSOUTHGATE_GIRL
+	const_export VIRIDIANFORESTSOUTHGATE_LITTLE_GIRL
+
+ViridianForestSouthGate_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  4,  0, VIRIDIAN_FOREST, 4
+	warp_event  5,  0, VIRIDIAN_FOREST, 5
+	warp_event  4,  7, LAST_MAP, 6
+	warp_event  5,  7, LAST_MAP, 6
+
+	def_bg_events
+
+	def_object_events
+	object_event  8,  4, SPRITE_GIRL, STAY, LEFT, TEXT_VIRIDIANFORESTSOUTHGATE_GIRL
+	object_event  2,  4, SPRITE_LITTLE_GIRL, WALK, UP_DOWN, TEXT_VIRIDIANFORESTSOUTHGATE_LITTLE_GIRL
+
+	def_warps_to VIRIDIAN_FOREST_SOUTH_GATE
+
+
+-- MAP HEADER --
+
+	map_header ViridianForestSouthGate, VIRIDIAN_FOREST_SOUTH_GATE, FOREST_GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_ViridianForestSouthGateGirlText::
+	text "Are you going to"
+	line "VIRIDIAN FOREST?"
+	cont "Be careful, it's"
+	cont "a natural maze!"
+	done
+
+_ViridianForestSouthGateLittleGirlText::
+	text "RATTATA may be"
+	line "small, but its"
+	cont "bite is wicked!"
+	cont "Did you get one?"
+	done
+
+
+-- MAP SCRIPT --
+
+ViridianForestSouthGate_Script:
+	jp EnableAutoTextBoxDrawing
+
+ViridianForestSouthGate_TextPointers:
+	def_text_pointers
+	dw_const ViridianForestSouthGateGirlText,       TEXT_VIRIDIANFORESTSOUTHGATE_GIRL
+	dw_const ViridianForestSouthGateLittleGirlText, TEXT_VIRIDIANFORESTSOUTHGATE_LITTLE_GIRL
+
+ViridianForestSouthGateGirlText:
+	text_far _ViridianForestSouthGateGirlText
+	text_end
+
+ViridianForestSouthGateLittleGirlText:
+	text_far _ViridianForestSouthGateLittleGirlText
+	text_end

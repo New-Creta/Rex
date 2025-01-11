@@ -1,0 +1,84 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMART2F_CLERK1
+	const_export CELADONMART2F_CLERK2
+	const_export CELADONMART2F_MIDDLE_AGED_MAN
+	const_export CELADONMART2F_GIRL
+
+CeladonMart2F_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event 12,  1, CELADON_MART_1F, 5
+	warp_event 16,  1, CELADON_MART_3F, 2
+	warp_event  1,  1, CELADON_MART_ELEVATOR, 1
+
+	def_bg_events
+	bg_event 14,  1, TEXT_CELADONMART2F_CURRENT_FLOOR_SIGN
+
+	def_object_events
+	object_event  5,  3, SPRITE_CLERK, STAY, DOWN, TEXT_CELADONMART2F_CLERK1
+	object_event  6,  3, SPRITE_CLERK, STAY, DOWN, TEXT_CELADONMART2F_CLERK2
+	object_event 19,  5, SPRITE_MIDDLE_AGED_MAN, STAY, NONE, TEXT_CELADONMART2F_MIDDLE_AGED_MAN
+	object_event 14,  4, SPRITE_GIRL, WALK, UP_DOWN, TEXT_CELADONMART2F_GIRL
+
+	def_warps_to CELADON_MART_2F
+
+
+-- MAP HEADER --
+
+	map_header CeladonMart2F, CELADON_MART_2F, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMart2FMiddleAgedManText::
+	text "SUPER REPEL keeps"
+	line "weak #MON at"
+	cont "bay..."
+
+	para "Hmm, it's a more"
+	line "powerful REPEL!"
+	done
+
+_CeladonMart2FGirlText::
+	text "For long outings,"
+	line "you should buy"
+	cont "REVIVE."
+	done
+
+_CeladonMart2FCurrentFloorSignText::
+	text "Top Grade Items"
+	line "for Trainers!"
+
+	para "2F: TRAINER'S"
+	line "    MARKET"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMart2F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMart2F_TextPointers:
+	def_text_pointers
+	dw_const CeladonMart2FClerk1Text,           TEXT_CELADONMART2F_CLERK1
+	dw_const CeladonMart2FClerk2Text,           TEXT_CELADONMART2F_CLERK2
+	dw_const CeladonMart2FMiddleAgedManText,    TEXT_CELADONMART2F_MIDDLE_AGED_MAN
+	dw_const CeladonMart2FGirlText,             TEXT_CELADONMART2F_GIRL
+	dw_const CeladonMart2FCurrentFloorSignText, TEXT_CELADONMART2F_CURRENT_FLOOR_SIGN
+
+CeladonMart2FMiddleAgedManText:
+	text_far _CeladonMart2FMiddleAgedManText
+	text_end
+
+CeladonMart2FGirlText:
+	text_far _CeladonMart2FGirlText
+	text_end
+
+CeladonMart2FCurrentFloorSignText:
+	text_far _CeladonMart2FCurrentFloorSignText
+	text_end

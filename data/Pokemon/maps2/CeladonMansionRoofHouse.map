@@ -1,0 +1,66 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMANSION_ROOF_HOUSE_HIKER
+	const_export CELADONMANSION_ROOF_HOUSE_EEVEE_POKEBALL
+
+CeladonMansionRoofHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, CELADON_MANSION_ROOF, 3
+	warp_event  3,  7, CELADON_MANSION_ROOF, 3
+
+	def_bg_events
+
+	def_object_events
+	object_event  2,  2, SPRITE_HIKER, STAY, DOWN, TEXT_CELADONMANSION_ROOF_HOUSE_HIKER
+	object_event  4,  3, SPRITE_POKE_BALL, STAY, NONE, TEXT_CELADONMANSION_ROOF_HOUSE_EEVEE_POKEBALL
+
+	def_warps_to CELADON_MANSION_ROOF_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header CeladonMansionRoofHouse, CELADON_MANSION_ROOF_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMansionRoofHouseHikerText::
+	text "I know everything"
+	line "about the world"
+	cont "of #MON in"
+	cont "your GAME BOY!"
+
+	para "Get together with"
+	line "your friends and"
+	cont "trade #MON!"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMansionRoofHouse_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMansionRoofHouse_TextPointers:
+	def_text_pointers
+	dw_const CeladonMansionRoofHouseHikerText,         TEXT_CELADONMANSION_ROOF_HOUSE_HIKER
+	dw_const CeladonMansionRoofHouseEeveePokeballText, TEXT_CELADONMANSION_ROOF_HOUSE_EEVEE_POKEBALL
+
+CeladonMansionRoofHouseHikerText:
+	text_far _CeladonMansionRoofHouseHikerText
+	text_end
+
+CeladonMansionRoofHouseEeveePokeballText:
+	text_asm
+	lb bc, EEVEE, 25
+	call GivePokemon
+	jr nc, .party_full
+	ld a, HS_CELADON_MANSION_EEVEE_GIFT
+	ld [wMissableObjectIndex], a
+	predef HideObject
+.party_full
+	jp TextScriptEnd

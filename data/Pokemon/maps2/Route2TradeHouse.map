@@ -1,0 +1,58 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export ROUTE2TRADEHOUSE_SCIENTIST
+	const_export ROUTE2TRADEHOUSE_GAMEBOY_KID
+
+Route2TradeHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 3
+	warp_event  3,  7, LAST_MAP, 3
+
+	def_bg_events
+
+	def_object_events
+	object_event  2,  4, SPRITE_SCIENTIST, STAY, RIGHT, TEXT_ROUTE2TRADEHOUSE_SCIENTIST
+	object_event  4,  1, SPRITE_GAMEBOY_KID, STAY, DOWN, TEXT_ROUTE2TRADEHOUSE_GAMEBOY_KID
+
+	def_warps_to ROUTE_2_TRADE_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header Route2TradeHouse, ROUTE_2_TRADE_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_Route2TradeHouseScientistText::
+	text "A fainted #MON"
+	line "can't fight. But, "
+	cont "it can still use "
+	cont "moves like CUT!"
+	done
+
+
+-- MAP SCRIPT --
+
+Route2TradeHouse_Script:
+	jp EnableAutoTextBoxDrawing
+
+Route2TradeHouse_TextPointers:
+	def_text_pointers
+	dw_const Route2TradeHouseScientistText,  TEXT_ROUTE2TRADEHOUSE_SCIENTIST
+	dw_const Route2TradeHouseGameboyKidText, TEXT_ROUTE2TRADEHOUSE_GAMEBOY_KID
+
+Route2TradeHouseScientistText:
+	text_far _Route2TradeHouseScientistText
+	text_end
+
+Route2TradeHouseGameboyKidText:
+	text_asm
+	ld a, TRADE_FOR_MARCEL
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+	jp TextScriptEnd

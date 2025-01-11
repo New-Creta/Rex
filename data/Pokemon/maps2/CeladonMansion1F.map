@@ -1,0 +1,108 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CELADONMANSION1F_MEOWTH
+	const_export CELADONMANSION1F_GRANNY
+	const_export CELADONMANSION1F_CLEFAIRY
+	const_export CELADONMANSION1F_NIDORANF
+
+CeladonMansion1F_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event  4, 11, LAST_MAP, 3
+	warp_event  5, 11, LAST_MAP, 3
+	warp_event  4,  0, LAST_MAP, 5
+	warp_event  7,  1, CELADON_MANSION_2F, 2
+	warp_event  2,  1, CELADON_MANSION_2F, 3
+
+	def_bg_events
+	bg_event  4,  9, TEXT_CELADONMANSION1F_MANAGERS_SUITE_SIGN
+
+	def_object_events
+	object_event  0,  5, SPRITE_MONSTER, STAY, RIGHT, TEXT_CELADONMANSION1F_MEOWTH
+	object_event  1,  5, SPRITE_GRANNY, STAY, DOWN, TEXT_CELADONMANSION1F_GRANNY
+	object_event  1,  8, SPRITE_FAIRY, WALK, LEFT_RIGHT, TEXT_CELADONMANSION1F_CLEFAIRY
+	object_event  4,  4, SPRITE_MONSTER, WALK, UP_DOWN, TEXT_CELADONMANSION1F_NIDORANF
+
+	def_warps_to CELADON_MANSION_1F
+
+
+-- MAP HEADER --
+
+	map_header CeladonMansion1F, CELADON_MANSION_1F, MANSION, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CeladonMansion1FMeowthText::
+	text "MEOWTH: Meow!@"
+	text_end
+
+_CeladonMansion1FGrannyText::
+	text "My dear #MON"
+	line "keep me company."
+
+	para "MEOWTH even brings"
+	line "money home!"
+	done
+
+_CeladonMansion1FClefairyText::
+	text "CLEFAIRY: Pi"
+	line "pippippi!@"
+	text_end
+
+_CeladonMansion1FNidoranFText::
+	text "NIDORAN: Kya"
+	line "kyaoo!@"
+	text_end
+
+_CeladonMansion1FManagersSuiteSignText::
+	text "CELADON MANSION"
+	line "Manager's Suite"
+	done
+
+
+-- MAP SCRIPT --
+
+CeladonMansion1F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CeladonMansion1F_TextPointers:
+	def_text_pointers
+	dw_const CeladonMansion1FMeowthText,            TEXT_CELADONMANSION1F_MEOWTH
+	dw_const CeladonMansion1FGrannyText,            TEXT_CELADONMANSION1F_GRANNY
+	dw_const CeladonMansion1FClefairyText,          TEXT_CELADONMANSION1F_CLEFAIRY
+	dw_const CeladonMansion1FNidoranFText,          TEXT_CELADONMANSION1F_NIDORANF
+	dw_const CeladonMansion1FManagersSuiteSignText, TEXT_CELADONMANSION1F_MANAGERS_SUITE_SIGN
+
+CeladonMansion1_PlayCryScript:
+	call PlayCry
+	jp TextScriptEnd
+
+CeladonMansion1FMeowthText:
+	text_far _CeladonMansion1FMeowthText
+	text_asm
+	ld a, MEOWTH
+	jp CeladonMansion1_PlayCryScript
+
+CeladonMansion1FGrannyText:
+	text_far _CeladonMansion1FGrannyText
+	text_end
+
+CeladonMansion1FClefairyText:
+	text_far _CeladonMansion1FClefairyText
+	text_asm
+	ld a, CLEFAIRY
+	jp CeladonMansion1_PlayCryScript
+
+CeladonMansion1FNidoranFText:
+	text_far _CeladonMansion1FNidoranFText
+	text_asm
+	ld a, NIDORAN_F
+	jp CeladonMansion1_PlayCryScript
+
+CeladonMansion1FManagersSuiteSignText:
+	text_far _CeladonMansion1FManagersSuiteSignText
+	text_end

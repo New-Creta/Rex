@@ -1,0 +1,54 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export DIGLETTSCAVEROUTE2_FISHING_GURU
+
+DiglettsCaveRoute2_Object:
+	db $7d ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 1
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  4,  4, DIGLETTS_CAVE, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  3, SPRITE_FISHING_GURU, STAY, NONE, TEXT_DIGLETTSCAVEROUTE2_FISHING_GURU
+
+	def_warps_to DIGLETTS_CAVE_ROUTE_2
+
+
+-- MAP HEADER --
+
+	map_header DiglettsCaveRoute2, DIGLETTS_CAVE_ROUTE_2, CAVERN, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_DiglettsCaveRoute2FishingGuruText::
+	text "I went to ROCK"
+	line "TUNNEL, but it's"
+	cont "dark and scary."
+
+	para "If a #MON's"
+	line "FLASH could light"
+	cont "it up..."
+	done
+
+
+-- MAP SCRIPT --
+
+DiglettsCaveRoute2_Script:
+	ld a, ROUTE_2
+	ld [wLastMap], a
+	jp EnableAutoTextBoxDrawing
+
+DiglettsCaveRoute2_TextPointers:
+	def_text_pointers
+	dw_const DiglettsCaveRoute2FishingGuruText, TEXT_DIGLETTSCAVEROUTE2_FISHING_GURU
+
+DiglettsCaveRoute2FishingGuruText:
+	text_far _DiglettsCaveRoute2FishingGuruText
+	text_end

@@ -1,0 +1,81 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export COPYCATSHOUSE1F_MIDDLE_AGED_WOMAN
+	const_export COPYCATSHOUSE1F_MIDDLE_AGED_MAN
+	const_export COPYCATSHOUSE1F_CHANSEY
+
+CopycatsHouse1F_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 1
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  7,  1, COPYCATS_HOUSE_2F, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  2,  2, SPRITE_MIDDLE_AGED_WOMAN, STAY, DOWN, TEXT_COPYCATSHOUSE1F_MIDDLE_AGED_WOMAN
+	object_event  5,  4, SPRITE_MIDDLE_AGED_MAN, STAY, LEFT, TEXT_COPYCATSHOUSE1F_MIDDLE_AGED_MAN
+	object_event  1,  4, SPRITE_FAIRY, WALK, UP_DOWN, TEXT_COPYCATSHOUSE1F_CHANSEY
+
+	def_warps_to COPYCATS_HOUSE_1F
+
+
+-- MAP HEADER --
+
+	map_header CopycatsHouse1F, COPYCATS_HOUSE_1F, REDS_HOUSE_1, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CopycatsHouse1FMiddleAgedWomanText::
+	text "My daughter is so"
+	line "self-centered."
+	cont "She only has a"
+	cont "few friends."
+	done
+
+_CopycatsHouse1FMiddleAgedManText::
+	text "My daughter likes"
+	line "to mimic people."
+
+	para "Her mimicry has"
+	line "earned her the"
+	cont "nickname COPYCAT"
+	cont "around here!"
+	done
+
+_CopycatsHouse1FChanseyText::
+	text "CHANSEY: Chaan!"
+	line "Sii!@"
+	text_end
+
+
+-- MAP SCRIPT --
+
+CopycatsHouse1F_Script:
+	jp EnableAutoTextBoxDrawing
+
+CopycatsHouse1F_TextPointers:
+	def_text_pointers
+	dw_const CopycatsHouse1FMiddleAgedWomanText, TEXT_COPYCATSHOUSE1F_MIDDLE_AGED_WOMAN
+	dw_const CopycatsHouse1FMiddleAgedManText,   TEXT_COPYCATSHOUSE1F_MIDDLE_AGED_MAN
+	dw_const CopycatsHouse1FChanseyText,         TEXT_COPYCATSHOUSE1F_CHANSEY
+
+CopycatsHouse1FMiddleAgedWomanText:
+	text_far _CopycatsHouse1FMiddleAgedWomanText
+	text_end
+
+CopycatsHouse1FMiddleAgedManText:
+	text_far _CopycatsHouse1FMiddleAgedManText
+	text_end
+
+CopycatsHouse1FChanseyText:
+	text_far _CopycatsHouse1FChanseyText
+	text_asm
+	ld a, CHANSEY
+	call PlayCry
+	jp TextScriptEnd

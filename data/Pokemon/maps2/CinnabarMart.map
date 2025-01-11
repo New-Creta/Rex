@@ -1,0 +1,62 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export CINNABARMART_CLERK
+	const_export CINNABARMART_SILPH_WORKER_F
+	const_export CINNABARMART_SCIENTIST
+
+CinnabarMart_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 5
+	warp_event  4,  7, LAST_MAP, 5
+
+	def_bg_events
+
+	def_object_events
+	object_event  0,  5, SPRITE_CLERK, STAY, RIGHT, TEXT_CINNABARMART_CLERK
+	object_event  6,  2, SPRITE_SILPH_WORKER_F, STAY, NONE, TEXT_CINNABARMART_SILPH_WORKER_F
+	object_event  3,  4, SPRITE_SCIENTIST, STAY, NONE, TEXT_CINNABARMART_SCIENTIST
+
+	def_warps_to CINNABAR_MART
+
+
+-- MAP HEADER --
+
+	map_header CinnabarMart, CINNABAR_MART, MART, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_CinnabarMartSilphWorkerFText::
+	text "Don't they have X"
+	line "ATTACK? It's good"
+	cont "for battles!"
+	done
+
+_CinnabarMartScientistText::
+	text "It never hurts to"
+	line "have extra items!"
+	done
+
+
+-- MAP SCRIPT --
+
+CinnabarMart_Script:
+	jp EnableAutoTextBoxDrawing
+
+CinnabarMart_TextPointers:
+	def_text_pointers
+	dw_const CinnabarMartClerkText,        TEXT_CINNABARMART_CLERK
+	dw_const CinnabarMartSilphWorkerFText, TEXT_CINNABARMART_SILPH_WORKER_F
+	dw_const CinnabarMartScientistText,    TEXT_CINNABARMART_SCIENTIST
+
+CinnabarMartSilphWorkerFText:
+	text_far _CinnabarMartSilphWorkerFText
+	text_end
+
+CinnabarMartScientistText:
+	text_far _CinnabarMartScientistText
+	text_end

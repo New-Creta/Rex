@@ -1,0 +1,75 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export ROCKTUNNELPOKECENTER_NURSE
+	const_export ROCKTUNNELPOKECENTER_GENTLEMAN
+	const_export ROCKTUNNELPOKECENTER_FISHER
+	const_export ROCKTUNNELPOKECENTER_LINK_RECEPTIONIST
+
+RockTunnelPokecenter_Object:
+	db $0 ; border block
+
+	def_warp_events
+	warp_event  3,  7, LAST_MAP, 1
+	warp_event  4,  7, LAST_MAP, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  1, SPRITE_NURSE, STAY, DOWN, TEXT_ROCKTUNNELPOKECENTER_NURSE
+	object_event  7,  3, SPRITE_GENTLEMAN, WALK, LEFT_RIGHT, TEXT_ROCKTUNNELPOKECENTER_GENTLEMAN
+	object_event  2,  5, SPRITE_FISHER, STAY, NONE, TEXT_ROCKTUNNELPOKECENTER_FISHER
+	object_event 11,  2, SPRITE_LINK_RECEPTIONIST, STAY, DOWN, TEXT_ROCKTUNNELPOKECENTER_LINK_RECEPTIONIST
+
+	def_warps_to ROCK_TUNNEL_POKECENTER
+
+
+-- MAP HEADER --
+
+	map_header RockTunnelPokecenter, ROCK_TUNNEL_POKECENTER, POKECENTER, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_RockTunnelPokecenterGentlemanText::
+	text "The element types"
+	line "of #MON make"
+	cont "them stronger"
+	cont "than some types"
+	cont "and weaker than"
+	cont "others!"
+	done
+
+_RockTunnelPokecenterFisherText::
+	text "I sold a useless"
+	line "NUGGET for ¥5000!"
+	done
+
+
+-- MAP SCRIPT --
+
+RockTunnelPokecenter_Script:
+	call Serial_TryEstablishingExternallyClockedConnection
+	jp EnableAutoTextBoxDrawing
+
+RockTunnelPokecenter_TextPointers:
+	def_text_pointers
+	dw_const RockTunnelPokecenterNurseText,            TEXT_ROCKTUNNELPOKECENTER_NURSE
+	dw_const RockTunnelPokecenterGentlemanText,        TEXT_ROCKTUNNELPOKECENTER_GENTLEMAN
+	dw_const RockTunnelPokecenterFisherText,           TEXT_ROCKTUNNELPOKECENTER_FISHER
+	dw_const RockTunnelPokecenterLinkReceptionistText, TEXT_ROCKTUNNELPOKECENTER_LINK_RECEPTIONIST
+
+RockTunnelPokecenterNurseText:
+	script_pokecenter_nurse
+
+RockTunnelPokecenterGentlemanText:
+	text_far _RockTunnelPokecenterGentlemanText
+	text_end
+
+RockTunnelPokecenterFisherText:
+	text_far _RockTunnelPokecenterFisherText
+	text_end
+
+RockTunnelPokecenterLinkReceptionistText:
+	script_cable_club_receptionist

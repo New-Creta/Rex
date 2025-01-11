@@ -1,0 +1,70 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export VIRIDIANFORESTNORTHGATE_SUPER_NERD
+	const_export VIRIDIANFORESTNORTHGATE_GRAMPS
+
+ViridianForestNorthGate_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  4,  0, LAST_MAP, 2
+	warp_event  5,  0, LAST_MAP, 2
+	warp_event  4,  7, VIRIDIAN_FOREST, 1
+	warp_event  5,  7, VIRIDIAN_FOREST, 1
+
+	def_bg_events
+
+	def_object_events
+	object_event  3,  2, SPRITE_SUPER_NERD, STAY, NONE, TEXT_VIRIDIANFORESTNORTHGATE_SUPER_NERD
+	object_event  2,  5, SPRITE_GRAMPS, STAY, NONE, TEXT_VIRIDIANFORESTNORTHGATE_GRAMPS
+
+	def_warps_to VIRIDIAN_FOREST_NORTH_GATE
+
+
+-- MAP HEADER --
+
+	map_header ViridianForestNorthGate, VIRIDIAN_FOREST_NORTH_GATE, FOREST_GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_ViridianForestNorthGateSuperNerdText::
+	text "Many #MON live"
+	line "only in forests "
+	cont "and caves."
+
+	para "You need to look"
+	line "everywhere to get"
+	cont "different kinds!"
+	done
+
+_ViridianForestNorthGateGrampsText::
+	text "Have you noticed"
+	line "the bushes on the"
+	cont "roadside?"
+
+	para "They can be cut"
+	line "down by a special"
+	cont "#MON move."
+	done
+
+
+-- MAP SCRIPT --
+
+ViridianForestNorthGate_Script:
+	jp EnableAutoTextBoxDrawing
+
+ViridianForestNorthGate_TextPointers:
+	def_text_pointers
+	dw_const ViridianForestNorthGateSuperNerdText, TEXT_VIRIDIANFORESTNORTHGATE_SUPER_NERD
+	dw_const ViridianForestNorthGateGrampsText,    TEXT_VIRIDIANFORESTNORTHGATE_GRAMPS
+
+ViridianForestNorthGateSuperNerdText:
+	text_far _ViridianForestNorthGateSuperNerdText
+	text_end
+
+ViridianForestNorthGateGrampsText:
+	text_far _ViridianForestNorthGateGrampsText
+	text_end

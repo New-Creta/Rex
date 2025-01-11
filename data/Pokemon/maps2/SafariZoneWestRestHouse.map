@@ -1,0 +1,76 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export SAFARIZONEWESTRESTHOUSE_SCIENTIST
+	const_export SAFARIZONEWESTRESTHOUSE_COOLTRAINER_M
+	const_export SAFARIZONEWESTRESTHOUSE_SILPH_WORKER_F
+
+SafariZoneWestRestHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, SAFARI_ZONE_WEST, 8
+	warp_event  3,  7, SAFARI_ZONE_WEST, 8
+
+	def_bg_events
+
+	def_object_events
+	object_event  4,  4, SPRITE_SCIENTIST, WALK, ANY_DIR, TEXT_SAFARIZONEWESTRESTHOUSE_SCIENTIST
+	object_event  0,  2, SPRITE_COOLTRAINER_M, STAY, RIGHT, TEXT_SAFARIZONEWESTRESTHOUSE_COOLTRAINER_M
+	object_event  6,  2, SPRITE_SILPH_WORKER_F, STAY, DOWN, TEXT_SAFARIZONEWESTRESTHOUSE_SILPH_WORKER_F
+
+	def_warps_to SAFARI_ZONE_WEST_REST_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header SafariZoneWestRestHouse, SAFARI_ZONE_WEST_REST_HOUSE, GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_SafariZoneWestRestHouseScientistText::
+	text "Tossing ROCKs at"
+	line "#MON might"
+	cont "make them run,"
+	cont "but they'll be"
+	cont "easier to catch."
+	done
+
+_SafariZoneWestRestHouseCooltrainerMText::
+	text "Using BAIT will"
+	line "make #MON"
+	cont "easier to catch."
+	done
+
+_SafariZoneWestRestHouseSilphWorkerFText::
+	text "I hiked a lot, but"
+	line "I didn't see any"
+	cont "#MON I wanted."
+	done
+
+
+-- MAP SCRIPT --
+
+SafariZoneWestRestHouse_Script:
+	call EnableAutoTextBoxDrawing
+	ret
+
+SafariZoneWestRestHouse_TextPointers:
+	def_text_pointers
+	dw_const SafariZoneWestRestHouseScientistText,    TEXT_SAFARIZONEWESTRESTHOUSE_SCIENTIST
+	dw_const SafariZoneWestRestHouseCooltrainerMText, TEXT_SAFARIZONEWESTRESTHOUSE_COOLTRAINER_M
+	dw_const SafariZoneWestRestHouseSilphWorkerFText, TEXT_SAFARIZONEWESTRESTHOUSE_SILPH_WORKER_F
+
+SafariZoneWestRestHouseScientistText:
+	text_far _SafariZoneWestRestHouseScientistText
+	text_end
+
+SafariZoneWestRestHouseCooltrainerMText:
+	text_far _SafariZoneWestRestHouseCooltrainerMText
+	text_end
+
+SafariZoneWestRestHouseSilphWorkerFText:
+	text_far _SafariZoneWestRestHouseSilphWorkerFText
+	text_end

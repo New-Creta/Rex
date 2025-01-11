@@ -1,0 +1,152 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export ROUTE11GATE2F_YOUNGSTER
+	const_export ROUTE11GATE2F_OAKS_AIDE
+
+Route11Gate2F_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  7,  7, ROUTE_11_GATE_1F, 5
+
+	def_bg_events
+	bg_event  1,  2, TEXT_ROUTE11GATE2F_LEFT_BINOCULARS
+	bg_event  6,  2, TEXT_ROUTE11GATE2F_RIGHT_BINOCULARS
+
+	def_object_events
+	object_event  4,  2, SPRITE_YOUNGSTER, WALK, LEFT_RIGHT, TEXT_ROUTE11GATE2F_YOUNGSTER
+	object_event  2,  6, SPRITE_SCIENTIST, STAY, NONE, TEXT_ROUTE11GATE2F_OAKS_AIDE
+
+	def_warps_to ROUTE_11_GATE_2F
+
+
+-- MAP HEADER --
+
+	map_header Route11Gate2F, ROUTE_11_GATE_2F, GATE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_Route11Gate2FOaksAideItemfinderDescriptionText::
+	text "There are items on"
+	line "the ground that"
+	cont "can't be seen."
+
+	para "ITEMFINDER will"
+	line "detect an item"
+	cont "close to you."
+
+	para "It can't pinpoint"
+	line "it, so you have"
+	cont "to look yourself!"
+	done
+
+_Route11Gate2FLeftBinocularsSnorlaxText::
+	text "Looked into the"
+	line "binoculars."
+
+	para "A big #MON is"
+	line "asleep on a road!"
+	done
+
+_Route11Gate2FLeftBinocularsNoSnorlaxText::
+	text "Looked into the"
+	line "binoculars."
+
+	para "It's a beautiful"
+	line "view!"
+	done
+
+_Route11Gate2FRightBinocularsText::
+	text "Looked into the"
+	line "binoculars."
+
+	para "The only way to"
+	line "get from CERULEAN"
+	cont "CITY to LAVENDER"
+	cont "is by way of the"
+	cont "ROCK TUNNEL."
+	done
+
+
+-- MAP SCRIPT --
+
+Route11Gate2F_Script:
+	jp DisableAutoTextBoxDrawing
+
+Route11Gate2F_TextPointers:
+	def_text_pointers
+	dw_const Route11Gate2FYoungsterText,       TEXT_ROUTE11GATE2F_YOUNGSTER
+	dw_const Route11Gate2FOaksAideText,        TEXT_ROUTE11GATE2F_OAKS_AIDE
+	dw_const Route11Gate2FLeftBinocularsText,  TEXT_ROUTE11GATE2F_LEFT_BINOCULARS
+	dw_const Route11Gate2FRightBinocularsText, TEXT_ROUTE11GATE2F_RIGHT_BINOCULARS
+
+Route11Gate2FYoungsterText:
+	text_asm
+	xor a ; TRADE_FOR_TERRY
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+Route11Gate2FScriptEnd:
+	jp TextScriptEnd
+
+Route11Gate2FOaksAideText:
+	text_asm
+	CheckEvent EVENT_GOT_ITEMFINDER, 1
+	jr c, .got_item
+	ld a, 30
+	ldh [hOaksAideRequirement], a
+	ld a, ITEMFINDER
+	ldh [hOaksAideRewardItem], a
+	ld [wd11e], a
+	call GetItemName
+	ld h, d
+	ld l, e
+	ld de, wOaksAideRewardItemName
+	ld bc, ITEM_NAME_LENGTH
+	call CopyData
+	predef OaksAideScript
+	ldh a, [hOaksAideResult]
+	dec a ; OAKS_AIDE_GOT_ITEM?
+	jr nz, .no_item
+	SetEvent EVENT_GOT_ITEMFINDER
+.got_item
+	ld hl, .ItemfinderDescriptionText
+	call PrintText
+.no_item
+	jr Route11Gate2FScriptEnd
+
+.ItemfinderDescriptionText:
+	text_far _Route11Gate2FOaksAideItemfinderDescriptionText
+	text_end
+
+Route11Gate2FLeftBinocularsText:
+	text_asm
+	ld a, [wSpritePlayerStateData1FacingDirection]
+	cp SPRITE_FACING_UP
+	jp nz, GateUpstairsScript_PrintIfFacingUp
+	CheckEvent EVENT_BEAT_ROUTE12_SNORLAX
+	ld hl, .SnorlaxText
+	jr z, .print
+	ld hl, .NoSnorlaxText
+.print
+	call PrintText
+	jp TextScriptEnd
+
+.SnorlaxText:
+	text_far _Route11Gate2FLeftBinocularsSnorlaxText
+	text_end
+
+.NoSnorlaxText:
+	text_far _Route11Gate2FLeftBinocularsNoSnorlaxText
+	text_end
+
+Route11Gate2FRightBinocularsText:
+	text_asm
+	ld hl, .Text
+	jp GateUpstairsScript_PrintIfFacingUp
+
+.Text:
+	text_far _Route11Gate2FRightBinocularsText
+	text_end

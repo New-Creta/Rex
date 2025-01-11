@@ -1,0 +1,85 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export PEWTERNIDORANHOUSE_NIDORAN
+	const_export PEWTERNIDORANHOUSE_LITTLE_BOY
+	const_export PEWTERNIDORANHOUSE_MIDDLE_AGED_MAN
+
+PewterNidoranHouse_Object:
+	db $a ; border block
+
+	def_warp_events
+	warp_event  2,  7, LAST_MAP, 4
+	warp_event  3,  7, LAST_MAP, 4
+
+	def_bg_events
+
+	def_object_events
+	object_event  4,  5, SPRITE_MONSTER, STAY, LEFT, TEXT_PEWTERNIDORANHOUSE_NIDORAN
+	object_event  3,  5, SPRITE_LITTLE_BOY, STAY, RIGHT, TEXT_PEWTERNIDORANHOUSE_LITTLE_BOY
+	object_event  1,  2, SPRITE_MIDDLE_AGED_MAN, STAY, NONE, TEXT_PEWTERNIDORANHOUSE_MIDDLE_AGED_MAN
+
+	def_warps_to PEWTER_NIDORAN_HOUSE
+
+
+-- MAP HEADER --
+
+	map_header PewterNidoranHouse, PEWTER_NIDORAN_HOUSE, HOUSE, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_PewterNidoranHouseNidoranText::
+	text "NIDORAN: Bowbow!@"
+	text_end
+
+_PewterNidoranHouseLittleBoyText::
+	text "NIDORAN sit!"
+	done
+
+_PewterNidoranHouseMiddleAgedManText::
+	text "Our #MON's an"
+	line "outsider, so it's"
+	cont "hard to handle."
+
+	para "An outsider is a"
+	line "#MON that you"
+	cont "get in a trade."
+
+	para "It grows fast, but"
+	line "it may ignore an"
+	cont "unskilled trainer"
+	cont "in battle!"
+
+	para "If only we had"
+	line "some BADGEs..."
+	done
+
+
+-- MAP SCRIPT --
+
+PewterNidoranHouse_Script:
+	jp EnableAutoTextBoxDrawing
+
+PewterNidoranHouse_TextPointers:
+	def_text_pointers
+	dw_const PewterNidoranHouseNidoranText,       TEXT_PEWTERNIDORANHOUSE_NIDORAN
+	dw_const PewterNidoranHouseLittleBoyText,     TEXT_PEWTERNIDORANHOUSE_LITTLE_BOY
+	dw_const PewterNidoranHouseMiddleAgedManText, TEXT_PEWTERNIDORANHOUSE_MIDDLE_AGED_MAN
+
+PewterNidoranHouseNidoranText:
+	text_far _PewterNidoranHouseNidoranText
+	text_asm
+	ld a, NIDORAN_M
+	call PlayCry
+	call WaitForSoundToFinish
+	jp TextScriptEnd
+
+PewterNidoranHouseLittleBoyText:
+	text_far _PewterNidoranHouseLittleBoyText
+	text_end
+
+PewterNidoranHouseMiddleAgedManText:
+	text_far _PewterNidoranHouseMiddleAgedManText
+	text_end

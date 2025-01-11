@@ -1,0 +1,781 @@
+-- MAP OBJECT --
+
+	object_const_def
+	const_export GAMECORNER_BEAUTY1
+	const_export GAMECORNER_CLERK1
+	const_export GAMECORNER_MIDDLE_AGED_MAN1
+	const_export GAMECORNER_BEAUTY2
+	const_export GAMECORNER_FISHING_GURU
+	const_export GAMECORNER_MIDDLE_AGED_WOMAN
+	const_export GAMECORNER_GYM_GUIDE
+	const_export GAMECORNER_GAMBLER
+	const_export GAMECORNER_CLERK2
+	const_export GAMECORNER_GENTLEMAN
+	const_export GAMECORNER_ROCKET
+
+GameCorner_Object:
+	db $f ; border block
+
+	def_warp_events
+	warp_event 15, 17, LAST_MAP, 8
+	warp_event 16, 17, LAST_MAP, 8
+	warp_event 17,  4, ROCKET_HIDEOUT_B1F, 2
+
+	def_bg_events
+	bg_event  9,  4, TEXT_GAMECORNER_POSTER
+
+	def_object_events
+	object_event  2,  6, SPRITE_BEAUTY, STAY, DOWN, TEXT_GAMECORNER_BEAUTY1
+	object_event  5,  6, SPRITE_CLERK, STAY, DOWN, TEXT_GAMECORNER_CLERK1
+	object_event  2, 10, SPRITE_MIDDLE_AGED_MAN, STAY, LEFT, TEXT_GAMECORNER_MIDDLE_AGED_MAN1
+	object_event  2, 13, SPRITE_BEAUTY, STAY, LEFT, TEXT_GAMECORNER_BEAUTY2
+	object_event  5, 11, SPRITE_FISHING_GURU, STAY, RIGHT, TEXT_GAMECORNER_FISHING_GURU
+	object_event  8, 11, SPRITE_MIDDLE_AGED_WOMAN, STAY, LEFT, TEXT_GAMECORNER_MIDDLE_AGED_WOMAN
+	object_event  8, 14, SPRITE_GYM_GUIDE, STAY, LEFT, TEXT_GAMECORNER_GYM_GUIDE
+	object_event 11, 15, SPRITE_GAMBLER, STAY, RIGHT, TEXT_GAMECORNER_GAMBLER
+	object_event 14, 11, SPRITE_CLERK, STAY, LEFT, TEXT_GAMECORNER_CLERK2
+	object_event 17, 13, SPRITE_GENTLEMAN, STAY, RIGHT, TEXT_GAMECORNER_GENTLEMAN
+	object_event  9,  5, SPRITE_ROCKET, STAY, UP, TEXT_GAMECORNER_ROCKET, OPP_ROCKET, 7
+
+	def_warps_to GAME_CORNER
+
+
+-- MAP HEADER --
+
+	map_header GameCorner, GAME_CORNER, LOBBY, 0
+	end_map_header
+
+
+-- MAP TEXT --
+
+_GameCornerBeauty1Text::
+	text "Welcome!"
+
+	para "You can exchange"
+	line "your coins for"
+	cont "fabulous prizes"
+	cont "next door."
+	done
+
+_GameCornerClerk1DoYouNeedSomeGameCoinsText::
+	text "Welcome to ROCKET"
+	line "GAME CORNER!"
+
+	para "Do you need some"
+	line "game coins?"
+
+	para "It's ¥1000 for 50"
+	line "coins. Would you"
+	cont "like some?"
+	done
+
+_GameCornerClerk1ThanksHereAre50CoinsText::
+	text "Thanks! Here are"
+	line "your 50 coins!"
+	done
+
+_GameCornerClerk1PleaseComePlaySometimeText::
+	text "No? Please come"
+	line "play sometime!"
+	done
+
+_GameCornerClerk1CantAffordTheCoinsText::
+	text "You can't afford"
+	line "the coins!"
+	done
+
+_GameCornerClerk1CoinCaseIsFullText::
+	text "Oops! Your COIN"
+	line "CASE is full."
+	done
+
+_GameCornerClerk1DontHaveCoinCaseText::
+	text "You don't have a"
+	line "COIN CASE!"
+	done
+
+_GameCornerMiddleAgedMan1Text::
+	text "Keep this quiet."
+
+	para "It's rumored that"
+	line "this place is run"
+	cont "by TEAM ROCKET."
+	done
+
+_GameCornerBeauty2Text::
+	text "I think these"
+	line "machines have"
+	cont "different odds."
+	done
+
+_GameCornerFishingGuruWantToPlayText::
+	text "Kid, do you want"
+	line "to play?"
+	prompt
+
+_GameCornerFishingGuruReceived10CoinsText::
+	text "<PLAYER> received"
+	line "10 coins!@"
+	text_end
+
+_GameCornerFishingGuruDontNeedMyCoinsText::
+	text "You don't need my"
+	line "coins!"
+	done
+
+_GameCornerFishingGuruWinsComeAndGoText::
+	text "Wins seem to come"
+	line "and go."
+	done
+
+_GameCornerMiddleAgedWomanText::
+	text "I'm having a"
+	line "wonderful time!"
+	done
+
+_GameCornerGymGuideChampInMakingText::
+	text "Hey!"
+
+	para "You have better"
+	line "things to do,"
+	cont "champ in making!"
+
+	para "CELADON GYM's"
+	line "LEADER is ERIKA!"
+	cont "She uses grass-"
+	cont "type #MON!"
+
+	para "She might appear"
+	line "docile, but don't"
+	cont "be fooled!"
+	done
+
+_GameCornerGymGuideTheyOfferRarePokemonText::
+	text "They offer rare"
+	line "#MON that can"
+	cont "be exchanged for"
+	cont "your coins."
+
+	para "But, I just can't"
+	line "seem to win!"
+	done
+
+_GameCornerGamblerText::
+	text "Games are scary!"
+	line "It's so easy to"
+	cont "get hooked!"
+	done
+
+_GameCornerClerk2WantSomeCoinsText::
+	text "What's up? Want"
+	line "some coins?"
+	prompt
+
+_GameCornerClerk2Received20CoinsText::
+	text "<PLAYER> received"
+	line "20 coins!@"
+	text_end
+
+_GameCornerClerk2YouHaveLotsOfCoinsText::
+	text "You have lots of"
+	line "coins!"
+	done
+
+_GameCornerClerk2INeedMoreCoinsText::
+	text "Darn! I need more"
+	line "coins for the"
+	cont "#MON I want!"
+	done
+
+_GameCornerGentlemanThrowingMeOffText::
+	text "Hey, what? You're"
+	line "throwing me off!"
+	cont "Here are some"
+	cont "coins, shoo!"
+	prompt
+
+_GameCornerGentlemanReceived20CoinsText::
+	text "<PLAYER> received"
+	line "20 coins!@"
+	text_end
+
+_GameCornerGentlemanYouGotYourOwnCoinsText::
+	text "You've got your"
+	line "own coins!"
+	done
+
+_GameCornerGentlemanCloselyWatchTheReelsText::
+	text "The trick is to"
+	line "watch the reels"
+	cont "closely!"
+	done
+
+_GameCornerRocketImGuardingThisPosterText::
+	text "I'm guarding this"
+	line "poster!"
+	cont "Go away, or else!"
+	done
+
+_GameCornerRocketBattleEndText::
+	text "Dang!"
+	prompt
+
+_GameCornerRocketAfterBattleText::
+	text "Our hideout might"
+	line "be discovered! I"
+	cont "better tell BOSS!"
+	done
+
+_GameCornerPosterSwitchBehindPosterText::
+	text "Hey!"
+
+	para "A switch behind"
+	line "the poster!?"
+	cont "Let's push it!@"
+	text_end
+
+_GameCornerOopsForgotCoinCaseText::
+	text "Oops! Forgot the"
+	line "COIN CASE!"
+	done
+
+
+-- MAP SCRIPT --
+
+GameCorner_Script:
+	call GameCornerSelectLuckySlotMachine
+	call GameCornerSetRocketHideoutDoorTile
+	call EnableAutoTextBoxDrawing
+	ld hl, GameCorner_ScriptPointers
+	ld a, [wGameCornerCurScript]
+	jp CallFunctionInTable
+
+GameCornerSelectLuckySlotMachine:
+	ld hl, wCurrentMapScriptFlags
+	bit 6, [hl]
+	res 6, [hl]
+	ret z
+	call Random
+	ldh a, [hRandomAdd]
+	cp $7
+	jr nc, .not_max
+	ld a, $8
+.not_max
+	srl a
+	srl a
+	srl a
+	ld [wLuckySlotHiddenObjectIndex], a
+	ret
+
+GameCornerSetRocketHideoutDoorTile:
+	ld hl, wCurrentMapScriptFlags
+	bit 5, [hl]
+	res 5, [hl]
+	ret z
+	CheckEvent EVENT_FOUND_ROCKET_HIDEOUT
+	ret nz
+	ld a, $2a
+	ld [wNewTileBlockID], a
+	lb bc, 2, 8
+	predef_jump ReplaceTileBlock
+
+GameCornerReenterMapAfterPlayerLoss:
+	xor a ; SCRIPT_GAMECORNER_DEFAULT
+	ld [wJoyIgnore], a
+	ld [wGameCornerCurScript], a
+	ld [wCurMapScript], a
+	ret
+
+GameCorner_ScriptPointers:
+	def_script_pointers
+	dw_const GameCornerDefaultScript,      SCRIPT_GAMECORNER_DEFAULT
+	dw_const GameCornerRocketBattleScript, SCRIPT_GAMECORNER_ROCKET_BATTLE
+	dw_const GameCornerRocketExitScript,   SCRIPT_GAMECORNER_ROCKET_EXIT
+
+GameCornerDefaultScript:
+	ret
+
+GameCornerRocketBattleScript:
+	ld a, [wIsInBattle]
+	cp $ff
+	jp z, GameCornerReenterMapAfterPlayerLoss
+	ld a, D_RIGHT | D_LEFT | D_UP | D_DOWN
+	ld [wJoyIgnore], a
+	ld a, TEXT_GAMECORNER_ROCKET_AFTER_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	ld a, GAMECORNER_ROCKET
+	ldh [hSpriteIndex], a
+	call SetSpriteMovementBytesToFF
+	ld de, GameCornerMovement_Rocket_WalkAroundPlayer
+	ld a, [wYCoord]
+	cp 6
+	jr nz, .not_direct_movement
+	ld de, GameCornerMovement_Rocket_WalkDirect
+	jr .got_rocket_movement
+.not_direct_movement
+	ld a, [wXCoord]
+	cp 8
+	jr nz, .got_rocket_movement
+	ld de, GameCornerMovement_Rocket_WalkDirect
+.got_rocket_movement
+	ld a, GAMECORNER_ROCKET
+	ldh [hSpriteIndex], a
+	call MoveSprite
+	ld a, SCRIPT_GAMECORNER_ROCKET_EXIT
+	ld [wGameCornerCurScript], a
+	ret
+
+GameCornerMovement_Rocket_WalkAroundPlayer:
+	db NPC_MOVEMENT_DOWN
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_UP
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db -1 ; end
+
+GameCornerMovement_Rocket_WalkDirect:
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db -1 ; end
+
+GameCornerRocketExitScript:
+	ld a, [wd730]
+	bit 0, a
+	ret nz
+	xor a
+	ld [wJoyIgnore], a
+	ld a, HS_GAME_CORNER_ROCKET
+	ld [wMissableObjectIndex], a
+	predef HideObject
+	ld hl, wCurrentMapScriptFlags
+	set 5, [hl]
+	set 6, [hl]
+	ld a, SCRIPT_GAMECORNER_DEFAULT
+	ld [wGameCornerCurScript], a
+	ret
+
+GameCorner_TextPointers:
+	def_text_pointers
+	dw_const GameCornerBeauty1Text,           TEXT_GAMECORNER_BEAUTY1
+	dw_const GameCornerClerk1Text,            TEXT_GAMECORNER_CLERK1
+	dw_const GameCornerMiddleAgedMan1Text,    TEXT_GAMECORNER_MIDDLE_AGED_MAN1
+	dw_const GameCornerBeauty2Text,           TEXT_GAMECORNER_BEAUTY2
+	dw_const GameCornerFishingGuruText,       TEXT_GAMECORNER_FISHING_GURU
+	dw_const GameCornerMiddleAgedWomanText,   TEXT_GAMECORNER_MIDDLE_AGED_WOMAN
+	dw_const GameCornerGymGuideText,          TEXT_GAMECORNER_GYM_GUIDE
+	dw_const GameCornerGamblerText,           TEXT_GAMECORNER_GAMBLER
+	dw_const GameCornerClerk2Text,            TEXT_GAMECORNER_CLERK2
+	dw_const GameCornerGentlemanText,         TEXT_GAMECORNER_GENTLEMAN
+	dw_const GameCornerRocketText,            TEXT_GAMECORNER_ROCKET
+	dw_const GameCornerPosterText,            TEXT_GAMECORNER_POSTER
+	dw_const GameCornerRocketAfterBattleText, TEXT_GAMECORNER_ROCKET_AFTER_BATTLE
+
+GameCornerBeauty1Text:
+	text_far _GameCornerBeauty1Text
+	text_end
+
+GameCornerClerk1Text:
+	text_asm
+	; Show player's coins
+	call GameCornerDrawCoinBox
+	ld hl, .DoYouNeedSomeGameCoins
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .declined
+	; Can only get more coins if you
+	; - have the Coin Case
+	ld b, COIN_CASE
+	call IsItemInBag
+	jr z, .no_coin_case
+	; - have room in the Coin Case for at least 9 coins
+	call Has9990Coins
+	jr nc, .coin_case_full
+	; - have at least 1000 yen
+	xor a
+	ldh [hMoney], a
+	ldh [hMoney + 2], a
+	ld a, $10
+	ldh [hMoney + 1], a
+	call HasEnoughMoney
+	jr nc, .buy_coins
+	ld hl, .CantAffordTheCoins
+	jr .print_ret
+.buy_coins
+	; Spend 1000 yen
+	xor a
+	ldh [hMoney], a
+	ldh [hMoney + 2], a
+	ld a, $10
+	ldh [hMoney + 1], a
+	ld hl, hMoney + 2
+	ld de, wPlayerMoney + 2
+	ld c, $3
+	predef SubBCDPredef
+	; Receive 50 coins
+	xor a
+	ldh [hUnusedCoinsByte], a
+	ldh [hCoins], a
+	ld a, $50
+	ldh [hCoins + 1], a
+	ld de, wPlayerCoins + 1
+	ld hl, hCoins + 1
+	ld c, $2
+	predef AddBCDPredef
+	; Update display
+	call GameCornerDrawCoinBox
+	ld hl, .ThanksHereAre50Coins
+	jr .print_ret
+.declined
+	ld hl, .PleaseComePlaySometime
+	jr .print_ret
+.coin_case_full
+	ld hl, .CoinCaseIsFull
+	jr .print_ret
+.no_coin_case
+	ld hl, .DontHaveCoinCase
+.print_ret
+	call PrintText
+	jp TextScriptEnd
+
+.DoYouNeedSomeGameCoins:
+	text_far _GameCornerClerk1DoYouNeedSomeGameCoinsText
+	text_end
+
+.ThanksHereAre50Coins:
+	text_far _GameCornerClerk1ThanksHereAre50CoinsText
+	text_end
+
+.PleaseComePlaySometime:
+	text_far _GameCornerClerk1PleaseComePlaySometimeText
+	text_end
+
+.CantAffordTheCoins:
+	text_far _GameCornerClerk1CantAffordTheCoinsText
+	text_end
+
+.CoinCaseIsFull:
+	text_far _GameCornerClerk1CoinCaseIsFullText
+	text_end
+
+.DontHaveCoinCase:
+	text_far _GameCornerClerk1DontHaveCoinCaseText
+	text_end
+
+GameCornerMiddleAgedMan1Text:
+	text_far _GameCornerMiddleAgedMan1Text
+	text_end
+
+GameCornerBeauty2Text:
+	text_far _GameCornerBeauty2Text
+	text_end
+
+GameCornerFishingGuruText:
+	text_asm
+	CheckEvent EVENT_GOT_10_COINS
+	jr nz, .alreadyGotNpcCoins
+	ld hl, .WantToPlayText
+	call PrintText
+	ld b, COIN_CASE
+	call IsItemInBag
+	jr z, .dontHaveCoinCase
+	call Has9990Coins
+	jr nc, .coinCaseFull
+	xor a
+	ldh [hUnusedCoinsByte], a
+	ldh [hCoins], a
+	ld a, $10
+	ldh [hCoins + 1], a
+	ld de, wPlayerCoins + 1
+	ld hl, hCoins + 1
+	ld c, $2
+	predef AddBCDPredef
+	SetEvent EVENT_GOT_10_COINS
+	ld a, $1
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	ld hl, .Received10CoinsText
+	jr .print_ret
+.alreadyGotNpcCoins
+	ld hl, .WinsComeAndGoText
+	jr .print_ret
+.coinCaseFull
+	ld hl, .DontNeedMyCoinsText
+	jr .print_ret
+.dontHaveCoinCase
+	ld hl, GameCornerOopsForgotCoinCaseText
+.print_ret
+	call PrintText
+	jp TextScriptEnd
+
+.WantToPlayText:
+	text_far _GameCornerFishingGuruWantToPlayText
+	text_end
+
+.Received10CoinsText:
+	text_far _GameCornerFishingGuruReceived10CoinsText
+	sound_get_item_1
+	text_end
+
+.DontNeedMyCoinsText:
+	text_far _GameCornerFishingGuruDontNeedMyCoinsText
+	text_end
+
+.WinsComeAndGoText:
+	text_far _GameCornerFishingGuruWinsComeAndGoText
+	text_end
+
+GameCornerMiddleAgedWomanText:
+	text_far _GameCornerMiddleAgedWomanText
+	text_end
+
+GameCornerGymGuideText:
+	text_asm
+	CheckEvent EVENT_BEAT_ERIKA
+	ld hl, GameCornerGymGuideChampInMakingText
+	jr z, .not_defeated
+	ld hl, GameCornerGymGuideTheyOfferRarePokemonText
+.not_defeated
+	call PrintText
+	jp TextScriptEnd
+
+GameCornerGymGuideChampInMakingText:
+	text_far _GameCornerGymGuideChampInMakingText
+	text_end
+
+GameCornerGymGuideTheyOfferRarePokemonText:
+	text_far _GameCornerGymGuideTheyOfferRarePokemonText
+	text_end
+
+GameCornerGamblerText:
+	text_far _GameCornerGamblerText
+	text_end
+
+GameCornerClerk2Text:
+	text_asm
+	CheckEvent EVENT_GOT_20_COINS_2
+	jr nz, .alreadyGotNpcCoins
+	ld hl, .WantSomeCoinsText
+	call PrintText
+	ld b, COIN_CASE
+	call IsItemInBag
+	jr z, .dontHaveCoinCase
+	call Has9990Coins
+	jr nc, .coinCaseFull
+	xor a
+	ldh [hUnusedCoinsByte], a
+	ldh [hCoins], a
+	ld a, $20
+	ldh [hCoins + 1], a
+	ld de, wPlayerCoins + 1
+	ld hl, hCoins + 1
+	ld c, $2
+	predef AddBCDPredef
+	SetEvent EVENT_GOT_20_COINS_2
+	ld hl, .Received20CoinsText
+	jr .print_ret
+.alreadyGotNpcCoins
+	ld hl, .INeedMoreCoinsText
+	jr .print_ret
+.coinCaseFull
+	ld hl, .YouHaveLotsOfCoinsText
+	jr .print_ret
+.dontHaveCoinCase
+	ld hl, GameCornerOopsForgotCoinCaseText
+.print_ret
+	call PrintText
+	jp TextScriptEnd
+
+.WantSomeCoinsText:
+	text_far _GameCornerClerk2WantSomeCoinsText
+	text_end
+
+.Received20CoinsText:
+	text_far _GameCornerClerk2Received20CoinsText
+	sound_get_item_1
+	text_end
+
+.YouHaveLotsOfCoinsText:
+	text_far _GameCornerClerk2YouHaveLotsOfCoinsText
+	text_end
+
+.INeedMoreCoinsText:
+	text_far _GameCornerClerk2INeedMoreCoinsText
+	text_end
+
+GameCornerGentlemanText:
+	text_asm
+	CheckEvent EVENT_GOT_20_COINS
+	jr nz, .alreadyGotNpcCoins
+	ld hl, .ThrowingMeOffText
+	call PrintText
+	ld b, COIN_CASE
+	call IsItemInBag
+	jr z, .dontHaveCoinCase
+	call Has9990Coins
+	jr z, .coinCaseFull
+	xor a
+	ldh [hUnusedCoinsByte], a
+	ldh [hCoins], a
+	ld a, $20
+	ldh [hCoins + 1], a
+	ld de, wPlayerCoins + 1
+	ld hl, hCoins + 1
+	ld c, $2
+	predef AddBCDPredef
+	SetEvent EVENT_GOT_20_COINS
+	ld hl, .Received20CoinsText
+	jr .print_ret
+.alreadyGotNpcCoins
+	ld hl, .CloselyWatchTheReelsText
+	jr .print_ret
+.coinCaseFull
+	ld hl, .YouGotYourOwnCoinsText
+	jr .print_ret
+.dontHaveCoinCase
+	ld hl, GameCornerOopsForgotCoinCaseText
+.print_ret
+	call PrintText
+	jp TextScriptEnd
+
+.ThrowingMeOffText:
+	text_far _GameCornerGentlemanThrowingMeOffText
+	text_end
+
+.Received20CoinsText:
+	text_far _GameCornerGentlemanReceived20CoinsText
+	sound_get_item_1
+	text_end
+
+.YouGotYourOwnCoinsText:
+	text_far _GameCornerGentlemanYouGotYourOwnCoinsText
+	text_end
+
+.CloselyWatchTheReelsText:
+	text_far _GameCornerGentlemanCloselyWatchTheReelsText
+	text_end
+
+GameCornerRocketText:
+	text_asm
+	ld hl, .ImGuardingThisPosterText
+	call PrintText
+	ld hl, wd72d
+	set 6, [hl]
+	set 7, [hl]
+	ld hl, .BattleEndText
+	ld de, .BattleEndText
+	call SaveEndBattleTextPointers
+	ldh a, [hSpriteIndex]
+	ld [wSpriteIndex], a
+	call EngageMapTrainer
+	call InitBattleEnemyParameters
+	xor a
+	ldh [hJoyHeld], a
+	ldh [hJoyPressed], a
+	ldh [hJoyReleased], a
+	ld a, SCRIPT_GAMECORNER_ROCKET_BATTLE
+	ld [wGameCornerCurScript], a
+	jp TextScriptEnd
+
+.ImGuardingThisPosterText:
+	text_far _GameCornerRocketImGuardingThisPosterText
+	text_end
+
+.BattleEndText:
+	text_far _GameCornerRocketBattleEndText
+	text_end
+
+GameCornerRocketAfterBattleText:
+	text_far _GameCornerRocketAfterBattleText
+	text_end
+
+GameCornerPosterText:
+	text_asm
+	ld a, $1
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	ld hl, .SwitchBehindPosterText
+	call PrintText
+	call WaitForSoundToFinish
+	ld a, SFX_GO_INSIDE
+	call PlaySound
+	call WaitForSoundToFinish
+	SetEvent EVENT_FOUND_ROCKET_HIDEOUT
+	ld a, $43
+	ld [wNewTileBlockID], a
+	lb bc, 2, 8
+	predef ReplaceTileBlock
+	jp TextScriptEnd
+
+.SwitchBehindPosterText:
+	text_far _GameCornerPosterSwitchBehindPosterText
+	text_asm
+	ld a, SFX_SWITCH
+	call PlaySound
+	call WaitForSoundToFinish
+	jp TextScriptEnd
+
+GameCornerOopsForgotCoinCaseText:
+	text_far _GameCornerOopsForgotCoinCaseText
+	text_end
+
+GameCornerDrawCoinBox:
+	ld hl, wd730
+	set 6, [hl]
+	hlcoord 11, 0
+	ld b, 5
+	ld c, 7
+	call TextBoxBorder
+	call UpdateSprites
+	hlcoord 12, 1
+	ld b, 4
+	ld c, 7
+	call ClearScreenArea
+	hlcoord 12, 2
+	ld de, GameCornerMoneyText
+	call PlaceString
+	hlcoord 12, 3
+	ld de, GameCornerBlankText1
+	call PlaceString
+	hlcoord 12, 3
+	ld de, wPlayerMoney
+	ld c, 3 | MONEY_SIGN | LEADING_ZEROES
+	call PrintBCDNumber
+	hlcoord 12, 4
+	ld de, GameCornerCoinText
+	call PlaceString
+	hlcoord 12, 5
+	ld de, GameCornerBlankText2
+	call PlaceString
+	hlcoord 15, 5
+	ld de, wPlayerCoins
+	ld c, $82
+	call PrintBCDNumber
+	ld hl, wd730
+	res 6, [hl]
+	ret
+
+GameCornerMoneyText:
+	db "MONEY@"
+
+GameCornerCoinText:
+	db "COIN@"
+
+GameCornerBlankText1:
+	db "       @"
+
+GameCornerBlankText2:
+	db "       @"
+
+Has9990Coins:
+	ld a, $99
+	ldh [hCoins], a
+	ld a, $90
+	ldh [hCoins + 1], a
+	jp HasEnoughCoins
