@@ -1,0 +1,206 @@
+{
+  "name": "SafariZoneNorth",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\FOREST.json",
+  "map_blocks": "Pokemon\\map_blocks\\SafariZoneNorth.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "safarizonenorth_protein"
+    },
+    {
+      "name": "safarizonenorth_tm_skull_bash"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 25,
+      "y": 1,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonenorth_protein"
+    },
+    {
+      "x": 19,
+      "y": 7,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonenorth_tm_skull_bash"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 8,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 9,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 20,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 21,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 39,
+      "y": 30,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 39,
+      "y": 31,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 35,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 36,
+      "y": 4,
+      "text": "text_safarizonenorth_rest_house_sign"
+    },
+    {
+      "x": 4,
+      "y": 25,
+      "text": "text_safarizonenorth_trainer_tips_1"
+    },
+    {
+      "x": 13,
+      "y": 31,
+      "text": "text_safarizonenorth_sign"
+    },
+    {
+      "x": 19,
+      "y": 33,
+      "text": "text_safarizonenorth_trainer_tips_2"
+    },
+    {
+      "x": 26,
+      "y": 28,
+      "text": "text_safarizonenorth_trainer_tips_3"
+    }
+  ],
+  "texts": [
+    {
+      "name": "SafariZoneNorthRestHouseSign",
+      "values": [
+        {
+          "text": "REST HOUSE",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthTrainerTips1",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "The SECRET HOUSE",
+          "type": "para"
+        },
+        {
+          "text": "is still ahead!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthSign",
+      "values": [
+        {
+          "text": "AREA 2",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthTrainerTips2",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "#MON hide in",
+          "type": "para"
+        },
+        {
+          "text": "tall grass!",
+          "type": "line"
+        },
+        {
+          "text": "Zigzag through",
+          "type": "para"
+        },
+        {
+          "text": "grassy areas to",
+          "type": "line"
+        },
+        {
+          "text": "flush them out.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthTrainerTips3",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Win a free HM for",
+          "type": "para"
+        },
+        {
+          "text": "finding the",
+          "type": "line"
+        },
+        {
+          "text": "SECRET HOUSE!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

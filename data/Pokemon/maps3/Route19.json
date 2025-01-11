@@ -1,0 +1,604 @@
+{
+  "name": "SEA ROUTE 19",
+  "width": 10,
+  "height": 27,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route19.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\fuchsiacity.json",
+      "offset": "-5"
+    },
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\route20.json",
+      "offset": "18"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route19_cooltrainer_m1"
+    },
+    {
+      "name": "route19_cooltrainer_m2"
+    },
+    {
+      "name": "route19_swimmer1"
+    },
+    {
+      "name": "route19_swimmer2"
+    },
+    {
+      "name": "route19_swimmer3"
+    },
+    {
+      "name": "route19_swimmer4"
+    },
+    {
+      "name": "route19_swimmer5"
+    },
+    {
+      "name": "route19_swimmer6"
+    },
+    {
+      "name": "route19_swimmer7"
+    },
+    {
+      "name": "route19_swimmer8"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_cooltrainer_m1"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_cooltrainer_m2"
+    },
+    {
+      "x": 13,
+      "y": 25,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_swimmer1"
+    },
+    {
+      "x": 4,
+      "y": 27,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route19_swimmer2"
+    },
+    {
+      "x": 16,
+      "y": 31,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route19_swimmer3"
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route19_swimmer4"
+    },
+    {
+      "x": 8,
+      "y": 43,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_swimmer5"
+    },
+    {
+      "x": 11,
+      "y": 43,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route19_swimmer6"
+    },
+    {
+      "x": 9,
+      "y": 42,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route19_swimmer7"
+    },
+    {
+      "x": 10,
+      "y": 44,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route19_swimmer8"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 11,
+      "y": 9,
+      "text": "text_route19_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route19CooltrainerM1Battle",
+      "values": [
+        {
+          "text": "Have to warm up",
+          "type": "text"
+        },
+        {
+          "text": "before my swim!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19CooltrainerM1EndBattle",
+      "values": [
+        {
+          "text": "All",
+          "type": "text"
+        },
+        {
+          "text": "warmed up!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19CooltrainerM1AfterBattle",
+      "values": [
+        {
+          "text": "Thanks, kid! I'm",
+          "type": "text"
+        },
+        {
+          "text": "ready for a swim!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "Wait! You'll have",
+          "type": "text"
+        },
+        {
+          "text": "a heart attack!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "Ooh!",
+          "type": "text"
+        },
+        {
+          "text": "That's chilly!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "Watch out for",
+          "type": "text"
+        },
+        {
+          "text": "TENTACOOL!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer1Battle",
+      "values": [
+        {
+          "text": "I love swimming!",
+          "type": "text"
+        },
+        {
+          "text": "What about you?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer1EndBattle",
+      "values": [
+        {
+          "text": "Belly",
+          "type": "text"
+        },
+        {
+          "text": "flop!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer1AfterBattle",
+      "values": [
+        {
+          "text": "I can beat #MON",
+          "type": "text"
+        },
+        {
+          "text": "at swimming!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer2Battle",
+      "values": [
+        {
+          "text": "What's beyond the",
+          "type": "text"
+        },
+        {
+          "text": "horizon?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer2EndBattle",
+      "values": [
+        {
+          "text": "Glub!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer2AfterBattle",
+      "values": [
+        {
+          "text": "I see a couple of",
+          "type": "text"
+        },
+        {
+          "text": "islands!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer3Battle",
+      "values": [
+        {
+          "text": "I tried diving",
+          "type": "text"
+        },
+        {
+          "text": "for #MON, but",
+          "type": "line"
+        },
+        {
+          "text": "it was a no go!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer3EndBattle",
+      "values": [
+        {
+          "text": "Help!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer3AfterBattle",
+      "values": [
+        {
+          "text": "You have to fish",
+          "type": "text"
+        },
+        {
+          "text": "for sea #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer4Battle",
+      "values": [
+        {
+          "text": "I look at the",
+          "type": "text"
+        },
+        {
+          "text": "sea to forget!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer4EndBattle",
+      "values": [
+        {
+          "text": "Ooh!",
+          "type": "text"
+        },
+        {
+          "text": "Traumatic!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer4AfterBattle",
+      "values": [
+        {
+          "text": "I'm looking at the",
+          "type": "text"
+        },
+        {
+          "text": "sea to forget!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer5Battle",
+      "values": [
+        {
+          "text": "Oh, I just love",
+          "type": "text"
+        },
+        {
+          "text": "your ride! Can I",
+          "type": "line"
+        },
+        {
+          "text": "have it if I win?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer5EndBattle",
+      "values": [
+        {
+          "text": "Oh!",
+          "type": "text"
+        },
+        {
+          "text": "I lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer5AfterBattle",
+      "values": [
+        {
+          "text": "It's still a long",
+          "type": "text"
+        },
+        {
+          "text": "way to go to",
+          "type": "line"
+        },
+        {
+          "text": "SEAFOAM ISLANDS.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer6Battle",
+      "values": [
+        {
+          "text": "Swimming's great!",
+          "type": "text"
+        },
+        {
+          "text": "Sunburns aren't!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer6EndBattle",
+      "values": [
+        {
+          "text": "Shocker!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer6AfterBattle",
+      "values": [
+        {
+          "text": "My boy friend",
+          "type": "text"
+        },
+        {
+          "text": "wanted to swim to",
+          "type": "line"
+        },
+        {
+          "text": "SEAFOAM ISLANDS.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer7Battle",
+      "values": [
+        {
+          "text": "These waters are",
+          "type": "text"
+        },
+        {
+          "text": "treacherous!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer7EndBattle",
+      "values": [
+        {
+          "text": "Ooh!",
+          "type": "text"
+        },
+        {
+          "text": "Dangerous!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer7AfterBattle",
+      "values": [
+        {
+          "text": "I got a cramp!",
+          "type": "text"
+        },
+        {
+          "text": "Glub, glub...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer8Battle",
+      "values": [
+        {
+          "text": "I swam here, but",
+          "type": "text"
+        },
+        {
+          "text": "I'm tired.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer8EndBattle",
+      "values": [
+        {
+          "text": "I'm",
+          "type": "text"
+        },
+        {
+          "text": "exhausted...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route19Swimmer8AfterBattle",
+      "values": [
+        {
+          "text": "LAPRAS is so big,",
+          "type": "text"
+        },
+        {
+          "text": "it must keep you",
+          "type": "line"
+        },
+        {
+          "text": "dry on water.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route19Sign",
+      "values": [
+        {
+          "text": "SEA ROUTE 19",
+          "type": "text"
+        },
+        {
+          "text": "FUCHSIA CITY -",
+          "type": "line"
+        },
+        {
+          "text": "SEAFOAM ISLANDS",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route19_default",
+    "script_route19_start_battle",
+    "script_route19_end_battle"
+  ]
+}

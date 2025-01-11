@@ -1,0 +1,232 @@
+{
+  "name": "PokemonMansionB1F",
+  "width": 15,
+  "height": 14,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonMansionB1F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemonmansionb1f_burglar"
+    },
+    {
+      "name": "pokemonmansionb1f_scientist"
+    },
+    {
+      "name": "pokemonmansionb1f_rare_candy"
+    },
+    {
+      "name": "pokemonmansionb1f_full_restore"
+    },
+    {
+      "name": "pokemonmansionb1f_tm_blizzard"
+    },
+    {
+      "name": "pokemonmansionb1f_tm_solarbeam"
+    },
+    {
+      "name": "pokemonmansionb1f_diary"
+    },
+    {
+      "name": "pokemonmansionb1f_secret_key"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 16,
+      "y": 23,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_burglar"
+    },
+    {
+      "x": 27,
+      "y": 11,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pokemonmansionb1f_scientist"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_rare_candy"
+    },
+    {
+      "x": 1,
+      "y": 22,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_full_restore"
+    },
+    {
+      "x": 19,
+      "y": 25,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_tm_blizzard"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_tm_solarbeam"
+    },
+    {
+      "x": 16,
+      "y": 20,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_diary"
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansionb1f_secret_key"
+    }
+  ],
+  "warps": [
+    {
+      "x": 23,
+      "y": 22,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "PokemonMansionB1FBurglarBattle",
+      "values": [
+        {
+          "text": "Uh-oh. Where am",
+          "type": "text"
+        },
+        {
+          "text": "I now?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FBurglarEndBattle",
+      "values": [
+        {
+          "text": "Awooh!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FBurglarAfterBattle",
+      "values": [
+        {
+          "text": "You can find stuff",
+          "type": "text"
+        },
+        {
+          "text": "lying around.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistBattle",
+      "values": [
+        {
+          "text": "This place is",
+          "type": "text"
+        },
+        {
+          "text": "ideal for a lab.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistEndBattle",
+      "values": [
+        {
+          "text": "What",
+          "type": "text"
+        },
+        {
+          "text": "was that for?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistAfterBattle",
+      "values": [
+        {
+          "text": "I like it here!",
+          "type": "text"
+        },
+        {
+          "text": "It's conducive to",
+          "type": "line"
+        },
+        {
+          "text": "my studies!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FDiary",
+      "values": [
+        {
+          "text": "Diary; Sept. 1",
+          "type": "text"
+        },
+        {
+          "text": "MEWTWO is far too",
+          "type": "line"
+        },
+        {
+          "text": "powerful.",
+          "type": "cont"
+        },
+        {
+          "text": "We have failed to",
+          "type": "para"
+        },
+        {
+          "text": "curb its vicious",
+          "type": "line"
+        },
+        {
+          "text": "tendencies...",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_pokemonmansionb1f_default",
+    "script_pokemonmansionb1f_start_battle",
+    "script_pokemonmansionb1f_end_battle"
+  ]
+}

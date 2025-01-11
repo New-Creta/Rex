@@ -1,0 +1,168 @@
+{
+  "name": "BrunosRoom",
+  "width": 5,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\BrunosRoom.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "brunosroom_bruno"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_bruno",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_brunosroom_bruno"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "BrunoBeforeBattle",
+      "values": [
+        {
+          "text": "I am BRUNO of",
+          "type": "text"
+        },
+        {
+          "text": "the ELITE FOUR!",
+          "type": "line"
+        },
+        {
+          "text": "Through rigorous",
+          "type": "para"
+        },
+        {
+          "text": "training, people",
+          "type": "line"
+        },
+        {
+          "text": "and #MON can",
+          "type": "cont"
+        },
+        {
+          "text": "become stronger!",
+          "type": "cont"
+        },
+        {
+          "text": "I've weight",
+          "type": "para"
+        },
+        {
+          "text": "trained with",
+          "type": "line"
+        },
+        {
+          "text": "my #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "para"
+        },
+        {
+          "text": "We will grind you",
+          "type": "para"
+        },
+        {
+          "text": "down with our",
+          "type": "line"
+        },
+        {
+          "text": "superior power!",
+          "type": "cont"
+        },
+        {
+          "text": "Hoo hah!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "BrunoEndBattle",
+      "values": [
+        {
+          "text": "Why?",
+          "type": "text"
+        },
+        {
+          "text": "How could I lose?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BrunoAfterBattle",
+      "values": [
+        {
+          "text": "My job is done!",
+          "type": "text"
+        },
+        {
+          "text": "Go face your next",
+          "type": "line"
+        },
+        {
+          "text": "challenge!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BrunosRoomBrunoDontRunAway",
+      "values": [
+        {
+          "text": "Someone's voice:",
+          "type": "text"
+        },
+        {
+          "text": "Don't run away!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_brunosroom_default",
+    "script_brunosroom_bruno_start_battle",
+    "script_brunosroom_bruno_end_battle",
+    "script_brunosroom_player_is_moving",
+    "script_brunosroom_noop"
+  ]
+}

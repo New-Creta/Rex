@@ -1,0 +1,745 @@
+{
+  "name": "CinnabarGym",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarGym.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabargym_blaine"
+    },
+    {
+      "name": "cinnabargym_super_nerd1"
+    },
+    {
+      "name": "cinnabargym_super_nerd2"
+    },
+    {
+      "name": "cinnabargym_super_nerd3"
+    },
+    {
+      "name": "cinnabargym_super_nerd4"
+    },
+    {
+      "name": "cinnabargym_super_nerd5"
+    },
+    {
+      "name": "cinnabargym_super_nerd6"
+    },
+    {
+      "name": "cinnabargym_super_nerd7"
+    },
+    {
+      "name": "cinnabargym_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_blaine"
+    },
+    {
+      "x": 17,
+      "y": 2,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd1"
+    },
+    {
+      "x": 17,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd2"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd3"
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd4"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd5"
+    },
+    {
+      "x": 3,
+      "y": 14,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd6"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd7"
+    },
+    {
+      "x": 16,
+      "y": 13,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 16,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "CinnabarGymBlainePreBattle",
+      "values": [
+        {
+          "text": "Hah!",
+          "type": "text"
+        },
+        {
+          "text": "I am BLAINE! I",
+          "type": "para"
+        },
+        {
+          "text": "am the LEADER of",
+          "type": "line"
+        },
+        {
+          "text": "CINNABAR GYM!",
+          "type": "cont"
+        },
+        {
+          "text": "My fiery #MON",
+          "type": "para"
+        },
+        {
+          "text": "will incinerate",
+          "type": "line"
+        },
+        {
+          "text": "all challengers!",
+          "type": "cont"
+        },
+        {
+          "text": "Hah! You better",
+          "type": "para"
+        },
+        {
+          "text": "have BURN HEAL!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlaineReceivedVolcanoBadge",
+      "values": [
+        {
+          "text": "I have",
+          "type": "text"
+        },
+        {
+          "text": "burnt out!",
+          "type": "line"
+        },
+        {
+          "text": "You have earned",
+          "type": "para"
+        },
+        {
+          "text": "the VOLCANOBADGE!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlainePostBattleAdvice",
+      "values": [
+        {
+          "text": "FIRE BLAST is the",
+          "type": "text"
+        },
+        {
+          "text": "ultimate fire",
+          "type": "line"
+        },
+        {
+          "text": "technique!",
+          "type": "cont"
+        },
+        {
+          "text": "Don't waste it on",
+          "type": "para"
+        },
+        {
+          "text": "water #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlaineVolcanoBadgeInfo",
+      "values": [
+        {
+          "text": "Hah!",
+          "type": "text"
+        },
+        {
+          "text": "The VOLCANOBADGE",
+          "type": "para"
+        },
+        {
+          "text": "heightens the",
+          "type": "line"
+        },
+        {
+          "text": "SPECIAL abilities",
+          "type": "cont"
+        },
+        {
+          "text": "of your #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Here, you can",
+          "type": "para"
+        },
+        {
+          "text": "have this too!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlaineReceivedTM38",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlaineTM38Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "TM38 contains",
+          "type": "para"
+        },
+        {
+          "text": "FIRE BLAST!",
+          "type": "line"
+        },
+        {
+          "text": "Teach it to fire-",
+          "type": "para"
+        },
+        {
+          "text": "type #MON!",
+          "type": "line"
+        },
+        {
+          "text": "CHARMELEON or",
+          "type": "para"
+        },
+        {
+          "text": "PONYTA would be",
+          "type": "line"
+        },
+        {
+          "text": "good bets!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymBlaineTM38NoRoom",
+      "values": [
+        {
+          "text": "Make room for my",
+          "type": "text"
+        },
+        {
+          "text": "gift!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd1Battle",
+      "values": [
+        {
+          "text": "Do you know how",
+          "type": "text"
+        },
+        {
+          "text": "hot #MON fire",
+          "type": "line"
+        },
+        {
+          "text": "breath can get?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd1EndBattle",
+      "values": [
+        {
+          "text": "Yow!",
+          "type": "text"
+        },
+        {
+          "text": "Hot, hot, hot!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd1AfterBattle",
+      "values": [
+        {
+          "text": "Fire, or to be",
+          "type": "text"
+        },
+        {
+          "text": "more precise,",
+          "type": "line"
+        },
+        {
+          "text": "combustion...",
+          "type": "cont"
+        },
+        {
+          "text": "Blah, blah, blah,",
+          "type": "para"
+        },
+        {
+          "text": "blah...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd2Battle",
+      "values": [
+        {
+          "text": "I was a thief, but",
+          "type": "text"
+        },
+        {
+          "text": "I became straight",
+          "type": "line"
+        },
+        {
+          "text": "as a trainer!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd2EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "surrender!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd2AfterBattle",
+      "values": [
+        {
+          "text": "I can't help",
+          "type": "text"
+        },
+        {
+          "text": "stealing other",
+          "type": "line"
+        },
+        {
+          "text": "people's #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd3Battle",
+      "values": [
+        {
+          "text": "You can't win!",
+          "type": "text"
+        },
+        {
+          "text": "I have studied",
+          "type": "line"
+        },
+        {
+          "text": "#MON totally!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd3EndBattle",
+      "values": [
+        {
+          "text": "Waah!",
+          "type": "text"
+        },
+        {
+          "text": "My studies!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd3AfterBattle",
+      "values": [
+        {
+          "text": "My theories are",
+          "type": "text"
+        },
+        {
+          "text": "too complicated",
+          "type": "line"
+        },
+        {
+          "text": "for you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd4Battle",
+      "values": [
+        {
+          "text": "I just like using",
+          "type": "text"
+        },
+        {
+          "text": "fire #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd4EndBattle",
+      "values": [
+        {
+          "text": "Too hot",
+          "type": "text"
+        },
+        {
+          "text": "to handle!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd4AfterBattle",
+      "values": [
+        {
+          "text": "I wish there was",
+          "type": "text"
+        },
+        {
+          "text": "a thief #MON!",
+          "type": "line"
+        },
+        {
+          "text": "I'd use that!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd5Battle",
+      "values": [
+        {
+          "text": "I know why BLAINE",
+          "type": "text"
+        },
+        {
+          "text": "became a trainer!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd5EndBattle",
+      "values": [
+        {
+          "text": "Ow!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd5AfterBattle",
+      "values": [
+        {
+          "text": "BLAINE was lost",
+          "type": "text"
+        },
+        {
+          "text": "in the mountains",
+          "type": "line"
+        },
+        {
+          "text": "when a fiery bird",
+          "type": "cont"
+        },
+        {
+          "text": "#MON appeared.",
+          "type": "cont"
+        },
+        {
+          "text": "Its light enabled",
+          "type": "para"
+        },
+        {
+          "text": "BLAINE to find",
+          "type": "line"
+        },
+        {
+          "text": "his way down!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd6Battle",
+      "values": [
+        {
+          "text": "I've been to many",
+          "type": "text"
+        },
+        {
+          "text": "GYMs, but this is",
+          "type": "line"
+        },
+        {
+          "text": "my favorite!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd6EndBattle",
+      "values": [
+        {
+          "text": "Yowza!",
+          "type": "text"
+        },
+        {
+          "text": "Too hot!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd6AfterBattle",
+      "values": [
+        {
+          "text": "Us fire #MON",
+          "type": "text"
+        },
+        {
+          "text": "fans like PONYTA",
+          "type": "line"
+        },
+        {
+          "text": "and NINETALES!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd7Battle",
+      "values": [
+        {
+          "text": "Fire is weak",
+          "type": "text"
+        },
+        {
+          "text": "against H2O!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd7EndBattle",
+      "values": [
+        {
+          "text": "Oh!",
+          "type": "text"
+        },
+        {
+          "text": "Snuffed out!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymSuperNerd7AfterBattle",
+      "values": [
+        {
+          "text": "Water beats fire!",
+          "type": "text"
+        },
+        {
+          "text": "But, fire melts",
+          "type": "line"
+        },
+        {
+          "text": "ice #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymGymGuideChampInMaking",
+      "values": [
+        {
+          "text": "Yo! Champ in",
+          "type": "text"
+        },
+        {
+          "text": "making!",
+          "type": "line"
+        },
+        {
+          "text": "The hot-headed",
+          "type": "para"
+        },
+        {
+          "text": "BLAINE is a fire",
+          "type": "line"
+        },
+        {
+          "text": "#MON pro!",
+          "type": "cont"
+        },
+        {
+          "text": "Douse his spirits",
+          "type": "para"
+        },
+        {
+          "text": "with water!",
+          "type": "line"
+        },
+        {
+          "text": "You better take",
+          "type": "para"
+        },
+        {
+          "text": "some BURN HEALs!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarGymGymGuideBeatBlaine",
+      "values": [
+        {
+          "text": "<PLAYER>! You beat",
+          "type": "text"
+        },
+        {
+          "text": "that fire brand!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_cinnabargym_default",
+    "script_cinnabargym_get_opponent_text",
+    "script_cinnabargym_open_gate",
+    "script_cinnabargym_blaine_post_battle"
+  ]
+}

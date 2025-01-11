@@ -1,0 +1,263 @@
+{
+  "name": "SilphCo3F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCo3F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "silphco3f_silph_worker_m"
+    },
+    {
+      "name": "silphco3f_rocket"
+    },
+    {
+      "name": "silphco3f_scientist"
+    },
+    {
+      "name": "silphco3f_hyper_potion"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 24,
+      "y": 8,
+      "sprite": "sprite_silph_worker_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_silphco3f_silph_worker_m"
+    },
+    {
+      "x": 20,
+      "y": 7,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_silphco3f_rocket"
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco3f_scientist"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_silphco3f_hyper_potion"
+    }
+  ],
+  "warps": [
+    {
+      "x": 26,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 24,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 20,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 23,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 10
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 3,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 27,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 27,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SilphCo3FSilphWorkerMWhatShouldIDo",
+      "values": [
+        {
+          "text": "I work for SILPH.",
+          "type": "text"
+        },
+        {
+          "text": "What should I do?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FSilphWorkerMYouSavedUs",
+      "values": [
+        {
+          "text": "<PLAYER>! You and",
+          "type": "text"
+        },
+        {
+          "text": "your #MON",
+          "type": "line"
+        },
+        {
+          "text": "saved us!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FRocketBattle",
+      "values": [
+        {
+          "text": "Quit messing with",
+          "type": "text"
+        },
+        {
+          "text": "us, kid!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FRocketEndBattle",
+      "values": [
+        {
+          "text": "I give",
+          "type": "text"
+        },
+        {
+          "text": "up!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FRocketAfterBattle",
+      "values": [
+        {
+          "text": "A hint? You can",
+          "type": "text"
+        },
+        {
+          "text": "open doors with a",
+          "type": "line"
+        },
+        {
+          "text": "CARD KEY!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FScientistBattle",
+      "values": [
+        {
+          "text": "I support TEAM",
+          "type": "text"
+        },
+        {
+          "text": "ROCKET more than",
+          "type": "line"
+        },
+        {
+          "text": "I support SILPH!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FScientistEndBattle",
+      "values": [
+        {
+          "text": "You",
+          "type": "text"
+        },
+        {
+          "text": "really got me!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo3FScientistAfterBattle",
+      "values": [
+        {
+          "text": "Humph...",
+          "type": "text"
+        },
+        {
+          "text": "TEAM ROCKET said",
+          "type": "para"
+        },
+        {
+          "text": "that if I helped",
+          "type": "line"
+        },
+        {
+          "text": "them, they'd let",
+          "type": "cont"
+        },
+        {
+          "text": "me study #MON!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_silphco3f_default",
+    "script_silphco3f_start_battle",
+    "script_silphco3f_end_battle"
+  ]
+}

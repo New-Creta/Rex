@@ -1,0 +1,288 @@
+{
+  "name": "SSAnneKitchen",
+  "width": 7,
+  "height": 8,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnneKitchen.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssannekitchen_cook1"
+    },
+    {
+      "name": "ssannekitchen_cook2"
+    },
+    {
+      "name": "ssannekitchen_cook3"
+    },
+    {
+      "name": "ssannekitchen_cook4"
+    },
+    {
+      "name": "ssannekitchen_cook5"
+    },
+    {
+      "name": "ssannekitchen_cook6"
+    },
+    {
+      "name": "ssannekitchen_cook7"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 1,
+      "y": 8,
+      "sprite": "sprite_cook",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ssannekitchen_cook1"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "sprite": "sprite_cook",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ssannekitchen_cook2"
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "sprite": "sprite_cook",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ssannekitchen_cook3"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "sprite": "sprite_cook",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssannekitchen_cook4"
+    },
+    {
+      "x": 13,
+      "y": 8,
+      "sprite": "sprite_cook",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssannekitchen_cook5"
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "sprite": "sprite_cook",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssannekitchen_cook6"
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "sprite": "sprite_cook",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssannekitchen_cook7"
+    }
+  ],
+  "warps": [
+    {
+      "x": 6,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 11
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SSAnneKitchenCook1",
+      "values": [
+        {
+          "text": "You, mon petit!",
+          "type": "text"
+        },
+        {
+          "text": "We're busy here!",
+          "type": "line"
+        },
+        {
+          "text": "Out of the way!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook2",
+      "values": [
+        {
+          "text": "I saw an odd ball",
+          "type": "text"
+        },
+        {
+          "text": "in the trash.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook3",
+      "values": [
+        {
+          "text": "I'm so busy I'm",
+          "type": "text"
+        },
+        {
+          "text": "getting dizzy!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook4",
+      "values": [
+        {
+          "text": "Hum-de-hum-de-",
+          "type": "text"
+        },
+        {
+          "text": "ho...",
+          "type": "line"
+        },
+        {
+          "text": "I peel spuds",
+          "type": "para"
+        },
+        {
+          "text": "every day!",
+          "type": "line"
+        },
+        {
+          "text": "Hum-hum...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook5",
+      "values": [
+        {
+          "text": "Did you hear about",
+          "type": "text"
+        },
+        {
+          "text": "SNORLAX?",
+          "type": "line"
+        },
+        {
+          "text": "All it does is",
+          "type": "para"
+        },
+        {
+          "text": "eat and sleep!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook6",
+      "values": [
+        {
+          "text": "Snivel...Sniff...",
+          "type": "text"
+        },
+        {
+          "text": "I only get to",
+          "type": "para"
+        },
+        {
+          "text": "peel onions...",
+          "type": "line"
+        },
+        {
+          "text": "Snivel...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook7MainCourseIs",
+      "values": [
+        {
+          "text": "Er-hem! Indeed I",
+          "type": "text"
+        },
+        {
+          "text": "am le CHEF!",
+          "type": "line"
+        },
+        {
+          "text": "Le main course is",
+          "type": "para"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook7SalmonDuSalad",
+      "values": [
+        {
+          "text": "Salmon du Salad!",
+          "type": "text"
+        },
+        {
+          "text": "Les guests may",
+          "type": "para"
+        },
+        {
+          "text": "gripe it's fish",
+          "type": "line"
+        },
+        {
+          "text": "again, however!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook7EelsAuBarbecue",
+      "values": [
+        {
+          "text": "Eels au Barbecue!",
+          "type": "text"
+        },
+        {
+          "text": "Les guests will",
+          "type": "para"
+        },
+        {
+          "text": "mutiny, I fear.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneKitchenCook7PrimeBeefSteak",
+      "values": [
+        {
+          "text": "Prime Beef Steak!",
+          "type": "text"
+        },
+        {
+          "text": "But, have I enough",
+          "type": "para"
+        },
+        {
+          "text": "fillets du beef?",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

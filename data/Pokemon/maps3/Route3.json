@@ -1,0 +1,539 @@
+{
+  "name": "ROUTE 3",
+  "width": 35,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route3.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\route4.json",
+      "offset": "25"
+    },
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\pewtercity.json",
+      "offset": "-4"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route3_super_nerd"
+    },
+    {
+      "name": "route3_youngster1"
+    },
+    {
+      "name": "route3_youngster2"
+    },
+    {
+      "name": "route3_cooltrainer_f1"
+    },
+    {
+      "name": "route3_youngster3"
+    },
+    {
+      "name": "route3_cooltrainer_f2"
+    },
+    {
+      "name": "route3_youngster4"
+    },
+    {
+      "name": "route3_youngster5"
+    },
+    {
+      "name": "route3_cooltrainer_f3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 57,
+      "y": 11,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route3_super_nerd"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route3_youngster1"
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route3_youngster2"
+    },
+    {
+      "x": 16,
+      "y": 9,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route3_cooltrainer_f1"
+    },
+    {
+      "x": 19,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route3_youngster3"
+    },
+    {
+      "x": 23,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route3_cooltrainer_f2"
+    },
+    {
+      "x": 22,
+      "y": 9,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route3_youngster4"
+    },
+    {
+      "x": 24,
+      "y": 6,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route3_youngster5"
+    },
+    {
+      "x": 33,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route3_cooltrainer_f3"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 59,
+      "y": 9,
+      "text": "10;route3signtext"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route3Youngster1Battle",
+      "values": [
+        {
+          "text": "Hey! I met you in",
+          "type": "text"
+        },
+        {
+          "text": "VIRIDIAN FOREST!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster1EndBattle",
+      "values": [
+        {
+          "text": "You",
+          "type": "text"
+        },
+        {
+          "text": "beat me again!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster1AfterBattle",
+      "values": [
+        {
+          "text": "There are other",
+          "type": "text"
+        },
+        {
+          "text": "kinds of #MON",
+          "type": "line"
+        },
+        {
+          "text": "than those found",
+          "type": "cont"
+        },
+        {
+          "text": "in the forest!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster2Battle",
+      "values": [
+        {
+          "text": "Hi! I like shorts!",
+          "type": "text"
+        },
+        {
+          "text": "They're comfy and",
+          "type": "line"
+        },
+        {
+          "text": "easy to wear!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster2EndBattle",
+      "values": [
+        {
+          "text": "I don't",
+          "type": "text"
+        },
+        {
+          "text": "believe it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster2AfterBattle",
+      "values": [
+        {
+          "text": "Are you storing",
+          "type": "text"
+        },
+        {
+          "text": "your #MON on",
+          "type": "line"
+        },
+        {
+          "text": "PC? Each BOX can",
+          "type": "cont"
+        },
+        {
+          "text": "hold 20 #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF1Battle",
+      "values": [
+        {
+          "text": "You looked at me,",
+          "type": "text"
+        },
+        {
+          "text": "didn't you?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF1EndBattle",
+      "values": [
+        {
+          "text": "You're",
+          "type": "text"
+        },
+        {
+          "text": "mean!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF1AfterBattle",
+      "values": [
+        {
+          "text": "Quit staring if",
+          "type": "text"
+        },
+        {
+          "text": "you don't want to",
+          "type": "line"
+        },
+        {
+          "text": "fight!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster3Battle",
+      "values": [
+        {
+          "text": "Are you a trainer?",
+          "type": "text"
+        },
+        {
+          "text": "Let's fight!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster3EndBattle",
+      "values": [
+        {
+          "text": "If I",
+          "type": "text"
+        },
+        {
+          "text": "had new #MON I",
+          "type": "line"
+        },
+        {
+          "text": "would've won!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster3AfterBattle",
+      "values": [
+        {
+          "text": "If a #MON BOX",
+          "type": "text"
+        },
+        {
+          "text": "on the PC gets",
+          "type": "line"
+        },
+        {
+          "text": "full, just switch",
+          "type": "cont"
+        },
+        {
+          "text": "to another BOX!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF2Battle",
+      "values": [
+        {
+          "text": "That look you",
+          "type": "text"
+        },
+        {
+          "text": "gave me, it's so",
+          "type": "line"
+        },
+        {
+          "text": "intriguing!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "Be nice!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "Avoid fights by",
+          "type": "text"
+        },
+        {
+          "text": "not letting",
+          "type": "line"
+        },
+        {
+          "text": "people see you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster4Battle",
+      "values": [
+        {
+          "text": "Hey! You're not",
+          "type": "text"
+        },
+        {
+          "text": "wearing shorts!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster4EndBattle",
+      "values": [
+        {
+          "text": "Lost!",
+          "type": "text"
+        },
+        {
+          "text": "Lost! Lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster4AfterBattle",
+      "values": [
+        {
+          "text": "I always wear",
+          "type": "text"
+        },
+        {
+          "text": "shorts, even in",
+          "type": "line"
+        },
+        {
+          "text": "winter!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster5Battle",
+      "values": [
+        {
+          "text": "You can fight my",
+          "type": "text"
+        },
+        {
+          "text": "new #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster5EndBattle",
+      "values": [
+        {
+          "text": "Done",
+          "type": "text"
+        },
+        {
+          "text": "like dinner!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3Youngster5AfterBattle",
+      "values": [
+        {
+          "text": "Trained #MON",
+          "type": "text"
+        },
+        {
+          "text": "are stronger than",
+          "type": "line"
+        },
+        {
+          "text": "the wild ones!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF3Battle",
+      "values": [
+        {
+          "text": "Eek! Did you",
+          "type": "text"
+        },
+        {
+          "text": "touch me?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF3EndBattle",
+      "values": [
+        {
+          "text": "That's it?",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route3CooltrainerF3AfterBattle",
+      "values": [
+        {
+          "text": "ROUTE 4 is at the",
+          "type": "text"
+        },
+        {
+          "text": "foot of MT.MOON.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route3Sign",
+      "values": [
+        {
+          "text": "ROUTE 3",
+          "type": "text"
+        },
+        {
+          "text": "MT.MOON AHEAD",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route3_default",
+    "script_route3_start_battle",
+    "script_route3_end_battle"
+  ]
+}

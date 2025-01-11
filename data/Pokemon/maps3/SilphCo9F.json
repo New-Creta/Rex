@@ -1,0 +1,281 @@
+{
+  "name": "SilphCo9F",
+  "width": 13,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCo9F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "silphco9f_nurse"
+    },
+    {
+      "name": "silphco9f_rocket1"
+    },
+    {
+      "name": "silphco9f_scientist"
+    },
+    {
+      "name": "silphco9f_rocket2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 14,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco9f_nurse"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco9f_rocket1"
+    },
+    {
+      "x": 21,
+      "y": 13,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco9f_scientist"
+    },
+    {
+      "x": 13,
+      "y": 16,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco9f_rocket2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 14,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 17,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SilphCo9FNurseYouLookTired",
+      "values": [
+        {
+          "text": "You look tired!",
+          "type": "text"
+        },
+        {
+          "text": "You should take a",
+          "type": "line"
+        },
+        {
+          "text": "quick nap!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FNurseDontGiveUp",
+      "values": [
+        {
+          "text": "Don't give up!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FNurseThankYou",
+      "values": [
+        {
+          "text": "Thank you so",
+          "type": "text"
+        },
+        {
+          "text": "much!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket1Battle",
+      "values": [
+        {
+          "text": "Your #MON seem",
+          "type": "text"
+        },
+        {
+          "text": "to adore you, kid!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket1EndBattle",
+      "values": [
+        {
+          "text": "Ghaaah!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket1AfterBattle",
+      "values": [
+        {
+          "text": "If I had started",
+          "type": "text"
+        },
+        {
+          "text": "as a trainer at",
+          "type": "line"
+        },
+        {
+          "text": "your age...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FScientistBattle",
+      "values": [
+        {
+          "text": "Your #MON have",
+          "type": "text"
+        },
+        {
+          "text": "weak points! I",
+          "type": "line"
+        },
+        {
+          "text": "can nail them!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FScientistEndBattle",
+      "values": [
+        {
+          "text": "You",
+          "type": "text"
+        },
+        {
+          "text": "hammered me!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FScientistAfterBattle",
+      "values": [
+        {
+          "text": "Exploiting weak",
+          "type": "text"
+        },
+        {
+          "text": "spots does work!",
+          "type": "line"
+        },
+        {
+          "text": "Think about",
+          "type": "cont"
+        },
+        {
+          "text": "element types!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket2Battle",
+      "values": [
+        {
+          "text": "I am one of the 4",
+          "type": "text"
+        },
+        {
+          "text": "ROCKET BROTHERS!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket2EndBattle",
+      "values": [
+        {
+          "text": "Warg!",
+          "type": "text"
+        },
+        {
+          "text": "Brothers, I lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo9FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "My brothers will",
+          "type": "text"
+        },
+        {
+          "text": "avenge me!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_silphco9f_default",
+    "script_silphco9f_start_battle",
+    "script_silphco9f_end_battle"
+  ]
+}

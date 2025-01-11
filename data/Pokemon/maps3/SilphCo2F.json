@@ -1,0 +1,408 @@
+{
+  "name": "SilphCo2F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCo2F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "silphco2f_silph_worker_f"
+    },
+    {
+      "name": "silphco2f_scientist1"
+    },
+    {
+      "name": "silphco2f_scientist2"
+    },
+    {
+      "name": "silphco2f_rocket1"
+    },
+    {
+      "name": "silphco2f_rocket2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 1,
+      "sprite": "sprite_silph_worker_f",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco2f_silph_worker_f"
+    },
+    {
+      "x": 5,
+      "y": 12,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco2f_scientist1"
+    },
+    {
+      "x": 24,
+      "y": 13,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_silphco2f_scientist2"
+    },
+    {
+      "x": 16,
+      "y": 11,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco2f_rocket1"
+    },
+    {
+      "x": 24,
+      "y": 7,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco2f_rocket2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 24,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 26,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 20,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 27,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 9,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SilphCo2FSilphWorkerFPleaseTakeThis",
+      "values": [
+        {
+          "text": "Eeek!",
+          "type": "text"
+        },
+        {
+          "text": "No! Stop! Help!",
+          "type": "line"
+        },
+        {
+          "text": "Oh, you're not",
+          "type": "para"
+        },
+        {
+          "text": "with TEAM ROCKET.",
+          "type": "line"
+        },
+        {
+          "text": "I thought...",
+          "type": "cont"
+        },
+        {
+          "text": "I'm sorry. Here,",
+          "type": "cont"
+        },
+        {
+          "text": "please take this!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FSilphWorkerFReceivedTM36",
+      "values": [
+        {
+          "text": "<PLAYER> got",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FSilphWorkerFTM36Explanation",
+      "values": [
+        {
+          "text": "TM36 is",
+          "type": "text"
+        },
+        {
+          "text": "SELFDESTRUCT!",
+          "type": "line"
+        },
+        {
+          "text": "It's powerful, but",
+          "type": "para"
+        },
+        {
+          "text": "the #MON that",
+          "type": "line"
+        },
+        {
+          "text": "uses it faints!",
+          "type": "cont"
+        },
+        {
+          "text": "Be careful.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FSilphWorkerFTM36NoRoom",
+      "values": [
+        {
+          "text": "You don't have any",
+          "type": "text"
+        },
+        {
+          "text": "room for this.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist1Battle",
+      "values": [
+        {
+          "text": "Help! I'm a SILPH",
+          "type": "text"
+        },
+        {
+          "text": "employee.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist1EndBattle",
+      "values": [
+        {
+          "text": "How",
+          "type": "text"
+        },
+        {
+          "text": "did you know I",
+          "type": "line"
+        },
+        {
+          "text": "was a ROCKET?",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist1AfterBattle",
+      "values": [
+        {
+          "text": "I work for both",
+          "type": "text"
+        },
+        {
+          "text": "SILPH and TEAM",
+          "type": "line"
+        },
+        {
+          "text": "ROCKET!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist2Battle",
+      "values": [
+        {
+          "text": "It's off limits",
+          "type": "text"
+        },
+        {
+          "text": "here! Go home!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist2EndBattle",
+      "values": [
+        {
+          "text": "You're",
+          "type": "text"
+        },
+        {
+          "text": "good.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FScientist2AfterBattle",
+      "values": [
+        {
+          "text": "Can you solve the",
+          "type": "text"
+        },
+        {
+          "text": "maze in here?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket1Battle",
+      "values": [
+        {
+          "text": "No kids are",
+          "type": "text"
+        },
+        {
+          "text": "allowed in here!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket1EndBattle",
+      "values": [
+        {
+          "text": "Tough!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket1AfterBattle",
+      "values": [
+        {
+          "text": "Diamond shaped",
+          "type": "text"
+        },
+        {
+          "text": "tiles are",
+          "type": "line"
+        },
+        {
+          "text": "teleport blocks!",
+          "type": "cont"
+        },
+        {
+          "text": "They're hi-tech",
+          "type": "para"
+        },
+        {
+          "text": "transporters!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket2Battle",
+      "values": [
+        {
+          "text": "Hey kid! What are",
+          "type": "text"
+        },
+        {
+          "text": "you doing here?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket2EndBattle",
+      "values": [
+        {
+          "text": "I goofed!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo2FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "SILPH CO. will",
+          "type": "text"
+        },
+        {
+          "text": "be merged with",
+          "type": "line"
+        },
+        {
+          "text": "TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_silphco2f_default",
+    "script_silphco2f_start_battle",
+    "script_silphco2f_end_battle"
+  ]
+}

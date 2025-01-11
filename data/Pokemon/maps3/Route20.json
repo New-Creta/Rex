@@ -1,0 +1,614 @@
+{
+  "name": "SEA ROUTE 20",
+  "width": 50,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route20.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\cinnabarisland.json",
+      "offset": "0"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\route19.json",
+      "offset": "-18"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route20_swimmer1"
+    },
+    {
+      "name": "route20_swimmer2"
+    },
+    {
+      "name": "route20_swimmer3"
+    },
+    {
+      "name": "route20_swimmer4"
+    },
+    {
+      "name": "route20_swimmer5"
+    },
+    {
+      "name": "route20_swimmer6"
+    },
+    {
+      "name": "route20_cooltrainer_m"
+    },
+    {
+      "name": "route20_swimmer7"
+    },
+    {
+      "name": "route20_swimmer8"
+    },
+    {
+      "name": "route20_swimmer9"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 87,
+      "y": 8,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer1"
+    },
+    {
+      "x": 68,
+      "y": 11,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer2"
+    },
+    {
+      "x": 45,
+      "y": 10,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer3"
+    },
+    {
+      "x": 55,
+      "y": 14,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route20_swimmer4"
+    },
+    {
+      "x": 38,
+      "y": 13,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer5"
+    },
+    {
+      "x": 87,
+      "y": 13,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer6"
+    },
+    {
+      "x": 34,
+      "y": 9,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_cooltrainer_m"
+    },
+    {
+      "x": 25,
+      "y": 7,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer7"
+    },
+    {
+      "x": 24,
+      "y": 12,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer8"
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer9"
+    }
+  ],
+  "warps": [
+    {
+      "x": 48,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 58,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 51,
+      "y": 7,
+      "text": "text_route20_seafoam_islands_west_sign"
+    },
+    {
+      "x": 57,
+      "y": 11,
+      "text": "text_route20_seafoam_islands_east_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route20Swimmer1Battle",
+      "values": [
+        {
+          "text": "The water is",
+          "type": "text"
+        },
+        {
+          "text": "shallow here.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer1EndBattle",
+      "values": [
+        {
+          "text": "Splash!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer1AfterBattle",
+      "values": [
+        {
+          "text": "I wish I could",
+          "type": "text"
+        },
+        {
+          "text": "ride my #MON.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer2Battle",
+      "values": [
+        {
+          "text": "SEAFOAM is a",
+          "type": "text"
+        },
+        {
+          "text": "quiet getaway!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer2EndBattle",
+      "values": [
+        {
+          "text": "Quit it!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer2AfterBattle",
+      "values": [
+        {
+          "text": "There's a huge",
+          "type": "text"
+        },
+        {
+          "text": "cavern underneath",
+          "type": "line"
+        },
+        {
+          "text": "this island.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer3Battle",
+      "values": [
+        {
+          "text": "I love floating",
+          "type": "text"
+        },
+        {
+          "text": "with the fishes!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer3EndBattle",
+      "values": [
+        {
+          "text": "Yowch!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer3AfterBattle",
+      "values": [
+        {
+          "text": "Want to float",
+          "type": "text"
+        },
+        {
+          "text": "with me?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer4Battle",
+      "values": [
+        {
+          "text": "Are you on",
+          "type": "text"
+        },
+        {
+          "text": "vacation too?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer4EndBattle",
+      "values": [
+        {
+          "text": "No",
+          "type": "text"
+        },
+        {
+          "text": "mercy at all!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer4AfterBattle",
+      "values": [
+        {
+          "text": "SEAFOAM used to",
+          "type": "text"
+        },
+        {
+          "text": "be one island!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer5Battle",
+      "values": [
+        {
+          "text": "Check out my buff",
+          "type": "text"
+        },
+        {
+          "text": "physique!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer5EndBattle",
+      "values": [
+        {
+          "text": "Wimpy!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer5AfterBattle",
+      "values": [
+        {
+          "text": "I should've been",
+          "type": "text"
+        },
+        {
+          "text": "buffing up my",
+          "type": "line"
+        },
+        {
+          "text": "#MON, not me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer6Battle",
+      "values": [
+        {
+          "text": "Why are you",
+          "type": "text"
+        },
+        {
+          "text": "riding a #MON?",
+          "type": "line"
+        },
+        {
+          "text": "Can't you swim?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer6EndBattle",
+      "values": [
+        {
+          "text": "Ouch!",
+          "type": "text"
+        },
+        {
+          "text": "Torpedoed!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer6AfterBattle",
+      "values": [
+        {
+          "text": "Riding a #MON",
+          "type": "text"
+        },
+        {
+          "text": "sure looks fun!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20CooltrainerMBattle",
+      "values": [
+        {
+          "text": "I rode my bird",
+          "type": "text"
+        },
+        {
+          "text": "#MON here!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20CooltrainerMEndBattle",
+      "values": [
+        {
+          "text": "Oh",
+          "type": "text"
+        },
+        {
+          "text": "no!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20CooltrainerMAfterBattle",
+      "values": [
+        {
+          "text": "My birds can't",
+          "type": "text"
+        },
+        {
+          "text": "FLY me back!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer7Battle",
+      "values": [
+        {
+          "text": "My boy friend gave",
+          "type": "text"
+        },
+        {
+          "text": "me big pearls!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer7EndBattle",
+      "values": [
+        {
+          "text": "Don't",
+          "type": "text"
+        },
+        {
+          "text": "touch my pearls!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer7AfterBattle",
+      "values": [
+        {
+          "text": "Will my pearls",
+          "type": "text"
+        },
+        {
+          "text": "grow bigger",
+          "type": "line"
+        },
+        {
+          "text": "inside CLOYSTER?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer8Battle",
+      "values": [
+        {
+          "text": "I swam here from",
+          "type": "text"
+        },
+        {
+          "text": "CINNABAR ISLAND!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer8EndBattle",
+      "values": [
+        {
+          "text": "I'm",
+          "type": "text"
+        },
+        {
+          "text": "so disappointed!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer8AfterBattle",
+      "values": [
+        {
+          "text": "#MON have",
+          "type": "text"
+        },
+        {
+          "text": "taken over an",
+          "type": "line"
+        },
+        {
+          "text": "abandoned mansion",
+          "type": "cont"
+        },
+        {
+          "text": "on CINNABAR!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer9Battle",
+      "values": [
+        {
+          "text": "CINNABAR, in the",
+          "type": "text"
+        },
+        {
+          "text": "west, has a LAB",
+          "type": "line"
+        },
+        {
+          "text": "for #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer9EndBattle",
+      "values": [
+        {
+          "text": "Wait!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route20Swimmer9AfterBattle",
+      "values": [
+        {
+          "text": "CINNABAR is a ",
+          "type": "text"
+        },
+        {
+          "text": "volcanic island!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route20SeafoamIslandsSign",
+      "values": [
+        {
+          "text": "SEAFOAM ISLANDS",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route20_default",
+    "script_route20_start_battle",
+    "script_route20_end_battle"
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "name": "PewterNidoranHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\PewterNidoranHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pewternidoranhouse_nidoran"
+    },
+    {
+      "name": "pewternidoranhouse_little_boy"
+    },
+    {
+      "name": "pewternidoranhouse_middle_aged_man"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 5,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pewternidoranhouse_nidoran"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "sprite": "sprite_little_boy",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pewternidoranhouse_little_boy"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pewternidoranhouse_middle_aged_man"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "PewterNidoranHouseNidoran",
+      "values": [
+        {
+          "text": "NIDORAN: Bowbow!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PewterNidoranHouseLittleBoy",
+      "values": [
+        {
+          "text": "NIDORAN sit!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PewterNidoranHouseMiddleAgedMan",
+      "values": [
+        {
+          "text": "Our #MON's an",
+          "type": "text"
+        },
+        {
+          "text": "outsider, so it's",
+          "type": "line"
+        },
+        {
+          "text": "hard to handle.",
+          "type": "cont"
+        },
+        {
+          "text": "An outsider is a",
+          "type": "para"
+        },
+        {
+          "text": "#MON that you",
+          "type": "line"
+        },
+        {
+          "text": "get in a trade.",
+          "type": "cont"
+        },
+        {
+          "text": "It grows fast, but",
+          "type": "para"
+        },
+        {
+          "text": "it may ignore an",
+          "type": "line"
+        },
+        {
+          "text": "unskilled trainer",
+          "type": "cont"
+        },
+        {
+          "text": "in battle!",
+          "type": "cont"
+        },
+        {
+          "text": "If only we had",
+          "type": "para"
+        },
+        {
+          "text": "some BADGEs...",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

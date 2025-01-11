@@ -1,0 +1,76 @@
+{
+  "name": "",
+  "width": -1,
+  "height": -1,
+  "tileset": "Pokemon\\tilesets\\.json",
+  "map_blocks": "Pokemon\\map_blocks\\.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "RockTunnelB1FHiker3AfterBattle",
+      "values": [
+        {
+          "text": "I'll raise my",
+          "type": "text"
+        },
+        {
+          "text": "#MON to beat",
+          "type": "line"
+        },
+        {
+          "text": "yours, kid!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3Battle",
+      "values": [
+        {
+          "text": "I draw #MON",
+          "type": "text"
+        },
+        {
+          "text": "when I'm home.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3EndBattle",
+      "values": [
+        {
+          "text": "Whew!",
+          "type": "text"
+        },
+        {
+          "text": "I'm exhausted!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3AfterBattle",
+      "values": [
+        {
+          "text": "I'm an artist,",
+          "type": "text"
+        },
+        {
+          "text": "not a fighter.",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

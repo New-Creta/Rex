@@ -1,0 +1,63 @@
+{
+  "name": "FuchsiaMeetingRoom",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LAB.json",
+  "map_blocks": "Pokemon\\map_blocks\\FuchsiaMeetingRoom.blk",
+  "border_block_idx": 23,
+  "connections": [],
+  "objects": [
+    {
+      "name": "fuchsiameetingroom_safari_zone_worker1"
+    },
+    {
+      "name": "fuchsiameetingroom_safari_zone_worker2"
+    },
+    {
+      "name": "fuchsiameetingroom_safari_zone_worker3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 1,
+      "sprite": "sprite_safari_zone_worker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_fuchsiameetingroom_safari_zone_worker1"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "sprite": "sprite_safari_zone_worker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_fuchsiameetingroom_safari_zone_worker2"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "sprite": "sprite_safari_zone_worker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_fuchsiameetingroom_safari_zone_worker3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

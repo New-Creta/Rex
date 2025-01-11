@@ -1,0 +1,136 @@
+{
+  "name": "HallOfFame",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\HallOfFame.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "halloffame_oak"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_oak",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_halloffame_oak"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "HallOfFameOak",
+      "values": [
+        {
+          "text": "OAK: Er-hem!",
+          "type": "text"
+        },
+        {
+          "text": "Congratulations",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "cont"
+        },
+        {
+          "text": "This floor is the",
+          "type": "para"
+        },
+        {
+          "text": "#MON HALL OF",
+          "type": "line"
+        },
+        {
+          "text": "FAME!",
+          "type": "cont"
+        },
+        {
+          "text": "#MON LEAGUE",
+          "type": "para"
+        },
+        {
+          "text": "champions are",
+          "type": "line"
+        },
+        {
+          "text": "honored for their",
+          "type": "cont"
+        },
+        {
+          "text": "exploits here!",
+          "type": "cont"
+        },
+        {
+          "text": "Their #MON are",
+          "type": "para"
+        },
+        {
+          "text": "also recorded in",
+          "type": "line"
+        },
+        {
+          "text": "the HALL OF FAME!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>! You have",
+          "type": "para"
+        },
+        {
+          "text": "endeavored hard",
+          "type": "line"
+        },
+        {
+          "text": "to become the new",
+          "type": "cont"
+        },
+        {
+          "text": "LEAGUE champion!",
+          "type": "cont"
+        },
+        {
+          "text": "Congratulations,",
+          "type": "para"
+        },
+        {
+          "text": "<PLAYER>, you and",
+          "type": "line"
+        },
+        {
+          "text": "your #MON are",
+          "type": "cont"
+        },
+        {
+          "text": "HALL OF FAMERs!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_halloffame_default",
+    "script_halloffame_oak_congratulations",
+    "script_halloffame_reset_events_and_save",
+    "script_halloffame_noop"
+  ]
+}

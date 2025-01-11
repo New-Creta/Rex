@@ -1,0 +1,73 @@
+{
+  "name": "DiglettsCaveRoute11",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\DiglettsCaveRoute11.blk",
+  "border_block_idx": 125,
+  "connections": [],
+  "objects": [
+    {
+      "name": "diglettscaveroute11_gambler"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_diglettscaveroute11_gambler"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "DiglettsCaveRoute11Gambler",
+      "values": [
+        {
+          "text": "What a surprise!",
+          "type": "text"
+        },
+        {
+          "text": "DIGLETTs dug this",
+          "type": "line"
+        },
+        {
+          "text": "long tunnel!",
+          "type": "cont"
+        },
+        {
+          "text": "It goes right to",
+          "type": "para"
+        },
+        {
+          "text": "VIRIDIAN CITY!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

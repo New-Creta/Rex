@@ -1,0 +1,250 @@
+{
+  "name": "ROUTE 22",
+  "width": 20,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route22.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\route23.json",
+      "offset": "0;unnecessary"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\viridiancity.json",
+      "offset": "-4"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route22_rival1"
+    },
+    {
+      "name": "route22_rival2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 25,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route22_rival1"
+    },
+    {
+      "x": 25,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route22_rival2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 8,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 7,
+      "y": 11,
+      "text": "text_route22_pokemon_league_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route22Rival1Defeated",
+      "values": [
+        {
+          "text": "Awww!",
+          "type": "text"
+        },
+        {
+          "text": "You just lucked",
+          "type": "line"
+        },
+        {
+          "text": "out!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route22Rival1Victory",
+      "values": [
+        {
+          "text": "<RIVAL>: What?",
+          "type": "text"
+        },
+        {
+          "text": "Why do I have 2",
+          "type": "line"
+        },
+        {
+          "text": "#MON?",
+          "type": "cont"
+        },
+        {
+          "text": "You should catch",
+          "type": "para"
+        },
+        {
+          "text": "some more too!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        },
+        {
+          "text": "<RIVAL>: What?",
+          "type": "text"
+        },
+        {
+          "text": "<PLAYER>! What a",
+          "type": "line"
+        },
+        {
+          "text": "surprise to see",
+          "type": "cont"
+        },
+        {
+          "text": "you here!",
+          "type": "cont"
+        },
+        {
+          "text": "So you're going to",
+          "type": "para"
+        },
+        {
+          "text": "#MON LEAGUE?",
+          "type": "line"
+        },
+        {
+          "text": "You collected all",
+          "type": "para"
+        },
+        {
+          "text": "the BADGEs too?",
+          "type": "line"
+        },
+        {
+          "text": "That's cool!",
+          "type": "cont"
+        },
+        {
+          "text": "Then I'll whip you",
+          "type": "para"
+        },
+        {
+          "text": "<PLAYER> as a",
+          "type": "line"
+        },
+        {
+          "text": "warm up for",
+          "type": "cont"
+        },
+        {
+          "text": "#MON LEAGUE!",
+          "type": "cont"
+        },
+        {
+          "text": "Come on!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "Route22Rival2Defeated",
+      "values": [
+        {
+          "text": "What!?",
+          "type": "text"
+        },
+        {
+          "text": "I was just",
+          "type": "para"
+        },
+        {
+          "text": "careless!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route22Rival2Victory",
+      "values": [
+        {
+          "text": "<RIVAL>: Hahaha!",
+          "type": "text"
+        },
+        {
+          "text": "<PLAYER>! That's",
+          "type": "line"
+        },
+        {
+          "text": "your best? You're",
+          "type": "cont"
+        },
+        {
+          "text": "nowhere near as",
+          "type": "cont"
+        },
+        {
+          "text": "good as me, pal!",
+          "type": "cont"
+        },
+        {
+          "text": "Go train some",
+          "type": "para"
+        },
+        {
+          "text": "more! You loser!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route22PokemonLeagueSign",
+      "values": [
+        {
+          "text": "#MON LEAGUE",
+          "type": "text"
+        },
+        {
+          "text": "Front Gate",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route22_default",
+    "script_route22_rival1_start_battle",
+    "script_route22_rival1_after_battle",
+    "script_route22_rival1_exit",
+    "script_route22_rival2_start_battle",
+    "script_route22_rival2_after_battle",
+    "script_route22_rival2_exit",
+    "script_route22_noop"
+  ]
+}

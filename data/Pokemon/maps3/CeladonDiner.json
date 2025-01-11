@@ -1,0 +1,258 @@
+{
+  "name": "CeladonDiner",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonDiner.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadondiner_cook"
+    },
+    {
+      "name": "celadondiner_middle_aged_woman"
+    },
+    {
+      "name": "celadondiner_middle_aged_man"
+    },
+    {
+      "name": "celadondiner_fisher"
+    },
+    {
+      "name": "celadondiner_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 5,
+      "sprite": "sprite_cook",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_celadondiner_cook"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_middle_aged_woman",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_celadondiner_middle_aged_woman"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadondiner_middle_aged_man"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_celadondiner_fisher"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadondiner_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 11
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 11
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "CeladonDinerCook",
+      "values": [
+        {
+          "text": "Hi!",
+          "type": "text"
+        },
+        {
+          "text": "We're taking a",
+          "type": "para"
+        },
+        {
+          "text": "break now.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerMiddleAgedWoman",
+      "values": [
+        {
+          "text": "My #MON are",
+          "type": "text"
+        },
+        {
+          "text": "weak, so I often",
+          "type": "line"
+        },
+        {
+          "text": "have to go to the",
+          "type": "cont"
+        },
+        {
+          "text": "DRUG STORE.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerMiddleAgedMan",
+      "values": [
+        {
+          "text": "Psst! There's a",
+          "type": "text"
+        },
+        {
+          "text": "basement under",
+          "type": "line"
+        },
+        {
+          "text": "the GAME CORNER.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerFisher",
+      "values": [
+        {
+          "text": "Munch...",
+          "type": "text"
+        },
+        {
+          "text": "The man at that",
+          "type": "para"
+        },
+        {
+          "text": "table lost it all",
+          "type": "line"
+        },
+        {
+          "text": "at the slots.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerGymGuideImFlatOutBusted",
+      "values": [
+        {
+          "text": "Go ahead! Laugh!",
+          "type": "text"
+        },
+        {
+          "text": "I'm flat out",
+          "type": "para"
+        },
+        {
+          "text": "busted!",
+          "type": "line"
+        },
+        {
+          "text": "No more slots for",
+          "type": "para"
+        },
+        {
+          "text": "me! I'm going",
+          "type": "line"
+        },
+        {
+          "text": "straight!",
+          "type": "cont"
+        },
+        {
+          "text": "Here! I won't be",
+          "type": "para"
+        },
+        {
+          "text": "needing this any-",
+          "type": "line"
+        },
+        {
+          "text": "more!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerGymGuideReceivedCoinCase",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "a @",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerGymGuideCoinCaseNoRoom",
+      "values": [
+        {
+          "text": "Make room for",
+          "type": "text"
+        },
+        {
+          "text": "this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonDinerGymGuideWinItBack",
+      "values": [
+        {
+          "text": "I always thought",
+          "type": "text"
+        },
+        {
+          "text": "I was going to",
+          "type": "line"
+        },
+        {
+          "text": "win it back...",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

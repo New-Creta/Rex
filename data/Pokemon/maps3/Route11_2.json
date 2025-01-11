@@ -1,0 +1,98 @@
+{
+  "name": "",
+  "width": -1,
+  "height": -1,
+  "tileset": "Pokemon\\tilesets\\.json",
+  "map_blocks": "Pokemon\\map_blocks\\.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "Route11SuperNerd2EndBattle",
+      "values": [
+        {
+          "text": "Whoa!",
+          "type": "text"
+        },
+        {
+          "text": "You spark plug!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11SuperNerd2AfterBattle",
+      "values": [
+        {
+          "text": "Well, better get",
+          "type": "text"
+        },
+        {
+          "text": "back to work.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster4Battle",
+      "values": [
+        {
+          "text": "My #MON should",
+          "type": "text"
+        },
+        {
+          "text": "be ready by now!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster4EndBattle",
+      "values": [
+        {
+          "text": "Too",
+          "type": "text"
+        },
+        {
+          "text": "much, too young!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster4AfterBattle",
+      "values": [
+        {
+          "text": "I better go find",
+          "type": "text"
+        },
+        {
+          "text": "stronger ones!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11DiglettsCaveSign",
+      "values": [
+        {
+          "text": "DIGLETT's CAVE",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,569 @@
+{
+  "name": "SSAnne2FRooms",
+  "width": 12,
+  "height": 8,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnne2FRooms.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssanne2frooms_gentleman1"
+    },
+    {
+      "name": "ssanne2frooms_fisher"
+    },
+    {
+      "name": "ssanne2frooms_gentleman2"
+    },
+    {
+      "name": "ssanne2frooms_cooltrainer_f"
+    },
+    {
+      "name": "ssanne2frooms_gentleman3"
+    },
+    {
+      "name": "ssanne2frooms_max_ether"
+    },
+    {
+      "name": "ssanne2frooms_gentleman4"
+    },
+    {
+      "name": "ssanne2frooms_gramps"
+    },
+    {
+      "name": "ssanne2frooms_rare_candy"
+    },
+    {
+      "name": "ssanne2frooms_gentleman5"
+    },
+    {
+      "name": "ssanne2frooms_little_boy"
+    },
+    {
+      "name": "ssanne2frooms_brunette_girl"
+    },
+    {
+      "name": "ssanne2frooms_beauty"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_gentleman1"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne2frooms_fisher"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_gentleman2"
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_cooltrainer_f"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman3"
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_max_ether"
+    },
+    {
+      "x": 21,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman4"
+    },
+    {
+      "x": 22,
+      "y": 1,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gramps"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_rare_candy"
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman5"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_little_boy",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_little_boy"
+    },
+    {
+      "x": 22,
+      "y": 12,
+      "sprite": "sprite_brunette_girl",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne2frooms_brunette_girl"
+    },
+    {
+      "x": 20,
+      "y": 12,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_beauty"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 22,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 23,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 2,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 12,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 22,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 23,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SSAnne2FRoomsGentleman3",
+      "values": [
+        {
+          "text": "In all my travels",
+          "type": "text"
+        },
+        {
+          "text": "I've never seen",
+          "type": "line"
+        },
+        {
+          "text": "any #MON sleep",
+          "type": "cont"
+        },
+        {
+          "text": "like this one!",
+          "type": "cont"
+        },
+        {
+          "text": "It was something",
+          "type": "para"
+        },
+        {
+          "text": "like this!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman4",
+      "values": [
+        {
+          "text": "Ah yes, I have",
+          "type": "text"
+        },
+        {
+          "text": "seen some #MON",
+          "type": "line"
+        },
+        {
+          "text": "ferry people",
+          "type": "cont"
+        },
+        {
+          "text": "across the water!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGramps",
+      "values": [
+        {
+          "text": "#MON can CUT",
+          "type": "text"
+        },
+        {
+          "text": "down small bushes.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman5",
+      "values": [
+        {
+          "text": "Have you gone to",
+          "type": "text"
+        },
+        {
+          "text": "the SAFARI ZONE",
+          "type": "line"
+        },
+        {
+          "text": "in FUCHSIA CITY?",
+          "type": "cont"
+        },
+        {
+          "text": "It had many rare",
+          "type": "para"
+        },
+        {
+          "text": "kinds of #MON!!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsLittleBoy",
+      "values": [
+        {
+          "text": "Me and my Daddy",
+          "type": "text"
+        },
+        {
+          "text": "think the SAFARI",
+          "type": "line"
+        },
+        {
+          "text": "ZONE is awesome!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsBrunetteGirl",
+      "values": [
+        {
+          "text": "The CAPTAIN looked",
+          "type": "text"
+        },
+        {
+          "text": "really sick and",
+          "type": "line"
+        },
+        {
+          "text": "pale!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsBeauty",
+      "values": [
+        {
+          "text": "I hear many people",
+          "type": "text"
+        },
+        {
+          "text": "get seasick!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman1Battle",
+      "values": [
+        {
+          "text": "Competing against",
+          "type": "text"
+        },
+        {
+          "text": "the young keeps",
+          "type": "line"
+        },
+        {
+          "text": "me youthful.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman1EndBattle",
+      "values": [
+        {
+          "text": "Good",
+          "type": "text"
+        },
+        {
+          "text": "fight! Ah, I feel",
+          "type": "line"
+        },
+        {
+          "text": "young again!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman1AfterBattle",
+      "values": [
+        {
+          "text": "15 years ago, I",
+          "type": "text"
+        },
+        {
+          "text": "would have won!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsFisherBattle",
+      "values": [
+        {
+          "text": "Check out what I",
+          "type": "text"
+        },
+        {
+          "text": "fished up!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsFisherEndBattle",
+      "values": [
+        {
+          "text": "I'm",
+          "type": "text"
+        },
+        {
+          "text": "all out!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsFisherAfterBattle",
+      "values": [
+        {
+          "text": "Party?",
+          "type": "text"
+        },
+        {
+          "text": "The cruise ship's",
+          "type": "para"
+        },
+        {
+          "text": "party should be",
+          "type": "line"
+        },
+        {
+          "text": "over by now.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman2Battle",
+      "values": [
+        {
+          "text": "Which do you like,",
+          "type": "text"
+        },
+        {
+          "text": "a strong or a",
+          "type": "line"
+        },
+        {
+          "text": "rare #MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman2EndBattle",
+      "values": [
+        {
+          "text": "I must",
+          "type": "text"
+        },
+        {
+          "text": "salute you!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsGentleman2AfterBattle",
+      "values": [
+        {
+          "text": "I prefer strong",
+          "type": "text"
+        },
+        {
+          "text": "and rare #MON.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsCooltrainerFBattle",
+      "values": [
+        {
+          "text": "I never saw you",
+          "type": "text"
+        },
+        {
+          "text": "at the party.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsCooltrainerFEndBattle",
+      "values": [
+        {
+          "text": "Take",
+          "type": "text"
+        },
+        {
+          "text": "it easy!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne2FRoomsCooltrainerFAfterBattle",
+      "values": [
+        {
+          "text": "Oh, I adore your",
+          "type": "text"
+        },
+        {
+          "text": "strong #MON!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_ssanne2frooms_default",
+    "script_ssanne2frooms_start_battle",
+    "script_ssanne2frooms_end_battle"
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "name": "MtMoonPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\MtMoonPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mtmoonpokecenter_nurse"
+    },
+    {
+      "name": "mtmoonpokecenter_youngster"
+    },
+    {
+      "name": "mtmoonpokecenter_gentleman"
+    },
+    {
+      "name": "mtmoonpokecenter_magikarp_salesman"
+    },
+    {
+      "name": "mtmoonpokecenter_clipboard"
+    },
+    {
+      "name": "mtmoonpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonpokecenter_nurse"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoonpokecenter_youngster"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoonpokecenter_gentleman"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "sprite": "sprite_middle_aged_man",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_mtmoonpokecenter_magikarp_salesman"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_clipboard",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonpokecenter_clipboard"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "MtMoonPokecenterYoungster",
+      "values": [
+        {
+          "text": "I've 6 # BALLs",
+          "type": "text"
+        },
+        {
+          "text": "set in my belt.",
+          "type": "line"
+        },
+        {
+          "text": "At most, you can",
+          "type": "para"
+        },
+        {
+          "text": "carry 6 #MON.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterGentleman",
+      "values": [
+        {
+          "text": "TEAM ROCKET",
+          "type": "text"
+        },
+        {
+          "text": "attacks CERULEAN",
+          "type": "line"
+        },
+        {
+          "text": "citizens...",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET is",
+          "type": "para"
+        },
+        {
+          "text": "always in the",
+          "type": "line"
+        },
+        {
+          "text": "news!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterMagikarpSalesmanIGotADeal",
+      "values": [
+        {
+          "text": "MAN: Hello, there!",
+          "type": "text"
+        },
+        {
+          "text": "Have I got a deal",
+          "type": "line"
+        },
+        {
+          "text": "just for you!",
+          "type": "cont"
+        },
+        {
+          "text": "I'll let you have",
+          "type": "para"
+        },
+        {
+          "text": "a swell MAGIKARP",
+          "type": "line"
+        },
+        {
+          "text": "for just \u00c2\u00a5500!",
+          "type": "cont"
+        },
+        {
+          "text": "What do you say?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterMagikarpSalesmanNo",
+      "values": [
+        {
+          "text": "No? I'm only",
+          "type": "text"
+        },
+        {
+          "text": "doing this as a",
+          "type": "line"
+        },
+        {
+          "text": "favor to you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterMagikarpSalesmanNoMoney",
+      "values": [
+        {
+          "text": "You'll need more",
+          "type": "text"
+        },
+        {
+          "text": "money than that!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterMagikarpSalesmanNoRefunds",
+      "values": [
+        {
+          "text": "MAN: Well, I don't",
+          "type": "text"
+        },
+        {
+          "text": "give refunds!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonPokecenterClipboard",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,48 @@
+{
+  "name": "RocketHideoutElevator",
+  "width": 3,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\RocketHideoutElevator.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 2,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 1,
+      "text": "text_rockethideoutelevator"
+    }
+  ],
+  "texts": [
+    {
+      "name": "RocketHideoutElevatorAppearsToNeedKey",
+      "values": [
+        {
+          "text": "It appears to",
+          "type": "text"
+        },
+        {
+          "text": "need a key.@",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,71 @@
+{
+  "name": "CeruleanCaveB1F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanCaveB1F.blk",
+  "border_block_idx": 125,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ceruleancaveb1f_mewtwo"
+    },
+    {
+      "name": "ceruleancaveb1f_ultra_ball"
+    },
+    {
+      "name": "ceruleancaveb1f_max_revive"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 27,
+      "y": 13,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancaveb1f_mewtwo"
+    },
+    {
+      "x": 16,
+      "y": 9,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancaveb1f_ultra_ball"
+    },
+    {
+      "x": 18,
+      "y": 1,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancaveb1f_max_revive"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "MewtwoBattle",
+      "values": [
+        {
+          "text": "Mew!@",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_ceruleancaveb1f_default",
+    "script_ceruleancaveb1f_start_battle",
+    "script_ceruleancaveb1f_end_battle"
+  ]
+}

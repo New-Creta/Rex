@@ -1,0 +1,315 @@
+{
+  "name": "ROUTE 24",
+  "width": 10,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route24.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "south",
+      "map": "Pokemon\\maps\\ceruleancity.json",
+      "offset": "-5"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\route25.json",
+      "offset": "0"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route24_cooltrainer_m1"
+    },
+    {
+      "name": "route24_cooltrainer_m2"
+    },
+    {
+      "name": "route24_cooltrainer_m3"
+    },
+    {
+      "name": "route24_cooltrainer_f1"
+    },
+    {
+      "name": "route24_youngster1"
+    },
+    {
+      "name": "route24_cooltrainer_f2"
+    },
+    {
+      "name": "route24_youngster2"
+    },
+    {
+      "name": "route24_tm_thunder_wave"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 11,
+      "y": 15,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_cooltrainer_m1"
+    },
+    {
+      "x": 5,
+      "y": 20,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route24_cooltrainer_m2"
+    },
+    {
+      "x": 11,
+      "y": 19,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_cooltrainer_m3"
+    },
+    {
+      "x": 10,
+      "y": 22,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route24_cooltrainer_f1"
+    },
+    {
+      "x": 11,
+      "y": 25,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_youngster1"
+    },
+    {
+      "x": 10,
+      "y": 28,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route24_cooltrainer_f2"
+    },
+    {
+      "x": 11,
+      "y": 31,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_youngster2"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route24_tm_thunder_wave"
+    }
+  ],
+  "warps": [],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "Route24CooltrainerM1YouBeatOurContest",
+      "values": [
+        {
+          "text": "Congratulations!",
+          "type": "text"
+        },
+        {
+          "text": "You beat our 5",
+          "type": "line"
+        },
+        {
+          "text": "contest trainers!@",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1YouJustEarnedAPrize",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "You just earned a",
+          "type": "para"
+        },
+        {
+          "text": "fabulous prize!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1ReceivedNugget",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "a @",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1NoRoom",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "any room!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1JoinTeamRocket",
+      "values": [
+        {
+          "text": "By the way, would",
+          "type": "text"
+        },
+        {
+          "text": "you like to join",
+          "type": "line"
+        },
+        {
+          "text": "TEAM ROCKET?",
+          "type": "cont"
+        },
+        {
+          "text": "We're a group",
+          "type": "para"
+        },
+        {
+          "text": "dedicated to evil",
+          "type": "line"
+        },
+        {
+          "text": "using #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Want to join?",
+          "type": "para"
+        },
+        {
+          "text": "Are you sure?",
+          "type": "para"
+        },
+        {
+          "text": "Come on, join us!",
+          "type": "para"
+        },
+        {
+          "text": "I'm telling you",
+          "type": "para"
+        },
+        {
+          "text": "to join!",
+          "type": "line"
+        },
+        {
+          "text": "OK, you need",
+          "type": "para"
+        },
+        {
+          "text": "convincing!",
+          "type": "line"
+        },
+        {
+          "text": "I'll make you an",
+          "type": "para"
+        },
+        {
+          "text": "offer you can't",
+          "type": "line"
+        },
+        {
+          "text": "refuse!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1Defeated",
+      "values": [
+        {
+          "text": "Arrgh!",
+          "type": "text"
+        },
+        {
+          "text": "You are good!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1YouCouldBecomeATopLeader",
+      "values": [
+        {
+          "text": "With your ability,",
+          "type": "text"
+        },
+        {
+          "text": "you could become",
+          "type": "line"
+        },
+        {
+          "text": "a top leader in",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "I saw your feat",
+          "type": "text"
+        },
+        {
+          "text": "from the grass!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route24_default",
+    "script_route24_start_battle",
+    "script_route24_end_battle",
+    "script_route24_after_rocket_battle",
+    "script_route24_player_moving"
+  ]
+}

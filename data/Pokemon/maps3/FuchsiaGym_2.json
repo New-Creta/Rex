@@ -1,0 +1,589 @@
+{
+  "name": "",
+  "width": -1,
+  "height": -1,
+  "tileset": "Pokemon\\tilesets\\.json",
+  "map_blocks": "Pokemon\\map_blocks\\.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "FuchsiaGymKogaPostBattleAdvice",
+      "values": [
+        {
+          "text": "When afflicted by",
+          "type": "text"
+        },
+        {
+          "text": "TOXIC, #MON",
+          "type": "line"
+        },
+        {
+          "text": "suffer more and",
+          "type": "cont"
+        },
+        {
+          "text": "more as battle",
+          "type": "cont"
+        },
+        {
+          "text": "progresses!",
+          "type": "cont"
+        },
+        {
+          "text": "It will surely",
+          "type": "para"
+        },
+        {
+          "text": "terrorize foes!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymKogaSoulBadgeInfo",
+      "values": [
+        {
+          "text": "Now that you have",
+          "type": "text"
+        },
+        {
+          "text": "the SOULBADGE,",
+          "type": "line"
+        },
+        {
+          "text": "the DEFENSE of",
+          "type": "cont"
+        },
+        {
+          "text": "your #MON",
+          "type": "cont"
+        },
+        {
+          "text": "increases!",
+          "type": "cont"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "SURF outside of",
+          "type": "line"
+        },
+        {
+          "text": "battle!",
+          "type": "cont"
+        },
+        {
+          "text": "Ah! Take this",
+          "type": "para"
+        },
+        {
+          "text": "too!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymKogaReceivedTM06",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymKogaTM06Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "TM06 contains",
+          "type": "para"
+        },
+        {
+          "text": "TOXIC!",
+          "type": "line"
+        },
+        {
+          "text": "It is a secret",
+          "type": "para"
+        },
+        {
+          "text": "technique over",
+          "type": "line"
+        },
+        {
+          "text": "400 years old!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymKogaTM06NoRoom",
+      "values": [
+        {
+          "text": "Make space for",
+          "type": "text"
+        },
+        {
+          "text": "this, child!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker1Battle",
+      "values": [
+        {
+          "text": "Strength isn't",
+          "type": "text"
+        },
+        {
+          "text": "the key for",
+          "type": "line"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        },
+        {
+          "text": "It's strategy!",
+          "type": "para"
+        },
+        {
+          "text": "I'll show you how",
+          "type": "para"
+        },
+        {
+          "text": "strategy can beat",
+          "type": "line"
+        },
+        {
+          "text": "brute strength!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker1EndBattle",
+      "values": [
+        {
+          "text": "What?",
+          "type": "text"
+        },
+        {
+          "text": "Extraordinary!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker1AfterBattle",
+      "values": [
+        {
+          "text": "So, you mix brawn",
+          "type": "text"
+        },
+        {
+          "text": "with brains?",
+          "type": "line"
+        },
+        {
+          "text": "Good strategy!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker2Battle",
+      "values": [
+        {
+          "text": "I wanted to become",
+          "type": "text"
+        },
+        {
+          "text": "a ninja, so I",
+          "type": "line"
+        },
+        {
+          "text": "joined this GYM!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker2EndBattle",
+      "values": [
+        {
+          "text": "I'm done",
+          "type": "text"
+        },
+        {
+          "text": "for!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker2AfterBattle",
+      "values": [
+        {
+          "text": "I will keep on",
+          "type": "text"
+        },
+        {
+          "text": "training under",
+          "type": "line"
+        },
+        {
+          "text": "KOGA, my ninja",
+          "type": "cont"
+        },
+        {
+          "text": "master!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker3Battle",
+      "values": [
+        {
+          "text": "Let's see you",
+          "type": "text"
+        },
+        {
+          "text": "beat my special",
+          "type": "line"
+        },
+        {
+          "text": "techniques!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker3EndBattle",
+      "values": [
+        {
+          "text": "You",
+          "type": "text"
+        },
+        {
+          "text": "had me fooled!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker3AfterBattle",
+      "values": [
+        {
+          "text": "I like poison and",
+          "type": "text"
+        },
+        {
+          "text": "sleep techniques,",
+          "type": "line"
+        },
+        {
+          "text": "as they linger",
+          "type": "cont"
+        },
+        {
+          "text": "after battle!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker4Battle",
+      "values": [
+        {
+          "text": "Stop right there!",
+          "type": "text"
+        },
+        {
+          "text": "Our invisible",
+          "type": "para"
+        },
+        {
+          "text": "walls have you",
+          "type": "line"
+        },
+        {
+          "text": "frustrated?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker4EndBattle",
+      "values": [
+        {
+          "text": "Whoa!",
+          "type": "text"
+        },
+        {
+          "text": "He's got it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker4AfterBattle",
+      "values": [
+        {
+          "text": "You impressed me!",
+          "type": "text"
+        },
+        {
+          "text": "Here's a hint!",
+          "type": "line"
+        },
+        {
+          "text": "Look very closely",
+          "type": "para"
+        },
+        {
+          "text": "for gaps in the",
+          "type": "line"
+        },
+        {
+          "text": "invisible walls!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker5Battle",
+      "values": [
+        {
+          "text": "I also study the",
+          "type": "text"
+        },
+        {
+          "text": "way of the ninja",
+          "type": "line"
+        },
+        {
+          "text": "with master KOGA!",
+          "type": "cont"
+        },
+        {
+          "text": "Ninja have a long",
+          "type": "para"
+        },
+        {
+          "text": "history of using",
+          "type": "line"
+        },
+        {
+          "text": "animals!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker5EndBattle",
+      "values": [
+        {
+          "text": "Awoo!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker5AfterBattle",
+      "values": [
+        {
+          "text": "I still have much",
+          "type": "text"
+        },
+        {
+          "text": "to learn!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker6Battle",
+      "values": [
+        {
+          "text": "Master KOGA comes",
+          "type": "text"
+        },
+        {
+          "text": "from a long line",
+          "type": "line"
+        },
+        {
+          "text": "of ninjas!",
+          "type": "cont"
+        },
+        {
+          "text": "What did you",
+          "type": "para"
+        },
+        {
+          "text": "descend from?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker6EndBattle",
+      "values": [
+        {
+          "text": "Dropped",
+          "type": "text"
+        },
+        {
+          "text": "my balls!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymRocker6AfterBattle",
+      "values": [
+        {
+          "text": "Where there is",
+          "type": "text"
+        },
+        {
+          "text": "light, there is",
+          "type": "line"
+        },
+        {
+          "text": "shadow!",
+          "type": "cont"
+        },
+        {
+          "text": "Light and shadow!",
+          "type": "para"
+        },
+        {
+          "text": "Which do you",
+          "type": "line"
+        },
+        {
+          "text": "choose?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymGymGuideChampInMaking",
+      "values": [
+        {
+          "text": "Yo! Champ in",
+          "type": "text"
+        },
+        {
+          "text": "making!",
+          "type": "line"
+        },
+        {
+          "text": "FUCHSIA GYM is",
+          "type": "para"
+        },
+        {
+          "text": "riddled with",
+          "type": "line"
+        },
+        {
+          "text": "invisible walls!",
+          "type": "cont"
+        },
+        {
+          "text": "KOGA might appear",
+          "type": "para"
+        },
+        {
+          "text": "close, but he's",
+          "type": "line"
+        },
+        {
+          "text": "blocked off!",
+          "type": "cont"
+        },
+        {
+          "text": "You have to find",
+          "type": "para"
+        },
+        {
+          "text": "gaps in the walls",
+          "type": "line"
+        },
+        {
+          "text": "to reach him!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaGymGymGuideBeatKoga",
+      "values": [
+        {
+          "text": "It's amazing how",
+          "type": "text"
+        },
+        {
+          "text": "ninja can terrify",
+          "type": "line"
+        },
+        {
+          "text": "even now!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

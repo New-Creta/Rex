@@ -1,0 +1,52 @@
+{
+  "name": "SSAnneB1F",
+  "width": 15,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnneB1F.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 23,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 27,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 10
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

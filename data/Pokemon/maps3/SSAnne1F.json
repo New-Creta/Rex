@@ -1,0 +1,169 @@
+{
+  "name": "SSAnne1F",
+  "width": 20,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnne1F.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssanne1f_waiter"
+    },
+    {
+      "name": "ssanne1f_sailor"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 6,
+      "sprite": "sprite_waiter",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ssanne1f_waiter"
+    },
+    {
+      "x": 27,
+      "y": 5,
+      "sprite": "sprite_sailor",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne1f_sailor"
+    }
+  ],
+  "warps": [
+    {
+      "x": 26,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 27,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 31,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 23,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 19,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 37,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 3,
+      "y": 16,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SSAnne1FWaiter",
+      "values": [
+        {
+          "text": "Bonjour!",
+          "type": "text"
+        },
+        {
+          "text": "I am le waiter on",
+          "type": "line"
+        },
+        {
+          "text": "this ship!",
+          "type": "cont"
+        },
+        {
+          "text": "I will be happy",
+          "type": "para"
+        },
+        {
+          "text": "to serve you any-",
+          "type": "line"
+        },
+        {
+          "text": "thing you please!",
+          "type": "cont"
+        },
+        {
+          "text": "Ah! Le strong",
+          "type": "para"
+        },
+        {
+          "text": "silent type!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FSailor",
+      "values": [
+        {
+          "text": "The passengers",
+          "type": "text"
+        },
+        {
+          "text": "are restless!",
+          "type": "line"
+        },
+        {
+          "text": "You might be",
+          "type": "para"
+        },
+        {
+          "text": "challenged by the",
+          "type": "line"
+        },
+        {
+          "text": "more bored ones!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

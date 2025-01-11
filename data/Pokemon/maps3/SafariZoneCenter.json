@@ -1,0 +1,125 @@
+{
+  "name": "SafariZoneCenter",
+  "width": 15,
+  "height": 13,
+  "tileset": "Pokemon\\tilesets\\FOREST.json",
+  "map_blocks": "Pokemon\\map_blocks\\SafariZoneCenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "safarizonecenter_nugget"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 14,
+      "y": 10,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonecenter_nugget"
+    }
+  ],
+  "warps": [
+    {
+      "x": 14,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 15,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 29,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 29,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 17,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 18,
+      "y": 20,
+      "text": "text_safarizonecenter_rest_house_sign"
+    },
+    {
+      "x": 14,
+      "y": 22,
+      "text": "text_safarizonecenter_trainer_tips_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "SafariZoneCenterRestHouseSign",
+      "values": [
+        {
+          "text": "REST HOUSE",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneCenterTrainerTipsSign",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Press the START",
+          "type": "para"
+        },
+        {
+          "text": "Button to check",
+          "type": "line"
+        },
+        {
+          "text": "remaining time!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

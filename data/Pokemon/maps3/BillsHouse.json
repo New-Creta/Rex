@@ -1,0 +1,351 @@
+{
+  "name": "BillsHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\INTERIOR.json",
+  "map_blocks": "Pokemon\\map_blocks\\BillsHouse.blk",
+  "border_block_idx": 13,
+  "connections": [],
+  "objects": [
+    {
+      "name": "billshouse_bill_pokemon"
+    },
+    {
+      "name": "billshouse_bill1"
+    },
+    {
+      "name": "billshouse_bill2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 5,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_pokemon"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_ss_ticket"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_check_out_my_rare_pokemon"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "BillsHouseBillImNotAPokemon",
+      "values": [
+        {
+          "text": "Hiya! I'm a",
+          "type": "text"
+        },
+        {
+          "text": "#MON...",
+          "type": "line"
+        },
+        {
+          "text": "...No I'm not!",
+          "type": "cont"
+        },
+        {
+          "text": "Call me BILL!",
+          "type": "para"
+        },
+        {
+          "text": "I'm a true blue",
+          "type": "line"
+        },
+        {
+          "text": "#MANIAC! Hey!",
+          "type": "cont"
+        },
+        {
+          "text": "What's with that",
+          "type": "cont"
+        },
+        {
+          "text": "skeptical look?",
+          "type": "cont"
+        },
+        {
+          "text": "I'm not joshing",
+          "type": "para"
+        },
+        {
+          "text": "you, I screwed up",
+          "type": "line"
+        },
+        {
+          "text": "an experiment and",
+          "type": "cont"
+        },
+        {
+          "text": "got combined with",
+          "type": "cont"
+        },
+        {
+          "text": "a #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "So, how about it?",
+          "type": "para"
+        },
+        {
+          "text": "Help me out here!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "BillsHouseBillUseSeparationSystem",
+      "values": [
+        {
+          "text": "When I'm in the",
+          "type": "text"
+        },
+        {
+          "text": "TELEPORTER, go to",
+          "type": "line"
+        },
+        {
+          "text": "my PC and run the",
+          "type": "cont"
+        },
+        {
+          "text": "Cell Separation",
+          "type": "cont"
+        },
+        {
+          "text": "System!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BillsHouseBillNoYouGottaHelp",
+      "values": [
+        {
+          "text": "No!? Come on, you",
+          "type": "text"
+        },
+        {
+          "text": "gotta help a guy",
+          "type": "line"
+        },
+        {
+          "text": "in deep trouble!",
+          "type": "cont"
+        },
+        {
+          "text": "What do you say,",
+          "type": "para"
+        },
+        {
+          "text": "chief? Please?",
+          "type": "line"
+        },
+        {
+          "text": "OK? All right!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BillsHouseBillThankYou",
+      "values": [
+        {
+          "text": "BILL: Yeehah!",
+          "type": "text"
+        },
+        {
+          "text": "Thanks, bud! I",
+          "type": "line"
+        },
+        {
+          "text": "owe you one!",
+          "type": "cont"
+        },
+        {
+          "text": "So, did you come",
+          "type": "para"
+        },
+        {
+          "text": "to see my #MON",
+          "type": "line"
+        },
+        {
+          "text": "collection?",
+          "type": "cont"
+        },
+        {
+          "text": "You didn't?",
+          "type": "cont"
+        },
+        {
+          "text": "That's a bummer.",
+          "type": "cont"
+        },
+        {
+          "text": "I've got to thank",
+          "type": "para"
+        },
+        {
+          "text": "you... Oh here,",
+          "type": "line"
+        },
+        {
+          "text": "maybe this'll do.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSTicketReceived",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "an @",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SSTicketNoRoom",
+      "values": [
+        {
+          "text": "You've got too",
+          "type": "text"
+        },
+        {
+          "text": "much stuff, bud!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "BillsHouseBillWhyDontYouGoInsteadOfMe",
+      "values": [
+        {
+          "text": "That cruise ship,",
+          "type": "text"
+        },
+        {
+          "text": "S.S.ANNE, is in",
+          "type": "line"
+        },
+        {
+          "text": "VERMILION CITY.",
+          "type": "cont"
+        },
+        {
+          "text": "Its passengers",
+          "type": "cont"
+        },
+        {
+          "text": "are all trainers!",
+          "type": "cont"
+        },
+        {
+          "text": "They invited me",
+          "type": "para"
+        },
+        {
+          "text": "to their party,",
+          "type": "line"
+        },
+        {
+          "text": "but I can't stand",
+          "type": "cont"
+        },
+        {
+          "text": "fancy do's. Why",
+          "type": "cont"
+        },
+        {
+          "text": "don't you go",
+          "type": "cont"
+        },
+        {
+          "text": "instead of me?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BillsHouseBillCheckOutMyRarePokemon",
+      "values": [
+        {
+          "text": "BILL: Look, bud,",
+          "type": "text"
+        },
+        {
+          "text": "just check out",
+          "type": "line"
+        },
+        {
+          "text": "some of my rare",
+          "type": "cont"
+        },
+        {
+          "text": "#MON on my PC!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_billshouse_default",
+    "script_billshouse_pokemon_walk_to_machine",
+    "script_billshouse_pokemon_enters_machine",
+    "script_billshouse_bill_exits_machine",
+    "script_billshouse_cleanup",
+    "script_billshouse_pc"
+  ]
+}

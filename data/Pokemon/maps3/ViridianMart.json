@@ -1,0 +1,153 @@
+{
+  "name": "ViridianMart",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\MART.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianMart.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "viridianmart_clerk"
+    },
+    {
+      "name": "viridianmart_youngster"
+    },
+    {
+      "name": "viridianmart_cooltrainer_m"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 0,
+      "y": 5,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_viridianmart_clerk"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_viridianmart_youngster"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianmart_cooltrainer_m"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "ViridianMartClerkSayHiToOak",
+      "values": [
+        {
+          "text": "Okay! Say hi to",
+          "type": "text"
+        },
+        {
+          "text": "PROF.OAK for me!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartClerkYouCameFromPalletTown",
+      "values": [
+        {
+          "text": "Hey! You came from",
+          "type": "text"
+        },
+        {
+          "text": "PALLET TOWN?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartClerkParcelQuest",
+      "values": [
+        {
+          "text": "You know PROF.",
+          "type": "text"
+        },
+        {
+          "text": "OAK, right?",
+          "type": "line"
+        },
+        {
+          "text": "His order came in.",
+          "type": "para"
+        },
+        {
+          "text": "Will you take it",
+          "type": "line"
+        },
+        {
+          "text": "to him?",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER> got",
+          "type": "para"
+        },
+        {
+          "text": "OAK's PARCEL!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartYoungster",
+      "values": [
+        {
+          "text": "This shop sells",
+          "type": "text"
+        },
+        {
+          "text": "many ANTIDOTEs.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartCooltrainerM",
+      "values": [
+        {
+          "text": "No! POTIONs are",
+          "type": "text"
+        },
+        {
+          "text": "all sold out.",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_viridianmart_default",
+    "script_viridianmart_oaks_parcel",
+    "script_viridianmart_noop"
+  ]
+}
