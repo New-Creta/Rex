@@ -1,0 +1,217 @@
+{
+  "name": "CINNABAR ISLAND",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarIsland.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\route21.json",
+      "offset": "0"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\route20.json",
+      "offset": "0"
+    }
+  ],
+  "objects": [
+    {
+      "name": "cinnabarisland_girl"
+    },
+    {
+      "name": "cinnabarisland_gambler"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 5,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_cinnabarisland_girl"
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_cinnabarisland_gambler"
+    }
+  ],
+  "warps": [
+    {
+      "x": 6,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 18,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 15,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 9,
+      "y": 5,
+      "text": "text_cinnabarisland_sign"
+    },
+    {
+      "x": 16,
+      "y": 11,
+      "text": "text_cinnabarisland_mart_sign"
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "text": "text_cinnabarisland_pokecenter_sign"
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "text": "text_cinnabarisland_pokemonlab_sign"
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "text": "text_cinnabarisland_gym_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "CinnabarIslandDoorIsLocked",
+      "values": [
+        {
+          "text": "The door is",
+          "type": "text"
+        },
+        {
+          "text": "locked...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarIslandGirl",
+      "values": [
+        {
+          "text": "CINNABAR GYM's",
+          "type": "text"
+        },
+        {
+          "text": "BLAINE is an odd",
+          "type": "line"
+        },
+        {
+          "text": "man who has lived",
+          "type": "cont"
+        },
+        {
+          "text": "here for decades.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarIslandGambler",
+      "values": [
+        {
+          "text": "Scientists conduct",
+          "type": "text"
+        },
+        {
+          "text": "experiments in",
+          "type": "line"
+        },
+        {
+          "text": "the burned out",
+          "type": "cont"
+        },
+        {
+          "text": "building.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarIslandSign",
+      "values": [
+        {
+          "text": "CINNABAR ISLAND",
+          "type": "text"
+        },
+        {
+          "text": "The Fiery Town of",
+          "type": "line"
+        },
+        {
+          "text": "Burning Desire",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarIslandPokemonLabSign",
+      "values": [
+        {
+          "text": "#MON LAB",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarIslandGymSign",
+      "values": [
+        {
+          "text": "CINNABAR ISLAND",
+          "type": "text"
+        },
+        {
+          "text": "#MON GYM",
+          "type": "line"
+        },
+        {
+          "text": "LEADER: BLAINE",
+          "type": "cont"
+        },
+        {
+          "text": "The Hot-Headed",
+          "type": "para"
+        },
+        {
+          "text": "Quiz Master!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_cinnabarisland_default",
+    "script_cinnabarisland_player_moving"
+  ]
+}

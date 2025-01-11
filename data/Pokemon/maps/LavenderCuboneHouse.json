@@ -1,0 +1,124 @@
+{
+  "name": "LavenderCuboneHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\LavenderCuboneHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "lavendercubonehouse_cubone"
+    },
+    {
+      "name": "lavendercubonehouse_brunette_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 5,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_lavendercubonehouse_cubone"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "sprite": "sprite_brunette_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_lavendercubonehouse_brunette_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "LavenderCuboneHouseCubone",
+      "values": [
+        {
+          "text": "CUBONE: Kyarugoo!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "LavenderCuboneHouseBrunetteGirlPoorCubonesMother",
+      "values": [
+        {
+          "text": "I hate those",
+          "type": "text"
+        },
+        {
+          "text": "horrible ROCKETs!",
+          "type": "line"
+        },
+        {
+          "text": "That poor CUBONE's",
+          "type": "para"
+        },
+        {
+          "text": "mother...",
+          "type": "line"
+        },
+        {
+          "text": "It was killed",
+          "type": "para"
+        },
+        {
+          "text": "trying to escape",
+          "type": "line"
+        },
+        {
+          "text": "from TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "LavenderCuboneHouseBrunetteGirlGhostIsGone",
+      "values": [
+        {
+          "text": "The GHOST of",
+          "type": "text"
+        },
+        {
+          "text": "#MON TOWER is",
+          "type": "line"
+        },
+        {
+          "text": "gone!",
+          "type": "cont"
+        },
+        {
+          "text": "Someone must have",
+          "type": "para"
+        },
+        {
+          "text": "soothed its",
+          "type": "line"
+        },
+        {
+          "text": "restless soul!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,105 @@
+{
+  "name": "CeruleanCave1F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanCave1F.blk",
+  "border_block_idx": 125,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ceruleancave1f_full_restore"
+    },
+    {
+      "name": "ceruleancave1f_max_elixer"
+    },
+    {
+      "name": "ceruleancave1f_nugget"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 7,
+      "y": 13,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancave1f_full_restore"
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancave1f_max_elixer"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancave1f_nugget"
+    }
+  ],
+  "warps": [
+    {
+      "x": 24,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 25,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 27,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 23,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

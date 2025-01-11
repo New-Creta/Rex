@@ -1,0 +1,903 @@
+{
+  "name": "CERULEAN CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\route24.json",
+      "offset": "5"
+    },
+    {
+      "direction": "south",
+      "map": "Pokemon\\maps\\route5.json",
+      "offset": "5"
+    },
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\route4.json",
+      "offset": "4"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\route9.json",
+      "offset": "4"
+    }
+  ],
+  "objects": [
+    {
+      "name": "ceruleancity_rival"
+    },
+    {
+      "name": "ceruleancity_rocket"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_m"
+    },
+    {
+      "name": "ceruleancity_super_nerd1"
+    },
+    {
+      "name": "ceruleancity_super_nerd2"
+    },
+    {
+      "name": "ceruleancity_guard1"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_f1"
+    },
+    {
+      "name": "ceruleancity_slowbro"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_f2"
+    },
+    {
+      "name": "ceruleancity_super_nerd3"
+    },
+    {
+      "name": "ceruleancity_guard2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 20,
+      "y": 2,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_rival"
+    },
+    {
+      "x": 30,
+      "y": 8,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancity_rocket"
+    },
+    {
+      "x": 31,
+      "y": 20,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_cooltrainer_m"
+    },
+    {
+      "x": 15,
+      "y": 18,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ceruleancity_super_nerd1"
+    },
+    {
+      "x": 9,
+      "y": 21,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ceruleancity_super_nerd2"
+    },
+    {
+      "x": 28,
+      "y": 12,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_guard1"
+    },
+    {
+      "x": 29,
+      "y": 26,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ceruleancity_cooltrainer_f1"
+    },
+    {
+      "x": 28,
+      "y": 26,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_slowbro"
+    },
+    {
+      "x": 9,
+      "y": 27,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ceruleancity_cooltrainer_f2"
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_super_nerd3"
+    },
+    {
+      "x": 27,
+      "y": 12,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_guard2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 27,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 19,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 30,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 25,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 27,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 23,
+      "y": 19,
+      "text": "text_ceruleancity_sign"
+    },
+    {
+      "x": 17,
+      "y": 29,
+      "text": "text_ceruleancity_trainer_tips"
+    },
+    {
+      "x": 26,
+      "y": 25,
+      "text": "text_ceruleancity_mart_sign"
+    },
+    {
+      "x": 20,
+      "y": 17,
+      "text": "text_ceruleancity_pokecenter_sign"
+    },
+    {
+      "x": 11,
+      "y": 25,
+      "text": "text_ceruleancity_bikeshop_sign"
+    },
+    {
+      "x": 27,
+      "y": 21,
+      "text": "text_ceruleancity_gym_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "CeruleanCityRivalPreBattle",
+      "values": [
+        {
+          "text": "<RIVAL>: Yo!",
+          "type": "text"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "line"
+        },
+        {
+          "text": "You're still",
+          "type": "para"
+        },
+        {
+          "text": "struggling along",
+          "type": "line"
+        },
+        {
+          "text": "back here?",
+          "type": "cont"
+        },
+        {
+          "text": "I'm doing great!",
+          "type": "para"
+        },
+        {
+          "text": "I caught a bunch",
+          "type": "line"
+        },
+        {
+          "text": "of strong and",
+          "type": "cont"
+        },
+        {
+          "text": "smart #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Here, let me see",
+          "type": "para"
+        },
+        {
+          "text": "what you caught,",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRivalDefeated",
+      "values": [
+        {
+          "text": "Hey!",
+          "type": "text"
+        },
+        {
+          "text": "Take it easy!",
+          "type": "line"
+        },
+        {
+          "text": "You won already!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRivalVictory",
+      "values": [
+        {
+          "text": "Heh!",
+          "type": "text"
+        },
+        {
+          "text": "You're no match",
+          "type": "line"
+        },
+        {
+          "text": "for my genius!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRivalIWentToBills",
+      "values": [
+        {
+          "text": "<RIVAL>: Hey,",
+          "type": "text"
+        },
+        {
+          "text": "guess what?",
+          "type": "line"
+        },
+        {
+          "text": "I went to BILL's",
+          "type": "para"
+        },
+        {
+          "text": "and got him to",
+          "type": "line"
+        },
+        {
+          "text": "show me his rare",
+          "type": "cont"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        },
+        {
+          "text": "That added a lot",
+          "type": "para"
+        },
+        {
+          "text": "of pages to my",
+          "type": "line"
+        },
+        {
+          "text": "#DEX!",
+          "type": "cont"
+        },
+        {
+          "text": "After all, BILL's",
+          "type": "para"
+        },
+        {
+          "text": "world famous as a",
+          "type": "line"
+        },
+        {
+          "text": "#MANIAC!",
+          "type": "cont"
+        },
+        {
+          "text": "He invented the",
+          "type": "para"
+        },
+        {
+          "text": "#MON Storage",
+          "type": "line"
+        },
+        {
+          "text": "System on PC!",
+          "type": "cont"
+        },
+        {
+          "text": "Since you're using",
+          "type": "para"
+        },
+        {
+          "text": "his system, go",
+          "type": "line"
+        },
+        {
+          "text": "thank him!",
+          "type": "cont"
+        },
+        {
+          "text": "Well, I better",
+          "type": "para"
+        },
+        {
+          "text": "get rolling!",
+          "type": "line"
+        },
+        {
+          "text": "Smell ya later!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocket",
+      "values": [
+        {
+          "text": "Hey! Stay out!",
+          "type": "text"
+        },
+        {
+          "text": "It's not your",
+          "type": "line"
+        },
+        {
+          "text": "yard! Huh? Me?",
+          "type": "cont"
+        },
+        {
+          "text": "I'm an innocent",
+          "type": "para"
+        },
+        {
+          "text": "bystander! Don't",
+          "type": "line"
+        },
+        {
+          "text": "you believe me?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocketReceivedTM28",
+      "values": [
+        {
+          "text": "<PLAYER> recovered",
+          "type": "text"
+        },
+        {
+          "text": "TM28!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocketIBetterGetMoving",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "I better get",
+          "type": "para"
+        },
+        {
+          "text": "moving! Bye!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocketTM28NoRoom",
+      "values": [
+        {
+          "text": "Make room for",
+          "type": "text"
+        },
+        {
+          "text": "this!",
+          "type": "line"
+        },
+        {
+          "text": "I can't run until",
+          "type": "para"
+        },
+        {
+          "text": "I give it to you!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocketIGiveUp",
+      "values": [
+        {
+          "text": "Stop!",
+          "type": "text"
+        },
+        {
+          "text": "I give up! I'll",
+          "type": "line"
+        },
+        {
+          "text": "leave quietly!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityRocketIllReturnTheTM",
+      "values": [
+        {
+          "text": "OK! I'll return",
+          "type": "text"
+        },
+        {
+          "text": "the TM I stole!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityCooltrainerM",
+      "values": [
+        {
+          "text": "You're a trainer",
+          "type": "text"
+        },
+        {
+          "text": "too? Collecting,",
+          "type": "line"
+        },
+        {
+          "text": "fighting, it's a",
+          "type": "cont"
+        },
+        {
+          "text": "tough life.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySuperNerd1",
+      "values": [
+        {
+          "text": "That bush in",
+          "type": "text"
+        },
+        {
+          "text": "front of the shop",
+          "type": "line"
+        },
+        {
+          "text": "is in the way.",
+          "type": "cont"
+        },
+        {
+          "text": "There might be a",
+          "type": "para"
+        },
+        {
+          "text": "way around.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySuperNerd2",
+      "values": [
+        {
+          "text": "You're making an",
+          "type": "text"
+        },
+        {
+          "text": "encyclopedia on",
+          "type": "line"
+        },
+        {
+          "text": "#MON? That",
+          "type": "cont"
+        },
+        {
+          "text": "sounds amusing.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityGuard",
+      "values": [
+        {
+          "text": "The people here",
+          "type": "text"
+        },
+        {
+          "text": "were robbed.",
+          "type": "line"
+        },
+        {
+          "text": "It's obvious that",
+          "type": "para"
+        },
+        {
+          "text": "TEAM ROCKET is",
+          "type": "line"
+        },
+        {
+          "text": "behind this most",
+          "type": "cont"
+        },
+        {
+          "text": "heinous crime!",
+          "type": "cont"
+        },
+        {
+          "text": "Even our POLICE",
+          "type": "para"
+        },
+        {
+          "text": "force has trouble",
+          "type": "line"
+        },
+        {
+          "text": "with the ROCKETs!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityCooltrainerF1SlowbroUseSonicboom",
+      "values": [
+        {
+          "text": "OK! SLOWBRO!",
+          "type": "text"
+        },
+        {
+          "text": "Use SONICBOOM!",
+          "type": "line"
+        },
+        {
+          "text": "Come on, SLOWBRO",
+          "type": "cont"
+        },
+        {
+          "text": "pay attention!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityCooltrainerF1SlowbroPunch",
+      "values": [
+        {
+          "text": "SLOWBRO punch!",
+          "type": "text"
+        },
+        {
+          "text": "No! You blew it",
+          "type": "line"
+        },
+        {
+          "text": "again!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityCooltrainerF1SlowbroWithdraw",
+      "values": [
+        {
+          "text": "SLOWBRO, WITHDRAW!",
+          "type": "text"
+        },
+        {
+          "text": "No! That's wrong!",
+          "type": "line"
+        },
+        {
+          "text": "It's so hard to",
+          "type": "para"
+        },
+        {
+          "text": "control #MON!",
+          "type": "line"
+        },
+        {
+          "text": "Your #MON's",
+          "type": "para"
+        },
+        {
+          "text": "obedience depends",
+          "type": "line"
+        },
+        {
+          "text": "on your abilities",
+          "type": "cont"
+        },
+        {
+          "text": "as a trainer!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySlowbroTookASnooze",
+      "values": [
+        {
+          "text": "SLOWBRO took a",
+          "type": "text"
+        },
+        {
+          "text": "snooze...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySlowbroIsLoafingAround",
+      "values": [
+        {
+          "text": "SLOWBRO is",
+          "type": "text"
+        },
+        {
+          "text": "loafing around...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySlowbroTurnedAway",
+      "values": [
+        {
+          "text": "SLOWBRO turned",
+          "type": "text"
+        },
+        {
+          "text": "away...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySlowbroIgnoredOrders",
+      "values": [
+        {
+          "text": "SLOWBRO",
+          "type": "text"
+        },
+        {
+          "text": "ignored orders...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityCooltrainerF2",
+      "values": [
+        {
+          "text": "I want a bright",
+          "type": "text"
+        },
+        {
+          "text": "red BICYCLE!",
+          "type": "line"
+        },
+        {
+          "text": "I'll keep it at",
+          "type": "para"
+        },
+        {
+          "text": "home, so it won't",
+          "type": "line"
+        },
+        {
+          "text": "get dirty!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySuperNerd3",
+      "values": [
+        {
+          "text": "This is CERULEAN",
+          "type": "text"
+        },
+        {
+          "text": "CAVE! Horribly",
+          "type": "line"
+        },
+        {
+          "text": "strong #MON",
+          "type": "cont"
+        },
+        {
+          "text": "live in there!",
+          "type": "cont"
+        },
+        {
+          "text": "The #MON LEAGUE",
+          "type": "para"
+        },
+        {
+          "text": "champion is the",
+          "type": "line"
+        },
+        {
+          "text": "only person who",
+          "type": "cont"
+        },
+        {
+          "text": "is allowed in!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCitySign",
+      "values": [
+        {
+          "text": "CERULEAN CITY",
+          "type": "text"
+        },
+        {
+          "text": "A Mysterious,",
+          "type": "line"
+        },
+        {
+          "text": "Blue Aura",
+          "type": "cont"
+        },
+        {
+          "text": "Surrounds It",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanCityTrainerTips",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Pressing B Button",
+          "type": "para"
+        },
+        {
+          "text": "during evolution",
+          "type": "line"
+        },
+        {
+          "text": "cancels the whole",
+          "type": "cont"
+        },
+        {
+          "text": "process.",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_ceruleancity_default",
+    "script_ceruleancity_rival_battle",
+    "script_ceruleancity_rival_defeated",
+    "script_ceruleancity_rival_cleanup",
+    "script_ceruleancity_rocket_defeated"
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "name": "CeladonPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonpokecenter_nurse"
+    },
+    {
+      "name": "celadonpokecenter_gentleman"
+    },
+    {
+      "name": "celadonpokecenter_beauty"
+    },
+    {
+      "name": "celadonpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonpokecenter_nurse"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_celadonpokecenter_gentleman"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_beauty",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_celadonpokecenter_beauty"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "CeladonPokecenterGentleman",
+      "values": [
+        {
+          "text": "# FLUTE awakens",
+          "type": "text"
+        },
+        {
+          "text": "#MON with a",
+          "type": "line"
+        },
+        {
+          "text": "sound that only",
+          "type": "cont"
+        },
+        {
+          "text": "they can hear!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonPokecenterBeauty",
+      "values": [
+        {
+          "text": "I rode uphill on",
+          "type": "text"
+        },
+        {
+          "text": "CYCLING ROAD from",
+          "type": "line"
+        },
+        {
+          "text": "FUCHSIA!",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

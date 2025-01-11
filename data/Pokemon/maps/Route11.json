@@ -1,0 +1,564 @@
+{
+  "name": "ROUTE 11",
+  "width": 30,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route11.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\vermilioncity.json",
+      "offset": "-4"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\route12.json",
+      "offset": "-27"
+    }
+  ],
+  "objects": [
+    {
+      "name": "route11_gambler1"
+    },
+    {
+      "name": "route11_gambler2"
+    },
+    {
+      "name": "route11_youngster1"
+    },
+    {
+      "name": "route11_super_nerd1"
+    },
+    {
+      "name": "route11_youngster2"
+    },
+    {
+      "name": "route11_gambler3"
+    },
+    {
+      "name": "route11_gambler4"
+    },
+    {
+      "name": "route11_youngster3"
+    },
+    {
+      "name": "route11_super_nerd2"
+    },
+    {
+      "name": "route11_youngster4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 14,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route11_gambler1"
+    },
+    {
+      "x": 26,
+      "y": 9,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route11_gambler2"
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route11_youngster1"
+    },
+    {
+      "x": 36,
+      "y": 11,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route11_super_nerd1"
+    },
+    {
+      "x": 22,
+      "y": 4,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route11_youngster2"
+    },
+    {
+      "x": 45,
+      "y": 7,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route11_gambler3"
+    },
+    {
+      "x": 33,
+      "y": 3,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route11_gambler4"
+    },
+    {
+      "x": 43,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route11_youngster3"
+    },
+    {
+      "x": 45,
+      "y": 16,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route11_super_nerd2"
+    },
+    {
+      "x": 22,
+      "y": 12,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route11_youngster4"
+    }
+  ],
+  "warps": [
+    {
+      "x": 49,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 49,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 58,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 58,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 5,
+      "text": "text_route11_diglettscave_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route11Gambler1Battle",
+      "values": [
+        {
+          "text": "Win, lose or draw!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler1EndBattle",
+      "values": [
+        {
+          "text": "Atcha!",
+          "type": "text"
+        },
+        {
+          "text": "Didn't go my way!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler1AfterBattle",
+      "values": [
+        {
+          "text": "#MON is life!",
+          "type": "text"
+        },
+        {
+          "text": "And to live is to",
+          "type": "line"
+        },
+        {
+          "text": "gamble!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler2Battle",
+      "values": [
+        {
+          "text": "Competition! I",
+          "type": "text"
+        },
+        {
+          "text": "can't get enough!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler2EndBattle",
+      "values": [
+        {
+          "text": "I had",
+          "type": "text"
+        },
+        {
+          "text": "a chance!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler2AfterBattle",
+      "values": [
+        {
+          "text": "You can't be a",
+          "type": "text"
+        },
+        {
+          "text": "coward in the",
+          "type": "line"
+        },
+        {
+          "text": "world of #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster1Battle",
+      "values": [
+        {
+          "text": "Let's go, but",
+          "type": "text"
+        },
+        {
+          "text": "don't cheat!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster1EndBattle",
+      "values": [
+        {
+          "text": "Huh?",
+          "type": "text"
+        },
+        {
+          "text": "That's not right!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster1AfterBattle",
+      "values": [
+        {
+          "text": "I did my best! I",
+          "type": "text"
+        },
+        {
+          "text": "have no regrets!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11SuperNerd1Battle",
+      "values": [
+        {
+          "text": "Careful!",
+          "type": "text"
+        },
+        {
+          "text": "I'm laying down",
+          "type": "line"
+        },
+        {
+          "text": "some cables!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route11SuperNerd1EndBattle",
+      "values": [
+        {
+          "text": "That",
+          "type": "text"
+        },
+        {
+          "text": "was electric!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11SuperNerd1AfterBattle",
+      "values": [
+        {
+          "text": "Spread the word",
+          "type": "text"
+        },
+        {
+          "text": "to save energy!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster2Battle",
+      "values": [
+        {
+          "text": "I just became a",
+          "type": "text"
+        },
+        {
+          "text": "trainer! But, I",
+          "type": "line"
+        },
+        {
+          "text": "think I can win!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster2EndBattle",
+      "values": [
+        {
+          "text": "My",
+          "type": "text"
+        },
+        {
+          "text": "#MON couldn't!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        },
+        {
+          "text": "What do you want?",
+          "type": "text"
+        },
+        {
+          "text": "Leave me alone!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler3Battle",
+      "values": [
+        {
+          "text": "Fwahaha! I have",
+          "type": "text"
+        },
+        {
+          "text": "never lost!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler3EndBattle",
+      "values": [
+        {
+          "text": "My",
+          "type": "text"
+        },
+        {
+          "text": "first loss!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler3AfterBattle",
+      "values": [
+        {
+          "text": "Luck of the draw!",
+          "type": "text"
+        },
+        {
+          "text": "Just luck!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler4Battle",
+      "values": [
+        {
+          "text": "I have never won",
+          "type": "text"
+        },
+        {
+          "text": "before...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler4EndBattle",
+      "values": [
+        {
+          "text": "I saw",
+          "type": "text"
+        },
+        {
+          "text": "this coming...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gambler4AfterBattle",
+      "values": [
+        {
+          "text": "It's just luck.",
+          "type": "text"
+        },
+        {
+          "text": "Luck of the draw.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster3Battle",
+      "values": [
+        {
+          "text": "I'm the best in",
+          "type": "text"
+        },
+        {
+          "text": "my class!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster3EndBattle",
+      "values": [
+        {
+          "text": "Darn!",
+          "type": "text"
+        },
+        {
+          "text": "I need to make my",
+          "type": "line"
+        },
+        {
+          "text": "#MON stronger!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route11Youngster3AfterBattle",
+      "values": [
+        {
+          "text": "There's a fat",
+          "type": "text"
+        },
+        {
+          "text": "#MON that",
+          "type": "line"
+        },
+        {
+          "text": "comes down from",
+          "type": "cont"
+        },
+        {
+          "text": "the mountains.",
+          "type": "cont"
+        },
+        {
+          "text": "It's strong if",
+          "type": "para"
+        },
+        {
+          "text": "you can get it.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11SuperNerd2Battle",
+      "values": [
+        {
+          "text": "Watch out for",
+          "type": "text"
+        },
+        {
+          "text": "live wires!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_route11_default",
+    "script_route11_start_battle",
+    "script_route11_end_battle"
+  ]
+}

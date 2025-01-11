@@ -1,0 +1,111 @@
+{
+  "name": "PewterSpeechHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\PewterSpeechHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pewterspeechhouse_gambler"
+    },
+    {
+      "name": "pewterspeechhouse_youngster"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pewterspeechhouse_gambler"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pewterspeechhouse_youngster"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "PewterSpeechHouseGambler",
+      "values": [
+        {
+          "text": "#MON learn new",
+          "type": "text"
+        },
+        {
+          "text": "techniques as",
+          "type": "line"
+        },
+        {
+          "text": "they grow!",
+          "type": "cont"
+        },
+        {
+          "text": "But, some moves",
+          "type": "para"
+        },
+        {
+          "text": "must be taught by",
+          "type": "line"
+        },
+        {
+          "text": "the trainer!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterSpeechHouseYoungster",
+      "values": [
+        {
+          "text": "#MON become",
+          "type": "text"
+        },
+        {
+          "text": "easier to catch",
+          "type": "line"
+        },
+        {
+          "text": "when they are",
+          "type": "cont"
+        },
+        {
+          "text": "hurt or asleep!",
+          "type": "cont"
+        },
+        {
+          "text": "But, it's not a",
+          "type": "para"
+        },
+        {
+          "text": "sure thing!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

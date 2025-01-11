@@ -1,0 +1,34 @@
+{
+  "name": "SilphCoElevator",
+  "width": 2,
+  "height": 2,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCoElevator.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 1,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 0,
+      "text": "text_silphcoelevator_elevator"
+    }
+  ],
+  "texts": [],
+  "scripts": []
+}

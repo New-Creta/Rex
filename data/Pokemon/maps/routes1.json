@@ -1,0 +1,15 @@
+{
+  "name": "",
+  "width": -1,
+  "height": -1,
+  "tileset": "Pokemon\\tilesets\\.json",
+  "map_blocks": "Pokemon\\map_blocks\\.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

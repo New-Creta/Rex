@@ -1,0 +1,25 @@
+{
+  "name": "RedsHouse2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\REDS_HOUSE_2.json",
+  "map_blocks": "Pokemon\\map_blocks\\RedsHouse2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": [
+    "script_redshouse2f_default",
+    "script_redshouse2f_noop"
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "name": "",
+  "width": -1,
+  "height": -1,
+  "tileset": "Pokemon\\tilesets\\.json",
+  "map_blocks": "Pokemon\\map_blocks\\.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "SilphCo5FRockerEndBattle",
+      "values": [
+        {
+          "text": "Oh",
+          "type": "text"
+        },
+        {
+          "text": "goodness!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRockerAfterBattle",
+      "values": [
+        {
+          "text": "You're only on 5F.",
+          "type": "text"
+        },
+        {
+          "text": "It's a long way",
+          "type": "line"
+        },
+        {
+          "text": "to my BOSS!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2Battle",
+      "values": [
+        {
+          "text": "Show TEAM ROCKET",
+          "type": "text"
+        },
+        {
+          "text": "a little respect!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2EndBattle",
+      "values": [
+        {
+          "text": "Cough...",
+          "type": "text"
+        },
+        {
+          "text": "Cough...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "Which reminds me.",
+          "type": "text"
+        },
+        {
+          "text": "KOFFING evolves",
+          "type": "para"
+        },
+        {
+          "text": "into WEEZING!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport1",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "#MON LAB",
+          "type": "para"
+        },
+        {
+          "text": "created PORYGON,",
+          "type": "line"
+        },
+        {
+          "text": "the first virtual",
+          "type": "cont"
+        },
+        {
+          "text": "reality #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport2",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "Over 160 #MON",
+          "type": "para"
+        },
+        {
+          "text": "techniques have",
+          "type": "line"
+        },
+        {
+          "text": "been confirmed.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport3",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "4 #MON evolve",
+          "type": "para"
+        },
+        {
+          "text": "only when traded",
+          "type": "line"
+        },
+        {
+          "text": "by link-cable.",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

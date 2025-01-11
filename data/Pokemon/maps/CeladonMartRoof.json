@@ -1,0 +1,404 @@
+{
+  "name": "CeladonMartRoof",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMartRoof.blk",
+  "border_block_idx": 66,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmartroof_super_nerd"
+    },
+    {
+      "name": "celadonmartroof_little_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_celadonmartroof_super_nerd"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_celadonmartroof_little_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 15,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 10,
+      "y": 1,
+      "text": "text_celadonmartroof_vending_machine1"
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "text": "text_celadonmartroof_vending_machine2"
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "text": "text_celadonmartroof_vending_machine3"
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "text": "text_celadonmartroof_current_floor_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "CeladonMartRoofLittleGirlGiveHerWhichDrink",
+      "values": [
+        {
+          "text": "Give her which",
+          "type": "text"
+        },
+        {
+          "text": "drink?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlYayFreshWater",
+      "values": [
+        {
+          "text": "Yay!",
+          "type": "text"
+        },
+        {
+          "text": "FRESH WATER!",
+          "type": "para"
+        },
+        {
+          "text": "Thank you!",
+          "type": "para"
+        },
+        {
+          "text": "You can have this",
+          "type": "para"
+        },
+        {
+          "text": "from me!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlReceivedTM13",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlTM13Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "para"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": " contains",
+          "type": "text"
+        },
+        {
+          "text": "ICE BEAM!",
+          "type": "line"
+        },
+        {
+          "text": "It can freeze the",
+          "type": "para"
+        },
+        {
+          "text": "target sometimes!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlYaySodaPop",
+      "values": [
+        {
+          "text": "Yay!",
+          "type": "text"
+        },
+        {
+          "text": "SODA POP!",
+          "type": "para"
+        },
+        {
+          "text": "Thank you!",
+          "type": "para"
+        },
+        {
+          "text": "You can have this",
+          "type": "para"
+        },
+        {
+          "text": "from me!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlReceivedTM48",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlTM48Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "para"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": " contains",
+          "type": "text"
+        },
+        {
+          "text": "ROCK SLIDE!",
+          "type": "line"
+        },
+        {
+          "text": "It can spook the",
+          "type": "para"
+        },
+        {
+          "text": "target sometimes!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlYayLemonade",
+      "values": [
+        {
+          "text": "Yay!",
+          "type": "text"
+        },
+        {
+          "text": "LEMONADE!",
+          "type": "para"
+        },
+        {
+          "text": "Thank you!",
+          "type": "para"
+        },
+        {
+          "text": "You can have this",
+          "type": "para"
+        },
+        {
+          "text": "from me!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlReceivedTM49",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "TM49!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlTM49Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "TM49 contains",
+          "type": "para"
+        },
+        {
+          "text": "TRI ATTACK!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlNoRoom",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "space for this!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlImNotThirsty",
+      "values": [
+        {
+          "text": "No thank you!",
+          "type": "text"
+        },
+        {
+          "text": "I'm not thirsty",
+          "type": "line"
+        },
+        {
+          "text": "after all!@",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofSuperNerd",
+      "values": [
+        {
+          "text": "My sister is a",
+          "type": "text"
+        },
+        {
+          "text": "trainer, believe",
+          "type": "line"
+        },
+        {
+          "text": "it or not.",
+          "type": "cont"
+        },
+        {
+          "text": "But, she's so",
+          "type": "para"
+        },
+        {
+          "text": "immature, she",
+          "type": "line"
+        },
+        {
+          "text": "drives me nuts!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlImThirsty",
+      "values": [
+        {
+          "text": "I'm thirsty!",
+          "type": "text"
+        },
+        {
+          "text": "I want something",
+          "type": "line"
+        },
+        {
+          "text": "to drink!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofLittleGirlGiveHerADrink",
+      "values": [
+        {
+          "text": "I'm thirsty!",
+          "type": "text"
+        },
+        {
+          "text": "I want something",
+          "type": "line"
+        },
+        {
+          "text": "to drink!",
+          "type": "cont"
+        },
+        {
+          "text": "Give her a drink?",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMartRoofCurrentFloorSign",
+      "values": [
+        {
+          "text": "ROOFTOP SQUARE:",
+          "type": "text"
+        },
+        {
+          "text": "VENDING MACHINES",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

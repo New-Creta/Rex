@@ -1,0 +1,139 @@
+{
+  "name": "FuchsiaBillsGrandpasHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\FuchsiaBillsGrandpasHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "fuchsiabillsgrandpashouse_middle_aged_woman"
+    },
+    {
+      "name": "fuchsiabillsgrandpashouse_bills_grandpa"
+    },
+    {
+      "name": "fuchsiabillsgrandpashouse_youngster"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_middle_aged_woman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_fuchsiabillsgrandpashouse_middle_aged_woman"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_fuchsiabillsgrandpashouse_bills_grandpa"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_fuchsiabillsgrandpashouse_youngster"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "FuchsiaBillsGrandpasHouseMiddleAgedWoman",
+      "values": [
+        {
+          "text": "SAFARI ZONE's",
+          "type": "text"
+        },
+        {
+          "text": "WARDEN is old,",
+          "type": "line"
+        },
+        {
+          "text": "but still active!",
+          "type": "cont"
+        },
+        {
+          "text": "All his teeth are",
+          "type": "para"
+        },
+        {
+          "text": "false, though.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaBillsGrandpasHouseBillsGrandpa",
+      "values": [
+        {
+          "text": "Hmm? You've met",
+          "type": "text"
+        },
+        {
+          "text": "BILL?",
+          "type": "line"
+        },
+        {
+          "text": "He's my grandson!",
+          "type": "para"
+        },
+        {
+          "text": "He always liked",
+          "type": "para"
+        },
+        {
+          "text": "collecting things",
+          "type": "line"
+        },
+        {
+          "text": "even as a child!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaBillsGrandpasHouseYoungster",
+      "values": [
+        {
+          "text": "BILL files his",
+          "type": "text"
+        },
+        {
+          "text": "own #MON data",
+          "type": "line"
+        },
+        {
+          "text": "on his PC!",
+          "type": "cont"
+        },
+        {
+          "text": "Did he show you?",
+          "type": "para"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

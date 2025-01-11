@@ -1,0 +1,234 @@
+{
+  "name": "PokemonTower2F",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonTower2F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemontower2f_rival"
+    },
+    {
+      "name": "pokemontower2f_channeler"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 14,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower2f_rival"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemontower2f_channeler"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "PokemonTower2FRivalWhatBringsYouHere",
+      "values": [
+        {
+          "text": "<RIVAL>: Hey,",
+          "type": "text"
+        },
+        {
+          "text": "<PLAYER>! What",
+          "type": "line"
+        },
+        {
+          "text": "brings you here?",
+          "type": "cont"
+        },
+        {
+          "text": "Your #MON",
+          "type": "cont"
+        },
+        {
+          "text": "don't look dead!",
+          "type": "cont"
+        },
+        {
+          "text": "I can at least",
+          "type": "para"
+        },
+        {
+          "text": "make them faint!",
+          "type": "line"
+        },
+        {
+          "text": "Let's go, pal!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower2FRivalDefeated",
+      "values": [
+        {
+          "text": "What?",
+          "type": "text"
+        },
+        {
+          "text": "You stinker!",
+          "type": "line"
+        },
+        {
+          "text": "I took it easy on",
+          "type": "para"
+        },
+        {
+          "text": "you too!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower2FRivalVictory",
+      "values": [
+        {
+          "text": "<RIVAL>: Well,",
+          "type": "text"
+        },
+        {
+          "text": "look at all your",
+          "type": "line"
+        },
+        {
+          "text": "wimpy #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Toughen them up a",
+          "type": "para"
+        },
+        {
+          "text": "bit more!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower2FRivalHowsYourDex",
+      "values": [
+        {
+          "text": "How's your #DEX",
+          "type": "text"
+        },
+        {
+          "text": "coming, pal?",
+          "type": "line"
+        },
+        {
+          "text": "I just caught a",
+          "type": "cont"
+        },
+        {
+          "text": "CUBONE!",
+          "type": "cont"
+        },
+        {
+          "text": "I can't find the",
+          "type": "para"
+        },
+        {
+          "text": "grown-up MAROWAK",
+          "type": "line"
+        },
+        {
+          "text": "yet!",
+          "type": "cont"
+        },
+        {
+          "text": "I doubt there are",
+          "type": "para"
+        },
+        {
+          "text": "any left! Well, I",
+          "type": "line"
+        },
+        {
+          "text": "better get going!",
+          "type": "cont"
+        },
+        {
+          "text": "I've got a lot to",
+          "type": "cont"
+        },
+        {
+          "text": "accomplish, pal!",
+          "type": "cont"
+        },
+        {
+          "text": "Smell ya later!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower2FChanneler",
+      "values": [
+        {
+          "text": "Even we could not",
+          "type": "text"
+        },
+        {
+          "text": "identify the",
+          "type": "line"
+        },
+        {
+          "text": "wayward GHOSTs!",
+          "type": "cont"
+        },
+        {
+          "text": "A SILPH SCOPE",
+          "type": "para"
+        },
+        {
+          "text": "might be able to",
+          "type": "line"
+        },
+        {
+          "text": "unmask them.",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_pokemontower2f_default",
+    "script_pokemontower2f_defeated_rival",
+    "script_pokemontower2f_rival_exits"
+  ]
+}

@@ -1,0 +1,696 @@
+{
+  "name": "VIRIDIAN CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\route2.json",
+      "offset": "5"
+    },
+    {
+      "direction": "south",
+      "map": "Pokemon\\maps\\route1.json",
+      "offset": "5"
+    },
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\route22.json",
+      "offset": "4"
+    }
+  ],
+  "objects": [
+    {
+      "name": "viridiancity_youngster1"
+    },
+    {
+      "name": "viridiancity_gambler1"
+    },
+    {
+      "name": "viridiancity_youngster2"
+    },
+    {
+      "name": "viridiancity_girl"
+    },
+    {
+      "name": "viridiancity_old_man_sleepy"
+    },
+    {
+      "name": "viridiancity_fisher"
+    },
+    {
+      "name": "viridiancity_old_man"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 13,
+      "y": 20,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_viridiancity_youngster1"
+    },
+    {
+      "x": 30,
+      "y": 8,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiancity_gambler1"
+    },
+    {
+      "x": 30,
+      "y": 25,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_viridiancity_youngster2"
+    },
+    {
+      "x": 17,
+      "y": 9,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_viridiancity_girl"
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "sprite": "sprite_gambler_asleep",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiancity_old_man_sleepy"
+    },
+    {
+      "x": 6,
+      "y": 23,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_viridiancity_fisher"
+    },
+    {
+      "x": 17,
+      "y": 5,
+      "sprite": "sprite_gambler",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_viridiancity_old_man"
+    }
+  ],
+  "warps": [
+    {
+      "x": 23,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 29,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 32,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 17,
+      "text": "text_viridiancity_sign"
+    },
+    {
+      "x": 19,
+      "y": 1,
+      "text": "text_viridiancity_trainer_tips1"
+    },
+    {
+      "x": 21,
+      "y": 29,
+      "text": "text_viridiancity_trainer_tips2"
+    },
+    {
+      "x": 30,
+      "y": 19,
+      "text": "text_viridiancity_mart_sign"
+    },
+    {
+      "x": 24,
+      "y": 25,
+      "text": "text_viridiancity_pokecenter_sign"
+    },
+    {
+      "x": 27,
+      "y": 7,
+      "text": "text_viridiancity_gym_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "ViridianCityYoungster1",
+      "values": [
+        {
+          "text": "Those # BALLs",
+          "type": "text"
+        },
+        {
+          "text": "at your waist!",
+          "type": "line"
+        },
+        {
+          "text": "You have #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "It's great that",
+          "type": "para"
+        },
+        {
+          "text": "you can carry and",
+          "type": "line"
+        },
+        {
+          "text": "use #MON any",
+          "type": "cont"
+        },
+        {
+          "text": "time, anywhere!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGambler1GymAlwaysClosed",
+      "values": [
+        {
+          "text": "This #MON GYM",
+          "type": "text"
+        },
+        {
+          "text": "is always closed.",
+          "type": "line"
+        },
+        {
+          "text": "I wonder who the",
+          "type": "para"
+        },
+        {
+          "text": "LEADER is?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGambler1GymLeaderReturned",
+      "values": [
+        {
+          "text": "VIRIDIAN GYM's",
+          "type": "text"
+        },
+        {
+          "text": "LEADER returned!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityYoungster2YouWantToKnowAbout",
+      "values": [
+        {
+          "text": "You want to know",
+          "type": "text"
+        },
+        {
+          "text": "about the 2 kinds",
+          "type": "line"
+        },
+        {
+          "text": "of caterpillar",
+          "type": "cont"
+        },
+        {
+          "text": "#MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityYoungster2OkThen",
+      "values": [
+        {
+          "text": "Oh, OK then!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityYoungster2CaterpieAndWeedleDescription",
+      "values": [
+        {
+          "text": "CATERPIE has no",
+          "type": "text"
+        },
+        {
+          "text": "poison, but",
+          "type": "line"
+        },
+        {
+          "text": "WEEDLE does.",
+          "type": "cont"
+        },
+        {
+          "text": "Watch out for its",
+          "type": "para"
+        },
+        {
+          "text": "POISON STING!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGirlHasntHadHisCoffeeYet",
+      "values": [
+        {
+          "text": "Oh Grandpa! Don't",
+          "type": "text"
+        },
+        {
+          "text": "be so mean!",
+          "type": "line"
+        },
+        {
+          "text": "He hasn't had his",
+          "type": "cont"
+        },
+        {
+          "text": "coffee yet.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGirlWhenIGoShop",
+      "values": [
+        {
+          "text": "When I go shop in",
+          "type": "text"
+        },
+        {
+          "text": "PEWTER CITY, I",
+          "type": "line"
+        },
+        {
+          "text": "have to take the",
+          "type": "cont"
+        },
+        {
+          "text": "winding trail in",
+          "type": "cont"
+        },
+        {
+          "text": "VIRIDIAN FOREST.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityOldManSleepyPrivateProperty",
+      "values": [
+        {
+          "text": "You can't go",
+          "type": "text"
+        },
+        {
+          "text": "through here!",
+          "type": "line"
+        },
+        {
+          "text": "This is private",
+          "type": "para"
+        },
+        {
+          "text": "property!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityFisherYouCanHaveThis",
+      "values": [
+        {
+          "text": "Yawn!",
+          "type": "text"
+        },
+        {
+          "text": "I must have dozed",
+          "type": "line"
+        },
+        {
+          "text": "off in the sun.",
+          "type": "cont"
+        },
+        {
+          "text": "I had this dream",
+          "type": "para"
+        },
+        {
+          "text": "about a DROWZEE",
+          "type": "line"
+        },
+        {
+          "text": "eating my dream.",
+          "type": "cont"
+        },
+        {
+          "text": "What's this?",
+          "type": "cont"
+        },
+        {
+          "text": "Where did this TM",
+          "type": "cont"
+        },
+        {
+          "text": "come from?",
+          "type": "cont"
+        },
+        {
+          "text": "This is spooky!",
+          "type": "para"
+        },
+        {
+          "text": "Here, you can",
+          "type": "line"
+        },
+        {
+          "text": "have this TM.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityFisherReceivedTM42",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "TM42!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityFisherTM42Explanation",
+      "values": [
+        {
+          "text": "TM42 contains",
+          "type": "text"
+        },
+        {
+          "text": "DREAM EATER...",
+          "type": "line"
+        },
+        {
+          "text": "...Snore...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityFisherTM42NoRoom",
+      "values": [
+        {
+          "text": "You have too much",
+          "type": "text"
+        },
+        {
+          "text": "stuff already.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityOldManHadMyCoffeeNow",
+      "values": [
+        {
+          "text": "Ahh, I've had my",
+          "type": "text"
+        },
+        {
+          "text": "coffee now and I",
+          "type": "line"
+        },
+        {
+          "text": "feel great!",
+          "type": "cont"
+        },
+        {
+          "text": "Sure you can go",
+          "type": "para"
+        },
+        {
+          "text": "through!",
+          "type": "line"
+        },
+        {
+          "text": "Are you in a",
+          "type": "para"
+        },
+        {
+          "text": "hurry?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityOldManKnowHowToCatchPokemon",
+      "values": [
+        {
+          "text": "I see you're using",
+          "type": "text"
+        },
+        {
+          "text": "a #DEX.",
+          "type": "line"
+        },
+        {
+          "text": "When you catch a",
+          "type": "para"
+        },
+        {
+          "text": "#MON, #DEX",
+          "type": "line"
+        },
+        {
+          "text": "is automatically",
+          "type": "cont"
+        },
+        {
+          "text": "updated.",
+          "type": "cont"
+        },
+        {
+          "text": "What? Don't you",
+          "type": "para"
+        },
+        {
+          "text": "know how to catch",
+          "type": "line"
+        },
+        {
+          "text": "#MON?",
+          "type": "cont"
+        },
+        {
+          "text": "I'll show you",
+          "type": "para"
+        },
+        {
+          "text": "how to then.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityOldManTimeIsMoney",
+      "values": [
+        {
+          "text": "Time is money...",
+          "type": "text"
+        },
+        {
+          "text": "Go along then.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityOldManYouNeedToWeakenTheTarget",
+      "values": [
+        {
+          "text": "First, you need",
+          "type": "text"
+        },
+        {
+          "text": "to weaken the",
+          "type": "line"
+        },
+        {
+          "text": "target #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCitySign",
+      "values": [
+        {
+          "text": "VIRIDIAN CITY ",
+          "type": "text"
+        },
+        {
+          "text": "The Eternally",
+          "type": "line"
+        },
+        {
+          "text": "Green Paradise",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityTrainerTips1",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Catch #MON",
+          "type": "para"
+        },
+        {
+          "text": "and expand your",
+          "type": "line"
+        },
+        {
+          "text": "collection!",
+          "type": "cont"
+        },
+        {
+          "text": "The more you have,",
+          "type": "para"
+        },
+        {
+          "text": "the easier it is",
+          "type": "line"
+        },
+        {
+          "text": "to fight!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityTrainerTips2",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "The battle moves",
+          "type": "para"
+        },
+        {
+          "text": "of #MON are",
+          "type": "line"
+        },
+        {
+          "text": "limited by their",
+          "type": "cont"
+        },
+        {
+          "text": "POWER POINTs, PP.",
+          "type": "cont"
+        },
+        {
+          "text": "To replenish PP,",
+          "type": "para"
+        },
+        {
+          "text": "rest your tired",
+          "type": "line"
+        },
+        {
+          "text": "#MON at a",
+          "type": "cont"
+        },
+        {
+          "text": "#MON CENTER!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGymSign",
+      "values": [
+        {
+          "text": "VIRIDIAN CITY",
+          "type": "text"
+        },
+        {
+          "text": "#MON GYM",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianCityGymLocked",
+      "values": [
+        {
+          "text": "The GYM's doors",
+          "type": "text"
+        },
+        {
+          "text": "are locked...",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_viridiancity_default",
+    "script_viridiancity_old_man_start_catch_training",
+    "script_viridiancity_old_man_end_catch_training",
+    "script_viridiancity_player_moving_down"
+  ]
+}

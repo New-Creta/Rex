@@ -1,0 +1,415 @@
+{
+  "name": "Museum1F",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\MUSEUM.json",
+  "map_blocks": "Pokemon\\map_blocks\\Museum1F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "museum1f_scientist1"
+    },
+    {
+      "name": "museum1f_gambler"
+    },
+    {
+      "name": "museum1f_scientist2"
+    },
+    {
+      "name": "museum1f_scientist3"
+    },
+    {
+      "name": "museum1f_old_amber"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 4,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_museum1f_scientist1"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_museum1f_gambler"
+    },
+    {
+      "x": 15,
+      "y": 2,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_museum1f_scientist2"
+    },
+    {
+      "x": 17,
+      "y": 4,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_museum1f_scientist3"
+    },
+    {
+      "x": 16,
+      "y": 2,
+      "sprite": "sprite_old_amber",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_museum1f_old_amber"
+    }
+  ],
+  "warps": [
+    {
+      "x": 10,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "Museum1FScientist1ComeAgain",
+      "values": [
+        {
+          "text": "Come again!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1WouldYouLikeToComeIn",
+      "values": [
+        {
+          "text": "It's \u00c2\u00a550 for a",
+          "type": "text"
+        },
+        {
+          "text": "child's ticket.",
+          "type": "line"
+        },
+        {
+          "text": "Would you like to",
+          "type": "para"
+        },
+        {
+          "text": "come in?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1ThankYou",
+      "values": [
+        {
+          "text": "Right, \u00c2\u00a550!",
+          "type": "text"
+        },
+        {
+          "text": "Thank you!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1DontHaveEnoughMoney",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "enough money.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1DoYouKnowWhatAmberIs",
+      "values": [
+        {
+          "text": "You can't sneak",
+          "type": "text"
+        },
+        {
+          "text": "in the back way!",
+          "type": "line"
+        },
+        {
+          "text": "Oh, whatever!",
+          "type": "para"
+        },
+        {
+          "text": "Do you know what",
+          "type": "line"
+        },
+        {
+          "text": "AMBER is?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1TheresALabSomewhere",
+      "values": [
+        {
+          "text": "There's a lab",
+          "type": "text"
+        },
+        {
+          "text": "somewhere trying",
+          "type": "line"
+        },
+        {
+          "text": "to resurrect",
+          "type": "cont"
+        },
+        {
+          "text": "ancient #MON",
+          "type": "cont"
+        },
+        {
+          "text": "from AMBER.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1AmberIsFossilizedTreeSap",
+      "values": [
+        {
+          "text": "AMBER is fossil-",
+          "type": "text"
+        },
+        {
+          "text": "ized tree sap.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1GoToOtherSide",
+      "values": [
+        {
+          "text": "Please go to the",
+          "type": "text"
+        },
+        {
+          "text": "other side!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist1TakePlentyOfTime",
+      "values": [
+        {
+          "text": "Take plenty of",
+          "type": "text"
+        },
+        {
+          "text": "time to look!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FGambler",
+      "values": [
+        {
+          "text": "That is one",
+          "type": "text"
+        },
+        {
+          "text": "magnificent",
+          "type": "line"
+        },
+        {
+          "text": "fossil!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist2TakeThisToAPokemonLab",
+      "values": [
+        {
+          "text": "Ssh! I think that",
+          "type": "text"
+        },
+        {
+          "text": "this chunk of",
+          "type": "line"
+        },
+        {
+          "text": "AMBER contains",
+          "type": "cont"
+        },
+        {
+          "text": "#MON DNA!",
+          "type": "cont"
+        },
+        {
+          "text": "It would be great",
+          "type": "para"
+        },
+        {
+          "text": "if #MON could",
+          "type": "line"
+        },
+        {
+          "text": "be resurrected",
+          "type": "cont"
+        },
+        {
+          "text": "from it!",
+          "type": "cont"
+        },
+        {
+          "text": "But, my colleagues",
+          "type": "para"
+        },
+        {
+          "text": "just ignore me!",
+          "type": "line"
+        },
+        {
+          "text": "So I have a favor",
+          "type": "para"
+        },
+        {
+          "text": "to ask!",
+          "type": "line"
+        },
+        {
+          "text": "Take this to a",
+          "type": "para"
+        },
+        {
+          "text": "#MON LAB and",
+          "type": "line"
+        },
+        {
+          "text": "get it examined!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist2ReceivedOldAmber",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "OLD AMBER!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist2GetTheOldAmberCheck",
+      "values": [
+        {
+          "text": "Ssh! Get the OLD",
+          "type": "text"
+        },
+        {
+          "text": "AMBER checked!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist2YouDontHaveSpace",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "space for this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FScientist3",
+      "values": [
+        {
+          "text": "We are proud of 2",
+          "type": "text"
+        },
+        {
+          "text": "fossils of very",
+          "type": "line"
+        },
+        {
+          "text": "rare, prehistoric",
+          "type": "cont"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Museum1FOldAmber",
+      "values": [
+        {
+          "text": "The AMBER is",
+          "type": "text"
+        },
+        {
+          "text": "clear and gold!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_museum1f_default",
+    "script_museum1f_noop"
+  ]
+}

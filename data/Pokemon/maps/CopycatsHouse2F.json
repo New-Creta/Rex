@@ -1,0 +1,370 @@
+{
+  "name": "CopycatsHouse2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\REDS_HOUSE_2.json",
+  "map_blocks": "Pokemon\\map_blocks\\CopycatsHouse2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "copycatshouse2f_copycat"
+    },
+    {
+      "name": "copycatshouse2f_doduo"
+    },
+    {
+      "name": "copycatshouse2f_monster"
+    },
+    {
+      "name": "copycatshouse2f_bird"
+    },
+    {
+      "name": "copycatshouse2f_fairy"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_brunette_girl",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_copycatshouse2f_copycat"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "sprite": "sprite_bird",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_copycatshouse2f_doduo"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_copycatshouse2f_monster"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "sprite": "sprite_bird",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_copycatshouse2f_bird"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "sprite": "sprite_fairy",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_copycatshouse2f_fairy"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 5,
+      "text": "text_copycatshouse2f_snes"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "text": "text_copycatshouse2f_pc"
+    }
+  ],
+  "texts": [
+    {
+      "name": "CopycatsHouse2FCopycatDoYouLikePokemon",
+      "values": [
+        {
+          "text": "<PLAYER>: Hi! Do",
+          "type": "text"
+        },
+        {
+          "text": "you like #MON?",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>: Uh no, I",
+          "type": "para"
+        },
+        {
+          "text": "just asked you.",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>: Huh?",
+          "type": "para"
+        },
+        {
+          "text": "You're strange!",
+          "type": "line"
+        },
+        {
+          "text": "COPYCAT: Hmm?",
+          "type": "para"
+        },
+        {
+          "text": "Quit mimicking?",
+          "type": "line"
+        },
+        {
+          "text": "But, that's my",
+          "type": "para"
+        },
+        {
+          "text": "favorite hobby!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FCopycatTM31PreReceive",
+      "values": [
+        {
+          "text": "Oh wow!",
+          "type": "text"
+        },
+        {
+          "text": "A # DOLL!",
+          "type": "line"
+        },
+        {
+          "text": "For me?",
+          "type": "para"
+        },
+        {
+          "text": "Thank you!",
+          "type": "line"
+        },
+        {
+          "text": "You can have",
+          "type": "para"
+        },
+        {
+          "text": "this, then!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FCopycatReceivedTM31",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FCopycatTM31Explanation1",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "TM31 contains my",
+          "type": "para"
+        },
+        {
+          "text": "favorite, MIMIC!",
+          "type": "line"
+        },
+        {
+          "text": "Use it on a good",
+          "type": "para"
+        },
+        {
+          "text": "#MON!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FCopycatTM31Explanation2",
+      "values": [
+        {
+          "text": "<PLAYER>: Hi!",
+          "type": "text"
+        },
+        {
+          "text": "Thanks for TM31!",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>: Pardon?",
+          "type": "para"
+        },
+        {
+          "text": "<PLAYER>: Is it",
+          "type": "para"
+        },
+        {
+          "text": "that fun to mimic",
+          "type": "line"
+        },
+        {
+          "text": "my every move?",
+          "type": "cont"
+        },
+        {
+          "text": "COPYCAT: You bet!",
+          "type": "para"
+        },
+        {
+          "text": "It's a scream!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FCopycatTM31NoRoom",
+      "values": [
+        {
+          "text": "Don't you want",
+          "type": "text"
+        },
+        {
+          "text": "this?@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FDoduo",
+      "values": [
+        {
+          "text": "DODUO: Giiih!",
+          "type": "text"
+        },
+        {
+          "text": "MIRROR MIRROR ON",
+          "type": "para"
+        },
+        {
+          "text": "THE WALL, WHO IS",
+          "type": "line"
+        },
+        {
+          "text": "THE FAIREST ONE",
+          "type": "cont"
+        },
+        {
+          "text": "OF ALL?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FRareDoll",
+      "values": [
+        {
+          "text": "This is a rare",
+          "type": "text"
+        },
+        {
+          "text": "#MON! Huh?",
+          "type": "line"
+        },
+        {
+          "text": "It's only a doll!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FSNES",
+      "values": [
+        {
+          "text": "A game with MARIO",
+          "type": "text"
+        },
+        {
+          "text": "wearing a bucket",
+          "type": "line"
+        },
+        {
+          "text": "on his head!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FPCMySecrets",
+      "values": [
+        {
+          "text": "...",
+          "type": "text"
+        },
+        {
+          "text": "My Secrets!",
+          "type": "para"
+        },
+        {
+          "text": "Skill: Mimicry!",
+          "type": "para"
+        },
+        {
+          "text": "Hobby: Collecting",
+          "type": "line"
+        },
+        {
+          "text": "dolls!",
+          "type": "cont"
+        },
+        {
+          "text": "Favorite #MON:",
+          "type": "cont"
+        },
+        {
+          "text": "CLEFAIRY!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse2FPCCantSee",
+      "values": [
+        {
+          "text": "Huh? Can't see!",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

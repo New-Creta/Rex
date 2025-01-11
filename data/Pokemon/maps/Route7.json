@@ -1,0 +1,81 @@
+{
+  "name": "ROUTE 7",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route7.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "west",
+      "map": "Pokemon\\maps\\celadoncity.json",
+      "offset": "-4"
+    },
+    {
+      "direction": "east",
+      "map": "Pokemon\\maps\\saffroncity.json",
+      "offset": "-4"
+    }
+  ],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 18,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 13,
+      "text": "text_route7_underground_path_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route7UndergroundPathSign",
+      "values": [
+        {
+          "text": "UNDERGROUND PATH",
+          "type": "text"
+        },
+        {
+          "text": "CELADON CITY -",
+          "type": "line"
+        },
+        {
+          "text": "LAVENDER TOWN",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

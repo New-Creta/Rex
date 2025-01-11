@@ -1,0 +1,28 @@
+{
+  "name": "UndergroundPathNorthSouth",
+  "width": 4,
+  "height": 24,
+  "tileset": "Pokemon\\tilesets\\UNDERGROUND.json",
+  "map_blocks": "Pokemon\\map_blocks\\UndergroundPathNorthSouth.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 5,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 2,
+      "y": 41,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

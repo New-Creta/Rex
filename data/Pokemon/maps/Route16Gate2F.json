@@ -1,0 +1,130 @@
+{
+  "name": "Route16Gate2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route16Gate2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route16gate2f_little_boy"
+    },
+    {
+      "name": "route16gate2f_little_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_little_boy",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route16gate2f_little_boy"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_route16gate2f_little_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 2,
+      "text": "text_route16gate2f_left_binoculars"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "text": "text_route16gate2f_right_binoculars"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route16Gate2FLittleBoy",
+      "values": [
+        {
+          "text": "I'm going for a",
+          "type": "text"
+        },
+        {
+          "text": "ride with my girl",
+          "type": "line"
+        },
+        {
+          "text": "friend!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FLittleGirl",
+      "values": [
+        {
+          "text": "We're going",
+          "type": "text"
+        },
+        {
+          "text": "riding together!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FLeftBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "It's CELADON DEPT.",
+          "type": "para"
+        },
+        {
+          "text": "STORE!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FRightBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "There's a long",
+          "type": "para"
+        },
+        {
+          "text": "path over water!",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

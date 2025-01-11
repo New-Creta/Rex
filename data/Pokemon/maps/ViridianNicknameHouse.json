@@ -1,0 +1,139 @@
+{
+  "name": "ViridianNicknameHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianNicknameHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "viridiannicknamehouse_balding_guy"
+    },
+    {
+      "name": "viridiannicknamehouse_little_girl"
+    },
+    {
+      "name": "viridiannicknamehouse_spearow"
+    },
+    {
+      "name": "viridiannicknamehouse_speary_sign"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_balding_guy",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiannicknamehouse_balding_guy"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_viridiannicknamehouse_little_girl"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_bird",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_viridiannicknamehouse_spearow"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "sprite": "sprite_clipboard",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiannicknamehouse_speary_sign"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "ViridianNicknameHouseBaldingGuy",
+      "values": [
+        {
+          "text": "Coming up with",
+          "type": "text"
+        },
+        {
+          "text": "nicknames is fun,",
+          "type": "line"
+        },
+        {
+          "text": "but hard.",
+          "type": "cont"
+        },
+        {
+          "text": "Simple names are",
+          "type": "para"
+        },
+        {
+          "text": "the easiest to",
+          "type": "line"
+        },
+        {
+          "text": "remember.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianNicknameHouseLittleGirl",
+      "values": [
+        {
+          "text": "My Daddy loves",
+          "type": "text"
+        },
+        {
+          "text": "#MON too.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianNicknameHouseSpearow",
+      "values": [
+        {
+          "text": "SPEARY: Tetweet!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "ViridianNicknameHouseSpearySign",
+      "values": [
+        {
+          "text": "SPEAROW",
+          "type": "text"
+        },
+        {
+          "text": "Name: SPEARY",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,28 @@
+{
+  "name": "DIGLETT's CAVE",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\DiglettsCave.blk",
+  "border_block_idx": 25,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 5,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 37,
+      "y": 31,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "texts": [],
+  "scripts": []
+}

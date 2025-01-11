@@ -1,0 +1,81 @@
+{
+  "name": "ROUTE 5",
+  "width": 10,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route5.blk",
+  "border_block_idx": 10,
+  "connections": [
+    {
+      "direction": "north",
+      "map": "Pokemon\\maps\\ceruleancity.json",
+      "offset": "-5"
+    },
+    {
+      "direction": "south",
+      "map": "Pokemon\\maps\\saffroncity.json",
+      "offset": "-5"
+    }
+  ],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 10,
+      "y": 29,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 9,
+      "y": 29,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 10,
+      "y": 33,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 17,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 10,
+      "y": 21,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 29,
+      "text": "text_route5_underground_path_sign"
+    }
+  ],
+  "texts": [
+    {
+      "name": "Route5UndergroundPathSign",
+      "values": [
+        {
+          "text": "UNDERGROUND PATH",
+          "type": "text"
+        },
+        {
+          "text": "CERULEAN CITY -",
+          "type": "line"
+        },
+        {
+          "text": "VERMILION CITY",
+          "type": "cont"
+        }
+      ]
+    }
+  ],
+  "scripts": []
+}

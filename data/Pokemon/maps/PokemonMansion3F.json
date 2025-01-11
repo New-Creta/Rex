@@ -1,0 +1,203 @@
+{
+  "name": "PokemonMansion3F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonMansion3F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemonmansion3f_super_nerd"
+    },
+    {
+      "name": "pokemonmansion3f_scientist"
+    },
+    {
+      "name": "pokemonmansion3f_max_potion"
+    },
+    {
+      "name": "pokemonmansion3f_iron"
+    },
+    {
+      "name": "pokemonmansion3f_diary"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 11,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_pokemonmansion3f_super_nerd"
+    },
+    {
+      "x": 20,
+      "y": 11,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemonmansion3f_scientist"
+    },
+    {
+      "x": 1,
+      "y": 16,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansion3f_max_potion"
+    },
+    {
+      "x": 25,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansion3f_iron"
+    },
+    {
+      "x": 6,
+      "y": 12,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansion3f_diary"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 25,
+      "y": 14,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "texts": [
+    {
+      "name": "PokemonMansion3FSuperNerdBattle",
+      "values": [
+        {
+          "text": "This place is",
+          "type": "text"
+        },
+        {
+          "text": "like, huge!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FSuperNerdEndBattle",
+      "values": [
+        {
+          "text": "Ayah!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FSuperNerdAfterBattle",
+      "values": [
+        {
+          "text": "I wonder where",
+          "type": "text"
+        },
+        {
+          "text": "my partner went.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistBattle",
+      "values": [
+        {
+          "text": "My mentor once",
+          "type": "text"
+        },
+        {
+          "text": "lived here.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistEndBattle",
+      "values": [
+        {
+          "text": "Whew!",
+          "type": "text"
+        },
+        {
+          "text": "Overwhelming!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistAfterBattle",
+      "values": [
+        {
+          "text": "So, you're stuck?",
+          "type": "text"
+        },
+        {
+          "text": "Try jumping off",
+          "type": "line"
+        },
+        {
+          "text": "over there!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FDiary",
+      "values": [
+        {
+          "text": "Diary: Feb. 6",
+          "type": "text"
+        },
+        {
+          "text": "MEW gave birth.",
+          "type": "line"
+        },
+        {
+          "text": "We named the",
+          "type": "para"
+        },
+        {
+          "text": "newborn MEWTWO.",
+          "type": "line"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    "script_pokemonmansion3f_default",
+    "script_pokemonmansion3f_start_battle",
+    "script_pokemonmansion3f_end_battle"
+  ]
+}
