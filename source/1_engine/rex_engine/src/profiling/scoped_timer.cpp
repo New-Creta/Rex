@@ -4,6 +4,7 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_std/mutex.h"
+#include "rex_std/memory.h"
 
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/task_system/task_system.h"
@@ -89,10 +90,26 @@ namespace rex
 		rsl::string m_filepath;
 	};
 
+	rsl::unique_ptr<ProfilingSession> g_profiling_session;
+
+	void begin_profiling_session()
+	{
+		g_profiling_session = rsl::make_unique<ProfilingSession>();
+	}
+	void end_profiling_session()
+	{
+		g_profiling_session.reset();
+	}
+
+
+
 	void new_profile_result(const ProfilingResult& result)
 	{
-		static ProfilingSession session{};
-		session.write_result(result);
+		if (!g_profiling_session)
+		{
+			begin_profiling_session();
+		}
+		g_profiling_session->write_result(result);
 	}
 
 	ScopedTimer::ScopedTimer(rsl::string_view name, rsl::source_location sourceLoc)
