@@ -1,6 +1,7 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/cmdline/cmdline.h"
+#include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/internal/details/diag_thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
@@ -46,8 +47,12 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     void init_log_verbosity()
-    {
+    {      
       LogVerbosity verbosity = LogVerbosity::Info;
+      if (rex::is_debugger_attached())
+      {
+        verbosity = LogVerbosity::Debug;
+      }
 
       // read the required log versboity from the commandline
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogVerbosity");
