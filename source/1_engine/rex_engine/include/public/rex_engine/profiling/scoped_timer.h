@@ -39,6 +39,8 @@ namespace rex
 		bool m_has_stopped;
 		rsl::source_location m_source_location;
 	};
+
+	void end_profiling_session();
 }
 
 #define REX_PROFILE_SCOPE(name) const rex::ScopedTimer REX_ANONYMOUS_VARIABLE(timer)(name)

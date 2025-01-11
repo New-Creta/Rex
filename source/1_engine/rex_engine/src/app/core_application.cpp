@@ -163,6 +163,7 @@ namespace rex
   void CoreApplication::update()
   {
     rex::mut_globals().frame_info.update();
+    rex::mut_globals().single_frame_allocator->adv_frame();
 
     platform_update();
   }
@@ -170,6 +171,8 @@ namespace rex
   void CoreApplication::shutdown()
   {
     platform_shutdown();
+
+    end_profiling_session();
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::mark_for_destroy(s32 exitCode)
