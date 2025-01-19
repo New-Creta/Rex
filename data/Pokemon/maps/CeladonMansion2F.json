@@ -41,20 +41,5 @@
       "text": "text_celadonmansion2f_meeting_room_sign"
     }
   ],
-  "texts": [
-    {
-      "name": "CeladonMansion2FMeetingRoomSign",
-      "values": [
-        {
-          "text": "GAME FREAK",
-          "type": "text"
-        },
-        {
-          "text": "Meeting Room",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

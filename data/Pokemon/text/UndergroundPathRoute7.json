@@ -1,0 +1,21 @@
+{
+  "texts": [
+    {
+      "name": "UndergroundPathRoute7MiddleAgedMan",
+      "values": [
+        {
+          "text": "I heard a sleepy",
+          "type": "text"
+        },
+        {
+          "text": "#MON appeared",
+          "type": "line"
+        },
+        {
+          "text": "near CELADON CITY.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

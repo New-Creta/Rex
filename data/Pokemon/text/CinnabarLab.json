@@ -1,0 +1,85 @@
+{
+  "texts": [
+    {
+      "name": "CinnabarLabFishingGuru",
+      "values": [
+        {
+          "text": "We study #MON",
+          "type": "text"
+        },
+        {
+          "text": "extensively here.",
+          "type": "line"
+        },
+        {
+          "text": "People often bring",
+          "type": "para"
+        },
+        {
+          "text": "us rare #MON",
+          "type": "line"
+        },
+        {
+          "text": "for examination.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabPhoto",
+      "values": [
+        {
+          "text": "A photo of the",
+          "type": "text"
+        },
+        {
+          "text": "LAB's founder,",
+          "type": "line"
+        },
+        {
+          "text": "DR.FUJI!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMeetingRoomSign",
+      "values": [
+        {
+          "text": "#MON LAB",
+          "type": "text"
+        },
+        {
+          "text": "Meeting Room",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabRAndDSign",
+      "values": [
+        {
+          "text": "#MON LAB",
+          "type": "text"
+        },
+        {
+          "text": "R-and-D Room",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabTestingRoomSign",
+      "values": [
+        {
+          "text": "#MON LAB",
+          "type": "text"
+        },
+        {
+          "text": "Testing Room",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

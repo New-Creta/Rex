@@ -1,0 +1,37 @@
+{
+  "texts": [
+    {
+      "name": "CeladonMansionRoofHouseHiker",
+      "values": [
+        {
+          "text": "I know everything",
+          "type": "text"
+        },
+        {
+          "text": "about the world",
+          "type": "line"
+        },
+        {
+          "text": "of #MON in",
+          "type": "cont"
+        },
+        {
+          "text": "your GAME BOY!",
+          "type": "cont"
+        },
+        {
+          "text": "Get together with",
+          "type": "para"
+        },
+        {
+          "text": "your friends and",
+          "type": "line"
+        },
+        {
+          "text": "trade #MON!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

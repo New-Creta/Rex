@@ -1,0 +1,119 @@
+{
+  "texts": [
+    {
+      "name": "PokemonMansionB1FBurglarBattle",
+      "values": [
+        {
+          "text": "Uh-oh. Where am",
+          "type": "text"
+        },
+        {
+          "text": "I now?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FBurglarEndBattle",
+      "values": [
+        {
+          "text": "Awooh!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FBurglarAfterBattle",
+      "values": [
+        {
+          "text": "You can find stuff",
+          "type": "text"
+        },
+        {
+          "text": "lying around.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistBattle",
+      "values": [
+        {
+          "text": "This place is",
+          "type": "text"
+        },
+        {
+          "text": "ideal for a lab.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistEndBattle",
+      "values": [
+        {
+          "text": "What",
+          "type": "text"
+        },
+        {
+          "text": "was that for?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FScientistAfterBattle",
+      "values": [
+        {
+          "text": "I like it here!",
+          "type": "text"
+        },
+        {
+          "text": "It's conducive to",
+          "type": "line"
+        },
+        {
+          "text": "my studies!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansionB1FDiary",
+      "values": [
+        {
+          "text": "Diary; Sept. 1",
+          "type": "text"
+        },
+        {
+          "text": "MEWTWO is far too",
+          "type": "line"
+        },
+        {
+          "text": "powerful.",
+          "type": "cont"
+        },
+        {
+          "text": "We have failed to",
+          "type": "para"
+        },
+        {
+          "text": "curb its vicious",
+          "type": "line"
+        },
+        {
+          "text": "tendencies...",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

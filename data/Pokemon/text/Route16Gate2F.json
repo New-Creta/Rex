@@ -1,0 +1,76 @@
+{
+  "texts": [
+    {
+      "name": "Route16Gate2FLittleBoy",
+      "values": [
+        {
+          "text": "I'm going for a",
+          "type": "text"
+        },
+        {
+          "text": "ride with my girl",
+          "type": "line"
+        },
+        {
+          "text": "friend!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FLittleGirl",
+      "values": [
+        {
+          "text": "We're going",
+          "type": "text"
+        },
+        {
+          "text": "riding together!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FLeftBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "It's CELADON DEPT.",
+          "type": "para"
+        },
+        {
+          "text": "STORE!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16Gate2FRightBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "There's a long",
+          "type": "para"
+        },
+        {
+          "text": "path over water!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

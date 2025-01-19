@@ -35,16 +35,5 @@
       "text": "text_celadonmansionroof_house_sign"
     }
   ],
-  "texts": [
-    {
-      "name": "CeladonMansionRoofHouseSign",
-      "values": [
-        {
-          "text": "I KNOW EVERYTHING!",
-          "type": "text"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -81,47 +81,6 @@
       "text": "text_seafoamislandsb4f_danger_sign"
     }
   ],
-  "texts": [
-    {
-      "name": "SeafoamIslandsB4FArticunoBattle",
-      "values": [
-        {
-          "text": "Gyaoo!@",
-          "type": "text"
-        }
-      ]
-    },
-    {
-      "name": "SeafoamIslandsB4FBouldersSign",
-      "values": [
-        {
-          "text": "Boulders might",
-          "type": "text"
-        },
-        {
-          "text": "change the flow",
-          "type": "line"
-        },
-        {
-          "text": "of water!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "SeafoamIslandsB4FDangerSign",
-      "values": [
-        {
-          "text": "DANGER",
-          "type": "text"
-        },
-        {
-          "text": "Fast current!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": [
     "script_seafoamislandsb4f_default",
     "script_seafoamislandsb4f_object_moving1",

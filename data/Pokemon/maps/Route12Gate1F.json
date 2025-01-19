@@ -54,20 +54,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "Route12Gate1FGuard",
-      "values": [
-        {
-          "text": "There's a lookout",
-          "type": "text"
-        },
-        {
-          "text": "spot upstairs.",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -59,49 +59,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "ViridianForestSouthGateGirl",
-      "values": [
-        {
-          "text": "Are you going to",
-          "type": "text"
-        },
-        {
-          "text": "VIRIDIAN FOREST?",
-          "type": "line"
-        },
-        {
-          "text": "Be careful, it's",
-          "type": "cont"
-        },
-        {
-          "text": "a natural maze!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "ViridianForestSouthGateLittleGirl",
-      "values": [
-        {
-          "text": "RATTATA may be",
-          "type": "text"
-        },
-        {
-          "text": "small, but its",
-          "type": "line"
-        },
-        {
-          "text": "bite is wicked!",
-          "type": "cont"
-        },
-        {
-          "text": "Did you get one?",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -34,73 +34,78 @@ class Warp():
         self.dst_warp_id = dst_warp_id
         return
 
-def save_as_json(name, map_blocks, width, height, tilset, connections, border_block_idx, objects, object_events, bg_events, warps, texts, scripts, output):
-    json = {}
-    json["name"] = name
-    json["width"] = width
-    json["height"] = height
-    json["tileset"] = os.path.join('Pokemon', 'tilesets', f'{tilset}.json')
-    json["map_blocks"] = os.path.join('Pokemon', 'map_blocks', f'{map_blocks}.blk')
-    json["border_block_idx"] = border_block_idx
-    json["connections"] = []
-    for connection in connections:
-        connection_dict = {}
-        connection_dict["direction"] = connection.dir
-        connection_dict["map"] = os.path.join('Pokemon', 'maps', f'{connection.map}.json')
-        connection_dict["offset"] = connection.offset
-        json["connections"].append(connection_dict)
+def save_as_json(name, map_blocks, width, height, tilset, connections, border_block_idx, objects, object_events, bg_events, warps, texts, scripts, map_output, text_output):
+    if name and len(name) > 0:
+        map_json = {}
+        map_json["name"] = name
+        map_json["width"] = width
+        map_json["height"] = height
+        map_json["tileset"] = os.path.join('Pokemon', 'tilesets', f'{tilset}.json')
+        map_json["map_blocks"] = os.path.join('Pokemon', 'map_blocks', f'{map_blocks}.blk')
+        map_json["border_block_idx"] = border_block_idx
+        map_json["connections"] = []
+        for connection in connections:
+            connection_dict = {}
+            connection_dict["direction"] = connection.dir
+            connection_dict["map"] = os.path.join('Pokemon', 'maps', f'{connection.map}.json')
+            connection_dict["offset"] = int(connection.offset)
+            map_json["connections"].append(connection_dict)
 
-    json["objects"] = []
-    for object in objects:
-        object_dict = {}
-        object_dict["name"] = object
-        json["objects"].append(object_dict)    
+        map_json["objects"] = []
+        for object in objects:
+            object_dict = {}
+            object_dict["name"] = object
+            map_json["objects"].append(object_dict)    
 
-    json["object_events"] = []
-    for object_ev in object_events:
-        object_ev_dict = {}
-        object_ev_dict["x"] = int(object_ev.x)
-        object_ev_dict["y"] = int(object_ev.y)
-        object_ev_dict["sprite"] = object_ev.sprite
-        object_ev_dict["action"] = object_ev.action
-        object_ev_dict["direction"] = object_ev.dir
-        object_ev_dict["text"] = object_ev.text
-        json["object_events"].append(object_ev_dict)
+        map_json["object_events"] = []
+        for object_ev in object_events:
+            object_ev_dict = {}
+            object_ev_dict["x"] = int(object_ev.x)
+            object_ev_dict["y"] = int(object_ev.y)
+            object_ev_dict["sprite"] = object_ev.sprite
+            object_ev_dict["action"] = object_ev.action
+            object_ev_dict["direction"] = object_ev.dir
+            object_ev_dict["text"] = object_ev.text
+            map_json["object_events"].append(object_ev_dict)
 
-    json["warps"] = []
-    for warp in warps:
-        warp_dict = {}
-        warp_dict['x'] = int(warp.x)
-        warp_dict['y'] = int(warp.y)
-        try:
-            warp_dict['dst_map_id'] = int(warp.dst_map_id)
-        except ValueError as e:
-            warp_dict['dst_map_id'] = -1 # if it should go to the "last map", this will raise
-        warp_dict['dst_warp_id'] = int(warp.dst_warp_id)
-        json["warps"].append(warp_dict)
+        map_json["warps"] = []
+        for warp in warps:
+            warp_dict = {}
+            warp_dict['x'] = int(warp.x)
+            warp_dict['y'] = int(warp.y)
+            try:
+                warp_dict['dst_map_id'] = int(warp.dst_map_id)
+            except ValueError as e:
+                warp_dict['dst_map_id'] = -1 # if it should go to the "last map", this will raise
+            warp_dict['dst_warp_id'] = int(warp.dst_warp_id)
+            map_json["warps"].append(warp_dict)
 
-    json["bg_events"] = []
-    for bg_ev in bg_events:
-        bg_ev_dict = {}
-        bg_ev_dict["x"] = int(bg_ev.x)
-        bg_ev_dict["y"] = int(bg_ev.y)
-        bg_ev_dict["text"] = bg_ev.text
-        json["bg_events"].append(bg_ev_dict)
+        map_json["bg_events"] = []
+        for bg_ev in bg_events:
+            bg_ev_dict = {}
+            bg_ev_dict["x"] = int(bg_ev.x)
+            bg_ev_dict["y"] = int(bg_ev.y)
+            bg_ev_dict["text"] = bg_ev.text
+            map_json["bg_events"].append(bg_ev_dict)
 
-    json['texts'] = []
+        map_json['scripts'] = []
+        for script in scripts:
+            map_json['scripts'].append(script)
+
+        regis.rex_json.save_file(map_output, map_json)
+
+    txt_json = {}
+    txt_json['texts'] = []
     for text in texts.items():
-        text_entry = {}
+        text_entry = {} 
         text_entry['name'] = text[0]
         text_entry ['values'] = []
         for text_values in text[1]:
             text_entry ['values'].append(text_values)
-        json['texts'].append(text_entry)
+        txt_json['texts'].append(text_entry)
 
-    json['scripts'] = []
-    for script in scripts:
-        json['scripts'].append(script)
-
-    regis.rex_json.save_file(output, json)
+    if len(txt_json['texts']) > 0:
+        regis.rex_json.save_file(text_output, txt_json)
             
 
 def parse_map(filepath):
@@ -282,6 +287,8 @@ def parse_map(filepath):
             if line.startswith('connection'):
                 line = line.replace(' ', '')
                 line = line.removeprefix('connection')
+                if ';' in line:
+                    line = line[0:line.find(';')]
                 splitted = line.split(',')
                 # dir
                 dir = splitted[0]
@@ -353,8 +360,9 @@ def parse_map(filepath):
             
 
         output = os.path.dirname(filepath)
-        output = os.path.join(output, os.path.pardir, 'maps3', f'{Path(filepath).stem}.json')
-        save_as_json(name, map_blocks, width, height, tileset, connections, border_block, objects, object_events, bg_events, warps, texts, scripts, output)
+        map_output = os.path.join(output, os.path.pardir, 'maps3', f'{Path(filepath).stem}.json')
+        text_output = os.path.join(output, os.path.pardir, 'text', f'{Path(filepath).stem}.json')
+        save_as_json(name, map_blocks, width, height, tileset, connections, border_block, objects, object_events, bg_events, warps, texts, scripts, map_output, text_output)
 
 if __name__ == '__main__':
     dir = 'D:\\Engines\\Rex\\data\\Pokemon\\maps2'

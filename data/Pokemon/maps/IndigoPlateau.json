@@ -9,7 +9,7 @@
     {
       "direction": "south",
       "map": "Pokemon\\maps\\route23.json",
-      "offset": "0"
+      "offset": 0
     }
   ],
   "objects": [],
@@ -29,6 +29,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [],
   "scripts": []
 }

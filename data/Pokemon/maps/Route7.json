@@ -9,12 +9,12 @@
     {
       "direction": "west",
       "map": "Pokemon\\maps\\celadoncity.json",
-      "offset": "-4"
+      "offset": -4
     },
     {
       "direction": "east",
       "map": "Pokemon\\maps\\saffroncity.json",
-      "offset": "-4"
+      "offset": -4
     }
   ],
   "objects": [],
@@ -56,25 +56,6 @@
       "x": 3,
       "y": 13,
       "text": "text_route7_underground_path_sign"
-    }
-  ],
-  "texts": [
-    {
-      "name": "Route7UndergroundPathSign",
-      "values": [
-        {
-          "text": "UNDERGROUND PATH",
-          "type": "text"
-        },
-        {
-          "text": "CELADON CITY -",
-          "type": "line"
-        },
-        {
-          "text": "LAVENDER TOWN",
-          "type": "cont"
-        }
-      ]
     }
   ],
   "scripts": []

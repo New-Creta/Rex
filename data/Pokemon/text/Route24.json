@@ -1,0 +1,461 @@
+{
+  "texts": [
+    {
+      "name": "Route24CooltrainerM1YouBeatOurContest",
+      "values": [
+        {
+          "text": "Congratulations!",
+          "type": "text"
+        },
+        {
+          "text": "You beat our 5",
+          "type": "line"
+        },
+        {
+          "text": "contest trainers!@",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1YouJustEarnedAPrize",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "You just earned a",
+          "type": "para"
+        },
+        {
+          "text": "fabulous prize!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1ReceivedNugget",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "a @",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1NoRoom",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "any room!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1JoinTeamRocket",
+      "values": [
+        {
+          "text": "By the way, would",
+          "type": "text"
+        },
+        {
+          "text": "you like to join",
+          "type": "line"
+        },
+        {
+          "text": "TEAM ROCKET?",
+          "type": "cont"
+        },
+        {
+          "text": "We're a group",
+          "type": "para"
+        },
+        {
+          "text": "dedicated to evil",
+          "type": "line"
+        },
+        {
+          "text": "using #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Want to join?",
+          "type": "para"
+        },
+        {
+          "text": "Are you sure?",
+          "type": "para"
+        },
+        {
+          "text": "Come on, join us!",
+          "type": "para"
+        },
+        {
+          "text": "I'm telling you",
+          "type": "para"
+        },
+        {
+          "text": "to join!",
+          "type": "line"
+        },
+        {
+          "text": "OK, you need",
+          "type": "para"
+        },
+        {
+          "text": "convincing!",
+          "type": "line"
+        },
+        {
+          "text": "I'll make you an",
+          "type": "para"
+        },
+        {
+          "text": "offer you can't",
+          "type": "line"
+        },
+        {
+          "text": "refuse!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1Defeated",
+      "values": [
+        {
+          "text": "Arrgh!",
+          "type": "text"
+        },
+        {
+          "text": "You are good!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM1YouCouldBecomeATopLeader",
+      "values": [
+        {
+          "text": "With your ability,",
+          "type": "text"
+        },
+        {
+          "text": "you could become",
+          "type": "line"
+        },
+        {
+          "text": "a top leader in",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "I saw your feat",
+          "type": "text"
+        },
+        {
+          "text": "from the grass!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "thought not!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "I hid because the",
+          "type": "text"
+        },
+        {
+          "text": "people on the",
+          "type": "line"
+        },
+        {
+          "text": "bridge scared me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM3Battle",
+      "values": [
+        {
+          "text": "OK! I'm No. 5!",
+          "type": "text"
+        },
+        {
+          "text": "I'll stomp you!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM3EndBattle",
+      "values": [
+        {
+          "text": "Whoa!",
+          "type": "text"
+        },
+        {
+          "text": "Too much!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerM3AfterBattle",
+      "values": [
+        {
+          "text": "I did my best, I",
+          "type": "text"
+        },
+        {
+          "text": "have no regrets!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF1Battle",
+      "values": [
+        {
+          "text": "I'm No. 4!",
+          "type": "text"
+        },
+        {
+          "text": "Getting tired?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF1EndBattle",
+      "values": [
+        {
+          "text": "I lost",
+          "type": "text"
+        },
+        {
+          "text": "too!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF1AfterBattle",
+      "values": [
+        {
+          "text": "I did my best, so",
+          "type": "text"
+        },
+        {
+          "text": "I've no regrets!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster1Battle",
+      "values": [
+        {
+          "text": "Here's No. 3!",
+          "type": "text"
+        },
+        {
+          "text": "I won't be easy!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster1EndBattle",
+      "values": [
+        {
+          "text": "Ow!",
+          "type": "text"
+        },
+        {
+          "text": "Stomped flat!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster1AfterBattle",
+      "values": [
+        {
+          "text": "I did my best, I",
+          "type": "text"
+        },
+        {
+          "text": "have no regrets!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF2Battle",
+      "values": [
+        {
+          "text": "I'm second!",
+          "type": "text"
+        },
+        {
+          "text": "Now it's serious!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "How could I",
+          "type": "text"
+        },
+        {
+          "text": "lose?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24CooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "I did my best, I",
+          "type": "text"
+        },
+        {
+          "text": "have no regrets!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster2Battle",
+      "values": [
+        {
+          "text": "This is NUGGET",
+          "type": "text"
+        },
+        {
+          "text": "BRIDGE! Beat us 5",
+          "type": "line"
+        },
+        {
+          "text": "trainers and win",
+          "type": "cont"
+        },
+        {
+          "text": "a fabulous prize!",
+          "type": "cont"
+        },
+        {
+          "text": "Think you got",
+          "type": "para"
+        },
+        {
+          "text": "what it takes?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster2EndBattle",
+      "values": [
+        {
+          "text": "Whoo!",
+          "type": "text"
+        },
+        {
+          "text": "Good stuff!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route24Youngster2AfterBattle",
+      "values": [
+        {
+          "text": "I did my best, I",
+          "type": "text"
+        },
+        {
+          "text": "have no regrets!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

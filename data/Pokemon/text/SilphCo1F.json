@@ -1,0 +1,25 @@
+{
+  "texts": [
+    {
+      "name": "SilphCo1FLinkReceptionist",
+      "values": [
+        {
+          "text": "Welcome!",
+          "type": "text"
+        },
+        {
+          "text": "The PRESIDENT is",
+          "type": "para"
+        },
+        {
+          "text": "in the boardroom",
+          "type": "line"
+        },
+        {
+          "text": "on 11F!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

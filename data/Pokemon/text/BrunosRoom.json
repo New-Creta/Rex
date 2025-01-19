@@ -1,0 +1,112 @@
+{
+  "texts": [
+    {
+      "name": "BrunoBeforeBattle",
+      "values": [
+        {
+          "text": "I am BRUNO of",
+          "type": "text"
+        },
+        {
+          "text": "the ELITE FOUR!",
+          "type": "line"
+        },
+        {
+          "text": "Through rigorous",
+          "type": "para"
+        },
+        {
+          "text": "training, people",
+          "type": "line"
+        },
+        {
+          "text": "and #MON can",
+          "type": "cont"
+        },
+        {
+          "text": "become stronger!",
+          "type": "cont"
+        },
+        {
+          "text": "I've weight",
+          "type": "para"
+        },
+        {
+          "text": "trained with",
+          "type": "line"
+        },
+        {
+          "text": "my #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "para"
+        },
+        {
+          "text": "We will grind you",
+          "type": "para"
+        },
+        {
+          "text": "down with our",
+          "type": "line"
+        },
+        {
+          "text": "superior power!",
+          "type": "cont"
+        },
+        {
+          "text": "Hoo hah!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "BrunoEndBattle",
+      "values": [
+        {
+          "text": "Why?",
+          "type": "text"
+        },
+        {
+          "text": "How could I lose?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BrunoAfterBattle",
+      "values": [
+        {
+          "text": "My job is done!",
+          "type": "text"
+        },
+        {
+          "text": "Go face your next",
+          "type": "line"
+        },
+        {
+          "text": "challenge!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BrunosRoomBrunoDontRunAway",
+      "values": [
+        {
+          "text": "Someone's voice:",
+          "type": "text"
+        },
+        {
+          "text": "Don't run away!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

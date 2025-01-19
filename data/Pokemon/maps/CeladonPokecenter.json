@@ -69,45 +69,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "CeladonPokecenterGentleman",
-      "values": [
-        {
-          "text": "# FLUTE awakens",
-          "type": "text"
-        },
-        {
-          "text": "#MON with a",
-          "type": "line"
-        },
-        {
-          "text": "sound that only",
-          "type": "cont"
-        },
-        {
-          "text": "they can hear!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "CeladonPokecenterBeauty",
-      "values": [
-        {
-          "text": "I rode uphill on",
-          "type": "text"
-        },
-        {
-          "text": "CYCLING ROAD from",
-          "type": "line"
-        },
-        {
-          "text": "FUCHSIA!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -69,45 +69,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "PewterPokecenterGentleman",
-      "values": [
-        {
-          "text": "What!?",
-          "type": "text"
-        },
-        {
-          "text": "TEAM ROCKET is",
-          "type": "para"
-        },
-        {
-          "text": "at MT.MOON? Huh?",
-          "type": "line"
-        },
-        {
-          "text": "I'm on the phone!",
-          "type": "cont"
-        },
-        {
-          "text": "Scram!",
-          "type": "para"
-        }
-      ]
-    },
-    {
-      "name": "PewterPokecenterJigglypuff",
-      "values": [
-        {
-          "text": "JIGGLYPUFF: Puu",
-          "type": "text"
-        },
-        {
-          "text": "pupuu!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

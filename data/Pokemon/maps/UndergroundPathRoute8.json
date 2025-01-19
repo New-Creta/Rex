@@ -42,24 +42,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "UndergroundPathRoute8Girl",
-      "values": [
-        {
-          "text": "The dept. store",
-          "type": "text"
-        },
-        {
-          "text": "in CELADON has a",
-          "type": "line"
-        },
-        {
-          "text": "great selection!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

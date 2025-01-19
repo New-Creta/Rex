@@ -58,65 +58,6 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "PewterGymBrockPreBattle",
-      "values": [
-        {
-          "text": "I'm BROCK!",
-          "type": "text"
-        },
-        {
-          "text": "I'm PEWTER's GYM",
-          "type": "line"
-        },
-        {
-          "text": "LEADER!",
-          "type": "cont"
-        },
-        {
-          "text": "I believe in rock",
-          "type": "para"
-        },
-        {
-          "text": "hard defense and",
-          "type": "line"
-        },
-        {
-          "text": "determination!",
-          "type": "cont"
-        },
-        {
-          "text": "That's why my",
-          "type": "para"
-        },
-        {
-          "text": "#MON are all",
-          "type": "line"
-        },
-        {
-          "text": "the rock-type!",
-          "type": "cont"
-        },
-        {
-          "text": "Do you still want",
-          "type": "para"
-        },
-        {
-          "text": "to challenge me?",
-          "type": "line"
-        },
-        {
-          "text": "Fine then! Show",
-          "type": "cont"
-        },
-        {
-          "text": "me your best!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": [
     "script_pewtergym_default",
     "script_pewtergym_start_battle",

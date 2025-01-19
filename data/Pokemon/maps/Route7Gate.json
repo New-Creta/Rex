@@ -48,7 +48,6 @@
     }
   ],
   "bg_events": [],
-  "texts": [],
   "scripts": [
     "script_route7gate_default",
     "script_route7gate_player_moving"

@@ -17,7 +17,6 @@
     }
   ],
   "bg_events": [],
-  "texts": [],
   "scripts": [
     "script_redshouse2f_default",
     "script_redshouse2f_noop"

@@ -47,28 +47,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "Route2TradeHouseScientist",
-      "values": [
-        {
-          "text": "A fainted #MON",
-          "type": "text"
-        },
-        {
-          "text": "can't fight. But, ",
-          "type": "line"
-        },
-        {
-          "text": "it can still use ",
-          "type": "cont"
-        },
-        {
-          "text": "moves like CUT!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

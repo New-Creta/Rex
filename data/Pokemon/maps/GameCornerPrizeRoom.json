@@ -63,41 +63,5 @@
       "text": "text_gamecornerprizeroom_prize_vendor_3"
     }
   ],
-  "texts": [
-    {
-      "name": "GameCornerPrizeRoomBaldingGuy",
-      "values": [
-        {
-          "text": "I sure do fancy",
-          "type": "text"
-        },
-        {
-          "text": "that PORYGON!",
-          "type": "line"
-        },
-        {
-          "text": "But, it's hard to",
-          "type": "para"
-        },
-        {
-          "text": "win at slots!",
-          "type": "line"
-        }
-      ]
-    },
-    {
-      "name": "GameCornerPrizeRoomGambler",
-      "values": [
-        {
-          "text": "I had a major",
-          "type": "text"
-        },
-        {
-          "text": "haul today!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

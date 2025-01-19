@@ -185,26 +185,6 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "PowerPlantVoltorbBattle",
-      "values": [
-        {
-          "text": "Bzzzt!",
-          "type": "text"
-        }
-      ]
-    },
-    {
-      "name": "PowerPlantZapdosBattle",
-      "values": [
-        {
-          "text": "Gyaoo!@",
-          "type": "text"
-        }
-      ]
-    }
-  ],
   "scripts": [
     "script_powerplant_default",
     "script_powerplant_start_battle",

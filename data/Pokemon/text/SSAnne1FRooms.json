@@ -1,0 +1,302 @@
+{
+  "texts": [
+    {
+      "name": "SSAnne1FRoomsWigglytuff",
+      "values": [
+        {
+          "text": "WIGGLYTUFF: Puup",
+          "type": "text"
+        },
+        {
+          "text": "pupuu!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman1Battle",
+      "values": [
+        {
+          "text": "I travel alone",
+          "type": "text"
+        },
+        {
+          "text": "on my journeys!",
+          "type": "line"
+        },
+        {
+          "text": "My #MON are my",
+          "type": "para"
+        },
+        {
+          "text": "only friends!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman1EndBattle",
+      "values": [
+        {
+          "text": "My, my",
+          "type": "text"
+        },
+        {
+          "text": "friends...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman1AfterBattle",
+      "values": [
+        {
+          "text": "You should be",
+          "type": "text"
+        },
+        {
+          "text": "nice to friends!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman2Battle",
+      "values": [
+        {
+          "text": "You pup! How dare",
+          "type": "text"
+        },
+        {
+          "text": "you barge in!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman2EndBattle",
+      "values": [
+        {
+          "text": "Humph!",
+          "type": "text"
+        },
+        {
+          "text": "You rude child!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman2AfterBattle",
+      "values": [
+        {
+          "text": "I wish to be left",
+          "type": "text"
+        },
+        {
+          "text": "alone! Get out!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsYoungsterBattle",
+      "values": [
+        {
+          "text": "I love #MON!",
+          "type": "text"
+        },
+        {
+          "text": "Do you?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsYoungsterEndBattle",
+      "values": [
+        {
+          "text": "Wow! ",
+          "type": "text"
+        },
+        {
+          "text": "You're great!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsYoungsterAfterBattle",
+      "values": [
+        {
+          "text": "Let me be your",
+          "type": "text"
+        },
+        {
+          "text": "friend, OK?",
+          "type": "line"
+        },
+        {
+          "text": "Then we can trade",
+          "type": "para"
+        },
+        {
+          "text": "#MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsCooltrainerFBattle",
+      "values": [
+        {
+          "text": "I collected these",
+          "type": "text"
+        },
+        {
+          "text": "#MON from all",
+          "type": "line"
+        },
+        {
+          "text": "around the world!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsCooltrainerFEndBattle",
+      "values": [
+        {
+          "text": "Oh no!",
+          "type": "text"
+        },
+        {
+          "text": "I went around the",
+          "type": "line"
+        },
+        {
+          "text": "world for these!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsCooltrainerFAfterBattle",
+      "values": [
+        {
+          "text": "You hurt my poor",
+          "type": "text"
+        },
+        {
+          "text": "worldly #MON!",
+          "type": "line"
+        },
+        {
+          "text": "I demand that you",
+          "type": "para"
+        },
+        {
+          "text": "heal them at a",
+          "type": "line"
+        },
+        {
+          "text": "#MON CENTER!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGirl1",
+      "values": [
+        {
+          "text": "Waiter, I would",
+          "type": "text"
+        },
+        {
+          "text": "like a cherry pie",
+          "type": "line"
+        },
+        {
+          "text": "please!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsMiddleAgedMan",
+      "values": [
+        {
+          "text": "A cruise is so",
+          "type": "text"
+        },
+        {
+          "text": "elegant yet cozy!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsLittleGirl",
+      "values": [
+        {
+          "text": "I always travel",
+          "type": "text"
+        },
+        {
+          "text": "with WIGGLYTUFF!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGirl2",
+      "values": [
+        {
+          "text": "We are cruising",
+          "type": "text"
+        },
+        {
+          "text": "around the world.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnne1FRoomsGentleman3",
+      "values": [
+        {
+          "text": "Ssh! I'm a GLOBAL",
+          "type": "text"
+        },
+        {
+          "text": "POLICE agent!",
+          "type": "line"
+        },
+        {
+          "text": "I'm on the trail",
+          "type": "para"
+        },
+        {
+          "text": "of TEAM ROCKET!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

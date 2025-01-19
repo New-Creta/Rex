@@ -1,0 +1,361 @@
+{
+  "texts": [
+    {
+      "name": "ViridianForestYoungster1",
+      "values": [
+        {
+          "text": "I came here with",
+          "type": "text"
+        },
+        {
+          "text": "some friends!",
+          "type": "line"
+        },
+        {
+          "text": "They're out for",
+          "type": "para"
+        },
+        {
+          "text": "#MON fights!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster2Battle",
+      "values": [
+        {
+          "text": "Hey! You have",
+          "type": "text"
+        },
+        {
+          "text": "#MON! Come on!",
+          "type": "line"
+        },
+        {
+          "text": "Let's battle'em!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster2EndBattle",
+      "values": [
+        {
+          "text": "No!",
+          "type": "text"
+        },
+        {
+          "text": "CATERPIE can't",
+          "type": "line"
+        },
+        {
+          "text": "cut it!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster2AfterBattle",
+      "values": [
+        {
+          "text": "Ssh! You'll scare",
+          "type": "text"
+        },
+        {
+          "text": "the bugs away!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster3Battle",
+      "values": [
+        {
+          "text": "Yo! You can't jam",
+          "type": "text"
+        },
+        {
+          "text": "out if you're a",
+          "type": "line"
+        },
+        {
+          "text": "#MON trainer!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster3EndBattle",
+      "values": [
+        {
+          "text": "Huh?",
+          "type": "text"
+        },
+        {
+          "text": "I ran out of",
+          "type": "line"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster3AfterBattle",
+      "values": [
+        {
+          "text": "Darn! I'm going",
+          "type": "text"
+        },
+        {
+          "text": "to catch some",
+          "type": "line"
+        },
+        {
+          "text": "stronger ones!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster4Battle",
+      "values": [
+        {
+          "text": "Hey, wait up!",
+          "type": "text"
+        },
+        {
+          "text": "What's the hurry?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster4EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "give! You're good",
+          "type": "line"
+        },
+        {
+          "text": "at this!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster4AfterBattle",
+      "values": [
+        {
+          "text": "Sometimes, you",
+          "type": "text"
+        },
+        {
+          "text": "can find stuff on",
+          "type": "line"
+        },
+        {
+          "text": "the ground!",
+          "type": "cont"
+        },
+        {
+          "text": "I'm looking for",
+          "type": "para"
+        },
+        {
+          "text": "the stuff I",
+          "type": "line"
+        },
+        {
+          "text": "dropped!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestYoungster5",
+      "values": [
+        {
+          "text": "I ran out of #",
+          "type": "text"
+        },
+        {
+          "text": "BALLs to catch",
+          "type": "line"
+        },
+        {
+          "text": "#MON with!",
+          "type": "cont"
+        },
+        {
+          "text": "You should carry",
+          "type": "para"
+        },
+        {
+          "text": "extras!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestTrainerTips1",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "If you want to",
+          "type": "para"
+        },
+        {
+          "text": "avoid battles,",
+          "type": "line"
+        },
+        {
+          "text": "stay away from",
+          "type": "cont"
+        },
+        {
+          "text": "grassy areas!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestUseAntidoteSign",
+      "values": [
+        {
+          "text": "For poison, use",
+          "type": "text"
+        },
+        {
+          "text": "ANTIDOTE! Get it",
+          "type": "line"
+        },
+        {
+          "text": "at #MON MARTs!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestTrainerTips2",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Contact PROF.OAK",
+          "type": "para"
+        },
+        {
+          "text": "via PC to get",
+          "type": "line"
+        },
+        {
+          "text": "your #DEX",
+          "type": "cont"
+        },
+        {
+          "text": "evaluated!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestTrainerTips3",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "No stealing of",
+          "type": "para"
+        },
+        {
+          "text": "#MON from",
+          "type": "line"
+        },
+        {
+          "text": "other trainers!",
+          "type": "cont"
+        },
+        {
+          "text": "Catch only wild",
+          "type": "cont"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestTrainerTips4",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Weaken #MON",
+          "type": "para"
+        },
+        {
+          "text": "before attempting",
+          "type": "line"
+        },
+        {
+          "text": "capture!",
+          "type": "cont"
+        },
+        {
+          "text": "When healthy,",
+          "type": "para"
+        },
+        {
+          "text": "they may escape!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestLeavingSign",
+      "values": [
+        {
+          "text": "LEAVING",
+          "type": "text"
+        },
+        {
+          "text": "VIRIDIAN FOREST",
+          "type": "line"
+        },
+        {
+          "text": "PEWTER CITY AHEAD",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

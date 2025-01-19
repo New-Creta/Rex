@@ -58,36 +58,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "CinnabarLabTradeRoomSuperNerd",
-      "values": [
-        {
-          "text": "I found this very",
-          "type": "text"
-        },
-        {
-          "text": "strange fossil in",
-          "type": "line"
-        },
-        {
-          "text": "MT.MOON!",
-          "type": "cont"
-        },
-        {
-          "text": "I think it's a",
-          "type": "para"
-        },
-        {
-          "text": "rare, prehistoric",
-          "type": "line"
-        },
-        {
-          "text": "#MON!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

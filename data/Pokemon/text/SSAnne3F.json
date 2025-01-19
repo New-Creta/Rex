@@ -1,0 +1,25 @@
+{
+  "texts": [
+    {
+      "name": "SSAnne3FSailor",
+      "values": [
+        {
+          "text": "Our CAPTAIN is a",
+          "type": "text"
+        },
+        {
+          "text": "sword master!",
+          "type": "line"
+        },
+        {
+          "text": "He even teaches",
+          "type": "para"
+        },
+        {
+          "text": "CUT to #MON!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

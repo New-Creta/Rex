@@ -1,0 +1,403 @@
+{
+  "texts": [
+    {
+      "name": "SilphCo11FSilphPresident",
+      "values": [
+        {
+          "text": "PRESIDENT: Thank",
+          "type": "text"
+        },
+        {
+          "text": "you for saving",
+          "type": "line"
+        },
+        {
+          "text": "SILPH!",
+          "type": "cont"
+        },
+        {
+          "text": "I will never",
+          "type": "para"
+        },
+        {
+          "text": "forget you saved",
+          "type": "line"
+        },
+        {
+          "text": "us in our moment",
+          "type": "cont"
+        },
+        {
+          "text": "of peril!",
+          "type": "cont"
+        },
+        {
+          "text": "I have to thank",
+          "type": "para"
+        },
+        {
+          "text": "you in some way!",
+          "type": "line"
+        },
+        {
+          "text": "Because I am rich,",
+          "type": "para"
+        },
+        {
+          "text": "I can give you",
+          "type": "line"
+        },
+        {
+          "text": "anything!",
+          "type": "cont"
+        },
+        {
+          "text": "Here, maybe this",
+          "type": "para"
+        },
+        {
+          "text": "will do!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FSilphPresidentReceivedMasterBall",
+      "values": [
+        {
+          "text": "<PLAYER> got a",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FSilphPresidentMasterBallDescription",
+      "values": [
+        {
+          "text": "PRESIDENT: You",
+          "type": "text"
+        },
+        {
+          "text": "can't buy that",
+          "type": "line"
+        },
+        {
+          "text": "anywhere!",
+          "type": "cont"
+        },
+        {
+          "text": "It's our secret",
+          "type": "para"
+        },
+        {
+          "text": "prototype MASTER",
+          "type": "line"
+        },
+        {
+          "text": "BALL!",
+          "type": "cont"
+        },
+        {
+          "text": "It will catch any",
+          "type": "para"
+        },
+        {
+          "text": "#MON without",
+          "type": "line"
+        },
+        {
+          "text": "fail!",
+          "type": "cont"
+        },
+        {
+          "text": "You should be",
+          "type": "para"
+        },
+        {
+          "text": "quiet about using",
+          "type": "line"
+        },
+        {
+          "text": "it, though.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FSilphPresidentNoRoom",
+      "values": [
+        {
+          "text": "You have no",
+          "type": "text"
+        },
+        {
+          "text": "room for this.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FBeauty",
+      "values": [
+        {
+          "text": "SECRETARY: Thank",
+          "type": "text"
+        },
+        {
+          "text": "you for rescuing",
+          "type": "line"
+        },
+        {
+          "text": "all of us!",
+          "type": "cont"
+        },
+        {
+          "text": "We admire your",
+          "type": "para"
+        },
+        {
+          "text": "courage.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FGiovanni",
+      "values": [
+        {
+          "text": "Ah <PLAYER>!",
+          "type": "text"
+        },
+        {
+          "text": "So we meet again!",
+          "type": "line"
+        },
+        {
+          "text": "The PRESIDENT and",
+          "type": "para"
+        },
+        {
+          "text": "I are discussing",
+          "type": "line"
+        },
+        {
+          "text": "a vital business",
+          "type": "cont"
+        },
+        {
+          "text": "proposition.",
+          "type": "cont"
+        },
+        {
+          "text": "Keep your nose",
+          "type": "para"
+        },
+        {
+          "text": "out of grown-up",
+          "type": "line"
+        },
+        {
+          "text": "matters...",
+          "type": "cont"
+        },
+        {
+          "text": "Or, experience a",
+          "type": "para"
+        },
+        {
+          "text": "world of pain!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FGiovanniILostAgain",
+      "values": [
+        {
+          "text": "Arrgh!!",
+          "type": "text"
+        },
+        {
+          "text": "I lost again!?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FGiovanniYouRuinedOurPlans",
+      "values": [
+        {
+          "text": "Blast it all!",
+          "type": "text"
+        },
+        {
+          "text": "You ruined our",
+          "type": "line"
+        },
+        {
+          "text": "plans for SILPH!",
+          "type": "cont"
+        },
+        {
+          "text": "But, TEAM ROCKET",
+          "type": "para"
+        },
+        {
+          "text": "will never fall!",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>! Never",
+          "type": "para"
+        },
+        {
+          "text": "forget that all",
+          "type": "line"
+        },
+        {
+          "text": "#MON exist",
+          "type": "cont"
+        },
+        {
+          "text": "for TEAM ROCKET!",
+          "type": "cont"
+        },
+        {
+          "text": "I must go, but I",
+          "type": "para"
+        },
+        {
+          "text": "shall return!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket1Battle",
+      "values": [
+        {
+          "text": "Stop right there!",
+          "type": "text"
+        },
+        {
+          "text": "Don't you move!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket1EndBattle",
+      "values": [
+        {
+          "text": "Don't...",
+          "type": "text"
+        },
+        {
+          "text": "Please!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket1AfterBattle",
+      "values": [
+        {
+          "text": "So, you want to",
+          "type": "text"
+        },
+        {
+          "text": "see my BOSS?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket2Battle",
+      "values": [
+        {
+          "text": "Halt! Do you have",
+          "type": "text"
+        },
+        {
+          "text": "an appointment",
+          "type": "line"
+        },
+        {
+          "text": "with my BOSS?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket2EndBattle",
+      "values": [
+        {
+          "text": "Gaah!",
+          "type": "text"
+        },
+        {
+          "text": "Demolished!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo11FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "Watch your step,",
+          "type": "text"
+        },
+        {
+          "text": "my BOSS likes his",
+          "type": "line"
+        },
+        {
+          "text": "#MON tough!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FPorygon",
+      "values": [
+        {
+          "text": "The monitor has",
+          "type": "text"
+        },
+        {
+          "text": "#MON on it!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

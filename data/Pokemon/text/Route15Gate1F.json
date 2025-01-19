@@ -1,0 +1,25 @@
+{
+  "texts": [
+    {
+      "name": "Route15Gate1FGuard",
+      "values": [
+        {
+          "text": "Are you working",
+          "type": "text"
+        },
+        {
+          "text": "on a #DEX?",
+          "type": "line"
+        },
+        {
+          "text": "PROF.OAK's AIDE",
+          "type": "para"
+        },
+        {
+          "text": "came by here.",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

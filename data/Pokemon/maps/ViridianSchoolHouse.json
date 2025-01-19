@@ -47,45 +47,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "ViridianSchoolHouseBrunetteGirl",
-      "values": [
-        {
-          "text": "Whew! I'm trying",
-          "type": "text"
-        },
-        {
-          "text": "to memorize all",
-          "type": "line"
-        },
-        {
-          "text": "my notes.",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "ViridianSchoolHouseCooltrainerF",
-      "values": [
-        {
-          "text": "Okay!",
-          "type": "text"
-        },
-        {
-          "text": "Be sure to read",
-          "type": "para"
-        },
-        {
-          "text": "the blackboard",
-          "type": "line"
-        },
-        {
-          "text": "carefully!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

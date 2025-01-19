@@ -42,36 +42,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "DiglettsCaveRoute2FishingGuru",
-      "values": [
-        {
-          "text": "I went to ROCK",
-          "type": "text"
-        },
-        {
-          "text": "TUNNEL, but it's",
-          "type": "line"
-        },
-        {
-          "text": "dark and scary.",
-          "type": "cont"
-        },
-        {
-          "text": "If a #MON's",
-          "type": "para"
-        },
-        {
-          "text": "FLASH could light",
-          "type": "line"
-        },
-        {
-          "text": "it up...",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

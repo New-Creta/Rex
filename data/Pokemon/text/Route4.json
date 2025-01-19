@@ -1,0 +1,106 @@
+{
+  "texts": [
+    {
+      "name": "Route4CooltrainerF1",
+      "values": [
+        {
+          "text": "Ouch! I tripped",
+          "type": "text"
+        },
+        {
+          "text": "over a rocky",
+          "type": "line"
+        },
+        {
+          "text": "#MON, GEODUDE!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route4CooltrainerF2Battle",
+      "values": [
+        {
+          "text": "I came to get my",
+          "type": "text"
+        },
+        {
+          "text": "mushroom #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route4CooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "Oh! My cute",
+          "type": "text"
+        },
+        {
+          "text": "mushroom #MON!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route4CooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "There might not",
+          "type": "text"
+        },
+        {
+          "text": "be any more",
+          "type": "line"
+        },
+        {
+          "text": "mushrooms here.",
+          "type": "cont"
+        },
+        {
+          "text": "I think I got",
+          "type": "para"
+        },
+        {
+          "text": "them all.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route4MtMoonSign",
+      "values": [
+        {
+          "text": "MT.MOON",
+          "type": "text"
+        },
+        {
+          "text": "Tunnel Entrance",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route4Sign",
+      "values": [
+        {
+          "text": "ROUTE 4",
+          "type": "text"
+        },
+        {
+          "text": "MT.MOON -",
+          "type": "line"
+        },
+        {
+          "text": "CERULEAN CITY",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

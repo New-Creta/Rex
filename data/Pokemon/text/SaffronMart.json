@@ -1,0 +1,46 @@
+{
+  "texts": [
+    {
+      "name": "SaffronMartSuperNerd",
+      "values": [
+        {
+          "text": "MAX REPEL lasts",
+          "type": "text"
+        },
+        {
+          "text": "longer than SUPER",
+          "type": "line"
+        },
+        {
+          "text": "REPEL for keeping",
+          "type": "cont"
+        },
+        {
+          "text": "weaker #MON",
+          "type": "cont"
+        },
+        {
+          "text": "away!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SaffronMartCooltrainerF",
+      "values": [
+        {
+          "text": "REVIVE is costly,",
+          "type": "text"
+        },
+        {
+          "text": "but it revives",
+          "type": "line"
+        },
+        {
+          "text": "fainted #MON!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

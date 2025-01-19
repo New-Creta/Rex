@@ -1,0 +1,153 @@
+{
+  "texts": [
+    {
+      "name": "SSAnneBowSuperNerd",
+      "values": [
+        {
+          "text": "The party's over.",
+          "type": "text"
+        },
+        {
+          "text": "The ship will be",
+          "type": "line"
+        },
+        {
+          "text": "departing soon.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor1",
+      "values": [
+        {
+          "text": "Scrubbing decks",
+          "type": "text"
+        },
+        {
+          "text": "is hard work!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowCooltrainerM",
+      "values": [
+        {
+          "text": "Urf. I feel ill.",
+          "type": "text"
+        },
+        {
+          "text": "I stepped out to",
+          "type": "para"
+        },
+        {
+          "text": "get some air.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor2Battle",
+      "values": [
+        {
+          "text": "Hey matey!",
+          "type": "text"
+        },
+        {
+          "text": "Let's do a little",
+          "type": "para"
+        },
+        {
+          "text": "jig!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor2EndBattle",
+      "values": [
+        {
+          "text": "You're",
+          "type": "text"
+        },
+        {
+          "text": "impressive!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor2AfterBattle",
+      "values": [
+        {
+          "text": "How many kinds of",
+          "type": "text"
+        },
+        {
+          "text": "#MON do you",
+          "type": "line"
+        },
+        {
+          "text": "think there are?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor3Battle",
+      "values": [
+        {
+          "text": "Ahoy there!",
+          "type": "text"
+        },
+        {
+          "text": "Are you seasick?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor3EndBattle",
+      "values": [
+        {
+          "text": "I was",
+          "type": "text"
+        },
+        {
+          "text": "just careless!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneBowSailor3AfterBattle",
+      "values": [
+        {
+          "text": "My Pa said there",
+          "type": "text"
+        },
+        {
+          "text": "are 100 kinds of",
+          "type": "line"
+        },
+        {
+          "text": "#MON. I think",
+          "type": "cont"
+        },
+        {
+          "text": "there are more.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

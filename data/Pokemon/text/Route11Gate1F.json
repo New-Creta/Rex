@@ -1,0 +1,49 @@
+{
+  "texts": [
+    {
+      "name": "Route11Gate1FGuard",
+      "values": [
+        {
+          "text": "When you catch",
+          "type": "text"
+        },
+        {
+          "text": "lots of #MON,",
+          "type": "line"
+        },
+        {
+          "text": "isn't it hard to",
+          "type": "cont"
+        },
+        {
+          "text": "think up names?",
+          "type": "cont"
+        },
+        {
+          "text": "In LAVENDER TOWN,",
+          "type": "para"
+        },
+        {
+          "text": "there's a man who",
+          "type": "line"
+        },
+        {
+          "text": "rates #MON",
+          "type": "cont"
+        },
+        {
+          "text": "nicknames.",
+          "type": "cont"
+        },
+        {
+          "text": "He'll help you",
+          "type": "para"
+        },
+        {
+          "text": "rename them too!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

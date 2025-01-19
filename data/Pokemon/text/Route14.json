@@ -1,0 +1,519 @@
+{
+  "texts": [
+    {
+      "name": "Route14CooltrainerM1Battle",
+      "values": [
+        {
+          "text": "You need to use",
+          "type": "text"
+        },
+        {
+          "text": "TMs to teach good",
+          "type": "line"
+        },
+        {
+          "text": "moves to #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM1EndBattle",
+      "values": [
+        {
+          "text": "Not",
+          "type": "text"
+        },
+        {
+          "text": "good enough!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM1AfterBattle",
+      "values": [
+        {
+          "text": "You have some HMs",
+          "type": "text"
+        },
+        {
+          "text": "right? #MON",
+          "type": "line"
+        },
+        {
+          "text": "can't ever forget",
+          "type": "cont"
+        },
+        {
+          "text": "those moves.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "My bird #MON",
+          "type": "text"
+        },
+        {
+          "text": "should be ready",
+          "type": "line"
+        },
+        {
+          "text": "for battle.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "Not",
+          "type": "text"
+        },
+        {
+          "text": "ready yet!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "They need to learn",
+          "type": "text"
+        },
+        {
+          "text": "better moves.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM3Battle",
+      "values": [
+        {
+          "text": "TMs are on sale",
+          "type": "text"
+        },
+        {
+          "text": "in CELADON!",
+          "type": "line"
+        },
+        {
+          "text": "But, only a few",
+          "type": "cont"
+        },
+        {
+          "text": "people have HMs!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM3EndBattle",
+      "values": [
+        {
+          "text": "Aww,",
+          "type": "text"
+        },
+        {
+          "text": "bummer!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM3AfterBattle",
+      "values": [
+        {
+          "text": "Teach #MON",
+          "type": "text"
+        },
+        {
+          "text": "moves of the same",
+          "type": "line"
+        },
+        {
+          "text": "element type for",
+          "type": "cont"
+        },
+        {
+          "text": "more power.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM4Battle",
+      "values": [
+        {
+          "text": "Have you taught",
+          "type": "text"
+        },
+        {
+          "text": "your bird #MON",
+          "type": "line"
+        },
+        {
+          "text": "how to FLY?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM4EndBattle",
+      "values": [
+        {
+          "text": "Shot",
+          "type": "text"
+        },
+        {
+          "text": "down in flames!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM4AfterBattle",
+      "values": [
+        {
+          "text": "Bird #MON are",
+          "type": "text"
+        },
+        {
+          "text": "my true love!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM5Battle",
+      "values": [
+        {
+          "text": "Have you heard of",
+          "type": "text"
+        },
+        {
+          "text": "the legendary",
+          "type": "line"
+        },
+        {
+          "text": "#MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM5EndBattle",
+      "values": [
+        {
+          "text": "Why?",
+          "type": "text"
+        },
+        {
+          "text": "Why'd I lose?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM5AfterBattle",
+      "values": [
+        {
+          "text": "The 3 legendary",
+          "type": "text"
+        },
+        {
+          "text": "#MON are all",
+          "type": "line"
+        },
+        {
+          "text": "birds of prey.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM6Battle",
+      "values": [
+        {
+          "text": "I'm not into it,",
+          "type": "text"
+        },
+        {
+          "text": "but OK! Let's go!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM6EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "knew it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14CooltrainerM6AfterBattle",
+      "values": [
+        {
+          "text": "Winning, losing,",
+          "type": "text"
+        },
+        {
+          "text": "it doesn't matter",
+          "type": "line"
+        },
+        {
+          "text": "in the long run!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker1Battle",
+      "values": [
+        {
+          "text": "C'mon, c'mon.",
+          "type": "text"
+        },
+        {
+          "text": "Let's go, let's",
+          "type": "line"
+        },
+        {
+          "text": "go, let's go!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker1EndBattle",
+      "values": [
+        {
+          "text": "Arrg!",
+          "type": "text"
+        },
+        {
+          "text": "Lost! Get lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker1AfterBattle",
+      "values": [
+        {
+          "text": "What, what, what?",
+          "type": "text"
+        },
+        {
+          "text": "What do you want?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker2Battle",
+      "values": [
+        {
+          "text": "Perfect! I need to",
+          "type": "text"
+        },
+        {
+          "text": "burn some time!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker2EndBattle",
+      "values": [
+        {
+          "text": "What?",
+          "type": "text"
+        },
+        {
+          "text": "You!?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker2AfterBattle",
+      "values": [
+        {
+          "text": "Raising #MON",
+          "type": "text"
+        },
+        {
+          "text": "is a drag, man.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker3Battle",
+      "values": [
+        {
+          "text": "We ride out here",
+          "type": "text"
+        },
+        {
+          "text": "because there's",
+          "type": "line"
+        },
+        {
+          "text": "more room!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker3EndBattle",
+      "values": [
+        {
+          "text": "Wipe out!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker3AfterBattle",
+      "values": [
+        {
+          "text": "It's cool you",
+          "type": "text"
+        },
+        {
+          "text": "made your #MON",
+          "type": "line"
+        },
+        {
+          "text": "so strong!",
+          "type": "cont"
+        },
+        {
+          "text": "Might is right!",
+          "type": "para"
+        },
+        {
+          "text": "And you know it!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker4Battle",
+      "values": [
+        {
+          "text": "#MON fight?",
+          "type": "text"
+        },
+        {
+          "text": "Cool! Rumble!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker4EndBattle",
+      "values": [
+        {
+          "text": "Blown",
+          "type": "text"
+        },
+        {
+          "text": "away!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route14Biker4AfterBattle",
+      "values": [
+        {
+          "text": "You know who'd",
+          "type": "text"
+        },
+        {
+          "text": "win, you and me",
+          "type": "line"
+        },
+        {
+          "text": "one on one!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route14Sign",
+      "values": [
+        {
+          "text": "ROUTE 14",
+          "type": "text"
+        },
+        {
+          "text": "West to FUCHSIA",
+          "type": "line"
+        },
+        {
+          "text": "CITY",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

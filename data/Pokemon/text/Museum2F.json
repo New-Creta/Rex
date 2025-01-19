@@ -1,0 +1,123 @@
+{
+  "texts": [
+    {
+      "name": "Museum2FYoungster",
+      "values": [
+        {
+          "text": "MOON STONE?",
+          "type": "text"
+        },
+        {
+          "text": "What's so special",
+          "type": "para"
+        },
+        {
+          "text": "about it?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FGramps",
+      "values": [
+        {
+          "text": "July 20, 1969!",
+          "type": "text"
+        },
+        {
+          "text": "The 1st lunar",
+          "type": "para"
+        },
+        {
+          "text": "landing!",
+          "type": "line"
+        },
+        {
+          "text": "I bought a color",
+          "type": "para"
+        },
+        {
+          "text": "TV to watch it!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FScientist",
+      "values": [
+        {
+          "text": "We have a space",
+          "type": "text"
+        },
+        {
+          "text": "exhibit now.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FBrunetteGirl",
+      "values": [
+        {
+          "text": "I want a PIKACHU!",
+          "type": "text"
+        },
+        {
+          "text": "It's so cute!",
+          "type": "line"
+        },
+        {
+          "text": "I asked my Daddy",
+          "type": "para"
+        },
+        {
+          "text": "to catch me one!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FHiker",
+      "values": [
+        {
+          "text": "Yeah, a PIKACHU",
+          "type": "text"
+        },
+        {
+          "text": "soon, I promise!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FSpaceShuttleSign",
+      "values": [
+        {
+          "text": "SPACE SHUTTLE",
+          "type": "text"
+        },
+        {
+          "text": "COLUMBIA",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Museum2FMoonStoneSign",
+      "values": [
+        {
+          "text": "Meteorite that",
+          "type": "text"
+        },
+        {
+          "text": "fell on MT.MOON.",
+          "type": "line"
+        },
+        {
+          "text": "(MOON STONE?)",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

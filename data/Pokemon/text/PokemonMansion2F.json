@@ -1,0 +1,140 @@
+{
+  "texts": [
+    {
+      "name": "PokemonMansion2FSuperNerdBattle",
+      "values": [
+        {
+          "text": "I can't get out!",
+          "type": "text"
+        },
+        {
+          "text": "This old place is",
+          "type": "line"
+        },
+        {
+          "text": "one big puzzle!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FSuperNerdEndBattle",
+      "values": [
+        {
+          "text": "Oh no!",
+          "type": "text"
+        },
+        {
+          "text": "My bag of loot!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FSuperNerdAfterBattle",
+      "values": [
+        {
+          "text": "Switches open and",
+          "type": "text"
+        },
+        {
+          "text": "close alternating",
+          "type": "line"
+        },
+        {
+          "text": "sets of doors!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FDiary1",
+      "values": [
+        {
+          "text": "Diary: July 5",
+          "type": "text"
+        },
+        {
+          "text": "Guyana,",
+          "type": "line"
+        },
+        {
+          "text": "South America",
+          "type": "cont"
+        },
+        {
+          "text": "A new #MON was",
+          "type": "para"
+        },
+        {
+          "text": "discovered deep",
+          "type": "line"
+        },
+        {
+          "text": "in the jungle.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FDiary2",
+      "values": [
+        {
+          "text": "Diary: July 10",
+          "type": "text"
+        },
+        {
+          "text": "We christened the",
+          "type": "line"
+        },
+        {
+          "text": "newly discovered",
+          "type": "cont"
+        },
+        {
+          "text": "#MON, MEW.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FSwitch",
+      "values": [
+        {
+          "text": "A secret switch!",
+          "type": "text"
+        },
+        {
+          "text": "Press it?",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FSwitchPressed",
+      "values": [
+        {
+          "text": "Who wouldn't?",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion2FSwitchNotPressed",
+      "values": [
+        {
+          "text": "Not quite yet!",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

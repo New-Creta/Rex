@@ -1,0 +1,97 @@
+{
+  "texts": [
+    {
+      "name": "Route16FlyHouseBrunetteGirl",
+      "values": [
+        {
+          "text": "Oh, you found my",
+          "type": "text"
+        },
+        {
+          "text": "secret retreat!",
+          "type": "line"
+        },
+        {
+          "text": "Please don't tell",
+          "type": "para"
+        },
+        {
+          "text": "anyone I'm here.",
+          "type": "line"
+        },
+        {
+          "text": "I'll make it up",
+          "type": "cont"
+        },
+        {
+          "text": "to you with this!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route16FlyHouseBrunetteGirlReceivedHM02",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "HM02!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16FlyHouseBrunetteGirlHM02Explanation",
+      "values": [
+        {
+          "text": "HM02 is FLY.",
+          "type": "text"
+        },
+        {
+          "text": "It will take you",
+          "type": "line"
+        },
+        {
+          "text": "back to any town.",
+          "type": "cont"
+        },
+        {
+          "text": "Put it to good",
+          "type": "para"
+        },
+        {
+          "text": "use!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16FlyHouseBrunetteGirlHM02NoRoom",
+      "values": [
+        {
+          "text": "You don't have any",
+          "type": "text"
+        },
+        {
+          "text": "room for this.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route16FlyHouseFearow",
+      "values": [
+        {
+          "text": "FEAROW: Kyueen!",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "texts": [
+    {
+      "name": "NameRatersHouseNameRaterWantMeToRate",
+      "values": [
+        {
+          "text": "Hello, hello!",
+          "type": "text"
+        },
+        {
+          "text": "I am the official",
+          "type": "line"
+        },
+        {
+          "text": "NAME RATER!",
+          "type": "cont"
+        },
+        {
+          "text": "Want me to rate",
+          "type": "para"
+        },
+        {
+          "text": "the nicknames of",
+          "type": "line"
+        },
+        {
+          "text": "your #MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterWhichPokemon",
+      "values": [
+        {
+          "text": "Which #MON",
+          "type": "text"
+        },
+        {
+          "text": "should I look at?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterGiveItANiceName",
+      "values": [
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": ", is it?",
+          "type": "text"
+        },
+        {
+          "text": "That is a decent",
+          "type": "line"
+        },
+        {
+          "text": "nickname!",
+          "type": "cont"
+        },
+        {
+          "text": "But, would you",
+          "type": "para"
+        },
+        {
+          "text": "like me to give",
+          "type": "line"
+        },
+        {
+          "text": "it a nicer name?",
+          "type": "cont"
+        },
+        {
+          "text": "How about it?",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterWhatShouldWeNameIt",
+      "values": [
+        {
+          "text": "Fine! What should",
+          "type": "text"
+        },
+        {
+          "text": "we name it?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterPokemonHasBeenRenamed",
+      "values": [
+        {
+          "text": "OK! This #MON",
+          "type": "text"
+        },
+        {
+          "text": "has been renamed",
+          "type": "line"
+        },
+        {
+          "text": "@",
+          "type": "cont"
+        },
+        {
+          "text": "text_ram wBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!",
+          "type": "text"
+        },
+        {
+          "text": "That's a better",
+          "type": "para"
+        },
+        {
+          "text": "name than before!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterComeAnyTimeYouLike",
+      "values": [
+        {
+          "text": "Fine! Come any",
+          "type": "text"
+        },
+        {
+          "text": "time you like!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "NameRatersHouseNameRaterATrulyImpeccableName",
+      "values": [
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": ", is it?",
+          "type": "text"
+        },
+        {
+          "text": "That is a truly",
+          "type": "line"
+        },
+        {
+          "text": "impeccable name!",
+          "type": "cont"
+        },
+        {
+          "text": "Take good care of",
+          "type": "para"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": "!",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

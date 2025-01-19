@@ -1,0 +1,98 @@
+{
+  "texts": [
+    {
+      "name": "VictoryRoad1FCooltrainerFBattle",
+      "values": [
+        {
+          "text": "I wonder if you",
+          "type": "text"
+        },
+        {
+          "text": "are good enough",
+          "type": "line"
+        },
+        {
+          "text": "for me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VictoryRoad1FCooltrainerFEndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "lost out!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VictoryRoad1FCooltrainerFAfterBattle",
+      "values": [
+        {
+          "text": "I never wanted to",
+          "type": "text"
+        },
+        {
+          "text": "lose to anybody!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VictoryRoad1FCooltrainerMBattle",
+      "values": [
+        {
+          "text": "I can see you're",
+          "type": "text"
+        },
+        {
+          "text": "good! Let me see",
+          "type": "line"
+        },
+        {
+          "text": "exactly how good!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VictoryRoad1FCooltrainerMEndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "had a chance...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VictoryRoad1FCooltrainerMAfterBattle",
+      "values": [
+        {
+          "text": "I concede, you're",
+          "type": "text"
+        },
+        {
+          "text": "better than me!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

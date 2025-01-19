@@ -1,0 +1,373 @@
+{
+  "texts": [
+    {
+      "name": "MtMoonB2FDomeFossilYouWant",
+      "values": [
+        {
+          "text": "You want the",
+          "type": "text"
+        },
+        {
+          "text": "DOME FOSSIL?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FHelixFossilYouWant",
+      "values": [
+        {
+          "text": "You want the",
+          "type": "text"
+        },
+        {
+          "text": "HELIX FOSSIL?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FReceivedFossil",
+      "values": [
+        {
+          "text": "<PLAYER> got the",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FYouHaveNoRoom",
+      "values": [
+        {
+          "text": "Look, you've got",
+          "type": "text"
+        },
+        {
+          "text": "no room for this.@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FSuperNerdTheyreBothMine",
+      "values": [
+        {
+          "text": "Hey, stop!",
+          "type": "text"
+        },
+        {
+          "text": "I found these",
+          "type": "para"
+        },
+        {
+          "text": "fossils! They're",
+          "type": "line"
+        },
+        {
+          "text": "both mine!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FSuperNerdOkIllShare",
+      "values": [
+        {
+          "text": "OK!",
+          "type": "text"
+        },
+        {
+          "text": "I'll share!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2fSuperNerdEachTakeOne",
+      "values": [
+        {
+          "text": "We'll each take",
+          "type": "text"
+        },
+        {
+          "text": "one!",
+          "type": "line"
+        },
+        {
+          "text": "No being greedy!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FSuperNerdTheresAPokemonLab",
+      "values": [
+        {
+          "text": "Far away, on",
+          "type": "text"
+        },
+        {
+          "text": "CINNABAR ISLAND,",
+          "type": "line"
+        },
+        {
+          "text": "there's a #MON",
+          "type": "cont"
+        },
+        {
+          "text": "LAB.",
+          "type": "cont"
+        },
+        {
+          "text": "They do research",
+          "type": "para"
+        },
+        {
+          "text": "on regenerating",
+          "type": "line"
+        },
+        {
+          "text": "fossils.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FSuperNerdThenThisIsMine",
+      "values": [
+        {
+          "text": "All right. Then",
+          "type": "text"
+        },
+        {
+          "text": "this is mine!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket1Battle",
+      "values": [
+        {
+          "text": "TEAM ROCKET will",
+          "type": "text"
+        },
+        {
+          "text": "find the fossils,",
+          "type": "line"
+        },
+        {
+          "text": "revive and sell",
+          "type": "cont"
+        },
+        {
+          "text": "them for cash!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket1EndBattle",
+      "values": [
+        {
+          "text": "Urgh!",
+          "type": "text"
+        },
+        {
+          "text": "Now I'm mad!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket1AfterBattle",
+      "values": [
+        {
+          "text": "You made me mad!",
+          "type": "text"
+        },
+        {
+          "text": "TEAM ROCKET will",
+          "type": "line"
+        },
+        {
+          "text": "blacklist you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket2Battle",
+      "values": [
+        {
+          "text": "We, TEAM ROCKET,",
+          "type": "text"
+        },
+        {
+          "text": "are #MON",
+          "type": "line"
+        },
+        {
+          "text": "gangsters!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket2EndBattle",
+      "values": [
+        {
+          "text": "I blew",
+          "type": "text"
+        },
+        {
+          "text": "it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "Darn it all! My",
+          "type": "text"
+        },
+        {
+          "text": "associates won't",
+          "type": "line"
+        },
+        {
+          "text": "stand for this!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket3Battle",
+      "values": [
+        {
+          "text": "We're pulling a",
+          "type": "text"
+        },
+        {
+          "text": "big job here!",
+          "type": "line"
+        },
+        {
+          "text": "Get lost, kid!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket3EndBattle",
+      "values": [
+        {
+          "text": "So, you",
+          "type": "text"
+        },
+        {
+          "text": "are good.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket3AfterBattle",
+      "values": [
+        {
+          "text": "If you find a",
+          "type": "text"
+        },
+        {
+          "text": "fossil, give it",
+          "type": "line"
+        },
+        {
+          "text": "to me and scram!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket4Battle",
+      "values": [
+        {
+          "text": "Little kids",
+          "type": "text"
+        },
+        {
+          "text": "should leave",
+          "type": "line"
+        },
+        {
+          "text": "grown-ups alone!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket4EndBattle",
+      "values": [
+        {
+          "text": "I'm",
+          "type": "text"
+        },
+        {
+          "text": "steamed!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MtMoonB2FRocket4AfterBattle",
+      "values": [
+        {
+          "text": "#MON lived",
+          "type": "text"
+        },
+        {
+          "text": "here long before",
+          "type": "line"
+        },
+        {
+          "text": "people came.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

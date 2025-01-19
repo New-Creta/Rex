@@ -42,32 +42,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "DiglettsCaveRoute11Gambler",
-      "values": [
-        {
-          "text": "What a surprise!",
-          "type": "text"
-        },
-        {
-          "text": "DIGLETTs dug this",
-          "type": "line"
-        },
-        {
-          "text": "long tunnel!",
-          "type": "cont"
-        },
-        {
-          "text": "It goes right to",
-          "type": "para"
-        },
-        {
-          "text": "VIRIDIAN CITY!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -1,0 +1,87 @@
+{
+  "texts": [
+    {
+      "name": "SafariZoneNorthRestHouseScientist",
+      "values": [
+        {
+          "text": "You can keep any",
+          "type": "text"
+        },
+        {
+          "text": "item you find on",
+          "type": "line"
+        },
+        {
+          "text": "the ground here.",
+          "type": "cont"
+        },
+        {
+          "text": "But, you'll run",
+          "type": "para"
+        },
+        {
+          "text": "out of time if",
+          "type": "line"
+        },
+        {
+          "text": "you try for all",
+          "type": "cont"
+        },
+        {
+          "text": "of them at once!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthRestHouseSafariZoneWorker",
+      "values": [
+        {
+          "text": "Go to the deepest",
+          "type": "text"
+        },
+        {
+          "text": "part of the",
+          "type": "line"
+        },
+        {
+          "text": "SAFARI ZONE. You",
+          "type": "cont"
+        },
+        {
+          "text": "will win a prize!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneNorthRestHouseGentleman",
+      "values": [
+        {
+          "text": "My EEVEE evolved",
+          "type": "text"
+        },
+        {
+          "text": "into FLAREON!",
+          "type": "line"
+        },
+        {
+          "text": "But, a friend's",
+          "type": "para"
+        },
+        {
+          "text": "EEVEE turned into",
+          "type": "line"
+        },
+        {
+          "text": "a VAPOREON!",
+          "type": "cont"
+        },
+        {
+          "text": "I wonder why?",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

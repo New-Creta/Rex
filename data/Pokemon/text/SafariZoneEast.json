@@ -1,0 +1,47 @@
+{
+  "texts": [
+    {
+      "name": "SafariZoneEastRestHouseSign",
+      "values": [
+        {
+          "text": "REST HOUSE",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneEastTrainerTips",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "The remaining time",
+          "type": "para"
+        },
+        {
+          "text": "declines only",
+          "type": "line"
+        },
+        {
+          "text": "while you walk!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneEastSign",
+      "values": [
+        {
+          "text": "CENTER AREA",
+          "type": "text"
+        },
+        {
+          "text": "NORTH: AREA 2",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

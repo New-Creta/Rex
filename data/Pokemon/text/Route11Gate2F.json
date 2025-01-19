@@ -1,0 +1,120 @@
+{
+  "texts": [
+    {
+      "name": "Route11Gate2FOaksAideItemfinderDescription",
+      "values": [
+        {
+          "text": "There are items on",
+          "type": "text"
+        },
+        {
+          "text": "the ground that",
+          "type": "line"
+        },
+        {
+          "text": "can't be seen.",
+          "type": "cont"
+        },
+        {
+          "text": "ITEMFINDER will",
+          "type": "para"
+        },
+        {
+          "text": "detect an item",
+          "type": "line"
+        },
+        {
+          "text": "close to you.",
+          "type": "cont"
+        },
+        {
+          "text": "It can't pinpoint",
+          "type": "para"
+        },
+        {
+          "text": "it, so you have",
+          "type": "line"
+        },
+        {
+          "text": "to look yourself!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gate2FLeftBinocularsSnorlax",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "A big #MON is",
+          "type": "para"
+        },
+        {
+          "text": "asleep on a road!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gate2FLeftBinocularsNoSnorlax",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "It's a beautiful",
+          "type": "para"
+        },
+        {
+          "text": "view!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route11Gate2FRightBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "The only way to",
+          "type": "para"
+        },
+        {
+          "text": "get from CERULEAN",
+          "type": "line"
+        },
+        {
+          "text": "CITY to LAVENDER",
+          "type": "cont"
+        },
+        {
+          "text": "is by way of the",
+          "type": "cont"
+        },
+        {
+          "text": "ROCK TUNNEL.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

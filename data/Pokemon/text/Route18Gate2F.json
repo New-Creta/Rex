@@ -1,0 +1,46 @@
+{
+  "texts": [
+    {
+      "name": "Route18Gate2FLeftBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "PALLET TOWN is in",
+          "type": "para"
+        },
+        {
+          "text": "the west!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route18Gate2FRightBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "There are people",
+          "type": "para"
+        },
+        {
+          "text": "swimming!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

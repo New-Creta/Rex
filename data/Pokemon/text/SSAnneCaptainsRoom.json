@@ -1,0 +1,191 @@
+{
+  "texts": [
+    {
+      "name": "SSAnneCaptainsRoomRubCaptainsBack",
+      "values": [
+        {
+          "text": "CAPTAIN: Ooargh...",
+          "type": "text"
+        },
+        {
+          "text": "I feel hideous...",
+          "type": "line"
+        },
+        {
+          "text": "Urrp! Seasick...",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER> rubbed",
+          "type": "para"
+        },
+        {
+          "text": "the CAPTAIN's",
+          "type": "line"
+        },
+        {
+          "text": "back!",
+          "type": "cont"
+        },
+        {
+          "text": "Rub-rub...",
+          "type": "para"
+        },
+        {
+          "text": "Rub-rub...@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomCaptainIFeelMuchBetter",
+      "values": [
+        {
+          "text": "CAPTAIN: Whew!",
+          "type": "text"
+        },
+        {
+          "text": "Thank you! I",
+          "type": "line"
+        },
+        {
+          "text": "feel much better!",
+          "type": "cont"
+        },
+        {
+          "text": "You want to see",
+          "type": "para"
+        },
+        {
+          "text": "my CUT technique?",
+          "type": "line"
+        },
+        {
+          "text": "I could show you",
+          "type": "para"
+        },
+        {
+          "text": "if I wasn't ill...",
+          "type": "line"
+        },
+        {
+          "text": "I know! You can",
+          "type": "para"
+        },
+        {
+          "text": "have this!",
+          "type": "line"
+        },
+        {
+          "text": "Teach it to your",
+          "type": "para"
+        },
+        {
+          "text": "#MON and you",
+          "type": "line"
+        },
+        {
+          "text": "can see it CUT",
+          "type": "cont"
+        },
+        {
+          "text": "any time!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomCaptainReceivedHM01",
+      "values": [
+        {
+          "text": "<PLAYER> got",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomCaptainNotSickAnymore",
+      "values": [
+        {
+          "text": "CAPTAIN: Whew!",
+          "type": "text"
+        },
+        {
+          "text": "Now that I'm not",
+          "type": "para"
+        },
+        {
+          "text": "sick any more, I",
+          "type": "line"
+        },
+        {
+          "text": "guess it's time.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomCaptainHM01NoRoom",
+      "values": [
+        {
+          "text": "Oh no! You have",
+          "type": "text"
+        },
+        {
+          "text": "no room for this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomTrash",
+      "values": [
+        {
+          "text": "Yuck! Shouldn't",
+          "type": "text"
+        },
+        {
+          "text": "have looked!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SSAnneCaptainsRoomSeasickBook",
+      "values": [
+        {
+          "text": "How to Conquer",
+          "type": "text"
+        },
+        {
+          "text": "Seasickness...",
+          "type": "line"
+        },
+        {
+          "text": "The CAPTAIN's",
+          "type": "cont"
+        },
+        {
+          "text": "reading this!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "texts": [
+    {
+      "name": "FightingDojoKarateMaster",
+      "values": [
+        {
+          "text": "Grunt!",
+          "type": "text"
+        },
+        {
+          "text": "I am the KARATE",
+          "type": "para"
+        },
+        {
+          "text": "MASTER! I am the",
+          "type": "line"
+        },
+        {
+          "text": "LEADER here!",
+          "type": "cont"
+        },
+        {
+          "text": "You wish to",
+          "type": "para"
+        },
+        {
+          "text": "challenge us?",
+          "type": "line"
+        },
+        {
+          "text": "Expect no mercy!",
+          "type": "cont"
+        },
+        {
+          "text": "Fwaaa!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoKarateMasterDefeated",
+      "values": [
+        {
+          "text": "Hwa!",
+          "type": "text"
+        },
+        {
+          "text": "Arrgh! Beaten!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoKarateMasterIWillGiveYouAPokemon",
+      "values": [
+        {
+          "text": "Indeed, I have",
+          "type": "text"
+        },
+        {
+          "text": "lost!",
+          "type": "line"
+        },
+        {
+          "text": "But, I beseech",
+          "type": "para"
+        },
+        {
+          "text": "you, do not take",
+          "type": "line"
+        },
+        {
+          "text": "our emblem as",
+          "type": "cont"
+        },
+        {
+          "text": "your trophy!",
+          "type": "cont"
+        },
+        {
+          "text": "In return, I will",
+          "type": "para"
+        },
+        {
+          "text": "give you a prized",
+          "type": "line"
+        },
+        {
+          "text": "fighting #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Choose whichever",
+          "type": "para"
+        },
+        {
+          "text": "one you like!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoKarateMasterStayAndTrainWithUs",
+      "values": [
+        {
+          "text": "Ho!",
+          "type": "text"
+        },
+        {
+          "text": "Stay and train at",
+          "type": "para"
+        },
+        {
+          "text": "Karate with us!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt1Battle",
+      "values": [
+        {
+          "text": "Hoargh! Take your",
+          "type": "text"
+        },
+        {
+          "text": "shoes off!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt1EndBattle",
+      "values": [
+        {
+          "text": "I give",
+          "type": "text"
+        },
+        {
+          "text": "up!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt1AfterBattle",
+      "values": [
+        {
+          "text": "You wait 'til you",
+          "type": "text"
+        },
+        {
+          "text": "see our Master!",
+          "type": "line"
+        },
+        {
+          "text": "I'm a small fry",
+          "type": "para"
+        },
+        {
+          "text": "compared to him!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt2Battle",
+      "values": [
+        {
+          "text": "I hear you're",
+          "type": "text"
+        },
+        {
+          "text": "good! Show me!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt2EndBattle",
+      "values": [
+        {
+          "text": "Judge!",
+          "type": "text"
+        },
+        {
+          "text": "1 point!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt2AfterBattle",
+      "values": [
+        {
+          "text": "Our Master is a",
+          "type": "text"
+        },
+        {
+          "text": "pro fighter!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt3Battle",
+      "values": [
+        {
+          "text": "Nothing tough",
+          "type": "text"
+        },
+        {
+          "text": "frightens me!",
+          "type": "line"
+        },
+        {
+          "text": "I break boulders",
+          "type": "para"
+        },
+        {
+          "text": "for training!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt3EndBattle",
+      "values": [
+        {
+          "text": "Yow!",
+          "type": "text"
+        },
+        {
+          "text": "Stubbed fingers!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt3AfterBattle",
+      "values": [
+        {
+          "text": "The only thing",
+          "type": "text"
+        },
+        {
+          "text": "that frightens us",
+          "type": "line"
+        },
+        {
+          "text": "is psychic power!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt4Battle",
+      "values": [
+        {
+          "text": "Hoohah!",
+          "type": "text"
+        },
+        {
+          "text": "You're trespassing",
+          "type": "para"
+        },
+        {
+          "text": "in our FIGHTING",
+          "type": "line"
+        },
+        {
+          "text": "DOJO!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt4EndBattle",
+      "values": [
+        {
+          "text": "Oof!",
+          "type": "text"
+        },
+        {
+          "text": "I give up!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBlackbelt4AfterBattle",
+      "values": [
+        {
+          "text": "The prime fighters",
+          "type": "text"
+        },
+        {
+          "text": "across the land",
+          "type": "line"
+        },
+        {
+          "text": "train here.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoHitmonleePokeBall",
+      "values": [
+        {
+          "text": "You want the",
+          "type": "text"
+        },
+        {
+          "text": "hard kicking",
+          "type": "line"
+        },
+        {
+          "text": "HITMONLEE?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoHitmonchanPokeBall",
+      "values": [
+        {
+          "text": "You want the",
+          "type": "text"
+        },
+        {
+          "text": "piston punching",
+          "type": "line"
+        },
+        {
+          "text": "HITMONCHAN?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FightingDojoBetterNotGetGreedy",
+      "values": [
+        {
+          "text": "Better not get",
+          "type": "text"
+        },
+        {
+          "text": "greedy...",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

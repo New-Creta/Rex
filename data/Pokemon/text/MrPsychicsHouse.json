@@ -1,0 +1,80 @@
+{
+  "texts": [
+    {
+      "name": "MrPsychicsHouseMrPsychicYouWantedThis",
+      "values": [
+        {
+          "text": "...Wait! Don't",
+          "type": "text"
+        },
+        {
+          "text": "say a word!",
+          "type": "line"
+        },
+        {
+          "text": "You wanted this!",
+          "type": "para"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "MrPsychicsHouseMrPsychicReceivedTM29",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "MrPsychicsHouseMrPsychicTM29Explanation",
+      "values": [
+        {
+          "text": "TM29 is PSYCHIC!",
+          "type": "text"
+        },
+        {
+          "text": "It can lower the",
+          "type": "para"
+        },
+        {
+          "text": "target's SPECIAL",
+          "type": "line"
+        },
+        {
+          "text": "abilities.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "MrPsychicsHouseMrPsychicTM29NoRoom",
+      "values": [
+        {
+          "text": "Where do you plan",
+          "type": "text"
+        },
+        {
+          "text": "to put this?",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

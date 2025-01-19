@@ -1,0 +1,89 @@
+{
+  "texts": [
+    {
+      "name": "ViridianMartClerkSayHiToOak",
+      "values": [
+        {
+          "text": "Okay! Say hi to",
+          "type": "text"
+        },
+        {
+          "text": "PROF.OAK for me!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartClerkYouCameFromPalletTown",
+      "values": [
+        {
+          "text": "Hey! You came from",
+          "type": "text"
+        },
+        {
+          "text": "PALLET TOWN?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartClerkParcelQuest",
+      "values": [
+        {
+          "text": "You know PROF.",
+          "type": "text"
+        },
+        {
+          "text": "OAK, right?",
+          "type": "line"
+        },
+        {
+          "text": "His order came in.",
+          "type": "para"
+        },
+        {
+          "text": "Will you take it",
+          "type": "line"
+        },
+        {
+          "text": "to him?",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER> got",
+          "type": "para"
+        },
+        {
+          "text": "OAK's PARCEL!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartYoungster",
+      "values": [
+        {
+          "text": "This shop sells",
+          "type": "text"
+        },
+        {
+          "text": "many ANTIDOTEs.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianMartCooltrainerM",
+      "values": [
+        {
+          "text": "No! POTIONs are",
+          "type": "text"
+        },
+        {
+          "text": "all sold out.",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

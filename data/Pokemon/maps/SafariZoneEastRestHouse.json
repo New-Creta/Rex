@@ -58,58 +58,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "SafariZoneEastRestHouseScientist",
-      "values": [
-        {
-          "text": "How many did you",
-          "type": "text"
-        },
-        {
-          "text": "catch? I'm bushed",
-          "type": "line"
-        },
-        {
-          "text": "from the work!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "SafariZoneEastRestHouseRocker",
-      "values": [
-        {
-          "text": "I caught a",
-          "type": "text"
-        },
-        {
-          "text": "CHANSEY!",
-          "type": "line"
-        },
-        {
-          "text": "That makes this",
-          "type": "para"
-        },
-        {
-          "text": "all worthwhile!",
-          "type": "line"
-        }
-      ]
-    },
-    {
-      "name": "SafariZoneEastRestHouseSilphWorkerM",
-      "values": [
-        {
-          "text": "Whew! I'm tired",
-          "type": "text"
-        },
-        {
-          "text": "from all the fun!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

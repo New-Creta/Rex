@@ -58,37 +58,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "CinnabarMartSilphWorkerF",
-      "values": [
-        {
-          "text": "Don't they have X",
-          "type": "text"
-        },
-        {
-          "text": "ATTACK? It's good",
-          "type": "line"
-        },
-        {
-          "text": "for battles!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarMartScientist",
-      "values": [
-        {
-          "text": "It never hurts to",
-          "type": "text"
-        },
-        {
-          "text": "have extra items!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

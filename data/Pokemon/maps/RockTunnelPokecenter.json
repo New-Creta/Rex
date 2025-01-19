@@ -69,49 +69,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "RockTunnelPokecenterGentleman",
-      "values": [
-        {
-          "text": "The element types",
-          "type": "text"
-        },
-        {
-          "text": "of #MON make",
-          "type": "line"
-        },
-        {
-          "text": "them stronger",
-          "type": "cont"
-        },
-        {
-          "text": "than some types",
-          "type": "cont"
-        },
-        {
-          "text": "and weaker than",
-          "type": "cont"
-        },
-        {
-          "text": "others!",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "RockTunnelPokecenterFisher",
-      "values": [
-        {
-          "text": "I sold a useless",
-          "type": "text"
-        },
-        {
-          "text": "NUGGET for \u00c2\u00a55000!",
-          "type": "line"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

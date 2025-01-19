@@ -1,0 +1,388 @@
+{
+  "texts": [
+    {
+      "name": "RockTunnelB1FCooltrainerF1Battle",
+      "values": [
+        {
+          "text": "Hikers leave twigs",
+          "type": "text"
+        },
+        {
+          "text": "as trail markers.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FCooltrainerF1EndBattle",
+      "values": [
+        {
+          "text": "Ohhh!",
+          "type": "text"
+        },
+        {
+          "text": "I did my best!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FCooltrainerF1AfterBattle",
+      "values": [
+        {
+          "text": "I want to go ",
+          "type": "text"
+        },
+        {
+          "text": "home!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker1Battle",
+      "values": [
+        {
+          "text": "Hahaha! Can you",
+          "type": "text"
+        },
+        {
+          "text": "beat my power?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker1EndBattle",
+      "values": [
+        {
+          "text": "Oops!",
+          "type": "text"
+        },
+        {
+          "text": "Out-muscled!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker1AfterBattle",
+      "values": [
+        {
+          "text": "I go for power",
+          "type": "text"
+        },
+        {
+          "text": "because I hate",
+          "type": "line"
+        },
+        {
+          "text": "thinking!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd1Battle",
+      "values": [
+        {
+          "text": "You have a",
+          "type": "text"
+        },
+        {
+          "text": "#DEX?",
+          "type": "line"
+        },
+        {
+          "text": "I want one too!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd1EndBattle",
+      "values": [
+        {
+          "text": "Shoot!",
+          "type": "text"
+        },
+        {
+          "text": "I'm so jealous!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd1AfterBattle",
+      "values": [
+        {
+          "text": "When you finish",
+          "type": "text"
+        },
+        {
+          "text": "your #DEX, can",
+          "type": "line"
+        },
+        {
+          "text": "I have it?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd2Battle",
+      "values": [
+        {
+          "text": "Do you know about",
+          "type": "text"
+        },
+        {
+          "text": "costume players?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd2EndBattle",
+      "values": [
+        {
+          "text": "Well,",
+          "type": "text"
+        },
+        {
+          "text": "that's that.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd2AfterBattle",
+      "values": [
+        {
+          "text": "Costume players",
+          "type": "text"
+        },
+        {
+          "text": "dress up as",
+          "type": "line"
+        },
+        {
+          "text": "#MON for fun.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker2Battle",
+      "values": [
+        {
+          "text": "My #MON",
+          "type": "text"
+        },
+        {
+          "text": "techniques will",
+          "type": "line"
+        },
+        {
+          "text": "leave you crying!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker2EndBattle",
+      "values": [
+        {
+          "text": "I give!",
+          "type": "text"
+        },
+        {
+          "text": "You're a better",
+          "type": "line"
+        },
+        {
+          "text": "technician!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker2AfterBattle",
+      "values": [
+        {
+          "text": "In mountains,",
+          "type": "text"
+        },
+        {
+          "text": "you'll often find",
+          "type": "line"
+        },
+        {
+          "text": "rock-type #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FCooltrainerF2Battle",
+      "values": [
+        {
+          "text": "I don't often",
+          "type": "text"
+        },
+        {
+          "text": "come here, but I",
+          "type": "line"
+        },
+        {
+          "text": "will fight you.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FCooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "Oh!",
+          "type": "text"
+        },
+        {
+          "text": "I lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FCooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "I like tiny",
+          "type": "text"
+        },
+        {
+          "text": "#MON, big ones",
+          "type": "line"
+        },
+        {
+          "text": "are too scary!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker3Battle",
+      "values": [
+        {
+          "text": "Hit me with your",
+          "type": "text"
+        },
+        {
+          "text": "best shot!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker3EndBattle",
+      "values": [
+        {
+          "text": "Fired",
+          "type": "text"
+        },
+        {
+          "text": "away!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FHiker3AfterBattle",
+      "values": [
+        {
+          "text": "I'll raise my",
+          "type": "text"
+        },
+        {
+          "text": "#MON to beat",
+          "type": "line"
+        },
+        {
+          "text": "yours, kid!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3Battle",
+      "values": [
+        {
+          "text": "I draw #MON",
+          "type": "text"
+        },
+        {
+          "text": "when I'm home.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3EndBattle",
+      "values": [
+        {
+          "text": "Whew!",
+          "type": "text"
+        },
+        {
+          "text": "I'm exhausted!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RockTunnelB1FSuperNerd3AfterBattle",
+      "values": [
+        {
+          "text": "I'm an artist,",
+          "type": "text"
+        },
+        {
+          "text": "not a fighter.",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

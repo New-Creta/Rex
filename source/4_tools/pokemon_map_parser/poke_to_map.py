@@ -16,6 +16,8 @@ def main():
     output = "D:\\Engines\\Rex\\data\\Pokemon\\maps2"
     for map_object in map_objects:
         stem = Path(map_object).stem
+        if stem.endswith('_2'):
+            stem = stem.removesuffix('_2')
         output_filename = f'{stem}.map'
         output_filepath = os.path.join(output, output_filename)
         with open(os.path.join(map_objects_dir, map_object)) as f:
@@ -25,6 +27,8 @@ def main():
 
     for map_header in map_headers:
         stem = Path(map_header).stem
+        if stem.endswith('_2'):
+            stem = stem.removesuffix('_2')
         output_filename = f'{stem}.map'
         output_filepath = os.path.join(output, output_filename)
         with open(os.path.join(map_headers_dir, map_header)) as f:
@@ -34,6 +38,8 @@ def main():
     
     for map_text in map_texts:
         stem = Path(map_text).stem
+        if stem.endswith('_2'):
+            stem = stem.removesuffix('_2')
         output_filename = f'{stem}.map'
         output_filepath = os.path.join(output, output_filename)
         with open(os.path.join(map_text_dir, map_text)) as f:
@@ -43,6 +49,8 @@ def main():
 
     for map_script in map_scripts:
         stem = Path(map_script).stem
+        if stem.endswith('_2'):
+            stem = stem.removesuffix('_2')
         output_filename = f'{stem}.map'
         output_filepath = os.path.join(output, output_filename)
         with open(os.path.join(map_scripts_dir, map_script)) as f:

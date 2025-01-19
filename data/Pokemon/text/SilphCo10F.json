@@ -1,0 +1,128 @@
+{
+  "texts": [
+    {
+      "name": "SilphCo10FSilphWorkerFImScared",
+      "values": [
+        {
+          "text": "Waaaaa!",
+          "type": "text"
+        },
+        {
+          "text": "I'm scared!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FSilphWorkerFQuietAboutMyCrying",
+      "values": [
+        {
+          "text": "Please keep quiet",
+          "type": "text"
+        },
+        {
+          "text": "about my crying!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FRocketBattle",
+      "values": [
+        {
+          "text": "Welcome to the",
+          "type": "text"
+        },
+        {
+          "text": "10F! So good of",
+          "type": "line"
+        },
+        {
+          "text": "you to join me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FRocketEndBattle",
+      "values": [
+        {
+          "text": "I'm",
+          "type": "text"
+        },
+        {
+          "text": "stunned!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FRocketAfterBattle",
+      "values": [
+        {
+          "text": "Nice try, but the",
+          "type": "text"
+        },
+        {
+          "text": "boardroom is up",
+          "type": "line"
+        },
+        {
+          "text": "one more floor!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FScientistBattle",
+      "values": [
+        {
+          "text": "Enough of your",
+          "type": "text"
+        },
+        {
+          "text": "silly games!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FScientistEndBattle",
+      "values": [
+        {
+          "text": "No",
+          "type": "text"
+        },
+        {
+          "text": "continues left!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo10FScientistAfterBattle",
+      "values": [
+        {
+          "text": "Are you satisfied",
+          "type": "text"
+        },
+        {
+          "text": "with beating me?",
+          "type": "line"
+        },
+        {
+          "text": "Then go on home!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

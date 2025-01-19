@@ -58,49 +58,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "FuchsiaMartMiddleAgedMan",
-      "values": [
-        {
-          "text": "Do you have a",
-          "type": "text"
-        },
-        {
-          "text": "SAFARI ZONE flag?",
-          "type": "line"
-        },
-        {
-          "text": "What about cards",
-          "type": "para"
-        },
-        {
-          "text": "or calendars?",
-          "type": "line"
-        }
-      ]
-    },
-    {
-      "name": "FuchsiaMartCooltrainerF",
-      "values": [
-        {
-          "text": "Did you try X",
-          "type": "text"
-        },
-        {
-          "text": "SPEED? It speeds",
-          "type": "line"
-        },
-        {
-          "text": "up a #MON in",
-          "type": "cont"
-        },
-        {
-          "text": "battle!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

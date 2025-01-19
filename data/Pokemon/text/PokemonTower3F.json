@@ -1,0 +1,137 @@
+{
+  "texts": [
+    {
+      "name": "PokemonTower3FChanneler1Battle",
+      "values": [
+        {
+          "text": "Urrg...Awaa...",
+          "type": "text"
+        },
+        {
+          "text": "Huhu...graa..",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler1EndBattle",
+      "values": [
+        {
+          "text": "Hwa!",
+          "type": "text"
+        },
+        {
+          "text": "I'm saved!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler1AfterBattle",
+      "values": [
+        {
+          "text": "The GHOSTs can be",
+          "type": "text"
+        },
+        {
+          "text": "identified by the",
+          "type": "line"
+        },
+        {
+          "text": "SILPH SCOPE.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler2Battle",
+      "values": [
+        {
+          "text": "Kekeke....",
+          "type": "text"
+        },
+        {
+          "text": "Kwaaah!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler2EndBattle",
+      "values": [
+        {
+          "text": "Hmm?",
+          "type": "text"
+        },
+        {
+          "text": "What am I doing?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler2AfterBattle",
+      "values": [
+        {
+          "text": "Sorry! I was",
+          "type": "text"
+        },
+        {
+          "text": "possessed!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler3Battle",
+      "values": [
+        {
+          "text": "Be gone!",
+          "type": "text"
+        },
+        {
+          "text": "Evil spirit!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler3EndBattle",
+      "values": [
+        {
+          "text": "Whew!",
+          "type": "text"
+        },
+        {
+          "text": "The spirit left!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonTower3FChanneler3AfterBattle",
+      "values": [
+        {
+          "text": "My friends were",
+          "type": "text"
+        },
+        {
+          "text": "possessed too!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

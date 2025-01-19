@@ -1,0 +1,67 @@
+{
+  "texts": [
+    {
+      "name": "CopycatsHouse1FMiddleAgedWoman",
+      "values": [
+        {
+          "text": "My daughter is so",
+          "type": "text"
+        },
+        {
+          "text": "self-centered.",
+          "type": "line"
+        },
+        {
+          "text": "She only has a",
+          "type": "cont"
+        },
+        {
+          "text": "few friends.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse1FMiddleAgedMan",
+      "values": [
+        {
+          "text": "My daughter likes",
+          "type": "text"
+        },
+        {
+          "text": "to mimic people.",
+          "type": "line"
+        },
+        {
+          "text": "Her mimicry has",
+          "type": "para"
+        },
+        {
+          "text": "earned her the",
+          "type": "line"
+        },
+        {
+          "text": "nickname COPYCAT",
+          "type": "cont"
+        },
+        {
+          "text": "around here!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CopycatsHouse1FChansey",
+      "values": [
+        {
+          "text": "CHANSEY: Chaan!",
+          "type": "text"
+        },
+        {
+          "text": "Sii!@",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

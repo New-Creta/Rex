@@ -1,0 +1,207 @@
+{
+  "texts": [
+    {
+      "name": "BikeShopClerkWelcome",
+      "values": [
+        {
+          "text": "Hi! Welcome to",
+          "type": "text"
+        },
+        {
+          "text": "our BIKE SHOP.",
+          "type": "line"
+        },
+        {
+          "text": "Have we got just",
+          "type": "para"
+        },
+        {
+          "text": "the BIKE for you!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopClerkDoYouLikeIt",
+      "values": [
+        {
+          "text": "It's a cool BIKE!",
+          "type": "text"
+        },
+        {
+          "text": "Do you want it?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopCantAfford",
+      "values": [
+        {
+          "text": "Sorry! You can't",
+          "type": "text"
+        },
+        {
+          "text": "afford it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopClerkOhThatsAVoucher",
+      "values": [
+        {
+          "text": "Oh, that's...",
+          "type": "text"
+        },
+        {
+          "text": "A BIKE VOUCHER!",
+          "type": "para"
+        },
+        {
+          "text": "OK! Here you go!",
+          "type": "para"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopExchangedVoucher",
+      "values": [
+        {
+          "text": "<PLAYER> exchanged",
+          "type": "text"
+        },
+        {
+          "text": "the BIKE VOUCHER",
+          "type": "line"
+        },
+        {
+          "text": "for a BICYCLE.@",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopComeAgain",
+      "values": [
+        {
+          "text": "Come back again",
+          "type": "text"
+        },
+        {
+          "text": "some time!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopClerkHowDoYouLikeYourBicycle",
+      "values": [
+        {
+          "text": "How do you like",
+          "type": "text"
+        },
+        {
+          "text": "your new BICYCLE?",
+          "type": "line"
+        },
+        {
+          "text": "You can take it",
+          "type": "para"
+        },
+        {
+          "text": "on CYCLING ROAD",
+          "type": "line"
+        },
+        {
+          "text": "and in caves!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopBagFull",
+      "values": [
+        {
+          "text": "You better make",
+          "type": "text"
+        },
+        {
+          "text": "room for this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopMiddleAgedWoman",
+      "values": [
+        {
+          "text": "A plain city BIKE",
+          "type": "text"
+        },
+        {
+          "text": "is good enough",
+          "type": "line"
+        },
+        {
+          "text": "for me!",
+          "type": "cont"
+        },
+        {
+          "text": "You can't put a",
+          "type": "para"
+        },
+        {
+          "text": "shopping basket",
+          "type": "line"
+        },
+        {
+          "text": "on an MTB!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopYoungsterTheseBikesAreExpensive",
+      "values": [
+        {
+          "text": "These BIKEs are",
+          "type": "text"
+        },
+        {
+          "text": "cool, but they're",
+          "type": "line"
+        },
+        {
+          "text": "way expensive!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "BikeShopYoungsterCoolBike",
+      "values": [
+        {
+          "text": "Wow. Your BIKE is",
+          "type": "text"
+        },
+        {
+          "text": "really cool!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

@@ -47,41 +47,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "SafariZoneCenterRestHouseGirl",
-      "values": [
-        {
-          "text": "SARA: Where did",
-          "type": "text"
-        },
-        {
-          "text": "my boy friend,",
-          "type": "line"
-        },
-        {
-          "text": "ERIK, go?",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "SafariZoneCenterRestHouseScientist",
-      "values": [
-        {
-          "text": "I'm catching",
-          "type": "text"
-        },
-        {
-          "text": "#MON to take",
-          "type": "line"
-        },
-        {
-          "text": "home as gifts!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

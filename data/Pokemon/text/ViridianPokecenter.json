@@ -1,0 +1,50 @@
+{
+  "texts": [
+    {
+      "name": "ViridianPokecenterGentleman",
+      "values": [
+        {
+          "text": "You can use that",
+          "type": "text"
+        },
+        {
+          "text": "PC in the corner.",
+          "type": "line"
+        },
+        {
+          "text": "The receptionist",
+          "type": "para"
+        },
+        {
+          "text": "told me. So kind!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ViridianPokecenterCooltrainerM",
+      "values": [
+        {
+          "text": "There's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "CENTER in every",
+          "type": "line"
+        },
+        {
+          "text": "town ahead.",
+          "type": "cont"
+        },
+        {
+          "text": "They don't charge",
+          "type": "para"
+        },
+        {
+          "text": "any money either!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

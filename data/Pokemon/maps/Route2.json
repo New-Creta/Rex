@@ -9,12 +9,12 @@
     {
       "direction": "north",
       "map": "Pokemon\\maps\\pewtercity.json",
-      "offset": "-5"
+      "offset": -5
     },
     {
       "direction": "south",
       "map": "Pokemon\\maps\\viridiancity.json",
-      "offset": "-5"
+      "offset": -5
     }
   ],
   "objects": [
@@ -91,34 +91,6 @@
       "x": 11,
       "y": 11,
       "text": "text_route2_digletts_cave_sign"
-    }
-  ],
-  "texts": [
-    {
-      "name": "Route2Sign",
-      "values": [
-        {
-          "text": "ROUTE 2",
-          "type": "text"
-        },
-        {
-          "text": "VIRIDIAN CITY -",
-          "type": "line"
-        },
-        {
-          "text": "PEWTER CITY",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "Route2DiglettsCaveSign",
-      "values": [
-        {
-          "text": "DIGLETT's CAVE",
-          "type": "text"
-        }
-      ]
     }
   ],
   "scripts": []

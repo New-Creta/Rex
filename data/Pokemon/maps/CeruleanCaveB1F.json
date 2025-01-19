@@ -52,17 +52,6 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "MewtwoBattle",
-      "values": [
-        {
-          "text": "Mew!@",
-          "type": "text"
-        }
-      ]
-    }
-  ],
   "scripts": [
     "script_ceruleancaveb1f_default",
     "script_ceruleancaveb1f_start_battle",

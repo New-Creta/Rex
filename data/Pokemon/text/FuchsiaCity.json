@@ -1,0 +1,350 @@
+{
+  "texts": [
+    {
+      "name": "FuchsiaCityYoungster1",
+      "values": [
+        {
+          "text": "Did you try the",
+          "type": "text"
+        },
+        {
+          "text": "SAFARI GAME? Some",
+          "type": "line"
+        },
+        {
+          "text": "#MON can only",
+          "type": "cont"
+        },
+        {
+          "text": "be caught there.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityGambler",
+      "values": [
+        {
+          "text": "SAFARI ZONE has a",
+          "type": "text"
+        },
+        {
+          "text": "zoo in front of",
+          "type": "line"
+        },
+        {
+          "text": "the entrance.",
+          "type": "cont"
+        },
+        {
+          "text": "Out back is the",
+          "type": "para"
+        },
+        {
+          "text": "SAFARI GAME for",
+          "type": "line"
+        },
+        {
+          "text": "catching #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityErik",
+      "values": [
+        {
+          "text": "ERIK: Where's",
+          "type": "text"
+        },
+        {
+          "text": "SARA? I said I'd",
+          "type": "line"
+        },
+        {
+          "text": "meet her here.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityYoungster2",
+      "values": [
+        {
+          "text": "That item ball in",
+          "type": "text"
+        },
+        {
+          "text": "there is really a",
+          "type": "line"
+        },
+        {
+          "text": "#MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityPokemon",
+      "values": [
+        {
+          "text": "!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCitySign",
+      "values": [
+        {
+          "text": "FUCHSIA CITY",
+          "type": "text"
+        },
+        {
+          "text": "Behold! It's",
+          "type": "line"
+        },
+        {
+          "text": "Passion Pink!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCitySafariGameSign",
+      "values": [
+        {
+          "text": "SAFARI GAME",
+          "type": "text"
+        },
+        {
+          "text": "#MON-U-CATCH!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityWardensHomeSign",
+      "values": [
+        {
+          "text": "SAFARI ZONE",
+          "type": "text"
+        },
+        {
+          "text": "WARDEN's HOME",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCitySafariZoneSign",
+      "values": [
+        {
+          "text": "#MON PARADISE",
+          "type": "text"
+        },
+        {
+          "text": "SAFARI ZONE",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityGymSign",
+      "values": [
+        {
+          "text": "FUCHSIA CITY",
+          "type": "text"
+        },
+        {
+          "text": "#MON GYM",
+          "type": "line"
+        },
+        {
+          "text": "LEADER: KOGA",
+          "type": "cont"
+        },
+        {
+          "text": "The Poisonous",
+          "type": "para"
+        },
+        {
+          "text": "Ninja Master",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityChanseySign",
+      "values": [
+        {
+          "text": "Name: CHANSEY",
+          "type": "text"
+        },
+        {
+          "text": "Catching one is",
+          "type": "para"
+        },
+        {
+          "text": "all up to chance.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityVoltorbSign",
+      "values": [
+        {
+          "text": "Name: VOLTORB",
+          "type": "text"
+        },
+        {
+          "text": "The very image of",
+          "type": "para"
+        },
+        {
+          "text": "a # BALL.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityKangaskhanSign",
+      "values": [
+        {
+          "text": "Name: KANGASKHAN",
+          "type": "text"
+        },
+        {
+          "text": "A maternal #MON",
+          "type": "para"
+        },
+        {
+          "text": "that raises its",
+          "type": "line"
+        },
+        {
+          "text": "young in a pouch",
+          "type": "cont"
+        },
+        {
+          "text": "on its belly.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCitySlowpokeSign",
+      "values": [
+        {
+          "text": "Name: SLOWPOKE",
+          "type": "text"
+        },
+        {
+          "text": "Friendly and very",
+          "type": "para"
+        },
+        {
+          "text": "slow moving.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityLaprasSign",
+      "values": [
+        {
+          "text": "Name: LAPRAS",
+          "type": "text"
+        },
+        {
+          "text": "A.K.A. the king",
+          "type": "para"
+        },
+        {
+          "text": "of the seas.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityFossilSignOmanyte",
+      "values": [
+        {
+          "text": "Name: OMANYTE",
+          "type": "text"
+        },
+        {
+          "text": "A #MON that",
+          "type": "para"
+        },
+        {
+          "text": "was resurrected",
+          "type": "line"
+        },
+        {
+          "text": "from a fossil.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityFossilSignKabuto",
+      "values": [
+        {
+          "text": "Name: KABUTO",
+          "type": "text"
+        },
+        {
+          "text": "A #MON that",
+          "type": "para"
+        },
+        {
+          "text": "was resurrected",
+          "type": "line"
+        },
+        {
+          "text": "from a fossil.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "FuchsiaCityFossilSignUndetermined",
+      "values": [
+        {
+          "text": "...",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

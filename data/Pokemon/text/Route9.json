@@ -1,0 +1,468 @@
+{
+  "texts": [
+    {
+      "name": "Route9CooltrainerF1Battle",
+      "values": [
+        {
+          "text": "You have #MON",
+          "type": "text"
+        },
+        {
+          "text": "with you!",
+          "type": "line"
+        },
+        {
+          "text": "You're mine!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerF1EndBattle",
+      "values": [
+        {
+          "text": "You",
+          "type": "text"
+        },
+        {
+          "text": "deceived me!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerF1AfterBattle",
+      "values": [
+        {
+          "text": "You need light to",
+          "type": "text"
+        },
+        {
+          "text": "get through that",
+          "type": "line"
+        },
+        {
+          "text": "dark tunnel ahead.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM1Battle",
+      "values": [
+        {
+          "text": "Who's that walking",
+          "type": "text"
+        },
+        {
+          "text": "with those good",
+          "type": "line"
+        },
+        {
+          "text": "looking #MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM1EndBattle",
+      "values": [
+        {
+          "text": "Out",
+          "type": "text"
+        },
+        {
+          "text": "like a light!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM1AfterBattle",
+      "values": [
+        {
+          "text": "Keep walking!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "I'm taking ROCK",
+          "type": "text"
+        },
+        {
+          "text": "TUNNEL to go to",
+          "type": "line"
+        },
+        {
+          "text": "LAVENDER...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "Can't",
+          "type": "text"
+        },
+        {
+          "text": "measure up!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "Are you off to",
+          "type": "text"
+        },
+        {
+          "text": "ROCK TUNNEL too?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerF2Battle",
+      "values": [
+        {
+          "text": "Don't you dare",
+          "type": "text"
+        },
+        {
+          "text": "condescend me!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "No!",
+          "type": "text"
+        },
+        {
+          "text": "You're too much!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9CooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "You're obviously",
+          "type": "text"
+        },
+        {
+          "text": "talented! Good",
+          "type": "line"
+        },
+        {
+          "text": "luck to you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker1Battle",
+      "values": [
+        {
+          "text": "Bwahaha!",
+          "type": "text"
+        },
+        {
+          "text": "Great! I was",
+          "type": "line"
+        },
+        {
+          "text": "bored, eh!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker1EndBattle",
+      "values": [
+        {
+          "text": "Keep it",
+          "type": "text"
+        },
+        {
+          "text": "coming, eh!",
+          "type": "line"
+        },
+        {
+          "text": "Oh wait. I'm out",
+          "type": "para"
+        },
+        {
+          "text": "of #MON!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker1AfterBattle",
+      "values": [
+        {
+          "text": "You sure had guts",
+          "type": "text"
+        },
+        {
+          "text": "standing up to me",
+          "type": "line"
+        },
+        {
+          "text": "there, eh?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker2Battle",
+      "values": [
+        {
+          "text": "Hahaha!",
+          "type": "text"
+        },
+        {
+          "text": "Aren't you a",
+          "type": "line"
+        },
+        {
+          "text": "little toughie!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker2EndBattle",
+      "values": [
+        {
+          "text": "What's",
+          "type": "text"
+        },
+        {
+          "text": "that?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker2AfterBattle",
+      "values": [
+        {
+          "text": "Hahaha! Kids",
+          "type": "text"
+        },
+        {
+          "text": "should be tough!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster1Battle",
+      "values": [
+        {
+          "text": "I got up early",
+          "type": "text"
+        },
+        {
+          "text": "every day to",
+          "type": "line"
+        },
+        {
+          "text": "raise my #MON",
+          "type": "cont"
+        },
+        {
+          "text": "from cocoons!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster1EndBattle",
+      "values": [
+        {
+          "text": "WHAT?",
+          "type": "text"
+        },
+        {
+          "text": "What a total",
+          "type": "para"
+        },
+        {
+          "text": "waste of time!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster1AfterBattle",
+      "values": [
+        {
+          "text": "I have to collect",
+          "type": "text"
+        },
+        {
+          "text": "more than bugs to",
+          "type": "line"
+        },
+        {
+          "text": "get stronger...",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker3Battle",
+      "values": [
+        {
+          "text": "Hahahaha!",
+          "type": "text"
+        },
+        {
+          "text": "Come on, dude!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker3EndBattle",
+      "values": [
+        {
+          "text": "Hahahaha!",
+          "type": "text"
+        },
+        {
+          "text": "You beat me fair!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9Hiker3AfterBattle",
+      "values": [
+        {
+          "text": "Hahahaha!",
+          "type": "text"
+        },
+        {
+          "text": "Us hearty guys",
+          "type": "line"
+        },
+        {
+          "text": "always laugh!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster2Battle",
+      "values": [
+        {
+          "text": "Go, my super bug",
+          "type": "text"
+        },
+        {
+          "text": "#MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster2EndBattle",
+      "values": [
+        {
+          "text": "My",
+          "type": "text"
+        },
+        {
+          "text": "bugs...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route9Youngster2AfterBattle",
+      "values": [
+        {
+          "text": "If you don't like",
+          "type": "text"
+        },
+        {
+          "text": "bug #MON, you",
+          "type": "line"
+        },
+        {
+          "text": "bug me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route9Sign",
+      "values": [
+        {
+          "text": "ROUTE 9",
+          "type": "text"
+        },
+        {
+          "text": "CERULEAN CITY-",
+          "type": "line"
+        },
+        {
+          "text": "ROCK TUNNEL",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

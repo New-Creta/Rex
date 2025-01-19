@@ -1,0 +1,486 @@
+{
+  "texts": [
+    {
+      "name": "VermilionGymLTSurgePreBattle",
+      "values": [
+        {
+          "text": "Hey, kid! What do",
+          "type": "text"
+        },
+        {
+          "text": "you think you're",
+          "type": "line"
+        },
+        {
+          "text": "doing here?",
+          "type": "cont"
+        },
+        {
+          "text": "You won't live",
+          "type": "para"
+        },
+        {
+          "text": "long in combat!",
+          "type": "line"
+        },
+        {
+          "text": "That's for sure!",
+          "type": "cont"
+        },
+        {
+          "text": "I tell you kid,",
+          "type": "para"
+        },
+        {
+          "text": "electric #MON",
+          "type": "line"
+        },
+        {
+          "text": "saved me during",
+          "type": "cont"
+        },
+        {
+          "text": "the war!",
+          "type": "cont"
+        },
+        {
+          "text": "They zapped my",
+          "type": "para"
+        },
+        {
+          "text": "enemies into",
+          "type": "line"
+        },
+        {
+          "text": "paralysis!",
+          "type": "cont"
+        },
+        {
+          "text": "The same as I'll",
+          "type": "para"
+        },
+        {
+          "text": "do to you!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymLTSurgePostBattleAdvice",
+      "values": [
+        {
+          "text": "A little word of",
+          "type": "text"
+        },
+        {
+          "text": "advice, kid!",
+          "type": "line"
+        },
+        {
+          "text": "Electricity is",
+          "type": "para"
+        },
+        {
+          "text": "sure powerful!",
+          "type": "line"
+        },
+        {
+          "text": "But, it's useless",
+          "type": "para"
+        },
+        {
+          "text": "against ground-",
+          "type": "line"
+        },
+        {
+          "text": "type #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymLTSurgeThunderBadgeInfo",
+      "values": [
+        {
+          "text": "The THUNDERBADGE",
+          "type": "text"
+        },
+        {
+          "text": "cranks up your",
+          "type": "line"
+        },
+        {
+          "text": "#MON's SPEED!",
+          "type": "cont"
+        },
+        {
+          "text": "It also lets your",
+          "type": "para"
+        },
+        {
+          "text": "#MON FLY any",
+          "type": "line"
+        },
+        {
+          "text": "time, kid!",
+          "type": "cont"
+        },
+        {
+          "text": "You're special,",
+          "type": "para"
+        },
+        {
+          "text": "kid! Take this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymLTSurgeReceivedTM24",
+      "values": [
+        {
+          "text": "<PLAYER> received ",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "TM24Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "TM24 contains",
+          "type": "para"
+        },
+        {
+          "text": "THUNDERBOLT!",
+          "type": "line"
+        },
+        {
+          "text": "Teach it to an",
+          "type": "para"
+        },
+        {
+          "text": "electric #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymLTSurgeTM24NoRoom",
+      "values": [
+        {
+          "text": "Yo kid, make room",
+          "type": "text"
+        },
+        {
+          "text": "in your pack!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymLTSurgeReceivedThunderBadge",
+      "values": [
+        {
+          "text": "Whoa!",
+          "type": "text"
+        },
+        {
+          "text": "You're the real",
+          "type": "para"
+        },
+        {
+          "text": "deal, kid!",
+          "type": "line"
+        },
+        {
+          "text": "Fine then, take",
+          "type": "para"
+        },
+        {
+          "text": "the THUNDERBADGE!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymGentlemanBattle",
+      "values": [
+        {
+          "text": "When I was in the",
+          "type": "text"
+        },
+        {
+          "text": "Army, LT.SURGE",
+          "type": "line"
+        },
+        {
+          "text": "was my strict CO!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymGentlemanEndBattle",
+      "values": [
+        {
+          "text": "Stop!",
+          "type": "text"
+        },
+        {
+          "text": "You're very good!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymGentlemanAfterBattle",
+      "values": [
+        {
+          "text": "The door won't",
+          "type": "text"
+        },
+        {
+          "text": "open?",
+          "type": "line"
+        },
+        {
+          "text": "LT.SURGE always",
+          "type": "para"
+        },
+        {
+          "text": "was cautious!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSuperNerdBattle",
+      "values": [
+        {
+          "text": "I'm a lightweight,",
+          "type": "text"
+        },
+        {
+          "text": "but I'm good with",
+          "type": "line"
+        },
+        {
+          "text": "electricity!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSuperNerdEndBattle",
+      "values": [
+        {
+          "text": "Fried!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSuperNerdAfterBattle",
+      "values": [
+        {
+          "text": "OK, I'll talk!",
+          "type": "text"
+        },
+        {
+          "text": "LT.SURGE said he",
+          "type": "para"
+        },
+        {
+          "text": "hid door switches",
+          "type": "line"
+        },
+        {
+          "text": "inside something!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSailorBattle",
+      "values": [
+        {
+          "text": "This is no place",
+          "type": "text"
+        },
+        {
+          "text": "for kids!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSailorEndBattle",
+      "values": [
+        {
+          "text": "Wow!",
+          "type": "text"
+        },
+        {
+          "text": "Surprised me!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymSailorAfterBattle",
+      "values": [
+        {
+          "text": "LT.SURGE set up",
+          "type": "text"
+        },
+        {
+          "text": "double locks!",
+          "type": "line"
+        },
+        {
+          "text": "Here's a hint!",
+          "type": "cont"
+        },
+        {
+          "text": "When you open the",
+          "type": "para"
+        },
+        {
+          "text": "1st lock, the 2nd",
+          "type": "line"
+        },
+        {
+          "text": "lock is right",
+          "type": "cont"
+        },
+        {
+          "text": "next to it!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymGymGuideChampInMaking",
+      "values": [
+        {
+          "text": "Yo! Champ in",
+          "type": "text"
+        },
+        {
+          "text": "making!",
+          "type": "line"
+        },
+        {
+          "text": "LT.SURGE has a",
+          "type": "para"
+        },
+        {
+          "text": "nickname. People",
+          "type": "line"
+        },
+        {
+          "text": "refer to him as",
+          "type": "cont"
+        },
+        {
+          "text": "the Lightning",
+          "type": "cont"
+        },
+        {
+          "text": "American!",
+          "type": "cont"
+        },
+        {
+          "text": "He's an expert on",
+          "type": "para"
+        },
+        {
+          "text": "electric #MON!",
+          "type": "line"
+        },
+        {
+          "text": "Birds and water",
+          "type": "para"
+        },
+        {
+          "text": "#MON are at",
+          "type": "line"
+        },
+        {
+          "text": "risk! Beware of",
+          "type": "cont"
+        },
+        {
+          "text": "paralysis too!",
+          "type": "cont"
+        },
+        {
+          "text": "LT.SURGE is very",
+          "type": "para"
+        },
+        {
+          "text": "cautious!",
+          "type": "line"
+        },
+        {
+          "text": "You'll have to",
+          "type": "para"
+        },
+        {
+          "text": "break a code to",
+          "type": "line"
+        },
+        {
+          "text": "get to him!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionGymGymGuideBeatLTSurge",
+      "values": [
+        {
+          "text": "Whew! That match",
+          "type": "text"
+        },
+        {
+          "text": "was electric!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

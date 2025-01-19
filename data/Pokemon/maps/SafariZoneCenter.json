@@ -89,37 +89,5 @@
       "text": "text_safarizonecenter_trainer_tips_sign"
     }
   ],
-  "texts": [
-    {
-      "name": "SafariZoneCenterRestHouseSign",
-      "values": [
-        {
-          "text": "REST HOUSE",
-          "type": "text"
-        }
-      ]
-    },
-    {
-      "name": "SafariZoneCenterTrainerTipsSign",
-      "values": [
-        {
-          "text": "TRAINER TIPS",
-          "type": "text"
-        },
-        {
-          "text": "Press the START",
-          "type": "para"
-        },
-        {
-          "text": "Button to check",
-          "type": "line"
-        },
-        {
-          "text": "remaining time!",
-          "type": "cont"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

@@ -1,0 +1,17 @@
+{
+  "texts": [
+    {
+      "name": "RocketHideoutElevatorAppearsToNeedKey",
+      "values": [
+        {
+          "text": "It appears to",
+          "type": "text"
+        },
+        {
+          "text": "need a key.@",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

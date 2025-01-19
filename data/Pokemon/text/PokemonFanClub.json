@@ -1,0 +1,416 @@
+{
+  "texts": [
+    {
+      "name": "PokemonFanClubPikachuFanNormal",
+      "values": [
+        {
+          "text": "Won't you admire",
+          "type": "text"
+        },
+        {
+          "text": "my PIKACHU's",
+          "type": "line"
+        },
+        {
+          "text": "adorable tail?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubPikachuFanBetter",
+      "values": [
+        {
+          "text": "Humph! My PIKACHU",
+          "type": "text"
+        },
+        {
+          "text": "is twice as cute",
+          "type": "line"
+        },
+        {
+          "text": "as that one!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubSeelFanNormal",
+      "values": [
+        {
+          "text": "I just love my",
+          "type": "text"
+        },
+        {
+          "text": "SEEL!",
+          "type": "line"
+        },
+        {
+          "text": "It squeals when I",
+          "type": "para"
+        },
+        {
+          "text": "hug it!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubSeelFanBetter",
+      "values": [
+        {
+          "text": "Oh dear!",
+          "type": "text"
+        },
+        {
+          "text": "My SEEL is far",
+          "type": "para"
+        },
+        {
+          "text": "more attractive!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubPikachu",
+      "values": [
+        {
+          "text": "PIKACHU: Chu!",
+          "type": "text"
+        },
+        {
+          "text": "Pikachu!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubSeel",
+      "values": [
+        {
+          "text": "SEEL: Kyuoo!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubChairmanIntro",
+      "values": [
+        {
+          "text": "I chair the",
+          "type": "text"
+        },
+        {
+          "text": "#MON Fan Club!",
+          "type": "line"
+        },
+        {
+          "text": "I have collected",
+          "type": "para"
+        },
+        {
+          "text": "over 100 #MON!",
+          "type": "line"
+        },
+        {
+          "text": "I'm very fussy",
+          "type": "para"
+        },
+        {
+          "text": "when it comes to",
+          "type": "line"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        },
+        {
+          "text": "So...",
+          "type": "para"
+        },
+        {
+          "text": "Did you come",
+          "type": "para"
+        },
+        {
+          "text": "visit to hear",
+          "type": "line"
+        },
+        {
+          "text": "about my #MON?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubChairmanStory",
+      "values": [
+        {
+          "text": "Good!",
+          "type": "text"
+        },
+        {
+          "text": "Then listen up!",
+          "type": "line"
+        },
+        {
+          "text": "My favorite",
+          "type": "para"
+        },
+        {
+          "text": "RAPIDASH...",
+          "type": "line"
+        },
+        {
+          "text": "It...cute...",
+          "type": "para"
+        },
+        {
+          "text": "lovely...smart...",
+          "type": "line"
+        },
+        {
+          "text": "plus...amazing...",
+          "type": "cont"
+        },
+        {
+          "text": "you think so?...",
+          "type": "cont"
+        },
+        {
+          "text": "oh yes...it...",
+          "type": "cont"
+        },
+        {
+          "text": "stunning...",
+          "type": "cont"
+        },
+        {
+          "text": "kindly...",
+          "type": "cont"
+        },
+        {
+          "text": "love it!",
+          "type": "cont"
+        },
+        {
+          "text": "Hug it...when...",
+          "type": "para"
+        },
+        {
+          "text": "sleeping...warm",
+          "type": "cont"
+        },
+        {
+          "text": "and cuddly...",
+          "type": "cont"
+        },
+        {
+          "text": "spectacular...",
+          "type": "cont"
+        },
+        {
+          "text": "ravishing...",
+          "type": "cont"
+        },
+        {
+          "text": "...Oops! Look at",
+          "type": "cont"
+        },
+        {
+          "text": "the time! I kept",
+          "type": "cont"
+        },
+        {
+          "text": "you too long!",
+          "type": "cont"
+        },
+        {
+          "text": "Thanks for hearing",
+          "type": "para"
+        },
+        {
+          "text": "me out! I want",
+          "type": "line"
+        },
+        {
+          "text": "you to have this!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubReceivedBikeVoucher",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "a @",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubExplainBikeVoucher",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "Exchange that for",
+          "type": "para"
+        },
+        {
+          "text": "a BICYCLE!",
+          "type": "line"
+        },
+        {
+          "text": "Don't worry, my",
+          "type": "para"
+        },
+        {
+          "text": "FEAROW will FLY",
+          "type": "line"
+        },
+        {
+          "text": "me anywhere!",
+          "type": "cont"
+        },
+        {
+          "text": "So, I don't need a",
+          "type": "para"
+        },
+        {
+          "text": "BICYCLE!",
+          "type": "line"
+        },
+        {
+          "text": "I hope you like",
+          "type": "para"
+        },
+        {
+          "text": "cycling!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubNoStory",
+      "values": [
+        {
+          "text": "Oh. Come back",
+          "type": "text"
+        },
+        {
+          "text": "when you want to",
+          "type": "line"
+        },
+        {
+          "text": "hear my story!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubChairFinal",
+      "values": [
+        {
+          "text": "Hello, <PLAYER>!",
+          "type": "text"
+        },
+        {
+          "text": "Did you come see",
+          "type": "para"
+        },
+        {
+          "text": "me about my",
+          "type": "line"
+        },
+        {
+          "text": "#MON again?",
+          "type": "cont"
+        },
+        {
+          "text": "No? Too bad!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubBagFull",
+      "values": [
+        {
+          "text": "Make room for",
+          "type": "text"
+        },
+        {
+          "text": "this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubReceptionist",
+      "values": [
+        {
+          "text": "Our Chairman is",
+          "type": "text"
+        },
+        {
+          "text": "very vocal about",
+          "type": "line"
+        },
+        {
+          "text": "#MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubSign1",
+      "values": [
+        {
+          "text": "Let's all listen",
+          "type": "text"
+        },
+        {
+          "text": "politely to other",
+          "type": "line"
+        },
+        {
+          "text": "trainers!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonFanClubSign2",
+      "values": [
+        {
+          "text": "If someone brags,",
+          "type": "text"
+        },
+        {
+          "text": "brag right back!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

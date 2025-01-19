@@ -9,12 +9,12 @@
     {
       "direction": "north",
       "map": "Pokemon\\maps\\route21.json",
-      "offset": "0"
+      "offset": 0
     },
     {
       "direction": "east",
       "map": "Pokemon\\maps\\route20.json",
-      "offset": "0"
+      "offset": 0
     }
   ],
   "objects": [
@@ -100,114 +100,6 @@
       "x": 13,
       "y": 3,
       "text": "text_cinnabarisland_gym_sign"
-    }
-  ],
-  "texts": [
-    {
-      "name": "CinnabarIslandDoorIsLocked",
-      "values": [
-        {
-          "text": "The door is",
-          "type": "text"
-        },
-        {
-          "text": "locked...",
-          "type": "line"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarIslandGirl",
-      "values": [
-        {
-          "text": "CINNABAR GYM's",
-          "type": "text"
-        },
-        {
-          "text": "BLAINE is an odd",
-          "type": "line"
-        },
-        {
-          "text": "man who has lived",
-          "type": "cont"
-        },
-        {
-          "text": "here for decades.",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarIslandGambler",
-      "values": [
-        {
-          "text": "Scientists conduct",
-          "type": "text"
-        },
-        {
-          "text": "experiments in",
-          "type": "line"
-        },
-        {
-          "text": "the burned out",
-          "type": "cont"
-        },
-        {
-          "text": "building.",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarIslandSign",
-      "values": [
-        {
-          "text": "CINNABAR ISLAND",
-          "type": "text"
-        },
-        {
-          "text": "The Fiery Town of",
-          "type": "line"
-        },
-        {
-          "text": "Burning Desire",
-          "type": "cont"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarIslandPokemonLabSign",
-      "values": [
-        {
-          "text": "#MON LAB",
-          "type": "text"
-        }
-      ]
-    },
-    {
-      "name": "CinnabarIslandGymSign",
-      "values": [
-        {
-          "text": "CINNABAR ISLAND",
-          "type": "text"
-        },
-        {
-          "text": "#MON GYM",
-          "type": "line"
-        },
-        {
-          "text": "LEADER: BLAINE",
-          "type": "cont"
-        },
-        {
-          "text": "The Hot-Headed",
-          "type": "para"
-        },
-        {
-          "text": "Quiz Master!",
-          "type": "line"
-        }
-      ]
     }
   ],
   "scripts": [

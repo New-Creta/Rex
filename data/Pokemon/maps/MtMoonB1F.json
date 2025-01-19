@@ -59,16 +59,5 @@
     }
   ],
   "bg_events": [],
-  "texts": [
-    {
-      "name": "MtMoonB1FUnused",
-      "values": [
-        {
-          "text": "text_start",
-          "type": "text"
-        }
-      ]
-    }
-  ],
   "scripts": []
 }

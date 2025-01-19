@@ -1,0 +1,21 @@
+{
+  "texts": [
+    {
+      "name": "UndergroundPathRoute6Girl",
+      "values": [
+        {
+          "text": "People often lose",
+          "type": "text"
+        },
+        {
+          "text": "things in that",
+          "type": "line"
+        },
+        {
+          "text": "UNDERGROUND PATH.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

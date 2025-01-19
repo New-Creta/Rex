@@ -1,0 +1,181 @@
+{
+  "texts": [
+    {
+      "name": "LavenderTownLittleGirlDoYouBelieveInGhosts",
+      "values": [
+        {
+          "text": "Do you believe in",
+          "type": "text"
+        },
+        {
+          "text": "GHOSTs?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownLittleGirlSoThereAreBelievers",
+      "values": [
+        {
+          "text": "Really? So there",
+          "type": "text"
+        },
+        {
+          "text": "are believers...",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownLittleGirlHaHaGuessNot",
+      "values": [
+        {
+          "text": "Hahaha, I guess",
+          "type": "text"
+        },
+        {
+          "text": "not.",
+          "type": "line"
+        },
+        {
+          "text": "That white hand",
+          "type": "para"
+        },
+        {
+          "text": "on your shoulder,",
+          "type": "line"
+        },
+        {
+          "text": "it's not real.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownCooltrainerM",
+      "values": [
+        {
+          "text": "This town is known",
+          "type": "text"
+        },
+        {
+          "text": "as the grave site",
+          "type": "line"
+        },
+        {
+          "text": "of #MON.",
+          "type": "cont"
+        },
+        {
+          "text": "Memorial services",
+          "type": "para"
+        },
+        {
+          "text": "are held in",
+          "type": "line"
+        },
+        {
+          "text": "#MON TOWER.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownSuperNerd",
+      "values": [
+        {
+          "text": "GHOSTs appeared",
+          "type": "text"
+        },
+        {
+          "text": "in #MON TOWER.",
+          "type": "line"
+        },
+        {
+          "text": "I think they're",
+          "type": "para"
+        },
+        {
+          "text": "the spirits of",
+          "type": "line"
+        },
+        {
+          "text": "#MON that the",
+          "type": "cont"
+        },
+        {
+          "text": "ROCKETs killed.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownSign",
+      "values": [
+        {
+          "text": "LAVENDER TOWN",
+          "type": "text"
+        },
+        {
+          "text": "The Noble Purple",
+          "type": "line"
+        },
+        {
+          "text": "Town",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownSilphScopeSign",
+      "values": [
+        {
+          "text": "New SILPH SCOPE!",
+          "type": "text"
+        },
+        {
+          "text": "Make the Invisible",
+          "type": "para"
+        },
+        {
+          "text": "Plain to See!",
+          "type": "line"
+        },
+        {
+          "text": "SILPH CO.",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownPokemonHouseSign",
+      "values": [
+        {
+          "text": "LAVENDER VOLUNTEER",
+          "type": "text"
+        },
+        {
+          "text": "#MON HOUSE",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "LavenderTownPokemonTowerSign",
+      "values": [
+        {
+          "text": "May the Souls of",
+          "type": "text"
+        },
+        {
+          "text": "#MON Rest Easy",
+          "type": "line"
+        },
+        {
+          "text": "#MON TOWER",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}
