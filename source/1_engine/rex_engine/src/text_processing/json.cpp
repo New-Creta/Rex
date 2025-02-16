@@ -13,7 +13,9 @@ namespace rex
 		{
 			auto start = blob.data();
 			auto end = blob.data() + blob.size();
-			return nlohmann::json::parse(start, end, nullptr, false);
+			bool allow_exceptions = false;
+			bool ignore_comments = true;
+			return nlohmann::json::parse(start, end, nullptr, allow_exceptions, ignore_comments);
 		}
 
 		json::json read_from_file(rsl::string_view filepath)

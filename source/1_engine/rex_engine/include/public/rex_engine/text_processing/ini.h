@@ -19,7 +19,7 @@ namespace rex
 			IniBlock(rsl::string_view header, const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items);
 
 			rsl::string_view header() const;
-			rsl::string_view get(rsl::string_view key, rsl::string_view default = "") const;
+			rsl::string_view get(rsl::string_view key, rsl::string_view def = "") const;
 			const rsl::unordered_map<rsl::string_view, rsl::string_view>& all_items() const;
 
 		private:
@@ -35,7 +35,7 @@ namespace rex
       explicit Ini(Error parseError);
 
       // Return the value of a key, possible within a header
-      rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view default = "") const;
+      rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view def = "") const;
 
       // Return if the content is discard aka, the content is invalid and a parse error occurred
       bool is_discarded() const;

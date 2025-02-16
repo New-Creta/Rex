@@ -10,7 +10,7 @@
 TEST_CASE("TEST - Temp CWD - Default")
 {
 	rex::TempDirectory tmp_dir;
-	rex::TempString old_cwd = rex::path::cwd();
+	rex::TempString old_cwd(rex::path::cwd());
 
 	{
 		rex::TempCwd tmp(tmp_dir.dirname());
@@ -24,7 +24,7 @@ TEST_CASE("TEST - Temp CWD - Default")
 TEST_CASE("TEST - Temp CWD - Creating a directory")
 {
 	rex::TempDirectory tmp_dir;
-	rex::TempString old_cwd = rex::path::cwd();
+	rex::TempString old_cwd(rex::path::cwd());
 
 	rex::TempString random_name = rex::path::random_dir();
 	{
@@ -41,7 +41,7 @@ TEST_CASE("TEST - Temp CWD - Creating a directory")
 TEST_CASE("TEST - Temp CWD - Creating a file")
 {
 	rex::TempDirectory tmp_dir;
-	rex::TempString old_cwd = rex::path::cwd();
+	rex::TempString old_cwd(rex::path::cwd());
 
 	rex::TempString random_name = rex::path::random_filename();
 	{

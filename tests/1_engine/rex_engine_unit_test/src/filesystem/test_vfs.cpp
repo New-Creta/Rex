@@ -377,7 +377,7 @@ TEST_CASE("TEST - VFS - abs path")
 {
 	rex::test::ScopedVfsInitialization vfs_init;
 
-	rex::TempString cwd = rex::path::cwd();
+	rex::TempString cwd(rex::path::cwd());
 
 	REX_CHECK(rex::path::abs_path("foo.txt") == rex::path::join(cwd, "foo.txt"));
 	REX_CHECK(rex::path::abs_path("foo.txt.bar") == rex::path::join(cwd, "foo.txt.bar"));

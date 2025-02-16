@@ -128,8 +128,8 @@ namespace rex
       return rex::transfer_object_between_vectors(idx, m_idle_objects, m_active_objects).get();
     }
     // Create a new object and add it to the active objects
-    template <typename ... Args>
-    PooledObject* create_new_active_object(Args&&... args)
+    template <typename ... Args2>
+    PooledObject* create_new_active_object(Args2&&... args)
     {
       // Increment the array holding the idle objects to avoid a reallocation later
       m_idle_objects.reserve(m_idle_objects.capacity() + 1);

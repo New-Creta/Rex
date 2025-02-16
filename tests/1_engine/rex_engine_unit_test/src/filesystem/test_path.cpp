@@ -160,7 +160,7 @@ TEST_CASE("TEST - Path - Absolute Path")
 {
 	rex::TempCwd tmp_cwd("path_tests");
 
-	rex::TempString cwd = rex::path::cwd();
+	rex::TempString cwd(rex::path::cwd());
 
 	REX_CHECK(rex::path::abs_path("foo.txt") == rex::path::join(cwd, "foo.txt"));
 	REX_CHECK(rex::path::abs_path("foo.txt.bar") == rex::path::join(cwd, "foo.txt.bar"));
@@ -748,7 +748,7 @@ TEST_CASE("TEST - Path - Depth")
 
 	// Testing absolute depth
 
-	rex::TempString cwd = rex::path::cwd();
+	rex::TempString cwd(rex::path::cwd());
 	s32 cwd_depth = rex::path::abs_depth(cwd);
 
 	REX_CHECK(rex::path::abs_depth("") == cwd_depth);
@@ -839,7 +839,7 @@ TEST_CASE("TEST - Path - Set Working Directory")
 {
 	rex::TempCwd tmp_cwd("path_tests");
 
-	rex::TempString cwd = rex::path::cwd();
+	rex::TempString cwd(rex::path::cwd());
 
 	rex::TempString old_wd = rex::path::set_cwd("");
 	REX_CHECK(rex::path::is_same(old_wd, cwd));
