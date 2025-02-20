@@ -13,7 +13,7 @@ TEST_CASE("TEST - Vector Utils - Transfering objects between vectors")
 	{
 		rex::transfer_object_between_vectors(0, vec1, vec2);
 
-		REX_CHECK(vec1 == rsl::vector{ 1, 2 });
+		REX_CHECK(vec1 == rsl::vector<int>({ 1, 2 }));
 		REX_CHECK(vec2 == rsl::vector{ 3, 4, 5, 0 });
 	}
 
@@ -21,7 +21,7 @@ TEST_CASE("TEST - Vector Utils - Transfering objects between vectors")
 	{
 		rex::transfer_object_between_vectors(1, vec1, vec2);
 
-		REX_CHECK(vec1 == rsl::vector{ 0, 2 });
+		REX_CHECK(vec1 == rsl::vector<int>({ 0, 2 }));
 		REX_CHECK(vec2 == rsl::vector{ 3, 4, 5, 1 });
 	}
 
@@ -29,7 +29,7 @@ TEST_CASE("TEST - Vector Utils - Transfering objects between vectors")
 	{
 		rex::transfer_object_between_vectors(2, vec1, vec2);
 
-		REX_CHECK(vec1 == rsl::vector{ 0, 1 });
+		REX_CHECK(vec1 == rsl::vector<int>({ 0, 1 }));
 		REX_CHECK(vec2 == rsl::vector{ 3, 4, 5, 2 });
 	}
 
@@ -37,7 +37,7 @@ TEST_CASE("TEST - Vector Utils - Transfering objects between vectors")
 	{
 		rex::transfer_object_between_vectors(1, vec1, vec2);
 
-		REX_CHECK(vec1 == rsl::vector{ 0, 2 });
+		REX_CHECK(vec1 == rsl::vector<int>({ 0, 2 }));
 		REX_CHECK(vec2 == rsl::vector{ 3, 4, 5, 1 });
 
 		rex::transfer_object_between_vectors(0, vec1, vec2);

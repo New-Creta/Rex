@@ -35,6 +35,10 @@ public class RexEngineUnitTest : TestProject
     base.SetupConfigSettings(conf, target);
 
     conf.Options.Remove(Options.Vc.Compiler.JumboBuild.Enable);
-    conf.AdditionalCompilerOptions.Add("/utf-8");
+
+    if (target.Compiler == Compiler.MSVC)
+    {
+      conf.AdditionalCompilerOptions.Add("/utf-8");
+    }
   }
 }

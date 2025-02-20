@@ -120,7 +120,7 @@ public:
 
         if (ret != ERROR_SUCCESS)
         {
-            printf("%hs: RegQueryValueEx [%s]: %d\n",
+            printf("%hs: RegQueryValueEx [%s]: %lu\n",
                     __FUNCTION__, valName.c_str(), ret);
             RegCloseKey(subkey);
             return false;
@@ -180,7 +180,7 @@ public:
 
             if (res != ERROR_SUCCESS)
             {
-                printf("%hs: Could not get value [%s] at key [%s]: %d\n",
+                printf("%hs: Could not get value [%s] at key [%s]: %lu\n",
                         __FUNCTION__, valPathStr.c_str(), path.substr(0, pos).c_str(), res);
                 return false;
             }
@@ -230,7 +230,7 @@ private:
 
             if (res != ERROR_SUCCESS)
             {
-                printf("%hs: failed to open key [%s]: %d\n",
+                printf("%hs: failed to open key [%s]: %lu\n",
                         __FUNCTION__, path.substr(pos + 1).c_str(), res);
                 hr = HRESULT_FROM_WIN32(res);
             }
@@ -264,7 +264,7 @@ private:
 
         if (retCode != ERROR_SUCCESS)
         {
-            printf("%hs: RegQueryInfoKey: %d\n",
+            printf("%hs: RegQueryInfoKey: %lu\n",
                     __FUNCTION__, retCode);
             return HRESULT_FROM_WIN32(retCode);
         }
@@ -294,7 +294,7 @@ private:
 
                 if (retCode == ERROR_SUCCESS)
                 {
-                    printf(TEXT("(%d) %s\n"), i + 1, keyName);
+                    printf(TEXT("(%lu) %s\n"), i + 1, keyName);
 
                     RegEntry entry;
                     entry.Name = std::string(keyName);
@@ -304,7 +304,7 @@ private:
                 }
                 else if (retCode != ERROR_NO_MORE_ITEMS)
                 {
-                    printf("%hs: RegEnumKeyEx: %d\n",
+                    printf("%hs: RegEnumKeyEx: %lu\n",
                             __FUNCTION__, retCode);
                     hr = HRESULT_FROM_WIN32(retCode);
 
@@ -341,7 +341,7 @@ private:
 
                 if (retCode == ERROR_SUCCESS)
                 {
-                    printf(TEXT("(%d) %s (%d bytes)\n"), i + 1, valueName, size);
+                    printf(TEXT("(%lu) %s (%lu bytes)\n"), i + 1, valueName, size);
 
                     RegEntry entry;
                     entry.Name = std::string(valueName);
@@ -351,7 +351,7 @@ private:
                 }
                 else if (retCode != ERROR_NO_MORE_ITEMS)
                 {
-                    printf("%hs: RegEnumValue: %d\n",
+                    printf("%hs: RegEnumValue: %lu\n",
                             __FUNCTION__, retCode);
                     hr = HRESULT_FROM_WIN32(retCode);
 

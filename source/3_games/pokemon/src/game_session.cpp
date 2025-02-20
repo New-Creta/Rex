@@ -175,6 +175,8 @@ namespace pokemon
 				case rex::KeyCode::D:
 					m_player_position.x += 1;
 					break;
+				default:
+					break;
 				}
 
 				rsl::pointi8 min_player_pos = constants::player_render_position_top_left;
