@@ -575,6 +575,7 @@ NTSTATUS DOKAN_CALLBACK MirrorReadFile(LPCWSTR FileName, LPVOID Buffer, DWORD Bu
   }
   else
   {
+    REX_UNUSED_PARAM(offset);
     REX_INFO(LogDokan, "\tByte to read: {}, Byte read {}, offset {}", BufferLength, *ReadLength, offset);
   }
 

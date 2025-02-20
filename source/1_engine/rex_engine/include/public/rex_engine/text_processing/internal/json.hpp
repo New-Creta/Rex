@@ -21498,6 +21498,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a numeric argument with ", type_name()), this));
+        return m_data.m_value.object->end()->value;
     }
 
     /// @brief access specified object element

@@ -642,6 +642,7 @@ namespace rex
         case ViewHeapType::RenderTarget:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         case ViewHeapType::DepthStencil:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
         case ViewHeapType::Sampler:         return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        case ViewHeapType::Undefined:       return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
         }
 
         return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();

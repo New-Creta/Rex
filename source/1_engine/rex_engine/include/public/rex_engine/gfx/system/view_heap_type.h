@@ -6,6 +6,7 @@ namespace rex
   {
     enum class ViewHeapType
     {
+      Undefined,
       ConstantBuffer   = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
       Texture2D        = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
       Texture3D        = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap

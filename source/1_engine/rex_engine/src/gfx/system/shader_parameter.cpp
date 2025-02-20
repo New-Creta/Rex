@@ -61,6 +61,8 @@ namespace rex
 		}
 		void ViewShaderParam::update_view(ViewOffset offset, u64 gpuAddress)
 		{
+			REX_UNUSED_PARAM(offset);
+
 			REX_ASSERT_X(offset.range_offset == 0, "Invalid range offset for binding a single view");
 			REX_ASSERT_X(offset.offset_within_range == 0, "Invalid offset within range for binding a single view");
 			m_gpu_address = gpuAddress;
@@ -92,7 +94,7 @@ namespace rex
 		}
 		void ViewTableShaderParam::bind_to(RenderContext* ctx) const
 		{
-			ViewHeapType target_view_heap_type;
+			ViewHeapType target_view_heap_type = ViewHeapType::Undefined;
 			switch (type())
 			{
 			case ShaderParameterType::ByteAddress: target_view_heap_type = ViewHeapType::ByteAddress; break;
