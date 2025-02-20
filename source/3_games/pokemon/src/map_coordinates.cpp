@@ -47,8 +47,8 @@ namespace pokemon
 		{
 			rsl::pointi8 coord{};
 
-			coord.x = idx % width;
-			coord.y = idx / width;
+			coord.x = static_cast<s8>(idx % width);
+			coord.y = static_cast<s8>(idx / width);
 
 			return coord;
 		}

@@ -22,7 +22,7 @@ namespace pokemon
   class Chunk
   {
   public:
-    Chunk(rex::gfx::Entity entity, rsl::string_view name, rsl::string_view background, glm::vec3 pos);
+    Chunk(rex::gfx::Entity entity, glm::vec3 pos);
 
   private:
     rsl::unique_ptr<rex::gfx::Material> m_material;

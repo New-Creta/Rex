@@ -21,6 +21,9 @@ namespace rex
     return static_cast<NarrowType>(value);
   }
 
+#pragma warning(push)
+#pragma warning(disable : 4389)
+
   template <typename NarrowType, typename T>
   constexpr NarrowType safe_narrow_cast(const T value)
   {
@@ -34,6 +37,7 @@ namespace rex
 
     return narrow_val;
   }
+#pragma warning(pop)
 
   template <typename NarrowType, typename T>
   constexpr NarrowType narrow_cast(const T value)

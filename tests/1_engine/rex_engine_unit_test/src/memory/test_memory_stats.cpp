@@ -42,7 +42,6 @@ TEST_CASE("TEST - Memory Stats - Memory Tracking Stats")
 	REX_CHECK(stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value() == 0);
 
 	// Stack allocation of a single int, should not affect tracked memory allocation
-	s32 x = 0;
 	rex::MemoryTrackingStats stats2 = rex::query_mem_tracking_stats();
 
 	REX_CHECK(stats2.max_used_memory == stats1.max_used_memory);
@@ -64,10 +63,10 @@ TEST_CASE("TEST - Memory Stats - Memory Tracking Stats")
 	REX_CHECK(stats3.max_used_memory >= stats1.max_used_memory);
 	// Tracking memory also costs memory, so we can't guarantee that a single allocation results in X memory added
 	// However, we can guarantee that it'll be bigger
-	REX_CHECK(stats3.used_memory >= stats1.used_memory.size_in_bytes() + sizeof(s32) + debug_allocation_overhead);
+	REX_CHECK(stats3.used_memory >= stats1.used_memory.size_in_bytes() + static_cast<s32>(sizeof(s32)) + debug_allocation_overhead);
 	REX_CHECK(stats3.num_alive_allocations == stats1.num_alive_allocations + 1);
 	REX_CHECK(stats3.num_total_allocations == stats1.num_total_allocations + 1);
-	REX_CHECK(stats3.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() == stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() + sizeof(s32) + debug_allocation_overhead);
+	REX_CHECK(stats3.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() == stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() + static_cast<s32>(sizeof(s32)) + debug_allocation_overhead);
 	REX_CHECK(stats3.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].max_value() >= stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].max_value());
 	REX_CHECK(stats3.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Engine).value()].value() == stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Engine).value()].value());
 	REX_CHECK(stats3.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value() == stats1.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value());
@@ -121,7 +120,6 @@ TEST_CASE("TEST - Memory Stats - All Memory Stats")
 	REX_CHECK(stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value() == 0);
 
 	// Stack allocation of a single int, should not affect tracked memory allocation
-	s32 x = 0;
 	rex::MemoryStats stats2 = rex::query_all_memory_stats();
 
 	// System Memory Stats
@@ -176,10 +174,10 @@ TEST_CASE("TEST - Memory Stats - All Memory Stats")
 	REX_CHECK(stats3.mem_tracking_stats.max_used_memory >= stats1.mem_tracking_stats.max_used_memory);
 	// Tracking memory also costs memory, so we can't guarantee that a single allocation results in X memory added
 	// However, we can guarantee that it'll be bigger
-	REX_CHECK(stats3.mem_tracking_stats.used_memory >= stats1.mem_tracking_stats.used_memory.size_in_bytes() + sizeof(s32) + debug_allocation_overhead);
+	REX_CHECK(stats3.mem_tracking_stats.used_memory >= stats1.mem_tracking_stats.used_memory.size_in_bytes() + static_cast<s32>(sizeof(s32)) + debug_allocation_overhead);
 	REX_CHECK(stats3.mem_tracking_stats.num_alive_allocations == stats1.mem_tracking_stats.num_alive_allocations + 1);
 	REX_CHECK(stats3.mem_tracking_stats.num_total_allocations == stats1.mem_tracking_stats.num_total_allocations + 1);
-	REX_CHECK(stats3.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() == stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() + sizeof(s32) + debug_allocation_overhead);
+	REX_CHECK(stats3.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() == stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].value() + static_cast<s32>(sizeof(s32)) + debug_allocation_overhead);
 	REX_CHECK(stats3.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].max_value() >= stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Global).value()].max_value());
 	REX_CHECK(stats3.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Engine).value()].value() == stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::Engine).value()].value());
 	REX_CHECK(stats3.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value() == stats1.mem_tracking_stats.usage_per_tag[rsl::enum_refl::enum_index(rex::MemoryTag::FileIO).value()].value());

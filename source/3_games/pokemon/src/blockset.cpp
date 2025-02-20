@@ -43,11 +43,11 @@ namespace pokemon
     }
 
     s64 file_size = rex::file::size(filepath);
-    s32 num_blocks = file_size / Block::num_tiles();
+    s64 num_blocks = file_size / Block::num_tiles();
     rex::memory::Blob file_blob = rex::vfs::read_file(filepath);
     rex::memory::BlobReader reader(file_blob);
 		Block::indices_array blob_memory;
-    rsl::unique_array<Block> blocks = rsl::make_unique<Block[]>(num_blocks);
+    rsl::unique_array<Block> blocks = rsl::make_unique<Block[]>(static_cast<s32>(num_blocks));
     for (s32 block_idx = 0; block_idx < num_blocks; ++block_idx)
     {
       reader.read(blob_memory.data(), blob_memory.size());

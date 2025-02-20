@@ -92,7 +92,6 @@ namespace rex
 		}
 
 		rsl::wbig_stack_string buffer;
-		DWORD data_type = 0;
 		bool bFound = false;
 		SP_DEVINFO_DATA device_info_data;
 		device_info_data.cbSize = sizeof(SP_DEVINFO_DATA);
@@ -110,7 +109,6 @@ namespace rex
 					// Retrieve the registry key for this device for 3rd party data
 					if (get_device_driver_reg_key(dev_info_handle, device_info_data, rsl::Out(buffer)))
 					{
-						const tchar* ptr = buffer.data();
 						registry_key.assign(buffer.data(), buffer.size());
 						buffer.clear();
 					}

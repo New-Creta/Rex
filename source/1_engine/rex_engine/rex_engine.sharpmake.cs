@@ -127,6 +127,8 @@ public class RexEngine : EngineProject
   {
     base.SetupConfigSettings(conf, target);
 
+    conf.add_public_define("GLM_FORCE_SILENT_WARNINGS");
+    
     switch (ProjectGen.Settings.GraphicsAPI)
     {
       case ProjectGen.GraphicsAPI.OpenGL:

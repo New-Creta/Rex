@@ -101,7 +101,8 @@ TEST_CASE("TEST - Settings - Settings with headers - with casing")
   REX_CHECK(rex::settings::has_setting("TestHeader1.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("TestHeader1.not_existing_string") == "");
   REX_CHECK(rex::settings::has_setting("TestHeader1.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("TestHeader1.not_existing_bool") == false);
+  REX_CHECK(rex::settings::get_int("TestHeader1.not_existing_bool") == 0);
+  REX_CHECK(rex::settings::get_bool("TestHeader1.not_existing_bool") == false);
   REX_CHECK(rex::settings::has_setting("TestHeader1.not_existing_bool") == false);
 
   REX_CHECK(rex::settings::get_int("TestHeader1.not_existing_int", 5) == 5);
@@ -110,7 +111,8 @@ TEST_CASE("TEST - Settings - Settings with headers - with casing")
   REX_CHECK(rex::settings::has_setting("TestHeader1.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("TestHeader1.not_existing_string", "default") == "default");
   REX_CHECK(rex::settings::has_setting("TestHeader1.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("TestHeader1.test_bool", true) == true);
+  REX_CHECK(rex::settings::get_int("TestHeader1.test_bool", 1) == 1);
+  REX_CHECK(rex::settings::get_bool("TestHeader1.test_bool", true) == true);
   REX_CHECK(rex::settings::has_setting("TestHeader1.test_bool") == false);
 
   // Second header
@@ -131,7 +133,8 @@ TEST_CASE("TEST - Settings - Settings with headers - with casing")
   REX_CHECK(rex::settings::has_setting("TestHeader2.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("TestHeader2.not_existing_string") == "");
   REX_CHECK(rex::settings::has_setting("TestHeader2.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("TestHeader2.not_existing_bool") == false);
+  REX_CHECK(rex::settings::get_int("TestHeader2.not_existing_bool") == 0);
+  REX_CHECK(rex::settings::get_bool("TestHeader2.not_existing_bool") == false);
   REX_CHECK(rex::settings::has_setting("TestHeader2.not_existing_bool") == false);
 
   REX_CHECK(rex::settings::get_int("TestHeader2.not_existing_int", 5) == 5);
@@ -140,7 +143,8 @@ TEST_CASE("TEST - Settings - Settings with headers - with casing")
   REX_CHECK(rex::settings::has_setting("TestHeader2.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("TestHeader2.not_existing_string", "default") == "default");
   REX_CHECK(rex::settings::has_setting("TestHeader2.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("TestHeader2.test_bool", true) == true);
+  REX_CHECK(rex::settings::get_int("TestHeader2.test_bool", true) == 1);
+  REX_CHECK(rex::settings::get_bool("TestHeader2.test_bool", true) == true);
   REX_CHECK(rex::settings::has_setting("TestHeader2.test_bool") == false);
 
   rex::settings::unload();
@@ -169,7 +173,8 @@ TEST_CASE("TEST - Settings - Settings with headers - without casing")
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("testheader1.not_existing_string") == "");
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("testheader1.not_existing_bool") == false);
+  REX_CHECK(rex::settings::get_int("testheader1.not_existing_bool") == 0);
+  REX_CHECK(rex::settings::get_bool("testheader1.not_existing_bool") == false);
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_bool") == false);
 
   REX_CHECK(rex::settings::get_int("testheader1.not_existing_int", 5) == 5);
@@ -178,7 +183,8 @@ TEST_CASE("TEST - Settings - Settings with headers - without casing")
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("testheader1.not_existing_string", "default") == "default");
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("testheader1.test_bool", true) == true);
+  REX_CHECK(rex::settings::get_bool("testheader1.test_bool", true) == true);
+  REX_CHECK(rex::settings::get_int("testheader1.test_bool", true) == 1);
   REX_CHECK(rex::settings::has_setting("testheader1.test_bool") == false);
 
   // Second header
@@ -199,7 +205,8 @@ TEST_CASE("TEST - Settings - Settings with headers - without casing")
   REX_CHECK(rex::settings::has_setting("testheader2.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("testheader2.not_existing_string") == "");
   REX_CHECK(rex::settings::has_setting("testheader2.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("testheader1.not_existing_bool") == false);
+  REX_CHECK(rex::settings::get_int("testheader1.not_existing_bool") == 0);
+  REX_CHECK(rex::settings::get_bool("testheader1.not_existing_bool") == false);
   REX_CHECK(rex::settings::has_setting("testheader1.not_existing_bool") == false);
 
   REX_CHECK(rex::settings::get_int("testheader2.not_existing_int", 5) == 5);
@@ -208,7 +215,8 @@ TEST_CASE("TEST - Settings - Settings with headers - without casing")
   REX_CHECK(rex::settings::has_setting("testheader2.not_existing_float") == false);
   REX_CHECK(rex::settings::get_string("testheader2.not_existing_string", "default") == "default");
   REX_CHECK(rex::settings::has_setting("testheader2.not_existing_string") == false);
-  REX_CHECK(rex::settings::get_int("testheader1.test_bool", true) == true);
+  REX_CHECK(rex::settings::get_int("testheader1.test_bool", true) == 1);
+  REX_CHECK(rex::settings::get_bool("testheader1.test_bool", true) == true);
   REX_CHECK(rex::settings::has_setting("testheader1.test_bool") == false);
 
   rex::settings::unload();

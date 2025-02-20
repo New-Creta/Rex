@@ -24,13 +24,15 @@ namespace pokemon
     // depending on the connection's direction
     if (conn.direction == Direction::North || conn.direction == Direction::South)
     {
-      start = rsl::clamp_min(mid_point_x - (conn.map->map_header.width / 2) + conn.offset, 0);
-      end = start + rsl::min(map->map_header.width + constants::g_map_padding_blocks, static_cast<s32>(conn.map->map_header.width));
+      start = static_cast<s8>(rsl::clamp_min(mid_point_x - (conn.map->map_header.width / 2) + conn.offset, 0));
+      s8 depth = static_cast<s8>(rsl::min(map->map_header.width + constants::g_map_padding_blocks, static_cast<s32>(conn.map->map_header.width)));
+      end = static_cast<s8>(start + depth);
     }
     else
     {
-      start = rsl::clamp_min(mid_point_y - (conn.map->map_header.height / 2) + conn.offset, 0);
-      end = start + rsl::min(map->map_header.height + constants::g_map_padding_blocks, static_cast<s32>(conn.map->map_header.height));
+      start = static_cast<s8>(rsl::clamp_min(mid_point_y - (conn.map->map_header.height / 2) + conn.offset, 0));
+      s8 depth = static_cast<s8>(rsl::min(map->map_header.height + constants::g_map_padding_blocks, static_cast<s32>(conn.map->map_header.height)));
+      end = static_cast<s8>(start + depth);
     }
 
     // Fill in the rex::Rect8 based on the direction of the connection
@@ -69,9 +71,6 @@ namespace pokemon
 
   rsl::pointi8 project_point_to_conn(const MapData* mapObject, const MapConnection& conn, rsl::pointi8 coord)
   {
-    s8 conn_midpoint_x = conn.map->map_header.width / 2;
-    s8 conn_midpoint_y = conn.map->map_header.height / 2;
-
     s8 projected_point = 0;
     if (conn.direction == Direction::North || conn.direction == Direction::South)
     {

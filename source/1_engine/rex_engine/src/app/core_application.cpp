@@ -228,7 +228,8 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::init_globals()
   {
-    mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(settings::get_int("SingleFrameAllocatorSize", 1_mib), 1);
+    s32 mem_size = static_cast<s32>(settings::get_int("SingleFrameAllocatorSize", static_cast<s32>(1_mib)));
+    mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(mem_size, 1);
   }
 
 } // namespace rex

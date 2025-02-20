@@ -257,14 +257,12 @@ namespace
 
 	void comments_helper(rsl::string_view s)
 	{
-		rex::json::json _;
-
 		// parse/accept with default parser
-		rex::json::json::parse(s);
+		auto tmp = rex::json::json::parse(s);
 		REX_CHECK(rex::json::json::accept(s));
 
 		// parse/accept while skipping comments
-		rex::json::json::parse(s, nullptr, false, true);
+		auto tmp2 = rex::json::json::parse(s, nullptr, false, true);
 		REX_CHECK(rex::json::json::accept(s, true));
 
 		rsl::vector<rsl::string> json_with_comments;
@@ -283,7 +281,7 @@ namespace
 			REX_CHECK(rex::json::json::parse(json_with_comment).is_discarded() == true);
 			REX_CHECK(!rex::json::json::accept(json_with_comment));
 
-			rex::json::json::parse(json_with_comment, nullptr, false, true);
+			auto _ = rex::json::json::parse(json_with_comment, nullptr, false, true);
 			REX_CHECK(rex::json::json::accept(json_with_comment, true));
 		}
 	}
@@ -1021,13 +1019,13 @@ TEST_CASE("TEST - Text Processing - Json")
 				if (valid(c))
 				{
 					CAPTURE(s1);
-					REX_CHECK_NOTHROW(parser_helper(s1).is_discarded() == false);
+					REX_CHECK(parser_helper(s1).is_discarded() == false);
 					CAPTURE(s2);
-					REX_CHECK_NOTHROW(parser_helper(s2).is_discarded() == false);
+					REX_CHECK(parser_helper(s2).is_discarded() == false);
 					CAPTURE(s3);
-					REX_CHECK_NOTHROW(parser_helper(s3).is_discarded() == false);
+					REX_CHECK(parser_helper(s3).is_discarded() == false);
 					CAPTURE(s4);
-					REX_CHECK_NOTHROW(parser_helper(s4).is_discarded() == false);
+					REX_CHECK(parser_helper(s4).is_discarded() == false);
 				}
 				else
 				{

@@ -22,7 +22,7 @@ TEST_CASE("TEST - Growing Pool - Request a single item")
 
 	rex::GrowingPool<rex::test::test_object, s32> growing_pool;
 
-	rex::test::test_object* ptr = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 2);
+	rex::test::test_object* ptr = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& /*ptr*/) { return true; }, 2);
 
 	REX_CHECK(ptr->x() == 2);
 	REX_CHECK(growing_pool.num_active_objects() == 1);
@@ -48,7 +48,7 @@ TEST_CASE("Test - Growing Pool - Request Scoped Item")
 	rex::test::test_object::reset();
 
 	{
-		rex::ObjectWithDestructionCallback<rex::test::test_object> scoped_obj = growing_pool.request_scoped([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 2);
+		rex::ObjectWithDestructionCallback<rex::test::test_object> scoped_obj = growing_pool.request_scoped([](const rsl::unique_ptr<rex::test::test_object>& /*ptr*/) { return true; }, 2);
 
 		REX_CHECK(scoped_obj->x() == 2);
 		REX_CHECK(growing_pool.num_active_objects() == 1);
@@ -73,8 +73,8 @@ TEST_CASE("TEST - Growling Pool - Request multiple items")
 
 	rex::GrowingPool<rex::test::test_object, s32> growing_pool;
 
-	rex::test::test_object* ptr1 = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 2);
-	rex::test::test_object* ptr2 = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& ptr) { return true; }, 3);
+	rex::test::test_object* ptr1 = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& /*ptr*/) { return true; }, 2);
+	rex::test::test_object* ptr2 = growing_pool.request([](const rsl::unique_ptr<rex::test::test_object>& /*ptr*/) { return true; }, 3);
 
 	REX_CHECK(ptr1->x() == 2);
 	REX_CHECK(ptr2->x() == 3);

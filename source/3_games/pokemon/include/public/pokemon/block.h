@@ -15,6 +15,7 @@ namespace pokemon
 		constexpr static s8 s_num_tiles_per_row = 4;
 		constexpr static s8 s_num_tiles_per_column = 4;
 		constexpr static s8 s_num_indices = s_num_tiles_per_row * s_num_tiles_per_column;
+		constexpr static u8 s_invalid_tile_index = 255;
 
 	public:
 		using indices_array = rsl::array<u8, s_num_indices>;
@@ -49,11 +50,11 @@ namespace pokemon
 		}
 		constexpr static s8 width_px()
 		{
-			return s_num_tiles_per_row * Tile::width_px();
+			return static_cast<s8>(s_num_tiles_per_row * Tile::width_px());
 		}
 		constexpr static s8 height_px()
 		{
-			return s_num_tiles_per_row * Tile::height_px();
+			return static_cast<s8>(s_num_tiles_per_row * Tile::height_px());
 		}
 		constexpr static s8 major_dimension()
 		{

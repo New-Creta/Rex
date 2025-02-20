@@ -7,7 +7,7 @@
 namespace rex
 {
 	FrameBasedAllocator::FrameBasedAllocator(rsl::memory_size size, s32 maxFrames)
-		: m_stack_allocator(size)
+		: m_stack_allocator(static_cast<count_t>(size))
 		, m_max_frames(maxFrames)
 		, m_current_frame(0)
 	{

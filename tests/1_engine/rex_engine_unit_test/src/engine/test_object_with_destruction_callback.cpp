@@ -23,7 +23,7 @@ TEST_CASE("TEST - Object With Destruction Callback - Destruction")
 	rex::test::test_object object(3);
 
 	{
-		rex::ObjectWithDestructionCallback<rex::test::test_object> scoped_object(&object, [&x](const rex::test::test_object* ptr) { ++x; });
+		rex::ObjectWithDestructionCallback<rex::test::test_object> scoped_object(&object, [&x](const rex::test::test_object* /*ptr*/) { ++x; });
 
 		REX_CHECK(scoped_object->x() == 3);
 		REX_CHECK(rex::test::test_object::num_created() == 1);

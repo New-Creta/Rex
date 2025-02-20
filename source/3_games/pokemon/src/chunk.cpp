@@ -11,7 +11,7 @@
 
 namespace pokemon
 {
-	Chunk::Chunk(rex::gfx::Entity entity, rsl::string_view name, rsl::string_view background, glm::vec3 pos)
+	Chunk::Chunk(rex::gfx::Entity entity, glm::vec3 pos)
 		: m_entity(entity)
 		, m_pos(pos)
 	{

@@ -11989,7 +11989,7 @@ class binary_reader
     {
         // step 1: read input into array with system's byte order
         rsl::array<rsl::uint8, sizeof(NumberType)> vec{};
-        for (rsl::size_t i = 0; i < sizeof(NumberType); ++i)
+        for (card32 i = 0; i < sizeof(NumberType); ++i)
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(format, "number")))

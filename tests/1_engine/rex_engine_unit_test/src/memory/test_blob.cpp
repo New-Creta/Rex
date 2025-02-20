@@ -169,7 +169,6 @@ TEST_CASE("Test - Blob - release as array")
   arr[1] = static_cast<rsl::byte>(2);
   arr[2] = static_cast<rsl::byte>(3);
 
-  rsl::byte* byte_array = arr.get();
   rex::memory::Blob b(rsl::move(arr));
 
   rsl::unique_array<rsl::byte> bytes = b.release_as_array<rsl::byte>();
@@ -186,7 +185,6 @@ TEST_CASE("Test - Blob - release")
   arr[2] = static_cast<rsl::byte>(3);
   arr[3] = static_cast<rsl::byte>(4);
 
-  rsl::byte* byte_array = arr.get();
   rex::memory::Blob b(rsl::move(arr));
 
   s32 value = b.release_as<s32>();

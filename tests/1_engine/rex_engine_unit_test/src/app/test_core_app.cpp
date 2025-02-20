@@ -35,7 +35,8 @@ namespace rex::test
 
 	rex::ApplicationCreationParams test_core_app_creation_params()
 	{
-		rex::ApplicationCreationParams app_params(PlatformCreationParams{});
+		static PlatformCreationParams platform_creation_params{};
+		rex::ApplicationCreationParams app_params(platform_creation_params);
 
 		app_params.gui_params.window_title.assign("test core app");
 

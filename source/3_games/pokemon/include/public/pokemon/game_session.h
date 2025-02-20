@@ -33,7 +33,7 @@ namespace pokemon
     SaveFile load_startup_savefile() const;
 
     rsl::unique_ptr<Map> init_map(const SaveFile& startupSaveFile);
-    TileRenderer* init_tile_renderer(const MapMatrix& mapMatrix, const MapRenderData& mapRenderData);
+    TileRenderer* init_tile_renderer(const MapRenderData& mapRenderData);
     void init_input();
 
   private:

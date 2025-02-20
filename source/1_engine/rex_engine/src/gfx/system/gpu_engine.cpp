@@ -127,10 +127,10 @@ namespace rex
       swapchain_info.height = m_swapchain->height();
       swapchain_info.viewport.top_left_x = 0.0f;
       swapchain_info.viewport.top_left_y = 0.0f;
-      swapchain_info.viewport.width = swapchain_info.width;
-      swapchain_info.viewport.height = swapchain_info.height;
-      swapchain_info.scissor_rect.right = swapchain_info.width;
-      swapchain_info.scissor_rect.bottom = swapchain_info.height;
+      swapchain_info.viewport.width = static_cast<f32>(swapchain_info.width);
+      swapchain_info.viewport.height = static_cast<f32>(swapchain_info.height);
+      swapchain_info.scissor_rect.right = static_cast<f32>(swapchain_info.width);
+      swapchain_info.scissor_rect.bottom = static_cast<f32>(swapchain_info.height);
 
       update_swapchain_info(swapchain_info);
     }

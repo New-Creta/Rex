@@ -88,7 +88,7 @@ namespace pokemon
 		SaveFile startup_save_file = load_startup_savefile();
 
 		m_active_map = init_map(startup_save_file);
-		m_tile_renderer = init_tile_renderer(m_active_map->map_matrix(), m_active_map->render_data());
+		m_tile_renderer = init_tile_renderer(m_active_map->render_data());
 		m_player_position = startup_save_file.position;
 
 		init_input();
@@ -143,7 +143,7 @@ namespace pokemon
 		return rsl::make_unique<Map>(rsl::move(map_matrix), rsl::move(map_render_data));
 	}
 
-	TileRenderer* GameSession::init_tile_renderer(const MapMatrix& mapMatrix, const MapRenderData& mapRenderData)
+	TileRenderer* GameSession::init_tile_renderer(const MapRenderData& mapRenderData)
 	{
 		REX_ASSERT_X(mapRenderData.tileset != nullptr, "No tileset texture provided to the renderer");
 
@@ -183,8 +183,8 @@ namespace pokemon
 				m_player_position.x = rsl::clamp_min(m_player_position.x, min_player_pos.x);
 				m_player_position.y = rsl::clamp_min(m_player_position.y, min_player_pos.y);
 
-				m_player_position.x = rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->map_matrix().width_in_tiles() - max_player_pos.x);
-				m_player_position.y = rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->map_matrix().height_in_tiles() - max_player_pos.y);
+				m_player_position.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->map_matrix().width_in_tiles() - max_player_pos.x));
+				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->map_matrix().height_in_tiles() - max_player_pos.y));
 
 			});
 	}

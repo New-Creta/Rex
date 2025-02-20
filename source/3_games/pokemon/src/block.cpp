@@ -5,7 +5,7 @@ namespace pokemon
 {
 	Block::Block()
 	{
-		m_tile_indices.fill(-1);
+		m_tile_indices.fill(s_invalid_tile_index);
 	}
 	Block::Block(const indices_array& tileIndices)
 		: m_tile_indices(tileIndices)

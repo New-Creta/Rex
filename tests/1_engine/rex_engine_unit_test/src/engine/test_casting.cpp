@@ -25,6 +25,9 @@ TEST_CASE("TEST - Casting - narrow casting")
 	REX_CHECK(i == j);
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4389)
+
 TEST_CASE("TEST - Casting - sign casting")
 {
 	s32 a = 0x7FFFFFFF;
@@ -51,6 +54,11 @@ TEST_CASE("TEST - Casting - sign casting")
 	s8 l = rex::unsafe_sign_cast<s8>(k);
 	REX_CHECK(k == l);
 }
+
+#pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning(disable : 4389)
 
 TEST_CASE("TEST - Casting - flip sign")
 {
@@ -79,6 +87,11 @@ TEST_CASE("TEST - Casting - flip sign")
 	REX_CHECK(k == l);
 }
 
+#pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning(disable : 4389)
+
 TEST_CASE("TEST - Casting - numeric cast")
 {
 	// Smaller to larger integer (same sign)
@@ -92,15 +105,17 @@ TEST_CASE("TEST - Casting - numeric cast")
 	REX_CHECK(small_int2 == large_int2);
 
 	// Unsigned to signed (value within range)
-	uint16_t unsigned_int = 300;
+	u16 unsigned_int = 300;
 	s32 signed_int = rex::numeric_cast<s32>(unsigned_int);
 	REX_CHECK(signed_int == unsigned_int);
 
 	// Signed to unsigned (value non-negative)
-	int16_t signed_int2 = 200;
+	s16 signed_int2 = 200;
 	u32 unsigned_int2 = rex::numeric_cast<u32>(signed_int2);
 	REX_CHECK(unsigned_int2 == signed_int2);
 }
+
+#pragma warning(pop)
 
 TEST_CASE("TEST - Casting - byte cast")
 {

@@ -44,7 +44,7 @@ namespace regina
   class Regina
   {
   public:
-    Regina(rsl::unique_ptr<Project> project, s32 windowWidth, s32 windowHeight)
+    Regina(rsl::unique_ptr<Project> project)
       : m_project(rsl::move(project))
     {
       if (!project)
@@ -128,7 +128,7 @@ namespace regina
   }
 
   //-------------------------------------------------------------------------
-  bool create_editor(const rex::ApplicationCreationParams& appCreationParams)
+  bool create_editor(const rex::ApplicationCreationParams& /*appCreationParams*/)
   {
     REX_INFO(LogRegina, "Initializing Regina");
 
@@ -145,10 +145,7 @@ namespace regina
       REX_INFO(LogRegina, "Project {} loaded", project->name());
     }
 
-    s32 window_width = appCreationParams.gui_params.window_width;
-    s32 window_height = appCreationParams.gui_params.window_height;
-
-    g_regina = rsl::make_unique<Regina>(rsl::move(project), window_width, window_height);
+    g_regina = rsl::make_unique<Regina>(rsl::move(project));
 
     REX_INFO(LogRegina, "Regina initialized");
 

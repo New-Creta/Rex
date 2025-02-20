@@ -85,7 +85,7 @@ namespace rex
       uav_desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
       uav_desc.Buffer.FirstElement = 0;
       uav_desc.Format = DXGI_FORMAT_R32_UINT;
-      uav_desc.Buffer.NumElements = size / sizeof(d3d::format_byte_size(uav_desc.Format));
+      uav_desc.Buffer.NumElements = static_cast<UINT>(size / sizeof(d3d::format_byte_size(uav_desc.Format)));
 
       DxResourceView uav_handle = new_free_handle();
       m_device->CreateUnorderedAccessView(resource, nullptr, &uav_desc, uav_handle);

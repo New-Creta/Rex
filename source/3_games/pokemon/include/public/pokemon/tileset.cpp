@@ -17,7 +17,7 @@ namespace pokemon
 	}
 	const u8* TileSet::tile_data(u8 tileIdx) const
 	{
-		constexpr s8 num_tiles_per_row = s_tileset_width_px / Tile::width_px();;
+		constexpr s8 num_tiles_per_row = static_cast<s8>(s_tileset_width_px / Tile::width_px());;
 
 		s32 tx = tileIdx % num_tiles_per_row;
 		s32 ty = tileIdx / num_tiles_per_row;

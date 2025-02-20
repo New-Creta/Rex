@@ -73,8 +73,6 @@ namespace pokemon
   void TileRenderer::update_tile_data(const MapMatrix& mapMatrix, TileCoord playerPos)
 	{
     s32 tiles_per_row = m_tileset_texture->width() / constants::g_tile_width_px;
-    f32 inv_texture_width = 1.0f / m_tileset_texture->width();
-    f32 inv_texture_height = 1.0f / m_tileset_texture->height();
 
     // Calculate the first block from which we should start drawing
     TileCoord top_left = coords::player_pos_to_screen_top_left(playerPos);
@@ -88,8 +86,8 @@ namespace pokemon
       {
         // Get the tile coord of the tile we're currently processing
         TileCoord coord = top_left;
-        coord.x += x;
-        coord.y += y;
+        coord.x += static_cast<s8>(x);
+        coord.y += static_cast<s8>(y);
 
         // Get the block the tile belongs to
         s32 block_idx = mapMatrix.index_at(coord);

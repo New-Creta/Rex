@@ -5,7 +5,6 @@
 
 TEST_CASE("TEST - Untracked Allocator - Allocation")
 {
-	rsl::allocator alloc;
 	rex::UntrackedAllocator untracked_alloc;
 
 	void* mem = untracked_alloc.allocate(10);
@@ -19,7 +18,6 @@ TEST_CASE("TEST - Untracked Allocator - Construction")
 {
 	rex::test::test_object::reset();
 
-	rsl::allocator alloc;
 	rex::UntrackedAllocator untracked_alloc;
 
 	rex::test::test_object* mem = static_cast<rex::test::test_object*>(untracked_alloc.allocate(sizeof(rex::test::test_object)));
