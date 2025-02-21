@@ -7,12 +7,12 @@
   "border_block_idx": 11,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\viridiancity.json",
       "offset": -5
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\pallettown.json",
       "offset": 0
     }

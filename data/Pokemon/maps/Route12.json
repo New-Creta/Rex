@@ -7,17 +7,17 @@
   "border_block_idx": 67,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\lavendertown.json",
       "offset": 0
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\route13.json",
       "offset": -20
     },
     {
-      "direction": "west",
+      "direction": "West",
       "map": "Pokemon\\maps\\route11.json",
       "offset": 27
     }

@@ -72,7 +72,7 @@ namespace pokemon
 
 			map_header.name = jsonBlob["name"];
 			map_header.map_blocks_filepath = jsonBlob["map_blocks"];
-			map_header.map_render_data_filepath = jsonBlob["blockset"];
+			map_header.map_render_data_filepath = jsonBlob["tileset"];
 			map_header.width = jsonBlob["width"];
 			map_header.height = jsonBlob["height"];
 			map_header.border_block_idx = jsonBlob["border_block_idx"];

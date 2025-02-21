@@ -7,12 +7,12 @@
   "border_block_idx": 67,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\pallettown.json",
       "offset": 0
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\cinnabarisland.json",
       "offset": 0
     }

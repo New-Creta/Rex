@@ -7,12 +7,12 @@
   "border_block_idx": 67,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\route16.json",
       "offset": 0
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\route18.json",
       "offset": 0
     }

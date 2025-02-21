@@ -7,12 +7,12 @@
   "border_block_idx": 67,
   "connections": [
     {
-      "direction": "west",
+      "direction": "West",
       "map": "Pokemon\\maps\\fuchsiacity.json",
       "offset": -4
     },
     {
-      "direction": "east",
+      "direction": "East",
       "map": "Pokemon\\maps\\route14.json",
       "offset": -18
     }

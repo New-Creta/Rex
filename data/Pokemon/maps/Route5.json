@@ -7,12 +7,12 @@
   "border_block_idx": 10,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\ceruleancity.json",
       "offset": -5
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\saffroncity.json",
       "offset": -5
     }

@@ -7,12 +7,12 @@
   "border_block_idx": 15,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\indigoplateau.json",
       "offset": 0
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\route22.json",
       "offset": 0
     }

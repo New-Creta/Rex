@@ -7,7 +7,7 @@
   "border_block_idx": 44,
   "connections": [
     {
-      "direction": "west",
+      "direction": "West",
       "map": "Pokemon\\maps\\route24.json",
       "offset": 0
     }

@@ -7,12 +7,12 @@
   "border_block_idx": 44,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\route4.json",
       "offset": 25
     },
     {
-      "direction": "west",
+      "direction": "West",
       "map": "Pokemon\\maps\\pewtercity.json",
       "offset": -4
     }

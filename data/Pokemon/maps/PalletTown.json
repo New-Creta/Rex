@@ -2,17 +2,17 @@
   "name": "PALLET TOWN",
   "width": 10,
   "height": 9,
-  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "tileset": "Pokemon\\blocksets\\OVERWORLD.json",
   "map_blocks": "Pokemon\\map_blocks\\PalletTown.blk",
   "border_block_idx": 11,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\route1.json",
       "offset": 0
     },
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\route21.json",
       "offset": 0
     }

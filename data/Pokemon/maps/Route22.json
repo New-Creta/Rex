@@ -7,12 +7,12 @@
   "border_block_idx": 44,
   "connections": [
     {
-      "direction": "north",
+      "direction": "North",
       "map": "Pokemon\\maps\\route23.json",
       "offset": 0
     },
     {
-      "direction": "east",
+      "direction": "East",
       "map": "Pokemon\\maps\\viridiancity.json",
       "offset": -4
     }

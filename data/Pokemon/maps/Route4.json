@@ -7,12 +7,12 @@
   "border_block_idx": 44,
   "connections": [
     {
-      "direction": "south",
+      "direction": "South",
       "map": "Pokemon\\maps\\route3.json",
       "offset": -25
     },
     {
-      "direction": "east",
+      "direction": "East",
       "map": "Pokemon\\maps\\ceruleancity.json",
       "offset": -4
     }

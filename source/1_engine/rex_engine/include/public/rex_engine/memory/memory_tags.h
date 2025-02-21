@@ -15,14 +15,14 @@ namespace rex
     StringPool,
     Renderer,
  
-    // MemoryTag values for Pokemon
-    Pokemon,
+    // MemoryTag values for Regina
+    Editor,
  
     // MemoryTag values for ConsoleApp
     ConsoleApp,
  
-    // MemoryTag values for Regina
-    Editor,
+    // MemoryTag values for Pokemon
+    Pokemon,
  
     // MemoryTag values for RexWindows
     Windows,
