@@ -7,11 +7,15 @@ namespace regina
 	class MainEditorWidget : public Widget
 	{
 	public:
+		MainEditorWidget();
 
 	protected:
 		bool on_update() override;
 
 	private:
 		void show_menu_bar();
+
+	private:
+		bool m_show_imgui_demo;
 	};
 }

@@ -45,7 +45,7 @@ namespace regina
 	// Initialization
 	void Regina::spawn_main_widget()
 	{
-		REX_ASSERT_X(m_project, "Cannot initialize for project if we don't have one. project is null");
+		REX_ASSERT_X(m_project, "Cannot spawn the main widget if we don't have a project. project is null");
 
 		m_active_widget = rsl::make_unique<MainEditorWidget>();
 
