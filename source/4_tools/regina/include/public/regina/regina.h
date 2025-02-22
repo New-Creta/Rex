@@ -1,5 +1,7 @@
 #include "rex_engine/engine/types.h"
 
+#include "rex_std/memory.h"
+
 namespace rex
 {
   struct ApplicationCreationParams;
@@ -8,12 +10,33 @@ namespace rex
 
 namespace regina
 {
-  bool initialize();
-  void update();
-  void draw();
-  void shutdown();
+  class ContentManager;
+  class Widget;
+  class Project;
 
-  // we put the generation of the app creation params into a separate function
-  // so that auto tests can always start of with the same settings as regina and change them where needed
-  rex::ApplicationCreationParams create_regina_app_creation_params(rex::PlatformCreationParams& platformParams);
+  class Regina
+  {
+  public:
+    Regina(rsl::unique_ptr<Project> project);
+    ~Regina();
+
+    void update();
+
+  private:
+    // Initialization
+    void spawn_main_widget();
+
+    // UI
+    void show_content_browser();
+
+    // Project management
+    void create_new_project(rsl::string_view projectName);
+    void spawn_create_project_widget();
+
+  private:
+    rsl::unique_ptr<Project> m_project;
+    rsl::unique_ptr<ContentManager> m_content_manager;
+    rsl::unique_ptr<Widget> m_active_widget;
+  };
+
 } // namespace regina

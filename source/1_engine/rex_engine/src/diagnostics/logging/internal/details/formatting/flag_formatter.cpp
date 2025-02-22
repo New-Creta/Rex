@@ -194,6 +194,77 @@ namespace rex
         }
         fmt_helper::append_string_view(msg.payload(), dest);
       }
+
+      ///////////////////////////////////////////////////////////////////////
+      // full time formatter
+      ///////////////////////////////////////////////////////////////////////
+
+      //-------------------------------------------------------------------------
+      FullTimeFormatter::FullTimeFormatter(PaddingInfo padinfo)
+          : FlagFormatter(padinfo)
+      {
+      }
+
+      //-------------------------------------------------------------------------
+      void FullTimeFormatter::format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest)
+      {
+        // cache the date/time part for the next second.
+        auto duration = msg.time().time_since_epoch();
+        auto secs     = rsl::chrono::duration_cast<rsl::chrono::seconds>(duration);
+
+        if(m_cache_timestamp != secs || m_cached_datetime.empty())
+        {
+          m_cached_datetime.clear();
+          m_cached_datetime.push_back('[');
+          fmt_helper::pad2(tmTime.tm_hour, m_cached_datetime);
+          m_cached_datetime.push_back(':');
+
+          fmt_helper::pad2(tmTime.tm_min, m_cached_datetime);
+          m_cached_datetime.push_back(':');
+
+          fmt_helper::pad2(tmTime.tm_sec, m_cached_datetime);
+          m_cached_datetime.push_back('.');
+
+          m_cache_timestamp = secs;
+        }
+
+        dest.append(m_cached_datetime.data(), m_cached_datetime.size());
+
+        auto millis = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time());
+        fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
+        dest.push_back(']');
+        dest.push_back(' ');
+
+        // append logger name if exists
+        if(!msg.logger_name().empty())
+        {
+          dest.push_back('[');
+          fmt_helper::append_string_view(msg.logger_name(), dest);
+          dest.push_back(']');
+          dest.push_back(' ');
+        }
+
+        dest.push_back('[');
+        // wrap the level name with color
+        msg.m_color_range_start = dest.size();
+        fmt_helper::append_string_view(level::to_string_view(msg.level()), dest);
+        msg.m_color_range_end = dest.size();
+        dest.push_back(']');
+        dest.push_back(' ');
+
+        // add source location if present
+        if(!msg.source().file_name().empty())
+        {
+          dest.push_back('[');
+          const char* filename = details::ShortFileNameFormatter<details::NullScopedPadder>::basename(msg.source().file_name().data());
+          fmt_helper::append_string_view(rsl::string_view(filename), dest);
+          dest.push_back(':');
+          fmt_helper::append_int(msg.source().line(), dest);
+          dest.push_back(']');
+          dest.push_back(' ');
+        }
+        fmt_helper::append_string_view(msg.payload(), dest);
+      }
     } // namespace details
   }   // namespace log
 } // namespace rex

@@ -63,7 +63,7 @@ namespace rex
         const s32 msg_size = formatted.size();
         const auto* data   = formatted.data();
 
-        vfs::save_to_file(m_filename, data, msg_size, vfs::AppendToFile::yes);
+        vfs::write_to_file(m_filename, data, msg_size, vfs::AppendToFile::yes);
       }
 
       template <typename Mutex>

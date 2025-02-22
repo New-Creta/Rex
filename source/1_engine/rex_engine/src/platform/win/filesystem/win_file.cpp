@@ -84,7 +84,7 @@ namespace rex
       return memory::Blob(rsl::move(buffer));
     }
     // Save content to a file
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size)
+    Error write_to_file(rsl::string_view filepath, const void* data, card64 size)
     {
       const rsl::string_view fullpath = path::abs_path(filepath);
 

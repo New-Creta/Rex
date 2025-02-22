@@ -93,20 +93,23 @@ namespace rex
       const TempString fullpath = path::abs_path(path);
       const rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
 
-      rsl::string full_path;
-      full_path.reserve(fullpath.size());
+      rsl::string to_create;
+      to_create.reserve(fullpath.size());
 
       for (const rsl::string_view sub_path : splitted_paths)
       {
-        full_path += sub_path;
-        const bool success = WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);
-
-        if (!success)
+        to_create += sub_path;
+        if (!exists(to_create))
         {
-          return Error::create_with_log(LogDirectory, "Failed to create directory at \"{}\"", full_path);
-        }
+					const bool success = WIN_SUCCESS_IGNORE(CreateDirectoryA(to_create.data(), NULL), ERROR_ALREADY_EXISTS);
 
-        full_path += g_folder_seps;
+					if (!success)
+					{
+						return Error::create_with_log(LogDirectory, "Failed to create directory at \"{}\"", to_create);
+					}
+				}
+
+        to_create += g_folder_seps;
       }
 
       return Error::no_error();

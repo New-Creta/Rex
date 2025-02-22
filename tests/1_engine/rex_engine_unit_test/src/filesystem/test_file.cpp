@@ -137,7 +137,7 @@ TEST_CASE("TEST - File - Saving")
 
   rsl::string_view dummy_content = "this is some dummy content";
   rex::TempString dummy_file = rex::path::random_filename();
-  rex::file::save_to_file(dummy_file, dummy_content.data(), dummy_content.length());
+  rex::file::write_to_file(dummy_file, dummy_content.data(), dummy_content.length());
 
   const rex::memory::Blob file_data = rex::file::read_file(dummy_file);
   const rsl::string_view file_content = rex::memory::blob_to_string_view(file_data);

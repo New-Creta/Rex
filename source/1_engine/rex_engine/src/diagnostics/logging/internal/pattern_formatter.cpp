@@ -113,7 +113,7 @@ namespace rex
         , m_last_log_secs(0)
     {
       rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
-      m_formatters.push_back(make_unique_debug<details::FullFormatter>(details::PaddingInfo {}));
+      m_formatters.push_back(make_unique_debug<details::FullTimeFormatter>(details::PaddingInfo {}));
     }
 
     //-------------------------------------------------------------------------

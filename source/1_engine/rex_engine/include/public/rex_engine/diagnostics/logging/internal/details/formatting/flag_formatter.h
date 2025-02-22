@@ -950,6 +950,22 @@ namespace rex
         rsl::chrono::seconds m_cache_timestamp {0};
         DebugString m_cached_datetime;
       };
+
+      //-------------------------------------------------------------------------
+      // Full Time info formatter
+      // pattern: [%H:%M:%S.%e] [%n] [%l] [%s:%#] %v
+      class FullTimeFormatter final : public FlagFormatter
+      {
+      public:
+        explicit FullTimeFormatter(PaddingInfo padinfo);
+
+        void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) override;
+
+      private:
+        rsl::chrono::seconds m_cache_timestamp {0};
+        DebugString m_cached_datetime;
+      };
+
     } // namespace details
   }   // namespace log
 } // namespace rex

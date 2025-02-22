@@ -691,7 +691,7 @@ namespace proj_fs
     GUID instance_id;
     CoCreateGuid(&instance_id);
 
-    if (!rex::vfs::save_to_file("virt_root.txt", &instance_id, sizeof(instance_id), rex::vfs::AppendToFile::no))
+    if (!rex::vfs::write_to_file("virt_root.txt", &instance_id, sizeof(instance_id), rex::vfs::AppendToFile::no))
     {
       return false;
     }

@@ -260,7 +260,7 @@ namespace rex
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
 
-    vfs::save_to_file(MountingPoint::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
+    vfs::write_to_file(MountingPoint::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
   }
 
   MemoryTrackingStats MemoryTracker::current_tracking_stats()

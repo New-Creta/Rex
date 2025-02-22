@@ -204,7 +204,7 @@ TEST_CASE("TEST - VFS - save to file")
 	rsl::string_view dummy_content = "this is some dummy content";
 
 	// Save a file using just the filepath, no appending
-	rex::vfs::save_to_file(filepath, dummy_content, rex::vfs::AppendToFile::no);
+	rex::vfs::write_to_file(filepath, dummy_content, rex::vfs::AppendToFile::no);
 
 	REX_CHECK(rex::vfs::is_file(filepath));
 	rex::memory::Blob file_blob = rex::vfs::read_file(filepath);
@@ -213,7 +213,7 @@ TEST_CASE("TEST - VFS - save to file")
 	// Save a file using just the filepath, with appending
 	rex::TempString dummy_content_appended(dummy_content);
 	dummy_content_appended += dummy_content;
-	rex::vfs::save_to_file(filepath, dummy_content, rex::vfs::AppendToFile::yes);
+	rex::vfs::write_to_file(filepath, dummy_content, rex::vfs::AppendToFile::yes);
 	file_blob = rex::vfs::read_file(filepath);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content_appended);
 
@@ -223,13 +223,13 @@ TEST_CASE("TEST - VFS - save to file")
 	filepath = rex::path::join(test_path1, filename);
 
 	// Save a file using a mounting point, no appending
-	rex::vfs::save_to_file(rex::MountingPoint::TestPath1, filename, dummy_content, rex::vfs::AppendToFile::no);
+	rex::vfs::write_to_file(rex::MountingPoint::TestPath1, filename, dummy_content, rex::vfs::AppendToFile::no);
 	rex::vfs::is_file(rex::MountingPoint::TestPath1, filename);
 	file_blob = rex::vfs::read_file(rex::MountingPoint::TestPath1, filename);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content);
 
 	// Save a file using a mounting point, with appending
-	rex::vfs::save_to_file(rex::MountingPoint::TestPath1, filename, dummy_content, rex::vfs::AppendToFile::yes);
+	rex::vfs::write_to_file(rex::MountingPoint::TestPath1, filename, dummy_content, rex::vfs::AppendToFile::yes);
 	file_blob = rex::vfs::read_file(rex::MountingPoint::TestPath1, filename);
 	REX_CHECK(rex::memory::blob_to_string_view(file_blob) == dummy_content_appended);
 

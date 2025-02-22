@@ -441,38 +441,38 @@ namespace rex
       rex::TempHeapScope tmp_heap_scope{};
       return rex::file::create(filepath);
     }
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
-      return save_to_file(root, filepath, text.data(), text.length(), shouldAppend);
+      return write_to_file(root, filepath, text.data(), text.length(), shouldAppend);
     }
-    Error save_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
+    Error write_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
-      return save_to_file(filepath, text.data(), text.length(), shouldAppend);
+      return write_to_file(filepath, text.data(), text.length(), shouldAppend);
     }
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
       filepath = path::remove_quotes(filepath);
 
       const rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
-      return save_to_file(path, data, size, shouldAppend);
+      return write_to_file(path, data, size, shouldAppend);
     }
 
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
       filepath = path::remove_quotes(filepath);
 
       const rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
-      return save_to_file(path, blob.data(), blob.size(), shouldAppend);
+      return write_to_file(path, blob.data(), blob.size(), shouldAppend);
     }
 
-    Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    Error write_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
-      return save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
+      return write_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
     Error create_dir(MountingPoint root, rsl::string_view path)
@@ -655,7 +655,7 @@ namespace rex
       return rex::file::read_file(fullpath);
     }
 
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    Error write_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       rex::TempHeapScope tmp_heap_scope{};
       const rsl::string_view fullpath = abs_path(filepath);
@@ -665,7 +665,7 @@ namespace rex
       }
       else
       {
-        return rex::file::save_to_file(fullpath, data, size);
+        return rex::file::write_to_file(fullpath, data, size);
       }
     }
 

@@ -80,12 +80,12 @@ namespace rex
     REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
     Error create_file(MountingPoint root, rsl::string_view filepath);
     Error create_file(rsl::string_view filepath);
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
-    Error save_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
+    Error write_to_file(rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    Error write_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    Error write_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    Error write_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     Error create_dir(MountingPoint root, rsl::string_view path);
     Error create_dir(rsl::string_view path);
     Error create_dirs(rsl::string_view path);

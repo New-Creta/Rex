@@ -17,6 +17,8 @@ namespace rex
   {
     void log_pre_init_results()
     {
+      REX_INFO(LogEngine, "Startup: {}", rsl::current_timepoint());
+
       // Now log the commandline we started the app with
       cmdline::print();
 

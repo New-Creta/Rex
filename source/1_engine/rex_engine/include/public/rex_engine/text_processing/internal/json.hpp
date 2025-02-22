@@ -15,6 +15,7 @@
 #include "rex_std/vector.h"
 #include "rex_std/forward_list.h"
 #include "rex_std/valarray.h"
+#include "rex_std/math.h"
 #include "rex_std/ios.h"
 #include "rex_std/iostream.h"
 #include "rex_std/streambuf.h"
@@ -5844,7 +5845,7 @@ inline void to_json(BasicJsonType& j, const T& t)
 template<typename BasicJsonType>
 inline void to_json(BasicJsonType& j, const rsl::string_view& p)
 {
-    j = p.string();
+    j = rsl::string(p);
 }
 #endif
 
@@ -15011,7 +15012,7 @@ namespace detail
 template<typename CharType> struct output_adapter_protocol
 {
     virtual void write_character(CharType c) = 0;
-    virtual void write_characters(const CharType* s, rsl::size_t length) = 0;
+    virtual void write_characters(const CharType* s, rsl::card32 length) = 0;
     virtual ~output_adapter_protocol() = default;
 
     output_adapter_protocol() = default;
@@ -15040,7 +15041,7 @@ class output_vector_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, rsl::size_t length) override
+    void write_characters(const CharType* s, rsl::card32 length) override
     {
         v.insert(v.end(), s, s + length);
     }
@@ -15065,7 +15066,7 @@ class output_stream_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, rsl::size_t length) override
+    void write_characters(const CharType* s, rsl::card32 length) override
     {
         stream.write(s, static_cast<rsl::streamsize>(length));
     }
@@ -15090,7 +15091,7 @@ class output_string_adapter : public output_adapter_protocol<CharType>
     }
 
     JSON_HEDLEY_NON_NULL(2)
-    void write_characters(const CharType* s, rsl::size_t length) override
+    void write_characters(const CharType* s, rsl::card32 length) override
     {
         str.append(s, length);
     }
@@ -17162,7 +17163,7 @@ boundaries.
 template<typename FloatType>
 boundaries compute_boundaries(FloatType value)
 {
-    JSON_ASSERT(rsl::isfinite(value));
+    JSON_ASSERT(rsl::is_finite(value));
     JSON_ASSERT(value > 0);
 
     // Convert the IEEE representation into a diyfp.
@@ -17864,7 +17865,7 @@ void grisu2(char* buf, int& len, int& decimal_exponent, FloatType value)
     static_assert(diyfp::kPrecision >= rsl::numeric_limits<FloatType>::digits + 3,
                   "internal error: not enough precision");
 
-    JSON_ASSERT(rsl::isfinite(value));
+    JSON_ASSERT(rsl::is_finite(value));
     JSON_ASSERT(value > 0);
 
     // If the neighbors (and boundaries) of 'value' are always computed for double-precision
@@ -18039,7 +18040,7 @@ JSON_HEDLEY_RETURNS_NON_NULL
 char* to_chars(char* first, const char* last, FloatType value)
 {
     static_cast<void>(last); // maybe unused - fix warning
-    JSON_ASSERT(rsl::isfinite(value));
+    JSON_ASSERT(rsl::is_finite(value));
 
     // Use signbit(value) instead of (value < 0) since signbit works for -0.
     if (rsl::signbit(value))
@@ -18142,7 +18143,7 @@ class serializer
     serializer(output_adapter_t<char> s, const char ichar,
                error_handler_t error_handler_ = error_handler_t::strict)
         : o(rsl::move(s))
-        , loc(rsl::localeconv())
+        , loc(std::localeconv())
         , thousands_sep(loc->thousands_sep == nullptr ? '\0' : rsl::char_traits<char>::to_char_type(* (loc->thousands_sep)))
         , decimal_point(loc->decimal_point == nullptr ? '\0' : rsl::char_traits<char>::to_char_type(* (loc->decimal_point)))
         , indent_char(ichar)
@@ -18182,8 +18183,8 @@ class serializer
     void dump(const BasicJsonType& val,
               const bool pretty_print,
               const bool ensure_ascii,
-              const unsigned int indent_step,
-              const unsigned int current_indent = 0)
+              const int indent_step,
+              const int current_indent = 0)
     {
         switch (val.m_data.m_type)
         {
@@ -18212,9 +18213,9 @@ class serializer
                     {
                         o->write_characters(indent_string.c_str(), new_indent);
                         o->write_character('\"');
-                        dump_escaped(i->first, ensure_ascii);
+                        dump_escaped(i->key, ensure_ascii);
                         o->write_characters("\": ", 3);
-                        dump(i->second, true, ensure_ascii, indent_step, new_indent);
+                        dump(i->value, true, ensure_ascii, indent_step, new_indent);
                         o->write_characters(",\n", 2);
                     }
 
@@ -18223,9 +18224,9 @@ class serializer
                     JSON_ASSERT(rsl::next(i) == val.m_data.m_value.object->cend());
                     o->write_characters(indent_string.c_str(), new_indent);
                     o->write_character('\"');
-                    dump_escaped(i->first, ensure_ascii);
+                    dump_escaped(i->key, ensure_ascii);
                     o->write_characters("\": ", 3);
-                    dump(i->second, true, ensure_ascii, indent_step, new_indent);
+                    dump(i->value, true, ensure_ascii, indent_step, new_indent);
 
                     o->write_character('\n');
                     o->write_characters(indent_string.c_str(), current_indent);
@@ -18240,9 +18241,9 @@ class serializer
                     for (rsl::size_t cnt = 0; cnt < val.m_data.m_value.object->size() - 1; ++cnt, ++i)
                     {
                         o->write_character('\"');
-                        dump_escaped(i->first, ensure_ascii);
+                        dump_escaped(i->key, ensure_ascii);
                         o->write_characters("\":", 2);
-                        dump(i->second, false, ensure_ascii, indent_step, current_indent);
+                        dump(i->value, false, ensure_ascii, indent_step, current_indent);
                         o->write_character(',');
                     }
 
@@ -18250,9 +18251,9 @@ class serializer
                     JSON_ASSERT(i != val.m_data.m_value.object->cend());
                     JSON_ASSERT(rsl::next(i) == val.m_data.m_value.object->cend());
                     o->write_character('\"');
-                    dump_escaped(i->first, ensure_ascii);
+                    dump_escaped(i->key, ensure_ascii);
                     o->write_characters("\":", 2);
-                    dump(i->second, false, ensure_ascii, indent_step, current_indent);
+                    dump(i->value, false, ensure_ascii, indent_step, current_indent);
 
                     o->write_character('}');
                 }
@@ -18467,13 +18468,13 @@ class serializer
     {
         rsl::uint32 codepoint{};
         rsl::uint8 state = UTF8_ACCEPT;
-        rsl::size_t bytes = 0;  // number of bytes written to string_buffer
+        rsl::card32 bytes = 0;  // number of bytes written to string_buffer
 
         // number of bytes written at the point of the last valid byte
-        rsl::size_t bytes_after_last_accept = 0;
-        rsl::size_t undumped_chars = 0;
+        rsl::card32 bytes_after_last_accept = 0;
+        rsl::card32 undumped_chars = 0;
 
-        for (rsl::size_t i = 0; i < s.size(); ++i)
+        for (rsl::card32 i = 0; i < s.size(); ++i)
         {
             const auto byte = static_cast<rsl::uint8>(s[i]);
 
@@ -18541,14 +18542,14 @@ class serializer
                                 if (codepoint <= 0xFFFF)
                                 {
                                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                                    static_cast<void>((rsl::snprintf)(string_buffer.data() + bytes, 7, "\\u%04x",
+                                    static_cast<void>((std::snprintf)(string_buffer.data() + bytes, 7, "\\u%04x",
                                                                       static_cast<rsl::uint16>(codepoint)));
                                     bytes += 6;
                                 }
                                 else
                                 {
                                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                                    static_cast<void>((rsl::snprintf)(string_buffer.data() + bytes, 13, "\\u%04x\\u%04x",
+                                    static_cast<void>((std::snprintf)(string_buffer.data() + bytes, 13, "\\u%04x\\u%04x",
                                                                       static_cast<rsl::uint16>(0xD7C0u + (codepoint >> 10u)),
                                                                       static_cast<rsl::uint16>(0xDC00u + (codepoint & 0x3FFu))));
                                     bytes += 12;
@@ -18816,7 +18817,7 @@ class serializer
 
         number_unsigned_t abs_value;
 
-        unsigned int n_chars{};
+        int n_chars{};
 
         if (is_negative_number(x))
         {
@@ -18874,7 +18875,7 @@ class serializer
     void dump_float(number_float_t x)
     {
         // NaN / inf
-        if (!rsl::isfinite(x))
+        if (!rsl::is_finite(x))
         {
             o->write_characters("null", 4);
             return;
@@ -18897,7 +18898,7 @@ class serializer
         auto* begin = number_buffer.data();
         auto* end = ::nlohmann::detail::to_chars(begin, begin + number_buffer.size(), x);
 
-        o->write_characters(begin, static_cast<size_t>(end - begin));
+        o->write_characters(begin, static_cast<card32>(end - begin));
     }
 
     void dump_float(number_float_t x, rsl::false_type /*is_ieee_single_or_double*/)
@@ -19001,7 +19002,7 @@ class serializer
                 ? (byte & 0x3fu) | (codep << 6u)
                 : (0xFFu >> type) & (byte);
 
-        const rsl::size_t index = 256u + static_cast<size_t>(state) * 16u + static_cast<size_t>(type);
+        const rsl::card32 index = 256u + static_cast<size_t>(state) * 16u + static_cast<size_t>(type);
         JSON_ASSERT(index < utf8d.size());
         state = utf8d[index];
         return state;
