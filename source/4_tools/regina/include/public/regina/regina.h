@@ -1,3 +1,5 @@
+#pragma once
+
 #include "rex_engine/engine/types.h"
 
 #include "rex_std/memory.h"

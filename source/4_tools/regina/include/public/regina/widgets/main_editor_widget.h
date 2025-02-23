@@ -14,6 +14,7 @@ namespace regina
 
 	private:
 		void show_menu_bar();
+		void init_widgets();
 
 	private:
 		bool m_show_imgui_demo;
