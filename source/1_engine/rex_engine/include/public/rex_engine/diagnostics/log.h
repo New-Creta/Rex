@@ -7,5 +7,5 @@ DEFINE_LOG_CATEGORY(LogEngine);
 
 namespace rex
 {
-	TempString log_path();
+	TempString project_log_path();
 }

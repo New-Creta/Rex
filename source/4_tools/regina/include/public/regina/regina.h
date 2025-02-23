@@ -28,9 +28,6 @@ namespace regina
     // Initialization
     void spawn_main_widget();
 
-    // UI
-    void show_content_browser();
-
     // Project management
     void create_new_project(rsl::string_view projectName);
     void spawn_create_project_widget();

@@ -13,6 +13,6 @@ namespace regina
 		void add_content(rsl::string_view directory);
 
 	private:
-
+		rsl::vector<rsl::string> m_entries;
 	};
 }

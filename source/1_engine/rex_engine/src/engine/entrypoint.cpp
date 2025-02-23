@@ -28,7 +28,7 @@ namespace rex
 
       REX_INFO(LogEngine, "Vfs Root: {}", rex::vfs::root());
       REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::current_session_root());
-      REX_INFO(LogEngine, "Log Path: {}", rex::log_path());
+      REX_INFO(LogEngine, "Log Path: {}", rex::project_log_path());
     }
 
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)

@@ -52,12 +52,6 @@ namespace regina
 		m_content_manager->add_content(rex::vfs::project_root());
 	}
 
-	// UI
-	void Regina::show_content_browser()
-	{
-
-	}
-
 	// Project management
 	void Regina::create_new_project(rsl::string_view projectName)
 	{

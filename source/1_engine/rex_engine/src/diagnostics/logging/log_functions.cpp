@@ -116,7 +116,7 @@ namespace rex
       // If the logging system has been initialized, we log to files as well
       if(g_enable_file_sinks)
       {
-        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::log_path(), true));
+        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::project_log_path(), true));
       }
 
       rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;

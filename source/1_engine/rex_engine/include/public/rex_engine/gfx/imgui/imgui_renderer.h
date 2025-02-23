@@ -39,6 +39,8 @@ namespace rex
       // Init the main viewport of imgui. 
       // The main viewport is the one pointing to the main window of the application
       void init_main_imgui_viewport();
+      // Init the colors for imgui to use
+      void init_colors();
 
       // GPU resource initialization
       void init_font_texture();
