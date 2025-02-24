@@ -53,5 +53,20 @@ namespace rex
 		{
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance);
 		}
+
+		bool is_item_hovered(float delayInSeconds, ImGuiHoveredFlags flags)
+		{
+			return ImGui::IsItemHovered() && GImGui->HoveredIdTimer > delayInSeconds; /*HoveredIdNotActiveTimer*/
+		}
+
+		void set_tooltip(std::string_view text, float delayInSeconds, bool allowWhenDisabled, ImVec2 padding)
+		{
+			if (is_item_hovered(delayInSeconds, allowWhenDisabled ? ImGuiHoveredFlags_AllowWhenDisabled : 0))
+			{
+				ScopedStyle tooltipPadding(ImGuiStyleVar_WindowPadding, padding);
+				ScopedColour textCol(ImGuiCol_Text, textBrighter);
+				ImGui::SetTooltip(text.data());
+			}
+		}
 	}
 }

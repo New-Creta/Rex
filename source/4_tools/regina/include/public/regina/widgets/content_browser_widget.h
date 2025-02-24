@@ -22,6 +22,7 @@ namespace regina
 
 		void render_top_bar(f32 height);
 		void render_bottom_bar(f32 height);
+		void render_items();
 
 	private:
 		rsl::string m_current_directory;
