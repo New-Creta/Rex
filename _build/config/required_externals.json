@@ -20,7 +20,7 @@
   "rex_imgui": {
     "name": "rex_imgui",
     "url": "https://gitlab.com/rex-externals/rex-imgui/",
-    "tag": "v1.0.6-r0.1",
+    "tag": "v1.0.6-r0.2",
     "storage": "~/source/0_thirdparty"
   },
   "rex_pix": {
