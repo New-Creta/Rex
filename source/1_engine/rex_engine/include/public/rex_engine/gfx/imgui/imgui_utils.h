@@ -121,5 +121,7 @@ namespace rex
 		void shift_cursor_y(float distance);
 		bool is_item_hovered(float delayInSeconds = 0.1f, ImGuiHoveredFlags flags = 0);
 		void set_tooltip(std::string_view text, float delayInSeconds = 0.1f, bool allowWhenDisabled = true, ImVec2 padding = ImVec2(5, 5));
+		ImRect rect_offset(const ImRect& rect, float x, float y);
+		void shift_cursor(float x, float y);
 	}
 }

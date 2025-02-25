@@ -50,6 +50,9 @@ namespace regina
 
 			if (ImGui::BeginTable("Assets", 2, table_flags))
 			{
+				ImGui::TableSetupColumn("Outliner", 0, 300.0f);
+				ImGui::TableSetupColumn("Directory Structure", ImGuiTableColumnFlags_WidthStretch);
+
 				ImGui::TableNextRow();
 
 				ImGui::BeginChild("##hiearchy");
@@ -94,7 +97,7 @@ namespace regina
 
 				const float topBarHeight = 26.0f;
 				const float bottomBarHeight = 32.0f;
-				ImGui::BeginChild("##directory_content");
+				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - topBarHeight - bottomBarHeight));
 				{
 					//for (rsl::string_view asset : assets)
 					//{
@@ -240,7 +243,7 @@ namespace regina
 						const float paddingForOutline = 2.0f;
 						const float scrollBarrOffset = 20.0f + ImGui::GetStyle().ScrollbarSize;
 						float panelWidth = ImGui::GetContentRegionAvail().x - scrollBarrOffset;
-						float cellSize = 100.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
+						float cellSize = 75.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
 						int columnCount = (int)(panelWidth / cellSize);
 						if (columnCount < 1) columnCount = 1;
 
@@ -629,7 +632,98 @@ namespace regina
 			ImGui::PushID(rsl::hash<rsl::string_view>{}(item));
 			ImGui::BeginGroup();
 
+			//ImGui::Text(item.data());
+
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+			const float edgeOffset = 4.0f;
+
+			const float textLineHeight = ImGui::GetTextLineHeightWithSpacing() * 2.0f + edgeOffset * 2.0f;
+			const float infoPanelHeight = textLineHeight;
+			const float thumbnailSize = 100.0f; // float(editorSettings.ContentBrowserThumbnailSize);
+
+			const ImVec2 topLeft = ImGui::GetCursorScreenPos();
+			const ImVec2 thumbBottomRight = { topLeft.x + thumbnailSize, topLeft.y + thumbnailSize };
+			const ImVec2 infoTopLeft = { topLeft.x,				 topLeft.y + thumbnailSize };
+			const ImVec2 bottomRight = { topLeft.x + thumbnailSize, topLeft.y + thumbnailSize + infoPanelHeight };
+
+			const bool isFocused = ImGui::IsWindowFocused();
+
+			const bool isSelected = false; // SelectionManager::IsSelected(SelectionContext::ContentBrowser, m_ID);
+			auto drawShadow = [](const ImVec2& topLeft, const ImVec2& bottomRight, bool directory)
+			{
+				auto* drawList = ImGui::GetWindowDrawList();
+				const ImRect itemRect = rex::imgui::rect_offset(ImRect(topLeft, bottomRight), 1.0f, 1.0f);
+				drawList->AddRect(itemRect.Min, itemRect.Max, rex::imgui::propertyField, 6.0f, directory ? 0 : ImDrawFlags_RoundCornersBottom, 2.0f);
+			};
+
+			auto* drawList = ImGui::GetWindowDrawList();
+
+			// Draw shadow
+			drawShadow(topLeft, bottomRight, false);
+
+			// Draw background
+			drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
+			drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
+
 			ImGui::Text(item.data());
+
+			rex::imgui::shift_cursor(edgeOffset, edgeOffset);
+			ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
+			{
+				// Centre align directory name
+				ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
+				ImGui::Spring();
+				{
+					ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbnailSize - edgeOffset * 3.0f));
+					const float textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
+					//if (m_IsRenaming)
+					//{
+					//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
+					//	renamingWidget();
+					//}
+					//else
+					//{
+						ImGui::SetNextItemWidth(textWidth);
+						ImGui::Text(item.data());
+					//}
+					ImGui::PopTextWrapPos();
+				}
+				ImGui::Spring();
+				ImGui::EndHorizontal();
+
+				ImGui::Spring();
+			}
+			ImGui::EndVertical();
+			rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
+
+			ImGui::PopStyleVar(); // ItemSpacing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			ImGui::EndGroup();
 
 			//CBItemActionResult result = item->OnRender(this);

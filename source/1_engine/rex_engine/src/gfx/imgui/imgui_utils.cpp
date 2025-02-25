@@ -68,5 +68,19 @@ namespace rex
 				ImGui::SetTooltip(text.data());
 			}
 		}
+		ImRect rect_offset(const ImRect& rect, float x, float y)
+		{
+			ImRect result = rect;
+			result.Min.x += x;
+			result.Min.y += y;
+			result.Max.x += x;
+			result.Max.y += y;
+			return result;
+		}
+		void shift_cursor(float x, float y)
+		{
+			const ImVec2 cursor = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
+		}
 	}
 }
