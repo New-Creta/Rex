@@ -25,7 +25,7 @@ namespace rex
 		constexpr auto textError = IM_COL32(230, 51, 51, 255);
 		constexpr auto muted = IM_COL32(77, 77, 77, 255);
 		constexpr auto groupHeader = IM_COL32(47, 47, 47, 255);
-		constexpr auto selection = IM_COL32(237, 192, 119, 255);
+		constexpr auto selection = IM_COL32(47, 38, 23, 255);
 		constexpr auto selectionMuted = IM_COL32(237, 201, 142, 23);
 		constexpr auto backgroundPopup = IM_COL32(50, 50, 50, 255);
 		constexpr auto validPrefab = IM_COL32(82, 179, 222, 255);

@@ -26,5 +26,7 @@ namespace regina
 
 	private:
 		rsl::string m_current_directory;
+		rsl::vector<rsl::string> m_files_in_current_directory;
+		rsl::vector<rsl::string> m_directories_in_current_directory;
 	};
 }

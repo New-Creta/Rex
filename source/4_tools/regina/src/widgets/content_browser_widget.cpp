@@ -18,7 +18,12 @@ namespace regina
 
 	ContentBrowserWidget::ContentBrowserWidget()
 	{
-		m_current_directory.assign("scripts");
+		m_current_directory.assign(rex::vfs::root());
+		m_files_in_current_directory = rex::directory::list_files(m_current_directory);
+		m_directories_in_current_directory = rex::directory::list_dirs(m_current_directory);
+
+		rsl::sort(m_files_in_current_directory.begin(), m_files_in_current_directory.end());
+		rsl::sort(m_directories_in_current_directory.begin(), m_directories_in_current_directory.end());
 	}
 
 	// We want a list of directories on the left hand side, similar to windows explorer
@@ -26,16 +31,6 @@ namespace regina
 	// The left hand side is 25% of the window, the right hand side is 75% of the window
 	bool ContentBrowserWidget::on_update()
 	{
-		static rsl::vector<rsl::string> dummy_dirs =
-		{
-			rsl::string("scripts"),
-			rsl::string("maps"),
-			rsl::string("materials"),
-			rsl::string("meshes"),
-			rsl::string("textures"),
-		};
-
-
 		// Create the left table
 
 		// Create the right table
@@ -78,7 +73,7 @@ namespace regina
 						//		return a->FilePath.stem().string() < b->FilePath.stem().string();
 						//	});
 
-					for (auto& directory : dummy_dirs)
+					for (rsl::string_view directory : m_directories_in_current_directory)
 					{
 						render_directory_hiearchy(directory);
 					}
@@ -99,13 +94,8 @@ namespace regina
 				const float bottomBarHeight = 32.0f;
 				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - topBarHeight - bottomBarHeight));
 				{
-					//for (rsl::string_view asset : assets)
-					//{
-					//	ImGui::Text(rsl::format("{}", asset).data());
-					//}
-
 					ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-					render_bottom_bar(topBarHeight);
+					render_top_bar(topBarHeight);
 					ImGui::PopStyleVar();
 
 					ImGui::Separator();
@@ -243,7 +233,7 @@ namespace regina
 						const float paddingForOutline = 2.0f;
 						const float scrollBarrOffset = 20.0f + ImGui::GetStyle().ScrollbarSize;
 						float panelWidth = ImGui::GetContentRegionAvail().x - scrollBarrOffset;
-						float cellSize = 75.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
+						float cellSize = 100.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
 						int columnCount = (int)(panelWidth / cellSize);
 						if (columnCount < 1) columnCount = 1;
 
@@ -280,21 +270,27 @@ namespace regina
 
 	void ContentBrowserWidget::render_directory_hiearchy(rsl::string_view directory)
 	{
-		rsl::string name(directory);
+		rsl::string_view directory_name = rex::path::filename(directory);
+
+		rsl::string name(directory_name);
 		rsl::string id = name + "_TreeNode";
 		bool previousState = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(id.c_str()));
+		previousState = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(name.c_str()));
 
 		// ImGui item height hack
 		auto* window = ImGui::GetCurrentWindow();
-		window->DC.CurrLineSize.y = 20.0f;
+		window->DC.CurrLineSize.y = 20.0f; // This causes issues where the node item doesn't want to open anymore
 		window->DC.CurrLineTextBaseOffset = 3.0f;
 		//---------------------------------------------
 
-		const ImRect itemRect = { window->WorkRect.Min.x, window->DC.CursorPos.y,
-									window->WorkRect.Max.x, window->DC.CursorPos.y + window->DC.CurrLineSize.y };
+		const ImRect itemRect = { 
+			window->WorkRect.Min.x, window->DC.CursorPos.y,
+			window->WorkRect.Max.x, window->DC.CursorPos.y + window->DC.CurrLineSize.y };
 
 		const bool isItemClicked = [&itemRect, &id]
 			{
+				return false;
+
 				if (ImGui::ItemHoverable(itemRect, ImGui::GetID(id.c_str()), ImGuiItemFlags_None))
 				{
 					return ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Left);
@@ -303,7 +299,6 @@ namespace regina
 			}();
 
 		const bool isWindowFocused = ImGui::IsWindowFocused();
-
 
 		auto fillWithColour = [&](const ImColor& colour)
 			{
@@ -314,8 +309,10 @@ namespace regina
 		// Fill with light selection colour if any of the child entities selected
 		auto checkIfAnyDescendantSelected = [&](rsl::string_view directory, auto isAnyDescendantSelected) -> bool
 			{
-				//if (directory->Handle == m_CurrentDirectory->Handle)
-				//	return true;
+				if (rex::path::is_same(directory, m_current_directory))
+				{
+					return true;
+				}
 
 				//if (!directory->SubDirectories.empty())
 				//{
@@ -330,7 +327,7 @@ namespace regina
 			};
 
 		const bool isAnyDescendantSelected = checkIfAnyDescendantSelected(directory, checkIfAnyDescendantSelected);
-		const bool isActiveDirectory = false; // directory->Handle == m_CurrentDirectory->Handle;
+		const bool isActiveDirectory = rex::path::is_same(directory, m_current_directory);
 
 		ImGuiTreeNodeFlags flags = (isActiveDirectory ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanFullWidth;
 
@@ -339,7 +336,9 @@ namespace regina
 		if (isActiveDirectory || isItemClicked)
 		{
 			if (isWindowFocused)
+			{
 				fillWithColour(rex::imgui::selection);
+			}
 			else
 			{
 				const ImColor col = rex::imgui::color_with_multiplied_value(rex::imgui::selection, 0.8f);
@@ -356,8 +355,17 @@ namespace regina
 		// Tree Node
 		//----------
 
-		bool open = ImGui::TreeNode(name.c_str());
-		//bool open = rex::imgui::TreeNode(id, name, flags, EditorResources::FolderIcon);
+		if (previousState)
+		{
+			fillWithColour(rex::imgui::selection);
+		}
+
+		//if (rex::directory::num_dirs(directory) == 0)
+		//{
+		//	flags |= ImGuiTreeNodeFlags_Leaf;
+		//}
+
+		bool open = ImGui::TreeNodeEx(name.data(), flags);
 
 		if (isActiveDirectory || isItemClicked)
 		{
@@ -381,25 +389,23 @@ namespace regina
 						// Refresh
 						REX_INFO(LogContentBrowserWidget, "Refreshing content browser after creating a new folder");
 					}
-					//bool created = FileSystem::CreateDirectory(Project::GetActiveAssetDirectory() / directory->FilePath / "New Folder");
-					//if (created)
-					//	Refresh();
+					else
+					{
+						REX_ERROR(LogContentBrowserWidget, "Failed to create new folder in {}", directory);
+					}
 				}
 
 				if (ImGui::MenuItem("Scene"))
 				{
 					REX_INFO(LogContentBrowserWidget, "Creating a new scene asset");
-					//CreateAssetInDirectory<Scene>("New Scene.hscene", directory);
 				}
 				if (ImGui::MenuItem("Material"))
 				{
 					REX_INFO(LogContentBrowserWidget, "Creating a new material asset");
-					//CreateAssetInDirectory<MaterialAsset>("New Material.hmaterial", directory);
 				}
 				if (ImGui::MenuItem("Sound Config"))
 				{
 					REX_INFO(LogContentBrowserWidget, "Creating a new sound config asset");
-					//CreateAssetInDirectory<SoundConfig>("New Sound Config.hsoundc", directory);
 				}
 				ImGui::EndMenu();
 			}
@@ -408,7 +414,7 @@ namespace regina
 
 			if (ImGui::MenuItem("Show in Explorer"))
 			{
-				// FileSystem::OpenDirectoryInExplorer(Project::GetActiveAssetDirectory() / directory->FilePath);
+				// Show directory in explorer
 			}
 
 			ImGui::EndPopup();
@@ -421,29 +427,28 @@ namespace regina
 		if (open)
 		{
 			rsl::vector<rsl::string> sub_dirs = rex::directory::list_dirs(directory);
-			//directories.reserve(m_BaseDirectory->SubDirectories.size());
-			//for (auto& [handle, directory] : directory->SubDirectories)
-			//	directories.emplace_back(directory);
-
-			//rsl::sort(sub_dirs.begin(), sub_dirs.end(), [](const auto& a, const auto& b)
-			//	{
-			//		return a->FilePath.stem().string() < b->FilePath.stem().string();
-			//	});
+			rsl::sort(sub_dirs.begin(), sub_dirs.end());
 
 			for (auto& child : sub_dirs)
+			{
 				render_directory_hiearchy(child);
+			}
 		}
 
 		//UpdateDropArea(directory);
 
-		//if (open != previousState && !isActiveDirectory)
-		//{
-		//	if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.01f))
-		//		ChangeDirectory(directory);
-		//}
+		if (open != previousState && !isActiveDirectory)
+		{
+			if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.01f))
+			{
+				REX_INFO(LogContentBrowserWidget, "Changing current directory to {}", directory);
+			}
+		}
 
 		if (open)
+		{
 			ImGui::TreePop();
+		}
 	}
 
 	void ContentBrowserWidget::render_top_bar(f32 height)
@@ -608,31 +613,24 @@ namespace regina
 	}
 	void ContentBrowserWidget::render_bottom_bar(f32 height)
 	{
-
+		// Display the full filepath of the current selected item as well as its size and other metadata
 	}
 	void ContentBrowserWidget::render_items()
 	{
 		//m_IsAnyItemHovered = false;
 
-		static rsl::unordered_map<rsl::string, rsl::vector<rsl::string>> dummy_content
-		{
-			{ rsl::string("scripts"), rsl::vector<rsl::string> { rsl::string("script_a.cs"), rsl::string("script_b.cs"), rsl::string("script_c.cs") }},
-			{ rsl::string("maps"), rsl::vector<rsl::string> { rsl::string("map_a.map"), rsl::string("map_b.map"), rsl::string("map_c.map") }},
-			{ rsl::string("meshes"), rsl::vector<rsl::string> { rsl::string("mesh_a.mesh"), rsl::string("mesh_b.mesh"), rsl::string("mesh_c.mesh") }},
-			{ rsl::string("textures"), rsl::vector<rsl::string> { rsl::string("texture_a.tex"), rsl::string("texture_b.tex"), rsl::string("texture_c.tex") }},
-			{ rsl::string("materials"), rsl::vector<rsl::string> { rsl::string("mat_a.mat"), rsl::string("mat_b.mat"), rsl::string("mat_c.mat") }}
-		};
-
-		rsl::vector<rsl::string>& items = dummy_content["scripts"];
+		rsl::vector<rsl::string_view> items;
+		items.reserve(m_directories_in_current_directory.size() + m_files_in_current_directory.size());
+		rsl::copy(m_directories_in_current_directory.cbegin(), m_directories_in_current_directory.cend(), rsl::back_inserter(items));
+		rsl::copy(m_files_in_current_directory.cbegin(), m_files_in_current_directory.cend(), rsl::back_inserter(items));
 
 		// TODO(Peter): This method of handling actions isn't great... It's starting to become spaghetti...
 		for (rsl::string_view item : items)
 		{
-			//item->OnRenderBegin();
+			item = rex::path::filename(item);
+
 			ImGui::PushID(rsl::hash<rsl::string_view>{}(item));
 			ImGui::BeginGroup();
-
-			//ImGui::Text(item.data());
 
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 
@@ -640,7 +638,7 @@ namespace regina
 
 			const float textLineHeight = ImGui::GetTextLineHeightWithSpacing() * 2.0f + edgeOffset * 2.0f;
 			const float infoPanelHeight = textLineHeight;
-			const float thumbnailSize = 100.0f; // float(editorSettings.ContentBrowserThumbnailSize);
+			const float thumbnailSize = 128.0f; // float(editorSettings.ContentBrowserThumbnailSize);
 
 			const ImVec2 topLeft = ImGui::GetCursorScreenPos();
 			const ImVec2 thumbBottomRight = { topLeft.x + thumbnailSize, topLeft.y + thumbnailSize };
@@ -666,7 +664,8 @@ namespace regina
 			drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
 			drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
 
-			ImGui::Text(item.data());
+			// Render thumbnail here
+			//ImGui::Text(item.data());
 
 			rex::imgui::shift_cursor(edgeOffset, edgeOffset);
 			ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
@@ -698,165 +697,23 @@ namespace regina
 			rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
 
 			ImGui::PopStyleVar(); // ItemSpacing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			ImGui::EndGroup();
 
-			//CBItemActionResult result = item->OnRender(this);
-
-			//if (result.IsSet(ContentBrowserAction::ClearSelections))
-			//{
-			//	ClearSelections();
-			//}
-			//if (result.IsSet(ContentBrowserAction::Deselected))
-			//{
-			//	SelectionManager::Deselect(SelectionContext::ContentBrowser, item->GetID());
-			//}
-			//if (result.IsSet(ContentBrowserAction::Selected))
-			//{
-			//	SelectionManager::Select(SelectionContext::ContentBrowser, item->GetID());
-			//}
-			//if (result.IsSet(ContentBrowserAction::SelectToHere) && SelectionManager::GetSelectionCount(SelectionContext::ContentBrowser) == 2)
-			//{
-			//	size_t firstIndex = m_CurrentItems.FindItem(SelectionManager::GetSelection(SelectionContext::ContentBrowser, 0));
-			//	size_t lastIndex = m_CurrentItems.FindItem(item->GetID());
-
-			//	if (firstIndex > lastIndex)
-			//	{
-			//		size_t temp = firstIndex;
-			//		firstIndex = lastIndex;
-			//		lastIndex = temp;
-			//	}
-
-			//	for (size_t i = firstIndex; i <= lastIndex; i++)
-			//	{
-			//		SelectionManager::Select(SelectionContext::ContentBrowser, m_CurrentItems[i]->GetID());
-			//	}
-			//}
-
-			//if (result.IsSet(ContentBrowserAction::StartRenaming))
-			//{
-			//	item->StartRenaming();
-			//}
-			//if (result.IsSet(ContentBrowserAction::Copy))
-			//{
-			//	m_CopiedAssets.Select(item->GetID());
-			//}
-			//if (result.IsSet(ContentBrowserAction::Reload))
-			//{
-			//	AssetManager::ReloadData(item->GetID());
-			//}
-			//if (result.IsSet(ContentBrowserAction::OpenDeleteDialogue) && !item->IsRenaming())
-			//{
-			//	s_OpenDeletePopup = true;
-			//}
-
-			//if (result.IsSet(ContentBrowserAction::ShowInExplorer))
-			//{
-			//	if (item->GetType() == ContentBrowserItem::ItemType::Directory)
-			//	{
-			//		FileSystem::ShowFileInExplorer(m_Project->GetAssetDirectory() / m_CurrentDirectory->FilePath / item->GetName());
-			//	}
-			//	else
-			//	{
-			//		FileSystem::ShowFileInExplorer(Project::GetEditorAssetManager()->GetFileSystemPath(Project::GetEditorAssetManager()->GetMetadata(item->GetID())));
-			//	}
-			//}
-
-			//if (result.IsSet(ContentBrowserAction::OpenExternal))
-			//{
-			//	if (item->GetType() == ContentBrowserItem::ItemType::Directory)
-			//	{
-			//		FileSystem::OpenExternally(m_Project->GetAssetDirectory() / m_CurrentDirectory->FilePath / item->GetName());
-			//	}
-			//	else
-			//	{
-			//		FileSystem::OpenExternally(Project::GetEditorAssetManager()->GetFileSystemPath(Project::GetEditorAssetManager()->GetMetadata(item->GetID())));
-			//	}
-			//}
-
-			//if (result.IsSet(ContentBrowserAction::Hovered))
-			//{
-			//	m_IsAnyItemHovered = true;
-			//}
-			//item->OnRenderEnd();
+			// Based on the action of the user, update the UI
+			// the following actions are supported
+			// Selection cleared
+			// item selected
+			// item deselected
+			// ctrl + selection
+			// rename
+			// open in explorer
+			// hovered
+			// duplicated
+			// renamed
+			// refresh
 
 			ImGui::PopID();
 			ImGui::NextColumn();
-
-			//if (result.IsSet(ContentBrowserAction::Duplicate))
-			//{
-			//	m_CopiedAssets.Select(item->GetID());
-			//	PasteCopiedAssets();
-			//	break;
-			//}
-
-			//if (result.IsSet(ContentBrowserAction::Renamed))
-			//{
-			//	SelectionManager::DeselectAll(SelectionContext::ContentBrowser);
-			//	Refresh();
-			//	SortItemList();
-
-			//	// NOTE (Tim): Calling the next line of code will cause the folder before the renaming to be selected as well, 
-			//	// and so you will have a selection count of 2 whereas only one will be valid, so we will simply not have any selected after a rename.
-			//	//SelectionManager::Select(SelectionContext::ContentBrowser, item->GetID()); 
-			//	break;
-			//}
-
-		//	if (result.IsSet(ContentBrowserAction::Activated))
-		//	{
-		//		if (item->GetType() == ContentBrowserItem::ItemType::Directory)
-		//		{
-		//			SelectionManager::DeselectAll(SelectionContext::ContentBrowser);
-		//			ChangeDirectory(item.As<ContentBrowserDirectory>()->GetDirectoryInfo());
-		//			break;
-		//		}
-		//		else
-		//		{
-		//			auto assetItem = item.As<ContentBrowserAsset>();
-		//			const auto& assetMetadata = assetItem->GetAssetInfo();
-
-		//			if (m_ItemActivationCallbacks.find(assetMetadata.Type) != m_ItemActivationCallbacks.end())
-		//			{
-		//				m_ItemActivationCallbacks[assetMetadata.Type](assetMetadata);
-		//			}
-		//			else
-		//			{
-		//				AssetEditorPanel::OpenEditor(AssetManager::GetAsset<Asset>(assetMetadata.Handle));
-		//			}
-		//		}
-		//	}
-
-		//	if (result.IsSet(ContentBrowserAction::Refresh))
-		//	{
-		//		Refresh();
-		//		break;
-		//	}
-		//}
 
 		// This is a workaround an issue with ImGui: https://github.com/ocornut/imgui/issues/331
 		//if (s_OpenDeletePopup)
