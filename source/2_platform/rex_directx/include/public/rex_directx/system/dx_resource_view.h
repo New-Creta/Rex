@@ -10,6 +10,8 @@ namespace rex
 {
   namespace gfx
   {
+    class IsShaderVisible;
+
     // A wrapper around both the cpu and gpu descriptor handle of a resource
     // Both are accessible through this object
     // For convenience this object also converts into one of these handles implicitely
@@ -17,7 +19,7 @@ namespace rex
     {
     public:
       DxResourceView() = default;
-      DxResourceView(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
+      DxResourceView(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size, IsShaderVisible isShaderVisible);
 
       // Increment the internal handle value by 1
       // It'll hold the address of the next descriptor
@@ -62,6 +64,7 @@ namespace rex
       CD3DX12_GPU_DESCRIPTOR_HANDLE m_gpu_handle; // The descriptor handle of the gpu addressible address
       D3D12_DESCRIPTOR_HEAP_TYPE m_type; // The typeo of the descriptor it points to
       s32 m_size; // The size of the descriptor it points to
+      bool m_is_shader_visible;
     };
   }
 }

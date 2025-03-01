@@ -82,5 +82,13 @@ namespace rex
 			const ImVec2 cursor = ImGui::GetCursorPos();
 			ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
 		}
+		void image(const rex::gfx::Texture2D* tex)
+		{
+			ImVec2 texSize{};
+			texSize.x = tex->width();
+			texSize.y = tex->height();
+			ImGui::Image((ImTextureID)tex, texSize);
+		}
+
 	}
 }

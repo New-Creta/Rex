@@ -32,7 +32,7 @@ namespace rex
       // Setup the render state of the viewport, it for rendering
       void setup_render_state(RenderContext* ctx, ImGuiFrameContext& frameCtx, s32 constantBufferSlot);
       // Draw the current viewport
-      void draw(RenderContext* ctx, ImDrawData* drawData);
+      void draw(RenderContext* ctx, ImDrawData* drawData, s32 textureSlot);
 
     private:
       ImGuiViewport* m_imgui_viewport;

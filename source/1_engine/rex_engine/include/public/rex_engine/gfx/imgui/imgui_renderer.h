@@ -52,7 +52,7 @@ namespace rex
 
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
-      rsl::unique_ptr<Sampler2D> m_fonts_sampler;          // The sampler for the fonts texture
+      rsl::unique_ptr<Sampler2D> m_default_sampler;          // The sampler for the fonts texture
       rsl::unique_ptr<RenderPass> m_imgui_renderpass;      // The render pass used by imgui
     };
 

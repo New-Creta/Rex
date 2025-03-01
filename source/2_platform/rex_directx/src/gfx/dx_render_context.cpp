@@ -205,6 +205,15 @@ namespace rex
     {
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, constantBuffer->gpu_address());
     }
+    void DxRenderContext::bind_texture2d(s32 paramIdx, Texture2D* texture)
+    {
+      // Textures need to be bind using a view table and cannot be bound directly
+      rsl::vector<const ResourceView*> views;
+      views.push_back(texture->resource_view());
+      auto copy_ctx = new_copy_ctx();
+      auto start_handle = copy_ctx->copy_views(ViewHeapType::Texture2D, views);
+      bind_view_table(paramIdx, start_handle.get());
+    }
     // Bind a shader resource to the context
     void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)
     {

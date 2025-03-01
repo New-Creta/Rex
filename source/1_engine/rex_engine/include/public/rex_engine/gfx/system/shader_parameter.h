@@ -55,7 +55,6 @@ namespace rex
 			virtual void bind_to(RenderContext* ctx) const = 0;
 
 		private:
-			rsl::vector<ResourceView*> m_views;
 			ShaderParameterType m_type;
 			s32 m_slot;
 		};

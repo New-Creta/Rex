@@ -100,6 +100,8 @@ namespace rex
       // Bind a constant buffer to the pipeline, tied to a param slot
       virtual void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) = 0;
       virtual void bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer) = 0;
+      // Binds a texture to the pipeline, tied to a param slot
+      virtual void bind_texture2d(s32 paramIdx, Texture2D* texture) = 0;
       // Bind a shader resource to the pipeline, tied to a param slot
       virtual void bind_shader_resource(s32 paramIdx, u64 gpuAddress) = 0;
       // Bind an unordered access to the pipeline, tied to a param slot

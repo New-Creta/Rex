@@ -19,6 +19,7 @@ namespace rex
     RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
       : m_imgui_viewport(imguiViewport)
       , m_frame_idx(0)
+      , m_current_bound_texture(nullptr)
     {
     }
 
@@ -44,10 +45,11 @@ namespace rex
 
       // Setup the render state, prepare it for rendering
       s32 slot = renderPass->slot("PerWidgetData");
+      
       setup_render_state(renderContext, frame_ctx, slot);
 
       // Draw all the primitives
-      draw(renderContext, draw_data);
+      draw(renderContext, draw_data, renderPass->slot("default_texture"));
 
       // Adavance to the next frame context so we can fill its data during the next frame
       advance_frame_ctx();
@@ -84,7 +86,7 @@ namespace rex
     }
 
     // Draw the current viewport
-    void RexImGuiViewport::draw(RenderContext* ctx, ImDrawData* drawData)
+    void RexImGuiViewport::draw(RenderContext* ctx, ImDrawData* drawData, s32 textureSlot)
     {
       s32 global_vtx_offset = 0;
       s32 global_idx_offset = 0;
@@ -111,6 +113,8 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
 
+          Texture2D* tex = (Texture2D*)pcmd->TextureId;
+					ctx->bind_texture2d(textureSlot, tex);
           ctx->set_scissor_rect(rect);
           ctx->draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }

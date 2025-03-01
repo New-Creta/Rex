@@ -22,6 +22,8 @@ namespace rex
       m_view_heap_type                = desc.Type;
       m_num_views               = static_cast<s32>(desc.NumDescriptors);
       m_view_size               = static_cast<s32>(m_device->GetDescriptorHandleIncrementSize(m_view_heap_type)); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+
+      init_null_handle();
     }
 
     // Create a render target view and return a handle pointing to it
@@ -142,9 +144,9 @@ namespace rex
         {
           const DxResourceView* src_handle = d3d::to_dx12(view);
           cpu_handle = src_handle->cpu_handle();
+          m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), cpu_handle, m_view_heap_type);
         }
 
-        m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), cpu_handle, m_view_heap_type);
         (*free_handle)++;
       }
 
@@ -186,7 +188,7 @@ namespace rex
         gpu_handle = m_view_heap->GetGPUDescriptorHandleForHeapStart();
       }
 
-      return DxResourceView(cpu_handle, gpu_handle, m_view_heap_type, m_view_size);
+      return DxResourceView(cpu_handle, gpu_handle, m_view_heap_type, m_view_size, m_is_shader_visible);
     }
     // Create a handle pointing to no resource
     void DxViewHeap::init_null_handle()
@@ -194,10 +196,20 @@ namespace rex
       m_null_view = new_free_handle();
       switch (m_view_heap_type)
       {
-      case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:    m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_SHADER_RESOURCE_VIEW_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:        m_device->CreateSampler(rsl::Nullptr<const D3D12_SAMPLER_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:            m_device->CreateRenderTargetView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_RENDER_TARGET_VIEW_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:            m_device->CreateDepthStencilView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_DEPTH_STENCIL_VIEW_DESC>, m_null_view);
+      case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+      {
+        D3D12_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
+        shader_resource_view_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        shader_resource_view_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        shader_resource_view_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        shader_resource_view_desc.Texture2D.MipLevels = 1;
+        shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
+        shader_resource_view_desc.Texture2D.ResourceMinLODClamp = 0.0f;
+        m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, &shader_resource_view_desc, m_null_view); break;
+      }
+      //case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:        m_device->CreateSampler(rsl::Nullptr<const D3D12_SAMPLER_DESC>, m_null_view); break;
+      //case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:            m_device->CreateRenderTargetView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_RENDER_TARGET_VIEW_DESC>, m_null_view); break;
+      //case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:            m_device->CreateDepthStencilView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_DEPTH_STENCIL_VIEW_DESC>, m_null_view); break;
       default: break;
       }
     }

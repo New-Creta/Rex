@@ -62,6 +62,8 @@ namespace rex
       // Set the constant buffer of the context at a given index
       void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) override;
       void bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer) override;
+      // Binds a texture to the pipeline, tied to a param slot
+      void bind_texture2d(s32 paramIdx, Texture2D* texture) override;
       void bind_shader_resource(s32 paramIdx, u64 gpuAddress) override;
       void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) override;
 

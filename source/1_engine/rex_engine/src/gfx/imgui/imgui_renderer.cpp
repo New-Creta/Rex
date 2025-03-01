@@ -229,7 +229,7 @@ namespace rex
       desc.register_space = 0;
       desc.shader_visibility = ShaderVisibility::Pixel;
 
-      m_fonts_sampler = gal()->create_sampler2d(desc);
+      m_default_sampler = gal()->create_sampler2d(desc);
     }
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_renderpass()
@@ -291,8 +291,8 @@ namespace rex
 
 
       m_imgui_renderpass = rsl::make_unique<RenderPass>(imgui_pass_desc);
-      m_imgui_renderpass->set("fonts_texture", m_fonts_texture.get());
-      m_imgui_renderpass->set("fonts_sampler", m_fonts_sampler.get());
+      //m_imgui_renderpass->set("fonts_texture", m_fonts_texture.get());
+      m_imgui_renderpass->set("default_sampler", m_default_sampler.get());
       m_imgui_renderpass->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
     }
 
