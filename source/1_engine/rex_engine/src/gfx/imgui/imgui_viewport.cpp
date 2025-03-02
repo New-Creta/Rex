@@ -19,7 +19,6 @@ namespace rex
     RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
       : m_imgui_viewport(imguiViewport)
       , m_frame_idx(0)
-      , m_current_bound_texture(nullptr)
     {
     }
 
