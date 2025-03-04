@@ -6,12 +6,61 @@
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/system/open_file.h"
+#include "rex_engine/profiling/scoped_timer.h"
 
 #include "rex_std/algorithm.h"
 #include "rex_std/functional.h"
 
 namespace regina
 {
+	void Selection::add(ImGuiID id)
+	{
+		auto it = rsl::find(m_selected_items.cbegin(), m_selected_items.cend(), id);
+		if (it == m_selected_items.cend())
+		{
+			add_without_search(id);
+		}
+	}
+	void Selection::remove(ImGuiID id)
+	{
+		auto it = rsl::find(m_selected_items.cbegin(), m_selected_items.cend(), id);
+		if (it != m_selected_items.cend())
+		{
+			remove_it(it);
+		}
+	}
+	void Selection::toggle(ImGuiID id)
+	{
+		// TODO: put a contains func in rsl
+		auto it = rsl::find(m_selected_items.cbegin(), m_selected_items.cend(), id);
+		if (it == m_selected_items.cend())
+		{
+			add_without_search(id);
+		}
+		else
+		{
+			remove_it(it);
+		}
+	}
+	void Selection::clear()
+	{
+		m_selected_items.clear();
+	}
+	bool Selection::is_selected(ImGuiID id) const
+	{
+		auto it = rsl::find(m_selected_items.cbegin(), m_selected_items.cend(), id);
+		return it != m_selected_items.cend();
+	}
+
+	void Selection::add_without_search(ImGuiID id)
+	{
+		m_selected_items.push_back(id);
+	}
+	void Selection::remove_it(rsl::vector<ImGuiID>::const_iterator it)
+	{
+		m_selected_items.erase(it);
+	}
 
 
 	DEFINE_LOG_CATEGORY(LogContentBrowserWidget);
@@ -19,12 +68,7 @@ namespace regina
 	ContentBrowserWidget::ContentBrowserWidget()
 		: m_thumbnail_manager(rsl::make_unique<ThumbnailManager>())
 	{
-		m_current_directory.assign(rex::vfs::root());
-		m_files_in_current_directory = rex::directory::list_files(m_current_directory);
-		m_directories_in_current_directory = rex::directory::list_dirs(m_current_directory);
-
-		rsl::sort(m_files_in_current_directory.begin(), m_files_in_current_directory.end());
-		rsl::sort(m_directories_in_current_directory.begin(), m_directories_in_current_directory.end());
+		change_directory(rex::vfs::root());
 	}
 
 	// We want a list of directories on the left hand side, similar to windows explorer
@@ -32,9 +76,7 @@ namespace regina
 	// The left hand side is 25% of the window, the right hand side is 75% of the window
 	bool ContentBrowserWidget::on_update()
 	{
-		// Create the left table
-
-		// Create the right table
+		REX_PROFILE_FUNCTION();
 
 		if (auto widget = rex::imgui::ScopedWidget("Content Browser"))
 		{
@@ -640,28 +682,32 @@ namespace regina
 
 			item = rex::path::filename(item);
 
-			ImGui::PushID(rsl::hash<rsl::string_view>{}(item));
+			ImGui::PushID(item.data());
 			ImGui::BeginGroup();
 
 			rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(itemSpacing, 0.0f));
 
-			const bool isFocused = ImGui::IsWindowFocused();
-			const bool isSelected = false; // SelectionManager::IsSelected(SelectionContext::ContentBrowser, m_ID);
-
-			auto* drawList = ImGui::GetWindowDrawList();
-
+			// Draw background
 			const ImVec2 topLeft = ImGui::GetCursorScreenPos();
 			const ImVec2 thumbBottomRight = { topLeft.x + thumbBhWidth, topLeft.y + thumbBhHeight };
 			const ImVec2 infoTopLeft = { topLeft.x,				 thumbBottomRight.y };
 			const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
+			auto* drawList = ImGui::GetWindowDrawList();
 
-			// Draw background
-			drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
+			if (m_selection.is_selected(ImGui::GetID(item.data())))
+			{
+				drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
+			}
+			else
+			{
+				drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
+			}
 			drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
 
+			// Shift the offset so we leave some space between the thumbnail and the corner
 			rex::imgui::shift_cursor(edgeOffset, edgeOffset);
 
-			// Render thumbnail here
+			// render the thumbnail
 			fullpath = rex::path::join(m_current_directory, item);
 			const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
 			ImVec2 imageSize{ 100.0f, 100.0f };
@@ -695,14 +741,48 @@ namespace regina
 			}
 			ImGui::EndVertical();
 
+			// Put the cursor back where it came from
 			rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
 			ImGui::EndGroup();
 
+			// UI actions
+			if (ImGui::IsItemClicked())
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					if (rex::directory::exists(fullpath))
+					{
+						change_directory(fullpath);
+					}
+					else
+					{
+						rex::open_file(fullpath);
+					}
+				}
+				else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
+				{
+					m_selection.toggle(ImGui::GetID(item.data()));
+				}
+				//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
+				//{
+				//	
+				//}
+				else
+				{
+					m_selection.clear();
+					m_selection.add(ImGui::GetID(item.data()));
+				}
+			}
+			//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			//{
+			//	m_selection.clear();
+			//}
+
 			// Based on the action of the user, update the UI
 			// the following actions are supported
-			// Selection cleared
-			// item selected
-			// item deselected
+			// Selection cleared - done
+			// item selected - done
+			// item deselected - done
 			// ctrl + selection
 			// rename
 			// open in explorer
@@ -751,4 +831,14 @@ namespace regina
 		}
 	}
 
+	void ContentBrowserWidget::change_directory(rsl::string_view newDirectory)
+	{
+		m_current_directory.assign(newDirectory);
+		m_files_in_current_directory = rex::directory::list_files(m_current_directory);
+		m_directories_in_current_directory = rex::directory::list_dirs(m_current_directory);
+
+		rsl::sort(m_files_in_current_directory.begin(), m_files_in_current_directory.end());
+		rsl::sort(m_directories_in_current_directory.begin(), m_directories_in_current_directory.end());
+
+	}
 }

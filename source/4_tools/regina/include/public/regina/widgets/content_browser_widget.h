@@ -8,8 +8,28 @@
 #include "rex_std/string.h"
 #include "rex_std/vector.h"
 
+#include "imgui/imgui.h"
+
 namespace regina
 {
+	class Selection
+	{
+	public:
+		void add(ImGuiID id);
+		void remove(ImGuiID id);
+		void toggle(ImGuiID id);
+		void clear();
+
+		bool is_selected(ImGuiID id) const;
+
+	private:
+		void add_without_search(ImGuiID id);
+		void remove_it(rsl::vector<ImGuiID>::const_iterator it);
+
+	private:
+		rsl::vector<ImGuiID> m_selected_items;
+	};
+
 	class ContentBrowserWidget : public Widget
 	{
 	public:
@@ -28,10 +48,14 @@ namespace regina
 
 		const Thumbnail* thumbnail_for_path(rsl::string_view path) const;
 
+		void change_directory(rsl::string_view newDirectory);
+
 	private:
 		rsl::string m_current_directory;
 		rsl::vector<rsl::string> m_files_in_current_directory;
 		rsl::vector<rsl::string> m_directories_in_current_directory;
 		rsl::unique_ptr<ThumbnailManager> m_thumbnail_manager;
+
+		Selection m_selection;
 	};
 }
