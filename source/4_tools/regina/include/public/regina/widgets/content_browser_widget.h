@@ -1,6 +1,7 @@
 #pragma once
 
-#include "regina//widgets/widget.h"
+#include "regina/widgets/widget.h"
+#include "regina/widgets/content_browser_hiearchy_item.h"
 #include "regina/thumbnail_manager.h"
 
 #include "rex_engine/engine/types.h"
@@ -54,8 +55,12 @@ namespace regina
 		rsl::string m_current_directory;
 		rsl::vector<rsl::string> m_files_in_current_directory;
 		rsl::vector<rsl::string> m_directories_in_current_directory;
+		rsl::vector<rsl::string> m_root_directories;
 		rsl::unique_ptr<ThumbnailManager> m_thumbnail_manager;
 
-		Selection m_selection;
+		rsl::vector<ContentBrowserHiearchyItem> m_hiearchy_items;
+
+		Selection m_content_selection;
+		Selection m_dir_selection;
 	};
 }

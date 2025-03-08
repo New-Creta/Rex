@@ -333,7 +333,6 @@ namespace rex
 #else
 #error "No Graphics API defined"
 #endif
-        REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 
         // Add the imgui renderer, which is our main UI renderer for the moment
         gfx::add_renderer<gfx::ImGuiRenderer>(m_window->primary_display_handle());

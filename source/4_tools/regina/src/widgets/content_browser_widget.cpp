@@ -69,6 +69,11 @@ namespace regina
 		: m_thumbnail_manager(rsl::make_unique<ThumbnailManager>())
 	{
 		change_directory(rex::vfs::root());
+
+		for (rsl::string_view dir : m_directories_in_current_directory)
+		{
+			m_hiearchy_items.emplace_back(dir);
+		}
 	}
 
 	// We want a list of directories on the left hand side, similar to windows explorer
@@ -78,15 +83,18 @@ namespace regina
 	{
 		REX_PROFILE_FUNCTION();
 
-		if (auto widget = rex::imgui::ScopedWidget("Content Browser"))
+		if (auto widget = rex::imgui::ScopedWidget("Content Browser", nullptr, ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 		{
+			rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+			rex::imgui::ScopedStyle padding(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
+			rex::imgui::ScopedStyle cellPadding(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 0.0f));
+
 			ImGuiTableFlags table_flags = ImGuiTableFlags_Resizable
 				| ImGuiTableFlags_SizingFixedFit
 				| ImGuiTableFlags_BordersInnerV;
 
-			//const rsl::vector<rsl::string>& assets = dummy_content.at(m_current_directory);
-
-			if (ImGui::BeginTable("Content Browser Table", 2, table_flags))
+			s32 num_columns = 2;
+			if (ImGui::BeginTable("Content Browser Table", num_columns, table_flags, ImVec2(0.0f, 0.0f)))
 			{
 				// Setup the the widgets of the columns
 				// The hiearchy of all the directories is on the left
@@ -99,28 +107,59 @@ namespace regina
 				// Directory hiearchy
 				ImGui::BeginChild("##hiearchy");
 				{
-					rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-					rex::imgui::ScopedColourStack item_bg(ImGuiCol_Header, IM_COL32_DISABLE,
-						ImGuiCol_HeaderActive, IM_COL32_DISABLE);
+					//ImGui::DragFloat("spacing: ", &spacing_y);
+					//ImGui::DragFloat("padding: ", &padding_y);
+					//ImGui::DragFloat("cell padding: ", &cellPadding_y);
 
-					for (rsl::string_view directory : m_directories_in_current_directory)
+					rex::imgui::ScopedStyle spacing2(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+					rex::imgui::ScopedColourStack item_bg(
+						ImGuiCol_Header, IM_COL32_DISABLE,
+						ImGuiCol_HeaderActive, IM_COL32_DISABLE
+					);
+
+					rsl::string_view opened_path = "";
+					for (ContentBrowserHiearchyItem& item : m_hiearchy_items)
 					{
-						render_directory_hiearchy(directory);
+						rsl::string_view opened_sub_path = item.draw(m_current_directory);
+						if (!opened_sub_path.empty())
+						{
+							opened_path = opened_sub_path;
+						}
 					}
+
+					if (!opened_path.empty() && !rex::path::is_same(opened_path, m_current_directory))
+					{
+						change_directory(opened_path);
+					}
+
+					//for (rsl::string_view directory : m_root_directories)
+					//{
+					//	render_directory_hiearchy(directory);
+					//}
 				}
 				ImGui::EndChild();
 
 				ImGui::TableSetColumnIndex(1);
 
 				// Directory content
-				const f32 topBarHeight = 26.0f;
-				const f32 bottomBarHeight = 32.0f;
-				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - topBarHeight - bottomBarHeight));
+				static f32 top_bar_height = 26.0f;
+				static f32 bottom_bar_height = 32.0f;
+				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - top_bar_height - bottom_bar_height));
 				{
+					//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+					//ImGui::BeginChild("##top_bar", ImVec2(0, top_bar_height));
+					//ImGui::BeginHorizontal("##top_bar", ImGui::GetWindowSize());
+
+					//ImGui::Text("This is a test");
+
+					//ImGui::EndHorizontal();
+					//ImGui::EndChild();
+					//ImGui::PopStyleVar();
+
 					// Top bar
 					{
 						rex::imgui::ScopedStyle frame_border_size(ImGuiStyleVar_FrameBorderSize, 0.0f);
-						render_top_bar(topBarHeight);
+						render_top_bar(top_bar_height);
 					}
 
 					ImGui::Separator();
@@ -137,7 +176,7 @@ namespace regina
 						const f32 scrollBarrOffset = 20.0f + ImGui::GetStyle().ScrollbarSize;
 						f32 panelWidth = ImGui::GetContentRegionAvail().x - scrollBarrOffset;
 						f32 cellSize = 100.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
-						s32 columnCount = rsl::max(1, (s32)(panelWidth / cellSize));
+						s32 columnCount = rsl::clamp_min((s32)(panelWidth / cellSize), 1);
 						
 						const f32 rowSpacing = 12.0f;
 						rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(paddingForOutline, rowSpacing));
@@ -158,7 +197,7 @@ namespace regina
 					ImGui::EndChild();
 
 					// Bottom bar
-					render_bottom_bar(bottomBarHeight);
+					render_bottom_bar(bottom_bar_height);
 				}
 				ImGui::EndChild();
 
@@ -173,105 +212,102 @@ namespace regina
 	{
 		rsl::string_view directory_name = rex::path::filename(directory);
 
-		rsl::string name(directory_name);
-		rsl::string id = name + "_TreeNode";
-		bool previousState = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(id.c_str()));
-		previousState = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(name.c_str()));
+		bool was_selected = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(directory_name.data()));
 
 		// ImGui item height hack
 		auto* window = ImGui::GetCurrentWindow();
-		window->DC.CurrLineSize.y = 20.0f; // This causes issues where the node item doesn't want to open anymore
+		window->DC.CurrLineSize.y = 20.0f;
 		window->DC.CurrLineTextBaseOffset = 3.0f;
 		//---------------------------------------------
 
-		const ImRect itemRect = { 
-			window->WorkRect.Min.x, window->DC.CursorPos.y,
-			window->WorkRect.Max.x, window->DC.CursorPos.y + window->DC.CurrLineSize.y };
+		//auto fill_with_colour = [&](const ImColor& colour)
+		//	{
+		//		const ImRect item_rect =
+		//		{
+		//			window->WorkRect.Min.x, window->DC.CursorPos.y,
+		//			window->WorkRect.Max.x, window->DC.CursorPos.y + window->DC.CurrLineSize.y
+		//		};
 
-		const bool isItemClicked = [&itemRect, &id]
-			{
-				return false;
+		//		const ImU32 bgColour = ImGui::ColorConvertFloat4ToU32(colour);
+		//		ImGui::GetWindowDrawList()->AddRectFilled(item_rect.Min, item_rect.Max, bgColour);
+		//	};
 
-				if (ImGui::ItemHoverable(itemRect, ImGui::GetID(id.c_str()), ImGuiItemFlags_None))
-				{
-					return ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Left);
-				}
-				return false;
-			}();
-
-		const bool isWindowFocused = ImGui::IsWindowFocused();
-
-		auto fillWithColour = [&](const ImColor& colour)
-			{
-				const ImU32 bgColour = ImGui::ColorConvertFloat4ToU32(colour);
-				ImGui::GetWindowDrawList()->AddRectFilled(itemRect.Min, itemRect.Max, bgColour);
-			};
+		// An item should be selected if it was selected before
+		// or if its parent directory is under the current selected directory
+		//const bool should_select = was_selected || rex::path::is_under_dir(m_current_directory, directory);
 
 		// Fill with light selection colour if any of the child entities selected
-		auto checkIfAnyDescendantSelected = [&](rsl::string_view directory, auto isAnyDescendantSelected) -> bool
-			{
-				if (rex::path::is_same(directory, m_current_directory))
-				{
-					return true;
-				}
+		//auto checkIfAnyDescendantSelected = [&](rsl::string_view directory, auto isAnyDescendantSelected) -> bool
+		//	{
 
-				//if (!directory->SubDirectories.empty())
-				//{
-				//	for (auto& [childHandle, childDir] : directory->SubDirectories)
-				//	{
-				//		if (isAnyDescendantSelected(childDir, isAnyDescendantSelected))
-				//			return true;
-				//	}
-				//}
+		//		if (rex::path::is_same(directory, m_current_directory))
+		//		{
+		//			return true;
+		//		}
 
-				return false;
-			};
+		//		//if (!directory->SubDirectories.empty())
+		//		//{
+		//		//	for (auto& [childHandle, childDir] : directory->SubDirectories)
+		//		//	{
+		//		//		if (isAnyDescendantSelected(childDir, isAnyDescendantSelected))
+		//		//			return true;
+		//		//	}
+		//		//}
 
-		const bool isAnyDescendantSelected = checkIfAnyDescendantSelected(directory, checkIfAnyDescendantSelected);
-		const bool isActiveDirectory = rex::path::is_same(directory, m_current_directory);
+		//		return false;
+		//	};
 
-		ImGuiTreeNodeFlags flags = (isActiveDirectory ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanFullWidth;
+		//const bool isAnyDescendantSelected = checkIfAnyDescendantSelected(directory, checkIfAnyDescendantSelected);
+		//const bool isActiveDirectory = rex::path::is_same(directory, m_current_directory);
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth; // (should_select ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanFullWidth;
+
+		//if (should_select)
+		//{
+		//	fill_with_colour(rex::imgui::selection);
+		//}
+		//else if (was_selected)
+		//{
+		//	fill_with_colour(rex::imgui::selection);
+		//}
 
 		// Fill background
 		//----------------
-		if (isActiveDirectory || isItemClicked)
-		{
-			if (isWindowFocused)
-			{
-				fillWithColour(rex::imgui::selection);
-			}
-			else
-			{
-				const ImColor col = rex::imgui::color_with_multiplied_value(rex::imgui::selection, 0.8f);
-				fillWithColour(rex::imgui::color_with_multiplied_value(col, 0.7f));
-			}
+		//if (isActiveDirectory)
+		//{
+		//	if (ImGui::IsWindowFocused())
+		//	{
+		//		fill_with_colour(rex::imgui::selection);
+		//	}
+		//	else
+		//	{
+		//		const ImColor col = rex::imgui::color_with_multiplied_value(rex::imgui::selection, 0.8f);
+		//		fill_with_colour(rex::imgui::color_with_multiplied_value(col, 0.7f));
+		//	}
 
-			ImGui::PushStyleColor(ImGuiCol_Text, rex::imgui::backgroundDark);
-		}
-		else if (isAnyDescendantSelected)
-		{
-			fillWithColour(rex::imgui::selectionMuted);
-		}
+		//	ImGui::PushStyleColor(ImGuiCol_Text, rex::imgui::backgroundDark);
+		//}
+		//else if (isAnyDescendantSelected)
+		//{
+		//	fill_with_colour(rex::imgui::selectionMuted);
+		//}
 
 		// Tree Node
 		//----------
 
-		if (previousState)
-		{
-			fillWithColour(rex::imgui::selection);
-		}
+
 
 		//if (rex::directory::num_dirs(directory) == 0)
 		//{
 		//	flags |= ImGuiTreeNodeFlags_Leaf;
 		//}
 
-		bool open = ImGui::TreeNodeEx(name.data(), flags);
+		bool open = ImGui::TreeNodeEx(directory_name.data(), flags);
 
-		if (isActiveDirectory || isItemClicked)
-		{
-			ImGui::PopStyleColor();
-		}
+		//if (isActiveDirectory)
+		//{
+		//	ImGui::PopStyleColor();
+		//}
 
 		// Fixing slight overlap
 		rex::imgui::shift_cursor_y(3.0f);
@@ -338,13 +374,15 @@ namespace regina
 
 		//UpdateDropArea(directory);
 
-		if (open != previousState && !isActiveDirectory)
-		{
-			if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.01f))
-			{
-				REX_INFO(LogContentBrowserWidget, "Changing current directory to {}", directory);
-			}
-		}
+		const bool is_current_dir = rex::path::is_same(directory, m_current_directory);
+		//if (was_selected == false && should_select && !is_current_dir)
+		//{
+		//	if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.01f))
+		//	{
+		//		REX_INFO(LogContentBrowserWidget, "Changing current directory to {}", directory);
+		//		change_directory(directory);
+		//	}
+		//}
 
 		if (open)
 		{
@@ -505,7 +543,7 @@ namespace regina
 				//		rex::imgui::DrawButtonImage(icon, rex::imgui::textDarker,
 				//			rex::imgui::ColourWithMultipliedValue(rex::imgui::textDarker, 1.2f),
 				//			rex::imgui::ColourWithMultipliedValue(rex::imgui::textDarker, 0.8f),
-				//			rex::imgui::RectExpanded(rex::imgui::GetItemRect(), -iconPadding, -iconPadding));
+				//			rex::imgui::RectExpanded(rex::imgui::Getitem_rect(), -iconPadding, -iconPadding));
 
 				//		return clicked;
 				//	};
@@ -694,7 +732,7 @@ namespace regina
 			const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
 			auto* drawList = ImGui::GetWindowDrawList();
 
-			if (m_selection.is_selected(ImGui::GetID(item.data())))
+			if (m_content_selection.is_selected(ImGui::GetID(item.data())))
 			{
 				drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
 			}
@@ -761,7 +799,7 @@ namespace regina
 				}
 				else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
 				{
-					m_selection.toggle(ImGui::GetID(item.data()));
+					m_content_selection.toggle(ImGui::GetID(item.data()));
 				}
 				//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
 				//{
@@ -769,13 +807,13 @@ namespace regina
 				//}
 				else
 				{
-					m_selection.clear();
-					m_selection.add(ImGui::GetID(item.data()));
+					m_content_selection.clear();
+					m_content_selection.add(ImGui::GetID(item.data()));
 				}
 			}
 			//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			//{
-			//	m_selection.clear();
+			//	m_content_selection.clear();
 			//}
 
 			// Based on the action of the user, update the UI
@@ -833,6 +871,8 @@ namespace regina
 
 	void ContentBrowserWidget::change_directory(rsl::string_view newDirectory)
 	{
+		REX_INFO(LogContentBrowserWidget, "Changing dir {} -> {}", m_current_directory, newDirectory);
+
 		m_current_directory.assign(newDirectory);
 		m_files_in_current_directory = rex::directory::list_files(m_current_directory);
 		m_directories_in_current_directory = rex::directory::list_dirs(m_current_directory);

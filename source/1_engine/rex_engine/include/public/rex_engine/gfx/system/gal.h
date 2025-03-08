@@ -55,7 +55,7 @@ namespace rex
     struct Info;
     struct MaterialDesc;
 
-    // GAL standa for graphics abstraction interface
+    // GAL stands for Graphics Abstraction Layer
     // It is the layer between the program and the graphics systems
     class GALInterface
     {
