@@ -103,14 +103,11 @@ namespace regina
 				ImGui::TableSetupColumn("Directory Content", ImGuiTableColumnFlags_WidthStretch);
 
 				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
 
 				// Directory hiearchy
 				ImGui::BeginChild("##hiearchy");
 				{
-					//ImGui::DragFloat("spacing: ", &spacing_y);
-					//ImGui::DragFloat("padding: ", &padding_y);
-					//ImGui::DragFloat("cell padding: ", &cellPadding_y);
-
 					rex::imgui::ScopedStyle spacing2(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 					rex::imgui::ScopedColourStack item_bg(
 						ImGuiCol_Header, IM_COL32_DISABLE,
@@ -131,22 +128,23 @@ namespace regina
 					{
 						change_directory(opened_path);
 					}
-
-					//for (rsl::string_view directory : m_root_directories)
-					//{
-					//	render_directory_hiearchy(directory);
-					//}
 				}
 				ImGui::EndChild();
 
 				ImGui::TableSetColumnIndex(1);
+
+				//ImGui::BeginVertical("Test Vertical");
+				//ImGui::Separator();
+				//ImGui::EndVertical();
 
 				// Directory content
 				static f32 top_bar_height = 26.0f;
 				static f32 bottom_bar_height = 32.0f;
 				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - top_bar_height - bottom_bar_height));
 				{
-					//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+					ImGui::Text("This is just some dummy content");
+
+						//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 					//ImGui::BeginChild("##top_bar", ImVec2(0, top_bar_height));
 					//ImGui::BeginHorizontal("##top_bar", ImGui::GetWindowSize());
 
@@ -208,187 +206,6 @@ namespace regina
 		return false;
 	}
 
-	void ContentBrowserWidget::render_directory_hiearchy(rsl::string_view directory)
-	{
-		rsl::string_view directory_name = rex::path::filename(directory);
-
-		bool was_selected = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(directory_name.data()));
-
-		// ImGui item height hack
-		auto* window = ImGui::GetCurrentWindow();
-		window->DC.CurrLineSize.y = 20.0f;
-		window->DC.CurrLineTextBaseOffset = 3.0f;
-		//---------------------------------------------
-
-		//auto fill_with_colour = [&](const ImColor& colour)
-		//	{
-		//		const ImRect item_rect =
-		//		{
-		//			window->WorkRect.Min.x, window->DC.CursorPos.y,
-		//			window->WorkRect.Max.x, window->DC.CursorPos.y + window->DC.CurrLineSize.y
-		//		};
-
-		//		const ImU32 bgColour = ImGui::ColorConvertFloat4ToU32(colour);
-		//		ImGui::GetWindowDrawList()->AddRectFilled(item_rect.Min, item_rect.Max, bgColour);
-		//	};
-
-		// An item should be selected if it was selected before
-		// or if its parent directory is under the current selected directory
-		//const bool should_select = was_selected || rex::path::is_under_dir(m_current_directory, directory);
-
-		// Fill with light selection colour if any of the child entities selected
-		//auto checkIfAnyDescendantSelected = [&](rsl::string_view directory, auto isAnyDescendantSelected) -> bool
-		//	{
-
-		//		if (rex::path::is_same(directory, m_current_directory))
-		//		{
-		//			return true;
-		//		}
-
-		//		//if (!directory->SubDirectories.empty())
-		//		//{
-		//		//	for (auto& [childHandle, childDir] : directory->SubDirectories)
-		//		//	{
-		//		//		if (isAnyDescendantSelected(childDir, isAnyDescendantSelected))
-		//		//			return true;
-		//		//	}
-		//		//}
-
-		//		return false;
-		//	};
-
-		//const bool isAnyDescendantSelected = checkIfAnyDescendantSelected(directory, checkIfAnyDescendantSelected);
-		//const bool isActiveDirectory = rex::path::is_same(directory, m_current_directory);
-
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth; // (should_select ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanFullWidth;
-
-		//if (should_select)
-		//{
-		//	fill_with_colour(rex::imgui::selection);
-		//}
-		//else if (was_selected)
-		//{
-		//	fill_with_colour(rex::imgui::selection);
-		//}
-
-		// Fill background
-		//----------------
-		//if (isActiveDirectory)
-		//{
-		//	if (ImGui::IsWindowFocused())
-		//	{
-		//		fill_with_colour(rex::imgui::selection);
-		//	}
-		//	else
-		//	{
-		//		const ImColor col = rex::imgui::color_with_multiplied_value(rex::imgui::selection, 0.8f);
-		//		fill_with_colour(rex::imgui::color_with_multiplied_value(col, 0.7f));
-		//	}
-
-		//	ImGui::PushStyleColor(ImGuiCol_Text, rex::imgui::backgroundDark);
-		//}
-		//else if (isAnyDescendantSelected)
-		//{
-		//	fill_with_colour(rex::imgui::selectionMuted);
-		//}
-
-		// Tree Node
-		//----------
-
-
-
-		//if (rex::directory::num_dirs(directory) == 0)
-		//{
-		//	flags |= ImGuiTreeNodeFlags_Leaf;
-		//}
-
-		bool open = ImGui::TreeNodeEx(directory_name.data(), flags);
-
-		//if (isActiveDirectory)
-		//{
-		//	ImGui::PopStyleColor();
-		//}
-
-		// Fixing slight overlap
-		rex::imgui::shift_cursor_y(3.0f);
-
-		// Create Menu
-		//------------
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.0f, 4.0f));
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::BeginMenu("New"))
-			{
-				if (ImGui::MenuItem("Folder"))
-				{
-					if (rex::directory::create(rex::path::join(directory, "New Folder")))
-					{
-						// Refresh
-						REX_INFO(LogContentBrowserWidget, "Refreshing content browser after creating a new folder");
-					}
-					else
-					{
-						REX_ERROR(LogContentBrowserWidget, "Failed to create new folder in {}", directory);
-					}
-				}
-
-				if (ImGui::MenuItem("Scene"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new scene asset");
-				}
-				if (ImGui::MenuItem("Material"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new material asset");
-				}
-				if (ImGui::MenuItem("Sound Config"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new sound config asset");
-				}
-				ImGui::EndMenu();
-			}
-
-			ImGui::Separator();
-
-			if (ImGui::MenuItem("Show in Explorer"))
-			{
-				// Show directory in explorer
-			}
-
-			ImGui::EndPopup();
-		}
-		ImGui::PopStyleVar(); // ItemSpacing
-
-		// Draw children
-		//--------------
-
-		if (open)
-		{
-			rsl::vector<rsl::string> sub_dirs = rex::directory::list_dirs(directory);
-			rsl::sort(sub_dirs.begin(), sub_dirs.end());
-
-			for (auto& child : sub_dirs)
-			{
-				render_directory_hiearchy(child);
-			}
-		}
-
-		//UpdateDropArea(directory);
-
-		const bool is_current_dir = rex::path::is_same(directory, m_current_directory);
-		//if (was_selected == false && should_select && !is_current_dir)
-		//{
-		//	if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.01f))
-		//	{
-		//		REX_INFO(LogContentBrowserWidget, "Changing current directory to {}", directory);
-		//		change_directory(directory);
-		//	}
-		//}
-
-		if (open)
-		{
-			ImGui::TreePop();
-		}
-	}
 	void ContentBrowserWidget::render_content_structure_context_menu()
 	{
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight))

@@ -40,7 +40,6 @@ namespace regina
 		bool on_update() override;
 
 	private:
-		void render_directory_hiearchy(rsl::string_view directory);
 		void render_content_structure_context_menu();
 
 		void render_top_bar(f32 height);
