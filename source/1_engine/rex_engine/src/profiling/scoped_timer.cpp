@@ -69,7 +69,7 @@ namespace rex
 			{
 				header += "{\n";
 				header += "\"otherData\": {},\n";
-				header += "\"displayTimeUnit\": \"us\",\n"; // if the profile timing would change, make sure this is changed too
+				header += "\"displayTimeUnit\": \"ns\",\n"; // if the profile timing would change, make sure this is changed too
 				header += "\"traceEvents\":[{}\n";
 			}
 
@@ -141,7 +141,7 @@ namespace rex
 	rsl::chrono::nanoseconds ScopedTimer::stop()
 	{
 		auto end = rsl::chrono::steady_clock::now();
-		auto high_res_start = floating_point_micro_seconds(m_start_timepoint.time_since_epoch());
+		auto high_res_start = floating_point_nano_seconds(m_start_timepoint.time_since_epoch());
 		auto elapsed_time = rsl::chrono::time_point_cast<rsl::chrono::nanoseconds>(end).time_since_epoch() - rsl::chrono::time_point_cast<rsl::chrono::nanoseconds>(m_start_timepoint).time_since_epoch();
 
 		new_profile_result(
