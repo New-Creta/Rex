@@ -54,6 +54,7 @@ namespace regina
 		rsl::string m_current_directory;
 		rsl::vector<rsl::string> m_files_in_current_directory;
 		rsl::vector<rsl::string> m_directories_in_current_directory;
+		rsl::vector<rsl::string_view> m_current_items;
 		rsl::vector<rsl::string> m_root_directories;
 		rsl::unique_ptr<ThumbnailManager> m_thumbnail_manager;
 

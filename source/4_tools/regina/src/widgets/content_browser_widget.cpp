@@ -133,27 +133,11 @@ namespace regina
 
 				ImGui::TableSetColumnIndex(1);
 
-				//ImGui::BeginVertical("Test Vertical");
-				//ImGui::Separator();
-				//ImGui::EndVertical();
-
 				// Directory content
 				static f32 top_bar_height = 26.0f;
 				static f32 bottom_bar_height = 32.0f;
 				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - top_bar_height - bottom_bar_height));
 				{
-					ImGui::Text("This is just some dummy content");
-
-						//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-					//ImGui::BeginChild("##top_bar", ImVec2(0, top_bar_height));
-					//ImGui::BeginHorizontal("##top_bar", ImGui::GetWindowSize());
-
-					//ImGui::Text("This is a test");
-
-					//ImGui::EndHorizontal();
-					//ImGui::EndChild();
-					//ImGui::PopStyleVar();
-
 					// Top bar
 					{
 						rex::imgui::ScopedStyle frame_border_size(ImGuiStyleVar_FrameBorderSize, 0.0f);
@@ -503,11 +487,6 @@ namespace regina
 	{
 		//m_IsAnyItemHovered = false;
 
-		rsl::vector<rsl::string_view> items;
-		items.reserve(m_directories_in_current_directory.size() + m_files_in_current_directory.size());
-		rsl::copy(m_directories_in_current_directory.cbegin(), m_directories_in_current_directory.cend(), rsl::back_inserter(items));
-		rsl::copy(m_files_in_current_directory.cbegin(), m_files_in_current_directory.cend(), rsl::back_inserter(items));
-
 		f32 edgeOffset = 6.0f;
 
 		f32 textLineHeight = ImGui::GetTextLineHeightWithSpacing() + edgeOffset * 2.0f;
@@ -520,7 +499,7 @@ namespace regina
 
 		// TODO(Peter): This method of handling actions isn't great... It's starting to become spaghetti...
 		rex::TempString fullpath;
-		for (rsl::string_view item : items)
+		for (rsl::string_view item : m_current_items)
 		{
 			// Each item should look something like this
 			// +------------------------------+
@@ -696,6 +675,11 @@ namespace regina
 
 		rsl::sort(m_files_in_current_directory.begin(), m_files_in_current_directory.end());
 		rsl::sort(m_directories_in_current_directory.begin(), m_directories_in_current_directory.end());
+
+		m_current_items.clear();
+		m_current_items.reserve(m_directories_in_current_directory.size() + m_files_in_current_directory.size());
+		rsl::copy(m_directories_in_current_directory.cbegin(), m_directories_in_current_directory.cend(), rsl::back_inserter(m_current_items));
+		rsl::copy(m_files_in_current_directory.cbegin(), m_files_in_current_directory.cend(), rsl::back_inserter(m_current_items));
 
 	}
 }
