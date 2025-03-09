@@ -168,10 +168,10 @@ namespace regina
 						rex::imgui::ScopedStyle padding(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 						render_items();
 
-						if (ImGui::IsWindowFocused() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-						{
+						//if (ImGui::IsWindowFocused() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+						//{
 							// UpdateInput();
-						}
+						//}
 
 						//RenderDeleteDialogue();
 						//RenderNewScriptDialogue();
@@ -516,6 +516,8 @@ namespace regina
 
 			item = rex::path::filename(item);
 
+			//REX_PROFILE_SCOPE(rsl::format("Rendering {}", item));
+
 			ImGui::PushID(item.data());
 			ImGui::BeginGroup();
 
@@ -528,85 +530,95 @@ namespace regina
 			const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
 			auto* drawList = ImGui::GetWindowDrawList();
 
-			if (m_content_selection.is_selected(ImGui::GetID(item.data())))
-			{
-				drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
-			}
-			else
-			{
-				drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
-			}
-			drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
+			//{
+			//	//REX_PROFILE_SCOPE(rsl::format("Rendering background {}", item));
+			//	if (m_content_selection.is_selected(ImGui::GetID(item.data())))
+			//	{
+			//		drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
+			//	}
+			//	else
+			//	{
+			//		drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
+			//	}
+			//	drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
+			//}
 
 			// Shift the offset so we leave some space between the thumbnail and the corner
 			rex::imgui::shift_cursor(edgeOffset, edgeOffset);
 
 			// render the thumbnail
-			fullpath = rex::path::join(m_current_directory, item);
-			const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
-			ImVec2 imageSize{ 100.0f, 100.0f };
-			ImGui::Image((ImTextureID)thumbnail->texture(), imageSize);
-
-			// Render Info Panel
-			ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
 			{
-				// Centre align directory name
-				ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
-				ImGui::Spring();
-				{
-					ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbBhWidth - edgeOffset));
-					const f32 textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
-					//if (m_IsRenaming)
-					//{
-					//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
-					//	renamingWidget();
-					//}
-					//else
-					//{
-						ImGui::SetNextItemWidth(textWidth);
-						ImGui::Text(item.data());
-					//}
-					ImGui::PopTextWrapPos();
-				}
-				ImGui::Spring();
-				ImGui::EndHorizontal();
+				//REX_PROFILE_SCOPE(rsl::format("Rendering thumbnail {}", item));
 
-				ImGui::Spring();
+				//fullpath = rex::path::join(m_current_directory, item);
+				//const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
+				//ImVec2 imageSize{ 100.0f, 100.0f };
+				//ImGui::Image((ImTextureID)thumbnail->texture(), imageSize);
 			}
-			ImGui::EndVertical();
+			// Render Info Panel
+			//ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
+			//{
+			//	//REX_PROFILE_SCOPE(rsl::format("Rendering infopanel {}", item));
+
+			//	// Centre align directory name
+			//	ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
+			//	ImGui::Spring();
+			//	{
+			//		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbBhWidth - edgeOffset));
+			//		const f32 textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
+			//		//if (m_IsRenaming)
+			//		//{
+			//		//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
+			//		//	renamingWidget();
+			//		//}
+			//		//else
+			//		//{
+			//			ImGui::SetNextItemWidth(textWidth);
+			//			ImGui::Text(item.data());
+			//		//}
+			//		ImGui::PopTextWrapPos();
+			//	}
+			//	ImGui::Spring();
+			//	ImGui::EndHorizontal();
+
+			//	ImGui::Spring();
+			//}
+			//ImGui::EndVertical();
 
 			// Put the cursor back where it came from
 			rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
 			ImGui::EndGroup();
 
 			// UI actions
-			if (ImGui::IsItemClicked())
-			{
-				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-				{
-					if (rex::directory::exists(fullpath))
-					{
-						change_directory(fullpath);
-					}
-					else
-					{
-						rex::open_file(fullpath);
-					}
-				}
-				else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
-				{
-					m_content_selection.toggle(ImGui::GetID(item.data()));
-				}
-				//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
-				//{
-				//	
-				//}
-				else
-				{
-					m_content_selection.clear();
-					m_content_selection.add(ImGui::GetID(item.data()));
-				}
-			}
+			//if (ImGui::IsItemClicked())
+			//{
+			//	//REX_PROFILE_SCOPE(rsl::format("UI Actions infopanel {}", item));
+
+			//	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			//	{
+			//		if (rex::directory::exists(fullpath))
+			//		{
+			//			change_directory(fullpath);
+			//		}
+			//		else
+			//		{
+			//			rex::open_file(fullpath);
+			//		}
+			//	}
+			//	else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
+			//	{
+			//		m_content_selection.toggle(ImGui::GetID(item.data()));
+			//	}
+			//	//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
+			//	//{
+			//	//	
+			//	//}
+			//	else
+			//	{
+			//		m_content_selection.clear();
+			//		m_content_selection.add(ImGui::GetID(item.data()));
+			//	}
+			//}
 			//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			//{
 			//	m_content_selection.clear();
