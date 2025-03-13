@@ -54,7 +54,7 @@ namespace rex
       render_ctx->clear_render_target(current_backbuffer_rt());
       render_ctx->execute_on_gpu();
 
-      // EMpty out the view heaps so that new views can be copied into it
+      // Empty out the view heaps so that new views can be copied into it
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Texture2D)->clear();
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
