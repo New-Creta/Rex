@@ -7,7 +7,6 @@
 
 #include "rex_engine/gfx/imgui/imgui_utils.h"
 
-#include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 
 namespace regina
@@ -19,6 +18,8 @@ namespace regina
 		, m_dir_name(rex::path::filename(m_fullpath))
 		, m_is_open(false)
 	{
+		m_id = ImGui::GetID(m_fullpath.c_str());
+
 		rsl::vector<rsl::string> sub_dirs = rex::directory::list_dirs(path);
 		for (rsl::string_view dir : sub_dirs)
 		{
@@ -30,7 +31,7 @@ namespace regina
 	{
 		// Pushing an ID as it's possible directories exist with the same name
 		// We do not want these to clash with each other
-		ImGui::PushID(m_fullpath.data());
+		ImGui::PushID(m_id);
 
 		// The below is done so that we have some spacing between our directory names
 		// This makes is a bit easier on the human eye

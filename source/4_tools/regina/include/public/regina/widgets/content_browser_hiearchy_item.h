@@ -2,6 +2,7 @@
 
 #include "rex_std/vector.h"
 #include "rex_std/string_view.h"
+#include "imgui/imgui.h"
 
 struct ImGuiWindow;
 
@@ -22,6 +23,7 @@ namespace regina
 		rsl::string m_fullpath;
 		rsl::string_view m_dir_name;
 		rsl::vector<rsl::unique_ptr<ContentBrowserHiearchyItem>> m_sub_items;
+		ImGuiID m_id;
 		bool m_is_open;
 	};
 }

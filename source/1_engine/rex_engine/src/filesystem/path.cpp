@@ -448,7 +448,7 @@ namespace rex
         res += g_seperation_char;
       }
 
-      res += rsl::join(norm_splitted, rsl::string_view(&g_seperation_char, 1)).as_string();
+      res += rsl::join(norm_splitted, rsl::string_view(&g_seperation_char, 1)).as_string<TempString>();
 
       if (is_drive(res))
       {

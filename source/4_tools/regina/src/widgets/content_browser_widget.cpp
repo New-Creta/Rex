@@ -11,6 +11,7 @@
 
 #include "rex_std/algorithm.h"
 #include "rex_std/functional.h"
+#include "rex_std/chrono.h"
 
 namespace regina
 {
@@ -147,6 +148,8 @@ namespace regina
 					ImGui::Separator();
 
 					// Content
+
+					auto start = rsl::chrono::high_resolution_clock::now();
 					ImGui::BeginChild("Scrolling");
 					{
 						rex::imgui::ScopedColour button_color(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -177,6 +180,9 @@ namespace regina
 						//RenderNewScriptDialogue();
 					}
 					ImGui::EndChild();
+					auto end = rsl::chrono::high_resolution_clock::now();
+					const rsl::chrono::duration<f32> elapsed_time = end - start;
+					REX_INFO(LogContentBrowserWidget, "Rendering directoy content took {} seconds", elapsed_time.count());
 
 					// Bottom bar
 					render_bottom_bar(bottom_bar_height);
@@ -499,7 +505,7 @@ namespace regina
 
 		// TODO(Peter): This method of handling actions isn't great... It's starting to become spaghetti...
 		rex::TempString fullpath;
-		for (rsl::string_view item : m_current_items)
+		for (ContentBrowserItem& item : m_current_items)
 		{
 			// Each item should look something like this
 			// +------------------------------+
@@ -514,144 +520,147 @@ namespace regina
 			// |           FILENAME           |                   
 			// +------------------------------+
 
-			item = rex::path::filename(item);
-
-			//REX_PROFILE_SCOPE(rsl::format("Rendering {}", item));
-
-			ImGui::PushID(item.data());
-			ImGui::BeginGroup();
-
-			rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(itemSpacing, 0.0f));
-
-			// Draw background
-			const ImVec2 topLeft = ImGui::GetCursorScreenPos();
-			const ImVec2 thumbBottomRight = { topLeft.x + thumbBhWidth, topLeft.y + thumbBhHeight };
-			const ImVec2 infoTopLeft = { topLeft.x,				 thumbBottomRight.y };
-			const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
-			auto* drawList = ImGui::GetWindowDrawList();
-
-			//{
-			//	//REX_PROFILE_SCOPE(rsl::format("Rendering background {}", item));
-			//	if (m_content_selection.is_selected(ImGui::GetID(item.data())))
-			//	{
-			//		drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
-			//	}
-			//	else
-			//	{
-			//		drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
-			//	}
-			//	drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
-			//}
-
-			// Shift the offset so we leave some space between the thumbnail and the corner
-			rex::imgui::shift_cursor(edgeOffset, edgeOffset);
-
-			// render the thumbnail
-			{
-				//REX_PROFILE_SCOPE(rsl::format("Rendering thumbnail {}", item));
-
-				//fullpath = rex::path::join(m_current_directory, item);
-				//const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
-				//ImVec2 imageSize{ 100.0f, 100.0f };
-				//ImGui::Image((ImTextureID)thumbnail->texture(), imageSize);
-			}
-			// Render Info Panel
-			//ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
-			//{
-			//	//REX_PROFILE_SCOPE(rsl::format("Rendering infopanel {}", item));
-
-			//	// Centre align directory name
-			//	ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
-			//	ImGui::Spring();
-			//	{
-			//		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbBhWidth - edgeOffset));
-			//		const f32 textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
-			//		//if (m_IsRenaming)
-			//		//{
-			//		//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
-			//		//	renamingWidget();
-			//		//}
-			//		//else
-			//		//{
-			//			ImGui::SetNextItemWidth(textWidth);
-			//			ImGui::Text(item.data());
-			//		//}
-			//		ImGui::PopTextWrapPos();
-			//	}
-			//	ImGui::Spring();
-			//	ImGui::EndHorizontal();
-
-			//	ImGui::Spring();
-			//}
-			//ImGui::EndVertical();
-
-			// Put the cursor back where it came from
-			rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
-			ImGui::EndGroup();
-
-			// UI actions
-			//if (ImGui::IsItemClicked())
-			//{
-			//	//REX_PROFILE_SCOPE(rsl::format("UI Actions infopanel {}", item));
-
-			//	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-			//	{
-			//		if (rex::directory::exists(fullpath))
-			//		{
-			//			change_directory(fullpath);
-			//		}
-			//		else
-			//		{
-			//			rex::open_file(fullpath);
-			//		}
-			//	}
-			//	else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
-			//	{
-			//		m_content_selection.toggle(ImGui::GetID(item.data()));
-			//	}
-			//	//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
-			//	//{
-			//	//	
-			//	//}
-			//	else
-			//	{
-			//		m_content_selection.clear();
-			//		m_content_selection.add(ImGui::GetID(item.data()));
-			//	}
-			//}
-			//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			//{
-			//	m_content_selection.clear();
-			//}
-
-			// Based on the action of the user, update the UI
-			// the following actions are supported
-			// Selection cleared - done
-			// item selected - done
-			// item deselected - done
-			// ctrl + selection
-			// rename
-			// open in explorer
-			// hovered
-			// duplicated
-			// renamed
-			// refresh
-
-			ImGui::PopID();
+			item.draw();
 			ImGui::NextColumn();
 
-		// This is a workaround an issue with ImGui: https://github.com/ocornut/imgui/issues/331
-		//if (s_OpenDeletePopup)
-		//{
-		//	ImGui::OpenPopup("Delete");
-		//	s_OpenDeletePopup = false;
-		//}
+		//	item = rex::path::filename(item);
 
-		//if (s_OpenNewScriptPopup)
-		//{
-		//	ImGui::OpenPopup("New Script");
-		//	s_OpenNewScriptPopup = false;
-		//}
+		//	//REX_PROFILE_SCOPE(rsl::format("Rendering {}", item));
+
+		//	ImGui::PushID(item.data());
+		//	ImGui::BeginGroup();
+
+		//	rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(itemSpacing, 0.0f));
+
+		//	// Draw background
+		//	const ImVec2 topLeft = ImGui::GetCursorScreenPos();
+		//	const ImVec2 thumbBottomRight = { topLeft.x + thumbBhWidth, topLeft.y + thumbBhHeight };
+		//	const ImVec2 infoTopLeft = { topLeft.x,				 thumbBottomRight.y };
+		//	const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
+		//	auto* drawList = ImGui::GetWindowDrawList();
+
+		//	{
+		//		//REX_PROFILE_SCOPE(rsl::format("Rendering background {}", item));
+		//		//if (m_content_selection.is_selected(ImGui::GetID(item.data())))
+		//		//{
+		//		//	drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
+		//		//}
+		//		//else
+		//		//{
+		//		//	drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
+		//		//}
+		//		drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
+		//	}
+
+		//	// Shift the offset so we leave some space between the thumbnail and the corner
+		//	rex::imgui::shift_cursor(edgeOffset, edgeOffset);
+
+		//	// render the thumbnail
+		//	{
+		//		//REX_PROFILE_SCOPE(rsl::format("Rendering thumbnail {}", item));
+
+		//		//fullpath = rex::path::join(m_current_directory, item);
+		//		//const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
+		//		//ImVec2 imageSize{ 100.0f, 100.0f };
+		//		//ImGui::Image((ImTextureID)thumbnail->texture(), imageSize);
+		//	}
+		//	// Render Info Panel
+		//	ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
+		//	{
+		//		//REX_PROFILE_SCOPE(rsl::format("Rendering infopanel {}", item));
+
+		//		// Centre align directory name
+		//		ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
+		//		ImGui::Spring();
+		//		{
+		//			ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbBhWidth - edgeOffset));
+		//			const f32 textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
+		//			//if (m_IsRenaming)
+		//			//{
+		//			//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
+		//			//	renamingWidget();
+		//			//}
+		//			//else
+		//			//{
+		//				ImGui::SetNextItemWidth(textWidth);
+		//				ImGui::Text(item.data());
+		//			//}
+		//			ImGui::PopTextWrapPos();
+		//		}
+		//		ImGui::Spring();
+		//		ImGui::EndHorizontal();
+
+		//		ImGui::Spring();
+		//	}
+		//	ImGui::EndVertical();
+
+		//	// Put the cursor back where it came from
+		//	rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
+		//	ImGui::EndGroup();
+
+		//	// UI actions
+		//	//if (ImGui::IsItemClicked())
+		//	//{
+		//	//	//REX_PROFILE_SCOPE(rsl::format("UI Actions infopanel {}", item));
+
+		//	//	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		//	//	{
+		//	//		if (rex::directory::exists(fullpath))
+		//	//		{
+		//	//			change_directory(fullpath);
+		//	//		}
+		//	//		else
+		//	//		{
+		//	//			rex::open_file(fullpath);
+		//	//		}
+		//	//	}
+		//	//	else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
+		//	//	{
+		//	//		m_content_selection.toggle(ImGui::GetID(item.data()));
+		//	//	}
+		//	//	//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
+		//	//	//{
+		//	//	//	
+		//	//	//}
+		//	//	else
+		//	//	{
+		//	//		m_content_selection.clear();
+		//	//		m_content_selection.add(ImGui::GetID(item.data()));
+		//	//	}
+		//	//}
+		//	//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		//	//{
+		//	//	m_content_selection.clear();
+		//	//}
+
+		//	// Based on the action of the user, update the UI
+		//	// the following actions are supported
+		//	// Selection cleared - done
+		//	// item selected - done
+		//	// item deselected - done
+		//	// ctrl + selection
+		//	// rename
+		//	// open in explorer
+		//	// hovered
+		//	// duplicated
+		//	// renamed
+		//	// refresh
+
+		//	ImGui::PopID();
+		//	ImGui::NextColumn();
+
+		//// This is a workaround an issue with ImGui: https://github.com/ocornut/imgui/issues/331
+		////if (s_OpenDeletePopup)
+		////{
+		////	ImGui::OpenPopup("Delete");
+		////	s_OpenDeletePopup = false;
+		////}
+
+		////if (s_OpenNewScriptPopup)
+		////{
+		////	ImGui::OpenPopup("New Script");
+		////	s_OpenNewScriptPopup = false;
+		////}
 		}
 
 	}
@@ -690,8 +699,13 @@ namespace regina
 
 		m_current_items.clear();
 		m_current_items.reserve(m_directories_in_current_directory.size() + m_files_in_current_directory.size());
-		rsl::copy(m_directories_in_current_directory.cbegin(), m_directories_in_current_directory.cend(), rsl::back_inserter(m_current_items));
-		rsl::copy(m_files_in_current_directory.cbegin(), m_files_in_current_directory.cend(), rsl::back_inserter(m_current_items));
-
+		for (rsl::string_view dir : m_directories_in_current_directory)
+		{
+			m_current_items.emplace_back(dir, thumbnail_for_path(dir));
+		}
+		for (rsl::string_view file : m_files_in_current_directory)
+		{
+			m_current_items.emplace_back(file, thumbnail_for_path(file));
+		}
 	}
 }
