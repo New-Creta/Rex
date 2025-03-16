@@ -4,8 +4,8 @@ namespace rex
 {
   namespace gfx
   {
-    DxRenderEngine::DxRenderEngine(ResourceStateTracker* globalResourceStateTracker)
-      : gfx::RenderEngine(globalResourceStateTracker)
+    DxRenderEngine::DxRenderEngine(GpuEngine* gpuEngine, ResourceStateTracker* globalResourceStateTracker)
+      : gfx::RenderEngine(gpuEngine, globalResourceStateTracker)
     {}
 
     // Initialize all the resources required for the compute engine

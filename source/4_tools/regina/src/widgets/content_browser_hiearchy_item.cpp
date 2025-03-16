@@ -40,6 +40,7 @@ namespace regina
 		window->DC.CurrLineTextBaseOffset = 3.0f;
 
 		if (rex::path::is_same(m_fullpath, selectedDirectory))
+		//if (m_fullpath == selectedDirectory)
 		{
 			draw_background_as_selected(window);
 		}

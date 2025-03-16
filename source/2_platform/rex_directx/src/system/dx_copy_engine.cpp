@@ -25,8 +25,8 @@ namespace rex
     // Copy Engine
     // -------------------------------------
 
-    DxCopyEngine::DxCopyEngine(ResourceStateTracker* globalResourceStateTracker)
-      : gfx::CopyEngine(globalResourceStateTracker)
+    DxCopyEngine::DxCopyEngine(GpuEngine* gpuEngine, ResourceStateTracker* globalResourceStateTracker)
+      : gfx::CopyEngine(gpuEngine, globalResourceStateTracker)
     {}
 
     // Initialize all the resources required for the compute engine

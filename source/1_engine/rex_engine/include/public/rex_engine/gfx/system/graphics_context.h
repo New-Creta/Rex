@@ -19,6 +19,7 @@ namespace rex
     class GraphicsEngine;
     class PooledAllocator;
     class RenderTarget;
+    class GpuEngine;
   }
 
   namespace gfx
@@ -65,6 +66,8 @@ namespace rex
       virtual void type_specific_reset(const ContextResetData& resetData);
       // Reset the platform specific context
       virtual void platform_reset(CommandAllocator* alloc, const ContextResetData& resetData) = 0;
+
+      GpuEngine* gpu_engine();
 
     private:
       ObjectWithDestructionCallback<gfx::PooledAllocator> m_allocator;  // The allocator to use for allocating gpu commands

@@ -167,6 +167,9 @@ namespace rex
     rex::mut_globals().frame_info.update();
     rex::mut_globals().single_frame_allocator->adv_frame();
 
+    REX_INFO(LogCoreApp, "FPS: {}", rex::globals().frame_info.fps().get());
+    REX_INFO(LogCoreApp, "Delta time: {}", rex::globals().frame_info.delta_time().to_seconds());
+
     platform_update();
   }
   //--------------------------------------------------------------------------------------------

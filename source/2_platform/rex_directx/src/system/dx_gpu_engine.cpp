@@ -99,15 +99,15 @@ namespace rex
     // Initialize the various sub engines
     rsl::unique_ptr<RenderEngine> DxGpuEngine::init_render_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxRenderEngine>(resourceStateTracker);
+      return rsl::make_unique<DxRenderEngine>(this, resourceStateTracker);
     }
     rsl::unique_ptr<CopyEngine> DxGpuEngine::init_copy_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxCopyEngine>(resourceStateTracker);
+      return rsl::make_unique<DxCopyEngine>(this, resourceStateTracker);
     }
     rsl::unique_ptr<ComputeEngine> DxGpuEngine::init_compute_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxComputeEngine>(resourceStateTracker);
+      return rsl::make_unique<DxComputeEngine>(this, resourceStateTracker);
     }
 
     // Initialize the resource heap which keeps track of all gpu resources

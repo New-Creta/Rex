@@ -16,6 +16,8 @@ namespace rex
 {
   namespace gfx
   {
+    DEFINE_LOG_CATEGORY(LogImGuiViewport);
+
     RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
       : m_imgui_viewport(imguiViewport)
       , m_frame_idx(0)
@@ -25,6 +27,8 @@ namespace rex
     // Render the viewport using the given render context to queue gpu commands to
     void RexImGuiViewport::render(RenderContext* renderContext, RenderPass* renderPass)
     {
+      auto start = rsl::chrono::high_resolution_clock::now();
+
       ImDrawData* draw_data = m_imgui_viewport->DrawData;
 
       // Avoid rendering when minimized
@@ -52,6 +56,10 @@ namespace rex
 
       // Adavance to the next frame context so we can fill its data during the next frame
       advance_frame_ctx();
+
+      auto end = rsl::chrono::high_resolution_clock::now();
+      const rsl::chrono::duration<f32> elapsed_time = end - start;
+      REX_INFO(LogImGuiViewport, "Rendering imgui viewport took {} seconds", elapsed_time.count());
     }
 
     // Get the current frame context to use to render the viewport
@@ -87,6 +95,8 @@ namespace rex
     // Draw the current viewport
     void RexImGuiViewport::draw(RenderContext* ctx, ImDrawData* drawData, s32 textureSlot)
     {
+      auto start = rsl::chrono::high_resolution_clock::now();
+
       s32 global_vtx_offset = 0;
       s32 global_idx_offset = 0;
       ImVec2 clip_off = drawData->DisplayPos;
@@ -120,6 +130,10 @@ namespace rex
         global_idx_offset += cmd_list->IdxBuffer.Size;
         global_vtx_offset += cmd_list->VtxBuffer.Size;
       }
+
+      auto end = rsl::chrono::high_resolution_clock::now();
+      const rsl::chrono::duration<f32> elapsed_time = end - start;
+      REX_INFO(LogImGuiViewport, "Drawing imgui viewport took {} seconds", elapsed_time.count());
     }
   }
 }

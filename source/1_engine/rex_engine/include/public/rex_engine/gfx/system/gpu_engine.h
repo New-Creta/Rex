@@ -59,6 +59,9 @@ namespace rex
       // Return the render target pointing to the current backbuffer of the swapchain
       RenderTarget* current_backbuffer_rt();
 
+      void notify_textures_presence_on_gpu(Texture2D* texture, rsl::unique_ptr<ResourceView> resourceView);
+      const ResourceView* try_get_texture_gpu_handle(Texture2D* texture) const;
+
     protected:
       // Initialize the various sub engines
       virtual rsl::unique_ptr<RenderEngine> init_render_engine(ResourceStateTracker* resourceStateTracker) = 0;
@@ -101,6 +104,8 @@ namespace rex
       ViewHeapPool m_cpu_descriptor_heap_pool; // Pool of descriptor heaps per type
       ViewHeapPool m_shader_visible_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
+
+      rsl::unordered_map<Texture2D*, rsl::unique_ptr<ResourceView>> m_textures_on_gpu;
     };
   }
 }

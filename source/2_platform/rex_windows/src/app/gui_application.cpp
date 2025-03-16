@@ -47,6 +47,8 @@ namespace rex
 {
   namespace win
   {
+    DEFINE_LOG_CATEGORY(LogGuiApplication);
+
     class GuiApplication::Internal
     {
     public:
@@ -103,7 +105,13 @@ namespace rex
 
         pre_user_update();
 
+        auto start = rsl::chrono::high_resolution_clock::now();
+
         m_on_update();
+
+        auto end = rsl::chrono::high_resolution_clock::now();
+        const rsl::chrono::duration<f32> elapsed_time = end - start;
+        REX_INFO(LogGuiApplication, "GuI app updating took {} seconds", elapsed_time.count());
 
         post_user_update();
 
@@ -116,6 +124,7 @@ namespace rex
       }
       void draw()
       {
+        auto start = rsl::chrono::high_resolution_clock::now();
         // don't render when the application gets destroyed soon
         if (m_app_instance->is_marked_for_destroy())
         {
@@ -124,6 +133,10 @@ namespace rex
 
         // Call into our graphics API to render everything
         gfx::render();
+
+        auto end = rsl::chrono::high_resolution_clock::now();
+        const rsl::chrono::duration<f32> elapsed_time = end - start;
+        REX_INFO(LogGuiApplication, "GuI app drawing took {} seconds", elapsed_time.count());
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {

@@ -48,7 +48,7 @@ namespace rex
     class GraphicsEngine
     {
     public:
-      GraphicsEngine(GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker);
+      GraphicsEngine(GpuEngine* gpuEngine, GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker);
       virtual ~GraphicsEngine();
 
       // Executes the context and returns the fence value that'll be set when all commands are executed
@@ -66,6 +66,8 @@ namespace rex
       GraphicsEngineType type() const;
       // Return the resource tracker of this engine
       ResourceStateTracker* resource_state_tracker();
+
+      GpuEngine* gpu_engine();
 
       // Fully initialize the engine, allocating all required resources etc
       virtual void init() = 0;
@@ -85,6 +87,7 @@ namespace rex
       ObjectWithDestructionCallback<PooledAllocator> request_allocator();
 
     private:
+      GpuEngine* m_gpu_engine;
       rsl::unique_ptr<CommandQueue> m_command_queue;        // the command queue to submit gpu commands
       GraphicsContextPool m_context_pool;                   // the pool for graphics contexts of this type of graphics engine
       gfx::CommandAllocatorPool m_command_allocator_pool;   // the pool for command allocators

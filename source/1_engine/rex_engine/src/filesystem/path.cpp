@@ -4,6 +4,7 @@
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/text_processing/text_processing.h"
 #include "rex_engine/filesystem/file.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
@@ -410,8 +411,8 @@ namespace rex
     // Converts forward slashes to backward slashes
     TempString norm_path(rsl::string_view path)
     {
-      const rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
-      rsl::vector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
+      const TempVector<rsl::string_view> splitted_path = rsl::split<rex::SingleFrameAllocatorWrapper>(path, "/\\");
+      TempVector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
 
       // loop over each path component in the given path
       for(const rsl::string_view path_comp: splitted_path)

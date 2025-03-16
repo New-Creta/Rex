@@ -191,9 +191,9 @@ namespace rex
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set a view table of the context
-    void DxRenderContext::bind_view_table(s32 paramIdx, ResourceView* startView)
+    void DxRenderContext::bind_view_table(s32 paramIdx, const ResourceView* startView)
     {
-      DxResourceView* dx_start_view = d3d::to_dx12(startView);
+      const DxResourceView* dx_start_view = d3d::to_dx12(startView);
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
     }
     // Bind a constant buffer to the context
@@ -207,12 +207,21 @@ namespace rex
     }
     void DxRenderContext::bind_texture2d(s32 paramIdx, Texture2D* texture)
     {
-      // Textures need to be bind using a view table and cannot be bound directly
-      rsl::vector<const ResourceView*> views;
-      views.push_back(texture->resource_view());
-      auto copy_ctx = new_copy_ctx();
-      auto start_handle = copy_ctx->copy_views(ViewHeapType::Texture2D, views);
-      bind_view_table(paramIdx, start_handle.get());
+      const ResourceView* gpu_handle = gpu_engine()->try_get_texture_gpu_handle(texture);
+
+      // If the texture is not on the GPU yet, copy it there first
+      if (gpu_handle == nullptr)
+      {
+        rsl::vector<const ResourceView*> views;
+        views.push_back(texture->resource_view());
+        auto copy_ctx = new_copy_ctx();
+        auto start_handle = copy_ctx->copy_views(ViewHeapType::Texture2D, views);
+        gpu_handle = start_handle.get();
+				gpu_engine()->notify_textures_presence_on_gpu(texture, rsl::move(start_handle));
+      }
+
+			// Textures need to be bind using a view table and cannot be bound directly
+      bind_view_table(paramIdx, gpu_handle);
     }
     // Bind a shader resource to the context
     void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)

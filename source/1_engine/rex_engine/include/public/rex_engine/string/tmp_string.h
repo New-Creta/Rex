@@ -16,4 +16,6 @@ namespace rex
 	// If the storage of the tmp string is expected to last for longer than a single frame, it should be converted
 	// to a string instead.
 	using TempString = rsl::basic_string<char8, rsl::char_traits<char8>, SingleFrameAllocatorWrapper>;
+	template <typename T>
+	using TempVector = rsl::vector<T, SingleFrameAllocatorWrapper>;
 }

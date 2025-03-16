@@ -11,7 +11,7 @@ namespace rex
     class RenderEngine : public GraphicsEngine
     {
     public:
-      RenderEngine(ResourceStateTracker* globalResourceStateTracker);
+      RenderEngine(GpuEngine* gpuEngine, ResourceStateTracker* globalResourceStateTracker);
 
     private:
 

@@ -8,8 +8,9 @@ namespace rex
 {
   namespace gfx
   {
-    GraphicsEngine::GraphicsEngine(GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker)
-      : m_command_queue(gal()->create_command_queue(type))
+    GraphicsEngine::GraphicsEngine(GpuEngine* gpuEngine, GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker)
+      : m_gpu_engine(gpuEngine)
+      , m_command_queue(gal()->create_command_queue(type))
       , m_command_allocator_pool(type)
       , m_context_pool([this](CommandAllocator* alloc) { return allocate_new_context(alloc); })
       , m_resource_state_tracker(globalResourceStateTracker)
@@ -61,6 +62,11 @@ namespace rex
     ResourceStateTracker* GraphicsEngine::resource_state_tracker()
     {
       return &m_resource_state_tracker;
+    }
+
+    GpuEngine* GraphicsEngine::gpu_engine()
+    {
+      return m_gpu_engine;
     }
 
     // Flush all commands on the gpu and halt the current thread untill all commands are executed
