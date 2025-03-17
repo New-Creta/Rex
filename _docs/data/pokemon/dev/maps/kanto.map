@@ -1,0 +1,52 @@
+{
+    "name": "Kanto",
+    "chunks": [
+        {
+            "name": "pallet_town",
+            "blk": "pallet_town.blk",
+            "bat": "overworld",
+            "width": 10,
+            "height": 9,
+            "connections": [
+                {
+                    "direction": "North",
+                    "chunk": "route_1",
+                    "offset": 0
+                },
+                {
+                    "direction": "South",
+                    "chunk": "route_21",
+                    "offset": 0
+                }
+            ]
+        },
+        {
+            "name": "route_1",
+            "blk": "route_1.blk",
+            "bat": "overworld",
+            "width": 10,
+            "height": 9,
+            "connections": [
+                {
+                    "direction": "South",
+                    "chunk": "pallet_town",
+                    "offset": 0
+                }
+            ]
+        },
+        {
+            "name": "route_21",
+            "blk": "route_21.blk",
+            "bat": "overworld",
+            "width": 10,
+            "height": 9,
+            "connections": [
+                {
+                    "direction": "North",
+                    "chunk": "pallet_town",
+                    "offset": 0
+                }
+            ]
+        }
+    ]
+}

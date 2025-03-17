@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DCBF2AA4-7CB4-46B8-92B4-916E40E15BD8}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>polished-map</RootNamespace>
+    <ProjectName>Polished Map</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Configuration)\</IntDir>
+    <TargetName>polishedmapd</TargetName>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Configuration)\</IntDir>
+    <TargetName>polishedmap</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4068;4351</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>.;..\include;..\res</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessToFile>false</PreprocessToFile>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <AdditionalDependencies>fltkimagesd.lib;fltkpngd.lib;fltkjpegd.lib;fltkzlibd.lib;fltkd.lib;opengl32.lib;glu32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libcmtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalLibraryDirectories>..\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NOMINMAX;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4068;4351</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>.;..\include;..\res</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>fltkimages.lib;fltkpng.lib;fltkjpeg.lib;fltkzlib.lib;fltk.lib;opengl32.lib;glu32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalLibraryDirectories>..\lib</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\colors.cpp" />
+    <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\directory-chooser.cpp" />
+    <ClCompile Include="..\src\event.cpp" />
+    <ClCompile Include="..\src\gameboy-screen.cpp" />
+    <ClCompile Include="..\src\help-window.cpp" />
+    <ClCompile Include="..\src\hex-spinner.cpp" />
+    <ClCompile Include="..\src\image.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\main-window.cpp" />
+    <ClCompile Include="..\src\map-buttons.cpp" />
+    <ClCompile Include="..\src\map-events.cpp" />
+    <ClCompile Include="..\src\map.cpp" />
+    <ClCompile Include="..\src\metatile.cpp" />
+    <ClCompile Include="..\src\metatileset.cpp" />
+    <ClCompile Include="..\src\modal-dialog.cpp" />
+    <ClCompile Include="..\src\option-dialogs.cpp" />
+    <ClCompile Include="..\src\palette-map.cpp" />
+    <ClCompile Include="..\src\palette-window.cpp" />
+    <ClCompile Include="..\src\parse-asm.cpp" />
+    <ClCompile Include="..\src\preferences.cpp" />
+    <ClCompile Include="..\src\roof-window.cpp" />
+    <ClCompile Include="..\src\ruler.cpp" />
+    <ClCompile Include="..\src\themes.cpp" />
+    <ClCompile Include="..\src\tile.cpp" />
+    <ClCompile Include="..\src\tiled-image.cpp" />
+    <ClCompile Include="..\src\block-window.cpp" />
+    <ClCompile Include="..\src\tileset-window.cpp" />
+    <ClCompile Include="..\src\tileset.cpp" />
+    <ClCompile Include="..\src\utils.cpp" />
+    <ClCompile Include="..\src\widgets.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\colors.h" />
+    <ClInclude Include="..\src\config.h" />
+    <ClInclude Include="..\src\directory-chooser.h" />
+    <ClInclude Include="..\src\event.h" />
+    <ClInclude Include="..\src\gameboy-screen.h" />
+    <ClInclude Include="..\src\help-window.h" />
+    <ClInclude Include="..\src\hex-spinner.h" />
+    <ClInclude Include="..\src\icons.h" />
+    <ClInclude Include="..\src\image.h" />
+    <ClInclude Include="..\src\main-window.h" />
+    <ClInclude Include="..\src\map-buttons.h" />
+    <ClInclude Include="..\src\map-events.h" />
+    <ClInclude Include="..\src\map.h" />
+    <ClInclude Include="..\src\metatile.h" />
+    <ClInclude Include="..\src\metatileset.h" />
+    <ClInclude Include="..\src\modal-dialog.h" />
+    <ClInclude Include="..\src\option-dialogs.h" />
+    <ClInclude Include="..\src\palette-map.h" />
+    <ClInclude Include="..\src\palette-window.h" />
+    <ClInclude Include="..\src\parse-asm.h" />
+    <ClInclude Include="..\src\preferences.h" />
+    <ClInclude Include="..\src\resource.h" />
+    <ClInclude Include="..\src\roof-window.h" />
+    <ClInclude Include="..\src\ruler.h" />
+    <ClInclude Include="..\src\themes.h" />
+    <ClInclude Include="..\src\tile.h" />
+    <ClInclude Include="..\src\tiled-image.h" />
+    <ClInclude Include="..\src\block-window.h" />
+    <ClInclude Include="..\src\tileset-window.h" />
+    <ClInclude Include="..\src\tileset.h" />
+    <ClInclude Include="..\src\utils.h" />
+    <ClInclude Include="..\src\version.h" />
+    <ClInclude Include="..\src\widgets.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\add-sub.xpm" />
+    <None Include="..\res\app.ico" />
+    <None Include="..\res\app.xpm" />
+    <None Include="..\res\blank.xpm" />
+    <None Include="..\res\blocks-dark.xpm" />
+    <None Include="..\res\blocks.xpm" />
+    <None Include="..\res\brushed-metal.dat" />
+    <None Include="..\res\change-roof.xpm" />
+    <None Include="..\res\change.xpm" />
+    <None Include="..\res\coll-bottom-left-dark.xpm" />
+    <None Include="..\res\coll-bottom-left.xpm" />
+    <None Include="..\res\coll-bottom-right-dark.xpm" />
+    <None Include="..\res\coll-bottom-right.xpm" />
+    <None Include="..\res\coll-top-left-dark.xpm" />
+    <None Include="..\res\coll-top-left.xpm" />
+    <None Include="..\res\coll-top-right-dark.xpm" />
+    <None Include="..\res\coll-top-right.xpm" />
+    <None Include="..\res\copy.xpm" />
+    <None Include="..\res\error.xpm" />
+    <None Include="..\res\events.xpm" />
+    <None Include="..\res\gameboy.xpm" />
+    <None Include="..\res\grid-dark.xpm" />
+    <None Include="..\res\grid.xpm" />
+    <None Include="..\res\help.html" />
+    <None Include="..\res\hex-dark.xpm" />
+    <None Include="..\res\hex.xpm" />
+    <None Include="..\res\ids-dark.xpm" />
+    <None Include="..\res\ids.xpm" />
+    <None Include="..\res\load-palettes.xpm" />
+    <None Include="..\res\load.xpm" />
+    <None Include="..\res\new.xpm" />
+    <None Include="..\res\open.xpm" />
+    <None Include="..\res\palettes.xpm" />
+    <None Include="..\res\paste.xpm" />
+    <None Include="..\res\print.xpm" />
+    <None Include="..\res\priority.xpm" />
+    <None Include="..\res\redo.xpm" />
+    <None Include="..\res\reload.xpm" />
+    <None Include="..\res\resize.xpm" />
+    <None Include="..\res\roof.xpm" />
+    <None Include="..\res\rulers.xpm" />
+    <None Include="..\res\save.xpm" />
+    <None Include="..\res\show.xpm" />
+    <None Include="..\res\success.xpm" />
+    <None Include="..\res\tileset.xpm" />
+    <None Include="..\res\undo.xpm" />
+    <None Include="..\res\warning.xpm" />
+    <None Include="..\res\warp.xpm" />
+    <None Include="..\res\zoom.xpm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="polished-map.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

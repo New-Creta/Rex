@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D40CA2E5-CC32-4486-93D4-2E32C215CD06}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5DC7221C-0CC8-4730-BFE5-DD3D544CB46A}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{A8BE94EE-82D6-4089-AB94-8B3381AD184B}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\modal-dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\themes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tileset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\palette-map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metatileset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metatile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\option-dialogs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\map-buttons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tiled-image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\help-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\block-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tileset-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\colors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\directory-chooser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\preferences.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\roof-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hex-spinner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\map-events.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gameboy-screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ruler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\palette-window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\parse-asm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\modal-dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\widgets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\main-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\themes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\icons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tileset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\palette-map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metatileset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metatile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\option-dialogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\map-buttons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tiled-image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\help-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\block-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tileset-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\directory-chooser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\preferences.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\roof-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hex-spinner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\map-events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gameboy-screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ruler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\palette-window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parse-asm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\app.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\error.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\open.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\save.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\success.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\warning.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\hex.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\zoom.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\grid.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\ids.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\new.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\print.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\redo.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\resize.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\undo.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\app.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\help.html">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\add-sub.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\tileset.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\change.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\events.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\load.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\show.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\blocks.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-bottom-left.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-bottom-right.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-top-left.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-top-right.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\change-roof.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\roof.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\priority.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\reload.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\gameboy.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\copy.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\paste.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\rulers.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\blank.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\load-palettes.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\palettes.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\blocks-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-bottom-left-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-bottom-right-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-top-left-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\coll-top-right-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\grid-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\hex-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\ids-dark.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\brushed-metal.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\warp.xpm">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="polished-map.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

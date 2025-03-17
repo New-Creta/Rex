@@ -1,0 +1,228 @@
+{
+  "data": [
+    {
+      "name": "white",
+      "color": "#ffffff"
+    },
+    {
+      "name": "purple_1",
+      "color": "#f7e7d6"
+    },
+    {
+      "name": "green_1",
+      "color": "#deffde"
+    },
+    {
+      "name": "blue_1",
+      "color": "#bdbdff"
+    },
+    {
+      "name": "green_2",
+      "color": "#b5ff52"
+    },
+    {
+      "name": "gray_1",
+      "color": "#adadad"
+    },
+    {
+      "name": "orange_1",
+      "color": "#a57b18"
+    },
+    {
+      "name": "orange_2",
+      "color": "#846b18"
+    },
+    {
+      "name": "green_3",
+      "color": "#7ba508"
+    },
+    {
+      "name": "blue_2",
+      "color": "#8c9cff"
+    },
+    {
+      "name": "blue_15",
+      "color": "#6b63ff"
+    },
+    {
+      "name": "gray_2",
+      "color": "#6b6b6b"
+    },
+    {
+      "name": "green_4",
+      "color": "#5abd29"
+    },
+    {
+      "name": "gray_3",
+      "color": "#555555"
+    },
+    {
+      "name": "green_5",
+      "color": "#a5ff73"
+    },
+    {
+      "name": "green_6",
+      "color": "#4a6b00"
+    },
+    {
+      "name": "gray_4",
+      "color": "#393939"
+    },
+    {
+      "name": "green_7",
+      "color": "#297300"
+    },
+    {
+      "name": "gray_5",
+      "color": "#f8f8f8"
+    },
+    {
+      "name": "pink_1",
+      "color": "#ff9cc6"
+    },
+    {
+      "name": "pink_2",
+      "color": "#f898c0"
+    },
+    {
+      "name": "red_1",
+      "color": "#f75231"
+    },
+    {
+      "name": "red_2",
+      "color": "#f05030"
+    },
+    {
+      "name": "yellow_1",
+      "color": "#a08840"
+    },
+    {
+      "name": "green_8",
+      "color": "#d8f8d8"
+    },
+    {
+      "name": "yellow_2",
+      "color": "#d6c68c"
+    },
+    {
+      "name": "yellow_3",
+      "color": "#c8c800"
+    },
+    {
+      "name": "orange_3",
+      "color": "#c69439"
+    },
+    {
+      "name": "orange_4",
+      "color": "#c09038"
+    },
+    {
+      "name": "blue_3",
+      "color": "#dee7ff"
+    },
+    {
+      "name": "blue_4",
+      "color": "#b8b8f8"
+    },
+    {
+      "name": "green_9",
+      "color": "#b0f850"
+    },
+    {
+      "name": "brown_1",
+      "color": "#ad8c39"
+    },
+    {
+      "name": "gray_6",
+      "color": "#aaaaaa"
+    },
+    {
+      "name": "brown_2",
+      "color": "#a07818"
+    },
+    {
+      "name": "orange_5",
+      "color": "#ff8408"
+    },
+    {
+      "name": "gray_7",
+      "color": "#9c9c9c"
+    },
+    {
+      "name": "blue_5",
+      "color": "#949cff"
+    },
+    {
+      "name": "blue_6",
+      "color": "#9098f8"
+    },
+    {
+      "name": "blue_7",
+      "color": "#8c9cb5"
+    },
+    {
+      "name": "blue_8",
+      "color": "#7d82a4"
+    },
+    {
+      "name": "blue_9",
+      "color": "#7b84ff"
+    },
+    {
+      "name": "blue_10",
+      "color": "#738cff"
+    },
+    {
+      "name": "blue_11",
+      "color": "#7384ff"
+    },
+    {
+      "name": "blue_12",
+      "color": "#6860f8"
+    },
+    {
+      "name": "green_10",
+      "color": "#63ce08"
+    },
+    {
+      "name": "green_11",
+      "color": "#60c808"
+    },
+    {
+      "name": "gray_8",
+      "color": "#5a5a5a"
+    },
+    {
+      "name": "green_12",
+      "color": "#94c64a"
+    },
+    {
+      "name": "blue_13",
+      "color": "#4a4aff"
+    },
+    {
+      "name": "blue_14",
+      "color": "#395a7b"
+    },
+    {
+      "name": "gray_9",
+      "color": "#383838"
+    },
+    {
+      "name": "green_13",
+      "color": "#287000"
+    },
+    {
+      "name": "yellow_4",
+      "color": "#ffff39"
+    },
+    {
+      "name": "brown_3",
+      "color": "#f0e0d0"
+    },
+    {
+      "name": "black",
+      "color": "#000000"
+    }
+  ]
+}
