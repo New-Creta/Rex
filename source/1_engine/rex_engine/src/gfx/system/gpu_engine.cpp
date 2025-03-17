@@ -106,6 +106,20 @@ namespace rex
       return m_swapchain->current_buffer();
     }
 
+    void GpuEngine::notify_textures_presence_on_gpu(Texture2D* texture, rsl::unique_ptr<ResourceView> resourceView)
+    {
+      m_textures_on_gpu[texture] = rsl::move(resourceView);
+    }
+    const ResourceView* GpuEngine::try_get_texture_gpu_handle(Texture2D* texture) const
+    {
+      if (m_textures_on_gpu.contains(texture))
+      {
+        return m_textures_on_gpu.at(texture).get();
+      }
+
+      return nullptr;
+    }
+
     // Returns a specific descriptor heap based on type
     ViewHeap* GpuEngine::cpu_desc_heap(ViewHeapType descHeapType)
     {

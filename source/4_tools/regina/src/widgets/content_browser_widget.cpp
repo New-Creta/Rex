@@ -149,7 +149,6 @@ namespace regina
 
 					// Content
 
-					auto start = rsl::chrono::high_resolution_clock::now();
 					ImGui::BeginChild("Scrolling");
 					{
 						rex::imgui::ScopedColour button_color(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -180,9 +179,6 @@ namespace regina
 						//RenderNewScriptDialogue();
 					}
 					ImGui::EndChild();
-					auto end = rsl::chrono::high_resolution_clock::now();
-					const rsl::chrono::duration<f32> elapsed_time = end - start;
-					REX_INFO(LogContentBrowserWidget, "Rendering directoy content took {} seconds", elapsed_time.count());
 
 					// Bottom bar
 					render_bottom_bar(bottom_bar_height);
