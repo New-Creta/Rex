@@ -1,0 +1,79 @@
+{
+  "name": "CinnabarLab",
+  "width": 9,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LAB.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarLab.blk",
+  "border_block_idx": 23,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabarlab_fishing_guru"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 1,
+      "y": 3,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_cinnabarlab_fishing_guru"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 2,
+      "text": "text_cinnabarlab_photo"
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "text": "text_cinnabarlab_meeting_room_sign"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "text": "text_cinnabarlab_r_and_d_sign"
+    },
+    {
+      "x": 17,
+      "y": 4,
+      "text": "text_cinnabarlab_testing_room_sign"
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,73 @@
+{
+  "name": "CinnabarPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabarpokecenter_nurse"
+    },
+    {
+      "name": "cinnabarpokecenter_cooltrainer_f"
+    },
+    {
+      "name": "cinnabarpokecenter_gentleman"
+    },
+    {
+      "name": "cinnabarpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabarpokecenter_nurse"
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_cinnabarpokecenter_cooltrainer_f"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_cinnabarpokecenter_gentleman"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabarpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

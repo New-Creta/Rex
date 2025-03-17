@@ -1,0 +1,313 @@
+{
+  "name": "SaffronGym",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SaffronGym.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "saffrongym_sabrina"
+    },
+    {
+      "name": "saffrongym_channeler1"
+    },
+    {
+      "name": "saffrongym_youngster1"
+    },
+    {
+      "name": "saffrongym_channeler2"
+    },
+    {
+      "name": "saffrongym_youngster2"
+    },
+    {
+      "name": "saffrongym_channeler3"
+    },
+    {
+      "name": "saffrongym_youngster3"
+    },
+    {
+      "name": "saffrongym_youngster4"
+    },
+    {
+      "name": "saffrongym_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 9,
+      "y": 8,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_sabrina"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_channeler1"
+    },
+    {
+      "x": 17,
+      "y": 1,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_youngster1"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_channeler2"
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_youngster2"
+    },
+    {
+      "x": 3,
+      "y": 13,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_channeler3"
+    },
+    {
+      "x": 17,
+      "y": 13,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_youngster3"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_youngster4"
+    },
+    {
+      "x": 10,
+      "y": 15,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffrongym_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 8,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 9,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 23
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 16
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 19
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 28
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 17
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 14
+    },
+    {
+      "x": 1,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 24
+    },
+    {
+      "x": 5,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 31
+    },
+    {
+      "x": 1,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 18
+    },
+    {
+      "x": 5,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 10
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 27
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 13
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 11,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 32
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 25
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 29
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 19,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 11
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 21
+    },
+    {
+      "x": 19,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 30
+    },
+    {
+      "x": 15,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 15
+    },
+    {
+      "x": 19,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 15,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 22
+    },
+    {
+      "x": 19,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 26
+    },
+    {
+      "x": 15,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 12
+    },
+    {
+      "x": 19,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 20
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_saffrongym_default",
+    "script_saffrongym_start_battle",
+    "script_saffrongym_end_battle",
+    "script_saffrongym_sabrina_post_battle"
+  ]
+}

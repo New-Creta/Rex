@@ -1,0 +1,63 @@
+{
+  "name": "ViridianForestSouthGate",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\FOREST_GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianForestSouthGate.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "viridianforestsouthgate_girl"
+    },
+    {
+      "name": "viridianforestsouthgate_little_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 4,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_viridianforestsouthgate_girl"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_viridianforestsouthgate_little_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

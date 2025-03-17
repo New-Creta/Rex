@@ -1,0 +1,78 @@
+{
+  "name": "RocketHideoutB3F",
+  "width": 15,
+  "height": 14,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\RocketHideoutB3F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "rockethideoutb3f_rocket1"
+    },
+    {
+      "name": "rockethideoutb3f_rocket2"
+    },
+    {
+      "name": "rockethideoutb3f_tm_double_edge"
+    },
+    {
+      "name": "rockethideoutb3f_rare_candy"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 22,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_rockethideoutb3f_rocket1"
+    },
+    {
+      "x": 26,
+      "y": 12,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_rockethideoutb3f_rocket2"
+    },
+    {
+      "x": 26,
+      "y": 17,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_rockethideoutb3f_tm_double_edge"
+    },
+    {
+      "x": 20,
+      "y": 14,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_rockethideoutb3f_rare_candy"
+    }
+  ],
+  "warps": [
+    {
+      "x": 25,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 19,
+      "y": 18,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_rockethideoutb3f_default",
+    "script_rockethideoutb3f_start_battle",
+    "script_rockethideoutb3f_end_battle",
+    "script_rockethideoutb3f_player_spinning"
+  ]
+}

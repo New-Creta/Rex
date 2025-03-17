@@ -1,0 +1,55 @@
+{
+  "name": "PokemonTower2F",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonTower2F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemontower2f_rival"
+    },
+    {
+      "name": "pokemontower2f_channeler"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 14,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower2f_rival"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemontower2f_channeler"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_pokemontower2f_default",
+    "script_pokemontower2f_defeated_rival",
+    "script_pokemontower2f_rival_exits"
+  ]
+}

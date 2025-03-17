@@ -1,0 +1,51 @@
+{
+  "name": "Route2TradeHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route2TradeHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route2tradehouse_scientist"
+    },
+    {
+      "name": "route2tradehouse_gameboy_kid"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 4,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route2tradehouse_scientist"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "sprite": "sprite_gameboy_kid",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route2tradehouse_gameboy_kid"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

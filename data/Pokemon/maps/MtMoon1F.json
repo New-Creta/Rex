@@ -1,0 +1,200 @@
+{
+  "name": "MtMoon1F",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\MtMoon1F.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mtmoon1f_hiker"
+    },
+    {
+      "name": "mtmoon1f_youngster1"
+    },
+    {
+      "name": "mtmoon1f_cooltrainer_f1"
+    },
+    {
+      "name": "mtmoon1f_super_nerd"
+    },
+    {
+      "name": "mtmoon1f_cooltrainer_f2"
+    },
+    {
+      "name": "mtmoon1f_youngster2"
+    },
+    {
+      "name": "mtmoon1f_youngster3"
+    },
+    {
+      "name": "mtmoon1f_potion1"
+    },
+    {
+      "name": "mtmoon1f_moon_stone"
+    },
+    {
+      "name": "mtmoon1f_rare_candy"
+    },
+    {
+      "name": "mtmoon1f_escape_rope"
+    },
+    {
+      "name": "mtmoon1f_potion2"
+    },
+    {
+      "name": "mtmoon1f_tm_water_gun"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 6,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoon1f_hiker"
+    },
+    {
+      "x": 12,
+      "y": 16,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_mtmoon1f_youngster1"
+    },
+    {
+      "x": 30,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoon1f_cooltrainer_f1"
+    },
+    {
+      "x": 24,
+      "y": 31,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoon1f_super_nerd"
+    },
+    {
+      "x": 16,
+      "y": 23,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoon1f_cooltrainer_f2"
+    },
+    {
+      "x": 7,
+      "y": 22,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoon1f_youngster2"
+    },
+    {
+      "x": 30,
+      "y": 27,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_mtmoon1f_youngster3"
+    },
+    {
+      "x": 2,
+      "y": 20,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_potion1"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_moon_stone"
+    },
+    {
+      "x": 35,
+      "y": 31,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_rare_candy"
+    },
+    {
+      "x": 36,
+      "y": 23,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_escape_rope"
+    },
+    {
+      "x": 20,
+      "y": 33,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_potion2"
+    },
+    {
+      "x": 5,
+      "y": 32,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoon1f_tm_water_gun"
+    }
+  ],
+  "warps": [
+    {
+      "x": 14,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 15,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 17,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 25,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 15,
+      "y": 23,
+      "text": "text_mtmoon1f_beware_zubat_sign"
+    }
+  ],
+  "scripts": [
+    "script_mtmoon1f_default",
+    "script_mtmoon1f_start_battle",
+    "script_mtmoon1f_end_battle"
+  ]
+}

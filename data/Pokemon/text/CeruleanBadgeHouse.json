@@ -1,0 +1,319 @@
+{
+  "texts": [
+    {
+      "name": "CeruleanBadgeHouseMiddleAgedMan",
+      "values": [
+        {
+          "text": "#MON BADGEs",
+          "type": "text"
+        },
+        {
+          "text": "are owned only by",
+          "type": "line"
+        },
+        {
+          "text": "skilled trainers.",
+          "type": "cont"
+        },
+        {
+          "text": "I see you have",
+          "type": "para"
+        },
+        {
+          "text": "at least one.",
+          "type": "line"
+        },
+        {
+          "text": "Those BADGEs have",
+          "type": "para"
+        },
+        {
+          "text": "amazing secrets!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseMiddleAgedManWhichBadge",
+      "values": [
+        {
+          "text": "Now then...",
+          "type": "text"
+        },
+        {
+          "text": "Which of the 8",
+          "type": "para"
+        },
+        {
+          "text": "BADGEs should I",
+          "type": "line"
+        },
+        {
+          "text": "describe?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseMiddleAgedManVisitAnyTime",
+      "values": [
+        {
+          "text": "Come visit me any",
+          "type": "text"
+        },
+        {
+          "text": "time you wish.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseBoulderBadge",
+      "values": [
+        {
+          "text": "The ATTACK of all",
+          "type": "text"
+        },
+        {
+          "text": "#MON increases",
+          "type": "line"
+        },
+        {
+          "text": "a little bit.",
+          "type": "cont"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "use FLASH any",
+          "type": "line"
+        },
+        {
+          "text": "time you desire.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseCascadeBadge",
+      "values": [
+        {
+          "text": "#MON up to L30",
+          "type": "text"
+        },
+        {
+          "text": "will obey you.",
+          "type": "line"
+        },
+        {
+          "text": "Any higher, they",
+          "type": "para"
+        },
+        {
+          "text": "become unruly!",
+          "type": "line"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "use CUT outside",
+          "type": "line"
+        },
+        {
+          "text": "of battle.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseThunderBadge",
+      "values": [
+        {
+          "text": "The SPEED of all",
+          "type": "text"
+        },
+        {
+          "text": "#MON increases",
+          "type": "line"
+        },
+        {
+          "text": "a little bit.",
+          "type": "cont"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "use FLY outside",
+          "type": "line"
+        },
+        {
+          "text": "of battle.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseRainbowBadge",
+      "values": [
+        {
+          "text": "#MON up to L50",
+          "type": "text"
+        },
+        {
+          "text": "will obey you.",
+          "type": "line"
+        },
+        {
+          "text": "Any higher, they",
+          "type": "para"
+        },
+        {
+          "text": "become unruly!",
+          "type": "line"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "use STRENGTH out-",
+          "type": "line"
+        },
+        {
+          "text": "side of battle.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseSoulBadge",
+      "values": [
+        {
+          "text": "The DEFENSE of all",
+          "type": "text"
+        },
+        {
+          "text": "#MON increases",
+          "type": "line"
+        },
+        {
+          "text": "a little bit.",
+          "type": "cont"
+        },
+        {
+          "text": "It also lets you",
+          "type": "para"
+        },
+        {
+          "text": "use SURF outside",
+          "type": "line"
+        },
+        {
+          "text": "of battle.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseMarshBadge",
+      "values": [
+        {
+          "text": "#MON up to L70",
+          "type": "text"
+        },
+        {
+          "text": "will obey you.",
+          "type": "line"
+        },
+        {
+          "text": "Any higher, they",
+          "type": "para"
+        },
+        {
+          "text": "become unruly!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseVolcanoBadge",
+      "values": [
+        {
+          "text": "Your #MON's",
+          "type": "text"
+        },
+        {
+          "text": "SPECIAL abilities",
+          "type": "line"
+        },
+        {
+          "text": "increase a bit.",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeruleanBadgeHouseEarthBadge",
+      "values": [
+        {
+          "text": "All #MON will",
+          "type": "text"
+        },
+        {
+          "text": "obey you!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        },
+        {
+          "text": "text_asm",
+          "type": "text"
+        },
+        {
+          "text": "text_far _CeruleanBadgeHouseMiddleAgedManText",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

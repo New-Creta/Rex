@@ -1,0 +1,106 @@
+{
+  "name": "PokemonFanClub",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\INTERIOR.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonFanClub.blk",
+  "border_block_idx": 13,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemonfanclub_pikachu_fan"
+    },
+    {
+      "name": "pokemonfanclub_seel_fan"
+    },
+    {
+      "name": "pokemonfanclub_pikachu"
+    },
+    {
+      "name": "pokemonfanclub_seel"
+    },
+    {
+      "name": "pokemonfanclub_chairman"
+    },
+    {
+      "name": "pokemonfanclub_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 3,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemonfanclub_pikachu_fan"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemonfanclub_seel_fan"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "sprite": "sprite_fairy",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemonfanclub_pikachu"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "sprite": "sprite_seel",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemonfanclub_seel"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pokemonfanclub_chairman"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pokemonfanclub_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 0,
+      "text": "text_pokemonfanclub_sign_1"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "text": "text_pokemonfanclub_sign_2"
+    }
+  ],
+  "scripts": []
+}

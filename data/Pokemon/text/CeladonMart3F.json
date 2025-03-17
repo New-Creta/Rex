@@ -1,0 +1,283 @@
+{
+  "texts": [
+    {
+      "name": "CeladonMart3FClerkTM18PreReceive",
+      "values": [
+        {
+          "text": "Oh, hi! I finally",
+          "type": "text"
+        },
+        {
+          "text": "finished #MON!",
+          "type": "line"
+        },
+        {
+          "text": "Not done yet?",
+          "type": "para"
+        },
+        {
+          "text": "This might be",
+          "type": "line"
+        },
+        {
+          "text": "useful!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FClerkReceivedTM18",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FClerkTM18Explanation",
+      "values": [
+        {
+          "text": "TM18 is COUNTER!",
+          "type": "text"
+        },
+        {
+          "text": "Not like the one",
+          "type": "line"
+        },
+        {
+          "text": "I'm leaning on,",
+          "type": "cont"
+        },
+        {
+          "text": "mind you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FClerkTM18NoRoom",
+      "values": [
+        {
+          "text": "Your pack is full",
+          "type": "text"
+        },
+        {
+          "text": "of items!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FGameBoyKid1",
+      "values": [
+        {
+          "text": "Captured #MON",
+          "type": "text"
+        },
+        {
+          "text": "are registered",
+          "type": "line"
+        },
+        {
+          "text": "with an ID No.",
+          "type": "cont"
+        },
+        {
+          "text": "and OT, the name",
+          "type": "cont"
+        },
+        {
+          "text": "of the Original",
+          "type": "cont"
+        },
+        {
+          "text": "Trainer that",
+          "type": "cont"
+        },
+        {
+          "text": "caught it!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FGameBoyKid2",
+      "values": [
+        {
+          "text": "All right!",
+          "type": "text"
+        },
+        {
+          "text": "My buddy's going",
+          "type": "para"
+        },
+        {
+          "text": "to trade me his",
+          "type": "line"
+        },
+        {
+          "text": "KANGASKHAN for my",
+          "type": "cont"
+        },
+        {
+          "text": "GRAVELER!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FGameBoyKid3",
+      "values": [
+        {
+          "text": "Come on GRAVELER!",
+          "type": "text"
+        },
+        {
+          "text": "I love GRAVELER!",
+          "type": "para"
+        },
+        {
+          "text": "I collect them!",
+          "type": "line"
+        },
+        {
+          "text": "Huh?",
+          "type": "para"
+        },
+        {
+          "text": "GRAVELER turned",
+          "type": "para"
+        },
+        {
+          "text": "into a different",
+          "type": "line"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FLittleBoy",
+      "values": [
+        {
+          "text": "You can identify",
+          "type": "text"
+        },
+        {
+          "text": "#MON you got",
+          "type": "line"
+        },
+        {
+          "text": "in trades by",
+          "type": "cont"
+        },
+        {
+          "text": "their ID Numbers!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FSNES",
+      "values": [
+        {
+          "text": "It's an SNES!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FRPG",
+      "values": [
+        {
+          "text": "An RPG! There's",
+          "type": "text"
+        },
+        {
+          "text": "no time for that!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FSportsGame",
+      "values": [
+        {
+          "text": "A sports game!",
+          "type": "text"
+        },
+        {
+          "text": "Dad'll like that!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FPuzzleGame",
+      "values": [
+        {
+          "text": "A puzzle game!",
+          "type": "text"
+        },
+        {
+          "text": "Looks addictive!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FFightingGame",
+      "values": [
+        {
+          "text": "A fighting game!",
+          "type": "text"
+        },
+        {
+          "text": "Looks tough!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FCurrentFloorSign",
+      "values": [
+        {
+          "text": "3F: TV GAME SHOP",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CeladonMart3FPokemonPoster",
+      "values": [
+        {
+          "text": "Red and Blue!",
+          "type": "text"
+        },
+        {
+          "text": "Both are #MON!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

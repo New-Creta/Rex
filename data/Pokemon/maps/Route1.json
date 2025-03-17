@@ -1,0 +1,55 @@
+{
+  "name": "ROUTE 1",
+  "width": 10,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route1.blk",
+  "border_block_idx": 11,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\viridiancity.json",
+      "offset": -5
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\pallettown.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route1_youngster1"
+    },
+    {
+      "name": "route1_youngster2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 24,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_route1_youngster1"
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_route1_youngster2"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 9,
+      "y": 27,
+      "text": "text_route1_sign"
+    }
+  ],
+  "scripts": []
+}

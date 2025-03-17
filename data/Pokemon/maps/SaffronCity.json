@@ -1,0 +1,302 @@
+{
+  "name": "SAFFRON CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\SaffronCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route5.json",
+      "offset": 5
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route6.json",
+      "offset": 5
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route7.json",
+      "offset": 4
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route8.json",
+      "offset": 4
+    }
+  ],
+  "objects": [
+    {
+      "name": "saffroncity_rocket1"
+    },
+    {
+      "name": "saffroncity_rocket2"
+    },
+    {
+      "name": "saffroncity_rocket3"
+    },
+    {
+      "name": "saffroncity_rocket4"
+    },
+    {
+      "name": "saffroncity_rocket5"
+    },
+    {
+      "name": "saffroncity_rocket6"
+    },
+    {
+      "name": "saffroncity_rocket7"
+    },
+    {
+      "name": "saffroncity_scientist"
+    },
+    {
+      "name": "saffroncity_silph_worker_m"
+    },
+    {
+      "name": "saffroncity_silph_worker_f"
+    },
+    {
+      "name": "saffroncity_gentleman"
+    },
+    {
+      "name": "saffroncity_pidgeot"
+    },
+    {
+      "name": "saffroncity_rocker"
+    },
+    {
+      "name": "saffroncity_rocket8"
+    },
+    {
+      "name": "saffroncity_rocket9"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 7,
+      "y": 6,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_saffroncity_rocket1"
+    },
+    {
+      "x": 20,
+      "y": 8,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_saffroncity_rocket2"
+    },
+    {
+      "x": 34,
+      "y": 4,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_saffroncity_rocket3"
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_saffroncity_rocket4"
+    },
+    {
+      "x": 11,
+      "y": 25,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_saffroncity_rocket5"
+    },
+    {
+      "x": 32,
+      "y": 13,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_saffroncity_rocket6"
+    },
+    {
+      "x": 18,
+      "y": 30,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_saffroncity_rocket7"
+    },
+    {
+      "x": 8,
+      "y": 14,
+      "sprite": "sprite_scientist",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_saffroncity_scientist"
+    },
+    {
+      "x": 23,
+      "y": 23,
+      "sprite": "sprite_silph_worker_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_saffroncity_silph_worker_m"
+    },
+    {
+      "x": 17,
+      "y": 30,
+      "sprite": "sprite_silph_worker_f",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_saffroncity_silph_worker_f"
+    },
+    {
+      "x": 30,
+      "y": 12,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffroncity_gentleman"
+    },
+    {
+      "x": 31,
+      "y": 12,
+      "sprite": "sprite_bird",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffroncity_pidgeot"
+    },
+    {
+      "x": 18,
+      "y": 8,
+      "sprite": "sprite_rocker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_saffroncity_rocker"
+    },
+    {
+      "x": 18,
+      "y": 22,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffroncity_rocket8"
+    },
+    {
+      "x": 19,
+      "y": 22,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffroncity_rocket9"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 26,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 34,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 25,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 21,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 9,
+      "y": 29,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 29,
+      "y": 29,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 5,
+      "text": "text_saffroncity_sign"
+    },
+    {
+      "x": 27,
+      "y": 5,
+      "text": "text_saffroncity_fighting_dojo_sign"
+    },
+    {
+      "x": 35,
+      "y": 5,
+      "text": "text_saffroncity_gym_sign"
+    },
+    {
+      "x": 26,
+      "y": 11,
+      "text": "text_saffroncity_mart_sign"
+    },
+    {
+      "x": 39,
+      "y": 19,
+      "text": "text_saffroncity_trainer_tips1"
+    },
+    {
+      "x": 5,
+      "y": 21,
+      "text": "text_saffroncity_trainer_tips2"
+    },
+    {
+      "x": 15,
+      "y": 21,
+      "text": "text_saffroncity_silph_co_sign"
+    },
+    {
+      "x": 10,
+      "y": 29,
+      "text": "text_saffroncity_pokecenter_sign"
+    },
+    {
+      "x": 27,
+      "y": 29,
+      "text": "text_saffroncity_mr_psychics_house_sign"
+    },
+    {
+      "x": 1,
+      "y": 19,
+      "text": "text_saffroncity_silph_co_latest_product_sign"
+    }
+  ],
+  "scripts": []
+}

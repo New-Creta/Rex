@@ -1,0 +1,344 @@
+{
+  "texts": [
+    {
+      "name": "PewterCityCooltrainerF",
+      "values": [
+        {
+          "text": "It's rumored that",
+          "type": "text"
+        },
+        {
+          "text": "CLEFAIRYs came",
+          "type": "line"
+        },
+        {
+          "text": "from the moon!",
+          "type": "cont"
+        },
+        {
+          "text": "They appeared ",
+          "type": "para"
+        },
+        {
+          "text": "after MOON STONE",
+          "type": "line"
+        },
+        {
+          "text": "fell on MT.MOON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityCooltrainerM",
+      "values": [
+        {
+          "text": "There aren't many",
+          "type": "text"
+        },
+        {
+          "text": "serious #MON",
+          "type": "line"
+        },
+        {
+          "text": "trainers here!",
+          "type": "cont"
+        },
+        {
+          "text": "They're all like",
+          "type": "para"
+        },
+        {
+          "text": "BUG CATCHERs,",
+          "type": "line"
+        },
+        {
+          "text": "but PEWTER GYM's",
+          "type": "cont"
+        },
+        {
+          "text": "BROCK is totally",
+          "type": "cont"
+        },
+        {
+          "text": "into it!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd1DidYouCheckOutMuseum",
+      "values": [
+        {
+          "text": "Did you check out",
+          "type": "text"
+        },
+        {
+          "text": "the MUSEUM?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd1WerentThoseFossilsAmazing",
+      "values": [
+        {
+          "text": "Weren't those",
+          "type": "text"
+        },
+        {
+          "text": "fossils from MT.",
+          "type": "line"
+        },
+        {
+          "text": "MOON amazing?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd1YouHaveToGo",
+      "values": [
+        {
+          "text": "Really?",
+          "type": "text"
+        },
+        {
+          "text": "You absolutely",
+          "type": "line"
+        },
+        {
+          "text": "have to go!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd1ItsRightHere",
+      "values": [
+        {
+          "text": "It's right here!",
+          "type": "text"
+        },
+        {
+          "text": "You have to pay",
+          "type": "line"
+        },
+        {
+          "text": "to get in, but",
+          "type": "cont"
+        },
+        {
+          "text": "it's worth it!",
+          "type": "cont"
+        },
+        {
+          "text": "See you around!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd2DoYouKnowWhatImDoing",
+      "values": [
+        {
+          "text": "Psssst!",
+          "type": "text"
+        },
+        {
+          "text": "Do you know what",
+          "type": "line"
+        },
+        {
+          "text": "I'm doing?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd2ThatsRight",
+      "values": [
+        {
+          "text": "That's right!",
+          "type": "text"
+        },
+        {
+          "text": "It's hard work!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySuperNerd2ImSprayingRepel",
+      "values": [
+        {
+          "text": "I'm spraying REPEL",
+          "type": "text"
+        },
+        {
+          "text": "to keep #MON",
+          "type": "line"
+        },
+        {
+          "text": "out of my garden!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityYoungsterYoureATrainerFollowMe",
+      "values": [
+        {
+          "text": "You're a trainer",
+          "type": "text"
+        },
+        {
+          "text": "right? BROCK's",
+          "type": "line"
+        },
+        {
+          "text": "looking for new",
+          "type": "cont"
+        },
+        {
+          "text": "challengers!",
+          "type": "cont"
+        },
+        {
+          "text": "Follow me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityYoungsterGoTakeOnBrock",
+      "values": [
+        {
+          "text": "If you have the",
+          "type": "text"
+        },
+        {
+          "text": "right stuff, go",
+          "type": "line"
+        },
+        {
+          "text": "take on BROCK!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityTrainerTips",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Any #MON that",
+          "type": "para"
+        },
+        {
+          "text": "takes part in",
+          "type": "line"
+        },
+        {
+          "text": "battle, however",
+          "type": "cont"
+        },
+        {
+          "text": "short, earns EXP!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityPoliceNoticeSign",
+      "values": [
+        {
+          "text": "NOTICE!",
+          "type": "text"
+        },
+        {
+          "text": "Thieves have been",
+          "type": "para"
+        },
+        {
+          "text": "stealing #MON",
+          "type": "line"
+        },
+        {
+          "text": "fossils at MT.",
+          "type": "cont"
+        },
+        {
+          "text": "MOON! Please call",
+          "type": "cont"
+        },
+        {
+          "text": "PEWTER POLICE",
+          "type": "cont"
+        },
+        {
+          "text": "with any info!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityMuseumSign",
+      "values": [
+        {
+          "text": "PEWTER MUSEUM",
+          "type": "text"
+        },
+        {
+          "text": "OF SCIENCE",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterCityGymSign",
+      "values": [
+        {
+          "text": "PEWTER CITY",
+          "type": "text"
+        },
+        {
+          "text": "#MON GYM",
+          "type": "line"
+        },
+        {
+          "text": "LEADER: BROCK",
+          "type": "cont"
+        },
+        {
+          "text": "The Rock Solid",
+          "type": "para"
+        },
+        {
+          "text": "#MON Trainer!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterCitySign",
+      "values": [
+        {
+          "text": "PEWTER CITY",
+          "type": "text"
+        },
+        {
+          "text": "A Stone Gray",
+          "type": "line"
+        },
+        {
+          "text": "City",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

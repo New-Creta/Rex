@@ -1,0 +1,106 @@
+{
+  "name": "CeladonMansion3F",
+  "width": 4,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\MANSION.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMansion3F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmansion3f_programmer"
+    },
+    {
+      "name": "celadonmansion3f_graphic_artist"
+    },
+    {
+      "name": "celadonmansion3f_writer"
+    },
+    {
+      "name": "celadonmansion3f_game_designer"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 0,
+      "y": 4,
+      "sprite": "sprite_bike_shop_clerk",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_celadonmansion3f_programmer"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_celadonmansion3f_graphic_artist"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_celadonmansion3f_writer"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_silph_worker_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_celadonmansion3f_game_designer"
+    }
+  ],
+  "warps": [
+    {
+      "x": 6,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 3,
+      "text": "text_celadonmansion3f_game_program_pc"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "text": "text_celadonmansion3f_playing_game_pc"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "text": "text_celadonmansion3f_game_script_pc"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "text": "text_celadonmansion3f_dev_room_sign"
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,133 @@
+{
+  "name": "CinnabarGym",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarGym.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabargym_blaine"
+    },
+    {
+      "name": "cinnabargym_super_nerd1"
+    },
+    {
+      "name": "cinnabargym_super_nerd2"
+    },
+    {
+      "name": "cinnabargym_super_nerd3"
+    },
+    {
+      "name": "cinnabargym_super_nerd4"
+    },
+    {
+      "name": "cinnabargym_super_nerd5"
+    },
+    {
+      "name": "cinnabargym_super_nerd6"
+    },
+    {
+      "name": "cinnabargym_super_nerd7"
+    },
+    {
+      "name": "cinnabargym_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_blaine"
+    },
+    {
+      "x": 17,
+      "y": 2,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd1"
+    },
+    {
+      "x": 17,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd2"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd3"
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd4"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd5"
+    },
+    {
+      "x": 3,
+      "y": 14,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd6"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_super_nerd7"
+    },
+    {
+      "x": 16,
+      "y": 13,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabargym_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 16,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_cinnabargym_default",
+    "script_cinnabargym_get_opponent_text",
+    "script_cinnabargym_open_gate",
+    "script_cinnabargym_blaine_post_battle"
+  ]
+}

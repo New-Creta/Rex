@@ -1,0 +1,55 @@
+{
+  "name": "Route6Gate",
+  "width": 4,
+  "height": 3,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route6Gate.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route6gate_guard"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 2,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route6gate_guard"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_route6gate_default",
+    "script_route6gate_player_moving"
+  ]
+}

@@ -5,3 +5,14 @@ https://www.spriters-resource.com/game_boy_advance/pokemonrubysapphire/
 https://www.spriters-resource.com/game_boy_advance/pokemonfireredleafgreen/
 https://www.pokecommunity.com/threads/johtoblazikens-bootleg-pokémon-firered-a-rom-base-without-the-rom-demo-v0-6.407866/
 https://essentialsdocs.fandom.com/wiki/Essentials_Docs_Wiki
+https://github.com/pret/pokered
+https://github.com/pret/pokecrystal
+https://github.com/pret/pokeemerald
+https://github.com/pret/pokeplatinum
+https://github.com/pret/pokeheartgold
+https://github.com/pret/pokefirered
+https://www.spriters-resource.com/game_boy_gbc/pokemongoldsilver/sheet/60234/
+https://www.youtube.com/watch?app=desktop&v=SK7XT0DWqtE
+
+Programmer - Nick De Breuck
+Programmer - Dave De Breuck

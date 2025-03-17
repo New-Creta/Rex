@@ -1,0 +1,42 @@
+{
+  "texts": [
+    {
+      "name": "SaffronPokecenterBeauty",
+      "values": [
+        {
+          "text": "#MON growth",
+          "type": "text"
+        },
+        {
+          "text": "rates differ from",
+          "type": "line"
+        },
+        {
+          "text": "specie to specie.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SaffronPokecenterGentleman",
+      "values": [
+        {
+          "text": "SILPH CO. is very",
+          "type": "text"
+        },
+        {
+          "text": "famous. That's",
+          "type": "line"
+        },
+        {
+          "text": "why it attracted",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

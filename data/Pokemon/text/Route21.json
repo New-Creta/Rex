@@ -1,0 +1,403 @@
+{
+  "texts": [
+    {
+      "name": "Route21Fisher1Battle",
+      "values": [
+        {
+          "text": "You want to know",
+          "type": "text"
+        },
+        {
+          "text": "if the fish are",
+          "type": "line"
+        },
+        {
+          "text": "biting?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher1EndBattle",
+      "values": [
+        {
+          "text": "Dang!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher1AfterBattle",
+      "values": [
+        {
+          "text": "I can't catch",
+          "type": "text"
+        },
+        {
+          "text": "anything good!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher2Battle",
+      "values": [
+        {
+          "text": "I got a big haul!",
+          "type": "text"
+        },
+        {
+          "text": "Wanna go for it?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher2EndBattle",
+      "values": [
+        {
+          "text": "Darn",
+          "type": "text"
+        },
+        {
+          "text": "MAGIKARP!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher2AfterBattle",
+      "values": [
+        {
+          "text": "I seem to only",
+          "type": "text"
+        },
+        {
+          "text": "catch MAGIKARP!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer1Battle",
+      "values": [
+        {
+          "text": "The sea cleanses",
+          "type": "text"
+        },
+        {
+          "text": "my body and soul!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer1EndBattle",
+      "values": [
+        {
+          "text": "Ayah!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer1AfterBattle",
+      "values": [
+        {
+          "text": "I like the",
+          "type": "text"
+        },
+        {
+          "text": "mountains too!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer2Battle",
+      "values": [
+        {
+          "text": "What's wrong with",
+          "type": "text"
+        },
+        {
+          "text": "me swimming?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer2EndBattle",
+      "values": [
+        {
+          "text": "Cheap",
+          "type": "text"
+        },
+        {
+          "text": "shot!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer2AfterBattle",
+      "values": [
+        {
+          "text": "I look like what?",
+          "type": "text"
+        },
+        {
+          "text": "A studded inner",
+          "type": "line"
+        },
+        {
+          "text": "tube? Get lost!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer3Battle",
+      "values": [
+        {
+          "text": "I caught all my",
+          "type": "text"
+        },
+        {
+          "text": "#MON at sea!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer3EndBattle",
+      "values": [
+        {
+          "text": "Diver!!",
+          "type": "text"
+        },
+        {
+          "text": "Down!!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer3AfterBattle",
+      "values": [
+        {
+          "text": "Where'd you catch",
+          "type": "text"
+        },
+        {
+          "text": "your #MON?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer4Battle",
+      "values": [
+        {
+          "text": "Right now, I'm in",
+          "type": "text"
+        },
+        {
+          "text": "a triathlon meet!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer4EndBattle",
+      "values": [
+        {
+          "text": "Pant...",
+          "type": "text"
+        },
+        {
+          "text": "pant...pant...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer4AfterBattle",
+      "values": [
+        {
+          "text": "I'm beat!",
+          "type": "text"
+        },
+        {
+          "text": "But, I still have",
+          "type": "line"
+        },
+        {
+          "text": "the bike race and",
+          "type": "cont"
+        },
+        {
+          "text": "marathon left!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer5Battle",
+      "values": [
+        {
+          "text": "Ahh! Feel the sun",
+          "type": "text"
+        },
+        {
+          "text": "and the wind!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer5EndBattle",
+      "values": [
+        {
+          "text": "Yow!",
+          "type": "text"
+        },
+        {
+          "text": "I lost!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Swimmer5AfterBattle",
+      "values": [
+        {
+          "text": "I'm sunburnt to a",
+          "type": "text"
+        },
+        {
+          "text": "crisp!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher3Battle",
+      "values": [
+        {
+          "text": "Hey, don't scare",
+          "type": "text"
+        },
+        {
+          "text": "away the fish!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher3EndBattle",
+      "values": [
+        {
+          "text": "Sorry!",
+          "type": "text"
+        },
+        {
+          "text": "I didn't mean it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher3AfterBattle",
+      "values": [
+        {
+          "text": "I was just angry",
+          "type": "text"
+        },
+        {
+          "text": "that I couldn't",
+          "type": "line"
+        },
+        {
+          "text": "catch anything.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher4Battle",
+      "values": [
+        {
+          "text": "Keep me company",
+          "type": "text"
+        },
+        {
+          "text": "'til I get a hit!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher4EndBattle",
+      "values": [
+        {
+          "text": "That",
+          "type": "text"
+        },
+        {
+          "text": "burned some time.",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route21Fisher4AfterBattle",
+      "values": [
+        {
+          "text": "Oh wait! I got a",
+          "type": "text"
+        },
+        {
+          "text": "bite! Yeah!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

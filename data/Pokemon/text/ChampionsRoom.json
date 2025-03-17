@@ -1,0 +1,436 @@
+{
+  "texts": [
+    {
+      "name": "ChampionsRoomRivalIntro",
+      "values": [
+        {
+          "text": "<RIVAL>: Hey!",
+          "type": "text"
+        },
+        {
+          "text": "I was looking",
+          "type": "para"
+        },
+        {
+          "text": "forward to seeing",
+          "type": "line"
+        },
+        {
+          "text": "you, <PLAYER>!",
+          "type": "cont"
+        },
+        {
+          "text": "My rival should",
+          "type": "para"
+        },
+        {
+          "text": "be strong to keep",
+          "type": "line"
+        },
+        {
+          "text": "me sharp!",
+          "type": "cont"
+        },
+        {
+          "text": "While working on",
+          "type": "para"
+        },
+        {
+          "text": "#DEX, I looked",
+          "type": "line"
+        },
+        {
+          "text": "all over for",
+          "type": "cont"
+        },
+        {
+          "text": "powerful #MON!",
+          "type": "cont"
+        },
+        {
+          "text": "Not only that, I",
+          "type": "para"
+        },
+        {
+          "text": "assembled teams",
+          "type": "line"
+        },
+        {
+          "text": "that would beat",
+          "type": "cont"
+        },
+        {
+          "text": "any #MON type!",
+          "type": "cont"
+        },
+        {
+          "text": "And now!",
+          "type": "para"
+        },
+        {
+          "text": "I'm the #MON",
+          "type": "para"
+        },
+        {
+          "text": "LEAGUE champion!",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>! Do you",
+          "type": "para"
+        },
+        {
+          "text": "know what that",
+          "type": "line"
+        },
+        {
+          "text": "means?",
+          "type": "cont"
+        },
+        {
+          "text": "I'll tell you!",
+          "type": "para"
+        },
+        {
+          "text": "I am the most",
+          "type": "para"
+        },
+        {
+          "text": "powerful trainer",
+          "type": "line"
+        },
+        {
+          "text": "in the world!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "RivalDefeated",
+      "values": [
+        {
+          "text": "NO!",
+          "type": "text"
+        },
+        {
+          "text": "That can't be!",
+          "type": "line"
+        },
+        {
+          "text": "You beat my best!",
+          "type": "cont"
+        },
+        {
+          "text": "After all that",
+          "type": "para"
+        },
+        {
+          "text": "work to become",
+          "type": "line"
+        },
+        {
+          "text": "LEAGUE champ?",
+          "type": "cont"
+        },
+        {
+          "text": "My reign is over",
+          "type": "para"
+        },
+        {
+          "text": "already?",
+          "type": "line"
+        },
+        {
+          "text": "It's not fair!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "RivalVictory",
+      "values": [
+        {
+          "text": "Hahaha!",
+          "type": "text"
+        },
+        {
+          "text": "I won, I won!",
+          "type": "line"
+        },
+        {
+          "text": "I'm too good for",
+          "type": "para"
+        },
+        {
+          "text": "you, <PLAYER>!",
+          "type": "line"
+        },
+        {
+          "text": "You did well to",
+          "type": "para"
+        },
+        {
+          "text": "even reach me,",
+          "type": "line"
+        },
+        {
+          "text": "<RIVAL>, the",
+          "type": "cont"
+        },
+        {
+          "text": "#MON genius!",
+          "type": "cont"
+        },
+        {
+          "text": "Nice try, loser!",
+          "type": "para"
+        },
+        {
+          "text": "Hahaha!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "ChampionsRoomRivalAfterBattle",
+      "values": [
+        {
+          "text": "Why?",
+          "type": "text"
+        },
+        {
+          "text": "Why did I lose?",
+          "type": "line"
+        },
+        {
+          "text": "I never made any",
+          "type": "para"
+        },
+        {
+          "text": "mistakes raising",
+          "type": "line"
+        },
+        {
+          "text": "my #MON...",
+          "type": "cont"
+        },
+        {
+          "text": "Darn it! You're",
+          "type": "para"
+        },
+        {
+          "text": "the new #MON",
+          "type": "line"
+        },
+        {
+          "text": "LEAGUE champion!",
+          "type": "cont"
+        },
+        {
+          "text": "Although I don't",
+          "type": "para"
+        },
+        {
+          "text": "like to admit it.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ChampionsRoomOak",
+      "values": [
+        {
+          "text": "OAK: <PLAYER>!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "ChampionsRoomOakCongratulatesPlayer",
+      "values": [
+        {
+          "text": "OAK: So, you won!",
+          "type": "text"
+        },
+        {
+          "text": "Congratulations!",
+          "type": "line"
+        },
+        {
+          "text": "You're the new",
+          "type": "cont"
+        },
+        {
+          "text": "#MON LEAGUE",
+          "type": "cont"
+        },
+        {
+          "text": "champion!",
+          "type": "cont"
+        },
+        {
+          "text": "You've grown up so",
+          "type": "para"
+        },
+        {
+          "text": "much since you",
+          "type": "line"
+        },
+        {
+          "text": "first left with",
+          "type": "cont"
+        },
+        {
+          "text": "@",
+          "type": "cont"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": "!",
+          "type": "text"
+        },
+        {
+          "text": "<PLAYER>, you have",
+          "type": "para"
+        },
+        {
+          "text": "come of age!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "ChampionsRoomOakDisappointedWithRival",
+      "values": [
+        {
+          "text": "OAK: <RIVAL>! I'm",
+          "type": "text"
+        },
+        {
+          "text": "disappointed!",
+          "type": "line"
+        },
+        {
+          "text": "I came when I",
+          "type": "para"
+        },
+        {
+          "text": "heard you beat",
+          "type": "line"
+        },
+        {
+          "text": "the ELITE FOUR!",
+          "type": "cont"
+        },
+        {
+          "text": "But, when I got",
+          "type": "para"
+        },
+        {
+          "text": "here, you had",
+          "type": "line"
+        },
+        {
+          "text": "already lost!",
+          "type": "cont"
+        },
+        {
+          "text": "<RIVAL>! Do you",
+          "type": "para"
+        },
+        {
+          "text": "understand why",
+          "type": "line"
+        },
+        {
+          "text": "you lost?",
+          "type": "cont"
+        },
+        {
+          "text": "You have forgotten",
+          "type": "para"
+        },
+        {
+          "text": "to treat your",
+          "type": "line"
+        },
+        {
+          "text": "#MON with",
+          "type": "cont"
+        },
+        {
+          "text": "trust and love!",
+          "type": "cont"
+        },
+        {
+          "text": "Without them, you",
+          "type": "para"
+        },
+        {
+          "text": "will never become",
+          "type": "line"
+        },
+        {
+          "text": "a champ again!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ChampionsRoomOakComeWithMe",
+      "values": [
+        {
+          "text": "OAK: <PLAYER>!",
+          "type": "text"
+        },
+        {
+          "text": "You understand",
+          "type": "para"
+        },
+        {
+          "text": "that your victory",
+          "type": "line"
+        },
+        {
+          "text": "was not just your",
+          "type": "cont"
+        },
+        {
+          "text": "own doing!",
+          "type": "cont"
+        },
+        {
+          "text": "The bond you share",
+          "type": "para"
+        },
+        {
+          "text": "with your #MON",
+          "type": "line"
+        },
+        {
+          "text": "is marvelous!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "para"
+        },
+        {
+          "text": "Come with me!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

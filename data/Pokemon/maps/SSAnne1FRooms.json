@@ -1,0 +1,178 @@
+{
+  "name": "SSAnne1FRooms",
+  "width": 12,
+  "height": 8,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnne1FRooms.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssanne1frooms_gentleman1"
+    },
+    {
+      "name": "ssanne1frooms_gentleman2"
+    },
+    {
+      "name": "ssanne1frooms_youngster"
+    },
+    {
+      "name": "ssanne1frooms_cooltrainer_f"
+    },
+    {
+      "name": "ssanne1frooms_girl1"
+    },
+    {
+      "name": "ssanne1frooms_middle_aged_man"
+    },
+    {
+      "name": "ssanne1frooms_little_girl"
+    },
+    {
+      "name": "ssanne1frooms_wigglytuff"
+    },
+    {
+      "name": "ssanne1frooms_girl2"
+    },
+    {
+      "name": "ssanne1frooms_tm_body_slam"
+    },
+    {
+      "name": "ssanne1frooms_gentleman3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne1frooms_gentleman1"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssanne1frooms_gentleman2"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssanne1frooms_youngster"
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne1frooms_cooltrainer_f"
+    },
+    {
+      "x": 22,
+      "y": 3,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ssanne1frooms_girl1"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne1frooms_middle_aged_man"
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "sprite": "sprite_little_girl",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne1frooms_little_girl"
+    },
+    {
+      "x": 3,
+      "y": 11,
+      "sprite": "sprite_fairy",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne1frooms_wigglytuff"
+    },
+    {
+      "x": 10,
+      "y": 13,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne1frooms_girl2"
+    },
+    {
+      "x": 12,
+      "y": 15,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne1frooms_tm_body_slam"
+    },
+    {
+      "x": 21,
+      "y": 13,
+      "sprite": "sprite_gentleman",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ssanne1frooms_gentleman3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 0,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 20,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 20,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_ssanne1frooms_default",
+    "script_ssanne1frooms_start_battle",
+    "script_ssanne1frooms_end_battle"
+  ]
+}

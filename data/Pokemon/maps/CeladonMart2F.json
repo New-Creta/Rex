@@ -1,0 +1,85 @@
+{
+  "name": "CeladonMart2F",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMart2F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmart2f_clerk1"
+    },
+    {
+      "name": "celadonmart2f_clerk2"
+    },
+    {
+      "name": "celadonmart2f_middle_aged_man"
+    },
+    {
+      "name": "celadonmart2f_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmart2f_clerk1"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmart2f_clerk2"
+    },
+    {
+      "x": 19,
+      "y": 5,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_celadonmart2f_middle_aged_man"
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_celadonmart2f_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 12,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 16,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 14,
+      "y": 1,
+      "text": "text_celadonmart2f_current_floor_sign"
+    }
+  ],
+  "scripts": []
+}

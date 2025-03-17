@@ -1,0 +1,95 @@
+{
+  "name": "SilphCo9F",
+  "width": 13,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCo9F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "silphco9f_nurse"
+    },
+    {
+      "name": "silphco9f_rocket1"
+    },
+    {
+      "name": "silphco9f_scientist"
+    },
+    {
+      "name": "silphco9f_rocket2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 14,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco9f_nurse"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco9f_rocket1"
+    },
+    {
+      "x": 21,
+      "y": 13,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco9f_scientist"
+    },
+    {
+      "x": 13,
+      "y": 16,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco9f_rocket2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 14,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 17,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_silphco9f_default",
+    "script_silphco9f_start_battle",
+    "script_silphco9f_end_battle"
+  ]
+}

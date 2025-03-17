@@ -1,0 +1,256 @@
+{
+  "name": "CERULEAN CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route24.json",
+      "offset": 5
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route5.json",
+      "offset": 5
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route4.json",
+      "offset": 4
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route9.json",
+      "offset": 4
+    }
+  ],
+  "objects": [
+    {
+      "name": "ceruleancity_rival"
+    },
+    {
+      "name": "ceruleancity_rocket"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_m"
+    },
+    {
+      "name": "ceruleancity_super_nerd1"
+    },
+    {
+      "name": "ceruleancity_super_nerd2"
+    },
+    {
+      "name": "ceruleancity_guard1"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_f1"
+    },
+    {
+      "name": "ceruleancity_slowbro"
+    },
+    {
+      "name": "ceruleancity_cooltrainer_f2"
+    },
+    {
+      "name": "ceruleancity_super_nerd3"
+    },
+    {
+      "name": "ceruleancity_guard2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 20,
+      "y": 2,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_rival"
+    },
+    {
+      "x": 30,
+      "y": 8,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ceruleancity_rocket"
+    },
+    {
+      "x": 31,
+      "y": 20,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_cooltrainer_m"
+    },
+    {
+      "x": 15,
+      "y": 18,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_ceruleancity_super_nerd1"
+    },
+    {
+      "x": 9,
+      "y": 21,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ceruleancity_super_nerd2"
+    },
+    {
+      "x": 28,
+      "y": 12,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_guard1"
+    },
+    {
+      "x": 29,
+      "y": 26,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ceruleancity_cooltrainer_f1"
+    },
+    {
+      "x": 28,
+      "y": 26,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_slowbro"
+    },
+    {
+      "x": 9,
+      "y": 27,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ceruleancity_cooltrainer_f2"
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_super_nerd3"
+    },
+    {
+      "x": 27,
+      "y": 12,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleancity_guard2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 27,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 19,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 30,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 25,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 27,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 23,
+      "y": 19,
+      "text": "text_ceruleancity_sign"
+    },
+    {
+      "x": 17,
+      "y": 29,
+      "text": "text_ceruleancity_trainer_tips"
+    },
+    {
+      "x": 26,
+      "y": 25,
+      "text": "text_ceruleancity_mart_sign"
+    },
+    {
+      "x": 20,
+      "y": 17,
+      "text": "text_ceruleancity_pokecenter_sign"
+    },
+    {
+      "x": 11,
+      "y": 25,
+      "text": "text_ceruleancity_bikeshop_sign"
+    },
+    {
+      "x": 27,
+      "y": 21,
+      "text": "text_ceruleancity_gym_sign"
+    }
+  ],
+  "scripts": [
+    "script_ceruleancity_default",
+    "script_ceruleancity_rival_battle",
+    "script_ceruleancity_rival_defeated",
+    "script_ceruleancity_rival_cleanup",
+    "script_ceruleancity_rocket_defeated"
+  ]
+}

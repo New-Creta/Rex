@@ -1,0 +1,169 @@
+{
+  "name": "PEWTER CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\PewterCity.blk",
+  "border_block_idx": 10,
+  "connections": [
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route2.json",
+      "offset": 5
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route3.json",
+      "offset": 4
+    }
+  ],
+  "objects": [
+    {
+      "name": "pewtercity_cooltrainer_f"
+    },
+    {
+      "name": "pewtercity_cooltrainer_m"
+    },
+    {
+      "name": "pewtercity_super_nerd1"
+    },
+    {
+      "name": "pewtercity_super_nerd2"
+    },
+    {
+      "name": "pewtercity_youngster"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 15,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pewtercity_cooltrainer_f"
+    },
+    {
+      "x": 17,
+      "y": 25,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pewtercity_cooltrainer_m"
+    },
+    {
+      "x": 27,
+      "y": 17,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pewtercity_super_nerd1"
+    },
+    {
+      "x": 26,
+      "y": 25,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_pewtercity_super_nerd2"
+    },
+    {
+      "x": 35,
+      "y": 16,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pewtercity_youngster"
+    }
+  ],
+  "warps": [
+    {
+      "x": 14,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 19,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 16,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 29,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 23,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 29,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 19,
+      "y": 29,
+      "text": "text_pewtercity_trainer_tips"
+    },
+    {
+      "x": 33,
+      "y": 19,
+      "text": "text_pewtercity_police_notice_sign"
+    },
+    {
+      "x": 24,
+      "y": 17,
+      "text": "text_pewtercity_mart_sign"
+    },
+    {
+      "x": 14,
+      "y": 25,
+      "text": "text_pewtercity_pokecenter_sign"
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "text": "text_pewtercity_museum_sign"
+    },
+    {
+      "x": 11,
+      "y": 17,
+      "text": "text_pewtercity_gym_sign"
+    },
+    {
+      "x": 25,
+      "y": 23,
+      "text": "text_pewtercity_sign"
+    }
+  ],
+  "scripts": [
+    "script_pewtercity_default",
+    "script_pewtercity_super_nerd1_shows_player_museum",
+    "script_pewtercity_hide_super_nerd1",
+    "script_pewtercity_reset_super_nerd1",
+    "script_pewtercity_youngster_shows_player_gym",
+    "script_pewtercity_hide_youngster",
+    "script_pewtercity_reset_youngster"
+  ]
+}

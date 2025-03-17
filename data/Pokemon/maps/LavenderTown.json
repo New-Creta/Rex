@@ -1,0 +1,133 @@
+{
+  "name": "LAVENDER TOWN",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\LavenderTown.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route10.json",
+      "offset": 0
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route12.json",
+      "offset": 0
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route8.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "lavendertown_little_girl"
+    },
+    {
+      "name": "lavendertown_cooltrainer_m"
+    },
+    {
+      "name": "lavendertown_super_nerd"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 15,
+      "y": 9,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_lavendertown_little_girl"
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_lavendertown_cooltrainer_m"
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_lavendertown_super_nerd"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 11,
+      "y": 9,
+      "text": "text_lavendertown_sign"
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "text": "text_lavendertown_silph_scope_sign"
+    },
+    {
+      "x": 16,
+      "y": 13,
+      "text": "text_lavendertown_mart_sign"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "text": "text_lavendertown_pokecenter_sign"
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "text": "text_lavendertown_pokemon_house_sign"
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "text": "text_lavendertown_pokemon_tower_sign"
+    }
+  ],
+  "scripts": []
+}

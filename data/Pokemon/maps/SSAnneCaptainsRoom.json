@@ -1,0 +1,45 @@
+{
+  "name": "SSAnneCaptainsRoom",
+  "width": 3,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnneCaptainsRoom.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssannecaptainsroom_captain"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_captain",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssannecaptainsroom_captain"
+    }
+  ],
+  "warps": [
+    {
+      "x": 0,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 4,
+      "y": 1,
+      "text": "text_ssannecaptainsroom_trash"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "text": "text_ssannecaptainsroom_seasick_book"
+    }
+  ],
+  "scripts": []
+}

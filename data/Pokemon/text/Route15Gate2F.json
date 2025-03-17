@@ -1,0 +1,78 @@
+{
+  "texts": [
+    {
+      "name": "Route15Gate2FOaksAideExpAll",
+      "values": [
+        {
+          "text": "EXP.ALL gives",
+          "type": "text"
+        },
+        {
+          "text": "EXP points to all",
+          "type": "line"
+        },
+        {
+          "text": "the #MON with",
+          "type": "cont"
+        },
+        {
+          "text": "you, even if they",
+          "type": "cont"
+        },
+        {
+          "text": "don't fight.",
+          "type": "cont"
+        },
+        {
+          "text": "It does, however,",
+          "type": "para"
+        },
+        {
+          "text": "reduce the amount",
+          "type": "line"
+        },
+        {
+          "text": "of EXP for each",
+          "type": "cont"
+        },
+        {
+          "text": "#MON.",
+          "type": "cont"
+        },
+        {
+          "text": "If you don't need",
+          "type": "para"
+        },
+        {
+          "text": "it, you should ",
+          "type": "line"
+        },
+        {
+          "text": "store it via PC.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Gate2FBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "It looks like a",
+          "type": "para"
+        },
+        {
+          "text": "small island!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

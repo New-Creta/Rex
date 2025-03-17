@@ -1,0 +1,52 @@
+{
+  "name": "RedsHouse1F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\REDS_HOUSE_1.json",
+  "map_blocks": "Pokemon\\map_blocks\\RedsHouse1F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "redshouse1f_mom"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 4,
+      "sprite": "sprite_mom",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_redshouse1f_mom"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "text": "text_redshouse1f_tv"
+    }
+  ],
+  "scripts": []
+}

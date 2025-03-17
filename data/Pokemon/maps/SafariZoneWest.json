@@ -1,0 +1,130 @@
+{
+  "name": "SafariZoneWest",
+  "width": 15,
+  "height": 13,
+  "tileset": "Pokemon\\tilesets\\FOREST.json",
+  "map_blocks": "Pokemon\\map_blocks\\SafariZoneWest.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "safarizonewest_max_potion"
+    },
+    {
+      "name": "safarizonewest_tm_double_team"
+    },
+    {
+      "name": "safarizonewest_max_revive"
+    },
+    {
+      "name": "safarizonewest_gold_teeth"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 20,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonewest_max_potion"
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonewest_tm_double_team"
+    },
+    {
+      "x": 18,
+      "y": 18,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonewest_max_revive"
+    },
+    {
+      "x": 19,
+      "y": 7,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_safarizonewest_gold_teeth"
+    }
+  ],
+  "warps": [
+    {
+      "x": 20,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 26,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 27,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 29,
+      "y": 22,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 29,
+      "y": 23,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 12,
+      "y": 12,
+      "text": "text_safarizonewest_rest_house_sign"
+    },
+    {
+      "x": 17,
+      "y": 3,
+      "text": "text_safarizonewest_find_wardens_teeth_sign"
+    },
+    {
+      "x": 26,
+      "y": 4,
+      "text": "text_safarizonewest_trainer_tips"
+    },
+    {
+      "x": 24,
+      "y": 22,
+      "text": "text_safarizonewest_sign"
+    }
+  ],
+  "scripts": []
+}

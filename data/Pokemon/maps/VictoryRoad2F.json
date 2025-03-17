@@ -1,0 +1,206 @@
+{
+  "name": "VictoryRoad2F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\VictoryRoad2F.blk",
+  "border_block_idx": 125,
+  "connections": [],
+  "objects": [
+    {
+      "name": "victoryroad2f_hiker"
+    },
+    {
+      "name": "victoryroad2f_super_nerd1"
+    },
+    {
+      "name": "victoryroad2f_cooltrainer_m"
+    },
+    {
+      "name": "victoryroad2f_super_nerd2"
+    },
+    {
+      "name": "victoryroad2f_super_nerd3"
+    },
+    {
+      "name": "victoryroad2f_moltres"
+    },
+    {
+      "name": "victoryroad2f_tm_submission"
+    },
+    {
+      "name": "victoryroad2f_full_heal"
+    },
+    {
+      "name": "victoryroad2f_tm_mega_kick"
+    },
+    {
+      "name": "victoryroad2f_guard_spec"
+    },
+    {
+      "name": "victoryroad2f_boulder1"
+    },
+    {
+      "name": "victoryroad2f_boulder2"
+    },
+    {
+      "name": "victoryroad2f_boulder3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 9,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_victoryroad2f_hiker"
+    },
+    {
+      "x": 21,
+      "y": 13,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_victoryroad2f_super_nerd1"
+    },
+    {
+      "x": 19,
+      "y": 8,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_victoryroad2f_cooltrainer_m"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_victoryroad2f_super_nerd2"
+    },
+    {
+      "x": 26,
+      "y": 3,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_victoryroad2f_super_nerd3"
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "sprite": "sprite_bird",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_victoryroad2f_moltres"
+    },
+    {
+      "x": 27,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad2f_tm_submission"
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad2f_full_heal"
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad2f_tm_mega_kick"
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad2f_guard_spec"
+    },
+    {
+      "x": 4,
+      "y": 14,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad2f_boulder1"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad2f_boulder2"
+    },
+    {
+      "x": 23,
+      "y": 16,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad2f_boulder3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 0,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 29,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 29,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 23,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 25,
+      "y": 14,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 27,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_victoryroad2f_default",
+    "script_victoryroad2f_start_battle",
+    "script_victoryroad2f_end_battle"
+  ]
+}

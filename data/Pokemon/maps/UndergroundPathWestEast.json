@@ -1,0 +1,27 @@
+{
+  "name": "UndergroundPathWestEast",
+  "width": 25,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\UNDERGROUND.json",
+  "map_blocks": "Pokemon\\map_blocks\\UndergroundPathWestEast.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 2,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 47,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

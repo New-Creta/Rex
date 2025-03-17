@@ -1,0 +1,46 @@
+{
+  "name": "FuchsiaGoodRodHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\FuchsiaGoodRodHouse.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "fuchsiagoodrodhouse_fishing_guru"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_fuchsiagoodrodhouse_fishing_guru"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 9
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

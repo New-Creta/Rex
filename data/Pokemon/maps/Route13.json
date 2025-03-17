@@ -1,0 +1,157 @@
+{
+  "name": "ROUTE 13",
+  "width": 30,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route13.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route12.json",
+      "offset": 20
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route14.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route13_cooltrainer_m1"
+    },
+    {
+      "name": "route13_cooltrainer_f1"
+    },
+    {
+      "name": "route13_cooltrainer_f2"
+    },
+    {
+      "name": "route13_cooltrainer_f3"
+    },
+    {
+      "name": "route13_cooltrainer_f4"
+    },
+    {
+      "name": "route13_cooltrainer_m2"
+    },
+    {
+      "name": "route13_beauty1"
+    },
+    {
+      "name": "route13_beauty2"
+    },
+    {
+      "name": "route13_biker"
+    },
+    {
+      "name": "route13_cooltrainer_m3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 49,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route13_cooltrainer_m1"
+    },
+    {
+      "x": 48,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route13_cooltrainer_f1"
+    },
+    {
+      "x": 27,
+      "y": 9,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route13_cooltrainer_f2"
+    },
+    {
+      "x": 23,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route13_cooltrainer_f3"
+    },
+    {
+      "x": 50,
+      "y": 5,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route13_cooltrainer_f4"
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route13_cooltrainer_m2"
+    },
+    {
+      "x": 33,
+      "y": 6,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route13_beauty1"
+    },
+    {
+      "x": 32,
+      "y": 6,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route13_beauty2"
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route13_biker"
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route13_cooltrainer_m3"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 15,
+      "y": 13,
+      "text": "text_route13_trainer_tips1"
+    },
+    {
+      "x": 33,
+      "y": 5,
+      "text": "text_route13_trainer_tips2"
+    },
+    {
+      "x": 31,
+      "y": 11,
+      "text": "text_route13_sign"
+    }
+  ],
+  "scripts": [
+    "script_route13_default",
+    "script_route13_start_battle",
+    "script_route13_end_battle"
+  ]
+}

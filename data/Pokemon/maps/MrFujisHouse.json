@@ -1,0 +1,95 @@
+{
+  "name": "MrFujisHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\MrFujisHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mrfujishouse_super_nerd"
+    },
+    {
+      "name": "mrfujishouse_little_girl"
+    },
+    {
+      "name": "mrfujishouse_psyduck"
+    },
+    {
+      "name": "mrfujishouse_nidorino"
+    },
+    {
+      "name": "mrfujishouse_mr_fuji"
+    },
+    {
+      "name": "mrfujishouse_pokedex"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 5,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mrfujishouse_super_nerd"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "sprite": "sprite_little_girl",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mrfujishouse_little_girl"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mrfujishouse_psyduck"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mrfujishouse_nidorino"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_mr_fuji",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mrfujishouse_mr_fuji"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mrfujishouse_pokedex"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

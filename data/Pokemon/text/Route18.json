@@ -1,0 +1,175 @@
+{
+  "texts": [
+    {
+      "name": "Route18CooltrainerM1Battle",
+      "values": [
+        {
+          "text": "I always check",
+          "type": "text"
+        },
+        {
+          "text": "every grassy area",
+          "type": "line"
+        },
+        {
+          "text": "for new #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM1EndBattle",
+      "values": [
+        {
+          "text": "Tch!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM1AfterBattle",
+      "values": [
+        {
+          "text": "I wish I had a",
+          "type": "text"
+        },
+        {
+          "text": "BIKE!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "Kurukkoo!",
+          "type": "text"
+        },
+        {
+          "text": "How do you like",
+          "type": "line"
+        },
+        {
+          "text": "my bird call?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "had to bug you!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "I also collect sea",
+          "type": "text"
+        },
+        {
+          "text": "#MON on",
+          "type": "line"
+        },
+        {
+          "text": "weekends!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM3Battle",
+      "values": [
+        {
+          "text": "This is my turf!",
+          "type": "text"
+        },
+        {
+          "text": "Get out of here!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM3EndBattle",
+      "values": [
+        {
+          "text": "Darn!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route18CooltrainerM3AfterBattle",
+      "values": [
+        {
+          "text": "This is my fave",
+          "type": "text"
+        },
+        {
+          "text": "#MON hunting",
+          "type": "line"
+        },
+        {
+          "text": "area!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18Sign",
+      "values": [
+        {
+          "text": "ROUTE 18",
+          "type": "text"
+        },
+        {
+          "text": "CELADON CITY -",
+          "type": "line"
+        },
+        {
+          "text": "FUCHSIA CITY",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18CyclingRoadSign",
+      "values": [
+        {
+          "text": "CYCLING ROAD",
+          "type": "text"
+        },
+        {
+          "text": "No pedestrians",
+          "type": "line"
+        },
+        {
+          "text": "permitted!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

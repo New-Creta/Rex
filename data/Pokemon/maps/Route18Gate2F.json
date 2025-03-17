@@ -1,0 +1,45 @@
+{
+  "name": "Route18Gate2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route18Gate2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route18gate2f_youngster"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_route18gate2f_youngster"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 2,
+      "text": "text_route18gate2f_left_binoculars"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "text": "text_route18gate2f_right_binoculars"
+    }
+  ],
+  "scripts": []
+}

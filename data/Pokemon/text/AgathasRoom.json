@@ -1,0 +1,140 @@
+{
+  "texts": [
+    {
+      "name": "AgathaBeforeBattle",
+      "values": [
+        {
+          "text": "I am AGATHA of",
+          "type": "text"
+        },
+        {
+          "text": "the ELITE FOUR!",
+          "type": "line"
+        },
+        {
+          "text": "OAK's taken a lot",
+          "type": "para"
+        },
+        {
+          "text": "of interest in",
+          "type": "line"
+        },
+        {
+          "text": "you, child!",
+          "type": "cont"
+        },
+        {
+          "text": "That old duff was",
+          "type": "para"
+        },
+        {
+          "text": "once tough and",
+          "type": "line"
+        },
+        {
+          "text": "handsome! That",
+          "type": "cont"
+        },
+        {
+          "text": "was decades ago!",
+          "type": "cont"
+        },
+        {
+          "text": "Now he just wants",
+          "type": "para"
+        },
+        {
+          "text": "to fiddle with",
+          "type": "line"
+        },
+        {
+          "text": "his #DEX! He's",
+          "type": "cont"
+        },
+        {
+          "text": "wrong! #MON",
+          "type": "cont"
+        },
+        {
+          "text": "are for fighting!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>! I'll show",
+          "type": "para"
+        },
+        {
+          "text": "you how a real",
+          "type": "line"
+        },
+        {
+          "text": "trainer fights!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "AgathaEndBattle",
+      "values": [
+        {
+          "text": "Oh ho!",
+          "type": "text"
+        },
+        {
+          "text": "You're something",
+          "type": "line"
+        },
+        {
+          "text": "special, child!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "AgathaAfterBattle",
+      "values": [
+        {
+          "text": "You win! I see",
+          "type": "text"
+        },
+        {
+          "text": "what the old duff",
+          "type": "line"
+        },
+        {
+          "text": "sees in you now!",
+          "type": "cont"
+        },
+        {
+          "text": "I have nothing",
+          "type": "para"
+        },
+        {
+          "text": "else to say! Run",
+          "type": "line"
+        },
+        {
+          "text": "along now, child!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "AgathasRoomAgathaDontRunAway",
+      "values": [
+        {
+          "text": "Someone's voice:",
+          "type": "text"
+        },
+        {
+          "text": "Don't run away!",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

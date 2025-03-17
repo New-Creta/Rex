@@ -1,0 +1,45 @@
+{
+  "name": "HallOfFame",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\HallOfFame.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "halloffame_oak"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_oak",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_halloffame_oak"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_halloffame_default",
+    "script_halloffame_oak_congratulations",
+    "script_halloffame_reset_events_and_save",
+    "script_halloffame_noop"
+  ]
+}

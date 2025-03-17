@@ -1,0 +1,43 @@
+{
+  "texts": [
+    {
+      "name": "Route18Gate1FGuardYouNeedABicycle",
+      "values": [
+        {
+          "text": "You need a BICYCLE",
+          "type": "text"
+        },
+        {
+          "text": "for CYCLING ROAD!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route18Gate1FGuardCyclingRoadUphill",
+      "values": [
+        {
+          "text": "CYCLING ROAD is",
+          "type": "text"
+        },
+        {
+          "text": "all uphill from",
+          "type": "line"
+        },
+        {
+          "text": "here.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route18Gate1FGuardExcuseMe",
+      "values": [
+        {
+          "text": "Excuse me!",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

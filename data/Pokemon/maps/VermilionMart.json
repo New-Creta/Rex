@@ -1,0 +1,62 @@
+{
+  "name": "VermilionMart",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\MART.json",
+  "map_blocks": "Pokemon\\map_blocks\\VermilionMart.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "vermilionmart_clerk"
+    },
+    {
+      "name": "vermilionmart_cooltrainer_m"
+    },
+    {
+      "name": "vermilionmart_cooltrainer_f"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 0,
+      "y": 5,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_vermilionmart_clerk"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_vermilionmart_cooltrainer_m"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_vermilionmart_cooltrainer_f"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

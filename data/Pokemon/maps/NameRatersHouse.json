@@ -1,0 +1,40 @@
+{
+  "name": "NameRatersHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\NameRatersHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "nameratershouse_name_rater"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_silph_president",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_nameratershouse_name_rater"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

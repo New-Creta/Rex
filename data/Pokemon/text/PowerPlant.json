@@ -1,0 +1,22 @@
+{
+  "texts": [
+    {
+      "name": "PowerPlantVoltorbBattle",
+      "values": [
+        {
+          "text": "Bzzzt!",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PowerPlantZapdosBattle",
+      "values": [
+        {
+          "text": "Gyaoo!@",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

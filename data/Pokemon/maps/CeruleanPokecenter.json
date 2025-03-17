@@ -1,0 +1,73 @@
+{
+  "name": "CeruleanPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ceruleanpokecenter_nurse"
+    },
+    {
+      "name": "ceruleanpokecenter_super_nerd"
+    },
+    {
+      "name": "ceruleanpokecenter_gentleman"
+    },
+    {
+      "name": "ceruleanpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleanpokecenter_nurse"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_super_nerd",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_ceruleanpokecenter_super_nerd"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleanpokecenter_gentleman"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleanpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

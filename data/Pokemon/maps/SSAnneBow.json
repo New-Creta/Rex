@@ -1,0 +1,88 @@
+{
+  "name": "SSAnneBow",
+  "width": 10,
+  "height": 7,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnneBow.blk",
+  "border_block_idx": 35,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssannebow_super_nerd"
+    },
+    {
+      "name": "ssannebow_sailor1"
+    },
+    {
+      "name": "ssannebow_cooltrainer_m"
+    },
+    {
+      "name": "ssannebow_sailor2"
+    },
+    {
+      "name": "ssannebow_sailor3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssannebow_super_nerd"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "sprite": "sprite_sailor",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssannebow_sailor1"
+    },
+    {
+      "x": 7,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssannebow_cooltrainer_m"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_sailor",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssannebow_sailor2"
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "sprite": "sprite_sailor",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_ssannebow_sailor3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 13,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_ssannebow_default",
+    "script_ssannebow_start_battle",
+    "script_ssannebow_end_battle"
+  ]
+}

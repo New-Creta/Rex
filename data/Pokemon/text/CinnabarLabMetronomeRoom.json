@@ -1,0 +1,187 @@
+{
+  "texts": [
+    {
+      "name": "CinnabarLabMetronomeRoomScientist1",
+      "values": [
+        {
+          "text": "Tch-tch-tch!",
+          "type": "text"
+        },
+        {
+          "text": "I made a cool TM!",
+          "type": "line"
+        },
+        {
+          "text": "It can cause all",
+          "type": "para"
+        },
+        {
+          "text": "kinds of fun!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomScientist1ReceivedTM35",
+      "values": [
+        {
+          "text": "<PLAYER> received ",
+          "type": "text"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wStringBuffer",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomScientist1TM35Explanation",
+      "values": [
+        {
+          "text": "Tch-tch-tch!",
+          "type": "text"
+        },
+        {
+          "text": "That's the sound",
+          "type": "line"
+        },
+        {
+          "text": "of a METRONOME!",
+          "type": "cont"
+        },
+        {
+          "text": "It tweaks your",
+          "type": "para"
+        },
+        {
+          "text": "#MON's brain",
+          "type": "line"
+        },
+        {
+          "text": "into using moves",
+          "type": "cont"
+        },
+        {
+          "text": "it doesn't know!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomScientist1TM35NoRoom",
+      "values": [
+        {
+          "text": "Your pack is",
+          "type": "text"
+        },
+        {
+          "text": "crammed full!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomScientist2",
+      "values": [
+        {
+          "text": "EEVEE can evolve",
+          "type": "text"
+        },
+        {
+          "text": "into 1 of 3 kinds",
+          "type": "line"
+        },
+        {
+          "text": "of #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomPC",
+      "values": [
+        {
+          "text": "There's an e-mail",
+          "type": "text"
+        },
+        {
+          "text": "message!",
+          "type": "line"
+        },
+        {
+          "text": "...",
+          "type": "para"
+        },
+        {
+          "text": "The 3 legendary",
+          "type": "para"
+        },
+        {
+          "text": "bird #MON are",
+          "type": "line"
+        },
+        {
+          "text": "ARTICUNO, ZAPDOS",
+          "type": "cont"
+        },
+        {
+          "text": "and MOLTRES.",
+          "type": "cont"
+        },
+        {
+          "text": "Their whereabouts",
+          "type": "para"
+        },
+        {
+          "text": "are unknown.",
+          "type": "line"
+        },
+        {
+          "text": "We plan to explore",
+          "type": "para"
+        },
+        {
+          "text": "the cavern close",
+          "type": "line"
+        },
+        {
+          "text": "to CERULEAN.",
+          "type": "cont"
+        },
+        {
+          "text": "From: #MON",
+          "type": "para"
+        },
+        {
+          "text": "RESEARCH TEAM",
+          "type": "line"
+        },
+        {
+          "text": "...",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "CinnabarLabMetronomeRoomAmberPipe",
+      "values": [
+        {
+          "text": "An amber pipe!",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

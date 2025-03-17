@@ -1,0 +1,73 @@
+{
+  "name": "LavenderPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\LavenderPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "lavenderpokecenter_nurse"
+    },
+    {
+      "name": "lavenderpokecenter_gentleman"
+    },
+    {
+      "name": "lavenderpokecenter_little_girl"
+    },
+    {
+      "name": "lavenderpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_lavenderpokecenter_nurse"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_lavenderpokecenter_gentleman"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_lavenderpokecenter_little_girl"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_lavenderpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

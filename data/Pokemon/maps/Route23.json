@@ -1,0 +1,139 @@
+{
+  "name": "ROUTE 23",
+  "width": 10,
+  "height": 72,
+  "tileset": "Pokemon\\tilesets\\PLATEAU.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route23.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\indigoplateau.json",
+      "offset": 0
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route22.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route23_guard1"
+    },
+    {
+      "name": "route23_guard2"
+    },
+    {
+      "name": "route23_swimmer1"
+    },
+    {
+      "name": "route23_swimmer2"
+    },
+    {
+      "name": "route23_guard3"
+    },
+    {
+      "name": "route23_guard4"
+    },
+    {
+      "name": "route23_guard5"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 35,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_guard1"
+    },
+    {
+      "x": 10,
+      "y": 56,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_guard2"
+    },
+    {
+      "x": 8,
+      "y": 85,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_swimmer1"
+    },
+    {
+      "x": 11,
+      "y": 96,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_swimmer2"
+    },
+    {
+      "x": 12,
+      "y": 105,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_guard3"
+    },
+    {
+      "x": 8,
+      "y": 119,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_guard4"
+    },
+    {
+      "x": 8,
+      "y": 136,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route23_guard5"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 139,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 8,
+      "y": 139,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 4,
+      "y": 31,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 14,
+      "y": 31,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 33,
+      "text": "text_route23_victory_road_gate_sign"
+    }
+  ],
+  "scripts": [
+    "script_route23_default",
+    "script_route23_player_moving",
+    "script_route23_reset_to_default"
+  ]
+}

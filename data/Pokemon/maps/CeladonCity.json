@@ -1,0 +1,251 @@
+{
+  "name": "CELADON CITY",
+  "width": 25,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route16.json",
+      "offset": 4
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route7.json",
+      "offset": 4
+    }
+  ],
+  "objects": [
+    {
+      "name": "celadoncity_little_girl"
+    },
+    {
+      "name": "celadoncity_gramps1"
+    },
+    {
+      "name": "celadoncity_girl"
+    },
+    {
+      "name": "celadoncity_gramps2"
+    },
+    {
+      "name": "celadoncity_gramps3"
+    },
+    {
+      "name": "celadoncity_fisher"
+    },
+    {
+      "name": "celadoncity_poliwrath"
+    },
+    {
+      "name": "celadoncity_rocket1"
+    },
+    {
+      "name": "celadoncity_rocket2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 17,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_celadoncity_little_girl"
+    },
+    {
+      "x": 11,
+      "y": 28,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_celadoncity_gramps1"
+    },
+    {
+      "x": 14,
+      "y": 19,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_celadoncity_girl"
+    },
+    {
+      "x": 25,
+      "y": 22,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadoncity_gramps2"
+    },
+    {
+      "x": 22,
+      "y": 16,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadoncity_gramps3"
+    },
+    {
+      "x": 32,
+      "y": 12,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_celadoncity_fisher"
+    },
+    {
+      "x": 30,
+      "y": 12,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_celadoncity_poliwrath"
+    },
+    {
+      "x": 32,
+      "y": 29,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_celadoncity_rocket1"
+    },
+    {
+      "x": 42,
+      "y": 14,
+      "sprite": "sprite_rocket",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_celadoncity_rocket2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 8,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 10,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 24,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 24,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 25,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 41,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 12,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 28,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 39,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 33,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 31,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 35,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 43,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 27,
+      "y": 15,
+      "text": "text_celadoncity_trainer_tips1"
+    },
+    {
+      "x": 19,
+      "y": 15,
+      "text": "text_celadoncity_sign"
+    },
+    {
+      "x": 42,
+      "y": 9,
+      "text": "text_celadoncity_pokecenter_sign"
+    },
+    {
+      "x": 13,
+      "y": 29,
+      "text": "text_celadoncity_gym_sign"
+    },
+    {
+      "x": 21,
+      "y": 9,
+      "text": "text_celadoncity_mansion_sign"
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "text": "text_celadoncity_deptstore_sign"
+    },
+    {
+      "x": 39,
+      "y": 21,
+      "text": "text_celadoncity_trainer_tips2"
+    },
+    {
+      "x": 33,
+      "y": 21,
+      "text": "text_celadoncity_prizeexchange_sign"
+    },
+    {
+      "x": 27,
+      "y": 21,
+      "text": "text_celadoncity_gamecorner_sign"
+    }
+  ],
+  "scripts": []
+}

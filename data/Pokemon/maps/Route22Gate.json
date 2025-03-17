@@ -1,0 +1,56 @@
+{
+  "name": "Route22Gate",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route22Gate.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route22gate_guard"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 2,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route22gate_guard"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_route22gate_default",
+    "script_route22gate_player_moving",
+    "script_route22gate_noop"
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "name": "VIRIDIAN FOREST",
+  "width": 17,
+  "height": 24,
+  "tileset": "Pokemon\\tilesets\\FOREST.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianForest.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "viridianforest_youngster1"
+    },
+    {
+      "name": "viridianforest_youngster2"
+    },
+    {
+      "name": "viridianforest_youngster3"
+    },
+    {
+      "name": "viridianforest_youngster4"
+    },
+    {
+      "name": "viridianforest_antidote"
+    },
+    {
+      "name": "viridianforest_potion"
+    },
+    {
+      "name": "viridianforest_poke_ball"
+    },
+    {
+      "name": "viridianforest_youngster5"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 16,
+      "y": 43,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforest_youngster1"
+    },
+    {
+      "x": 30,
+      "y": 33,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_viridianforest_youngster2"
+    },
+    {
+      "x": 30,
+      "y": 19,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_viridianforest_youngster3"
+    },
+    {
+      "x": 2,
+      "y": 18,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_viridianforest_youngster4"
+    },
+    {
+      "x": 25,
+      "y": 11,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforest_antidote"
+    },
+    {
+      "x": 12,
+      "y": 29,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforest_potion"
+    },
+    {
+      "x": 1,
+      "y": 31,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforest_poke_ball"
+    },
+    {
+      "x": 27,
+      "y": 40,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforest_youngster5"
+    }
+  ],
+  "warps": [
+    {
+      "x": 1,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 15,
+      "y": 47,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 16,
+      "y": 47,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 47,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 18,
+      "y": 47,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 24,
+      "y": 40,
+      "text": "text_viridianforest_trainer_tips1"
+    },
+    {
+      "x": 16,
+      "y": 32,
+      "text": "text_viridianforest_use_antidote_sign"
+    },
+    {
+      "x": 26,
+      "y": 17,
+      "text": "text_viridianforest_trainer_tips2"
+    },
+    {
+      "x": 4,
+      "y": 24,
+      "text": "text_viridianforest_trainer_tips3"
+    },
+    {
+      "x": 18,
+      "y": 45,
+      "text": "text_viridianforest_trainer_tips4"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "text": "text_viridianforest_leaving_sign"
+    }
+  ],
+  "scripts": [
+    "script_viridianforest_default",
+    "script_viridianforest_start_battle",
+    "script_viridianforest_end_battle"
+  ]
+}

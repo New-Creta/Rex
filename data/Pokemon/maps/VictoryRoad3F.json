@@ -1,0 +1,155 @@
+{
+  "name": "VictoryRoad3F",
+  "width": 15,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\VictoryRoad3F.blk",
+  "border_block_idx": 125,
+  "connections": [],
+  "objects": [
+    {
+      "name": "victoryroad3f_cooltrainer_m1"
+    },
+    {
+      "name": "victoryroad3f_cooltrainer_f1"
+    },
+    {
+      "name": "victoryroad3f_cooltrainer_m2"
+    },
+    {
+      "name": "victoryroad3f_cooltrainer_f2"
+    },
+    {
+      "name": "victoryroad3f_max_revive"
+    },
+    {
+      "name": "victoryroad3f_tm_explosion"
+    },
+    {
+      "name": "victoryroad3f_boulder1"
+    },
+    {
+      "name": "victoryroad3f_boulder2"
+    },
+    {
+      "name": "victoryroad3f_boulder3"
+    },
+    {
+      "name": "victoryroad3f_boulder4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 28,
+      "y": 5,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_victoryroad3f_cooltrainer_m1"
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_victoryroad3f_cooltrainer_f1"
+    },
+    {
+      "x": 6,
+      "y": 14,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_victoryroad3f_cooltrainer_m2"
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_victoryroad3f_cooltrainer_f2"
+    },
+    {
+      "x": 26,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad3f_max_revive"
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_victoryroad3f_tm_explosion"
+    },
+    {
+      "x": 22,
+      "y": 3,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad3f_boulder1"
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad3f_boulder2"
+    },
+    {
+      "x": 24,
+      "y": 10,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad3f_boulder3"
+    },
+    {
+      "x": 22,
+      "y": 15,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_victoryroad3f_boulder4"
+    }
+  ],
+  "warps": [
+    {
+      "x": 23,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 27,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_victoryroad3f_default",
+    "script_victoryroad3f_start_battle",
+    "script_victoryroad3f_end_battle"
+  ]
+}

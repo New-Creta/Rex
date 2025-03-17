@@ -1,0 +1,62 @@
+{
+  "texts": [
+    {
+      "name": "ViridianForestNorthGateSuperNerd",
+      "values": [
+        {
+          "text": "Many #MON live",
+          "type": "text"
+        },
+        {
+          "text": "only in forests ",
+          "type": "line"
+        },
+        {
+          "text": "and caves.",
+          "type": "cont"
+        },
+        {
+          "text": "You need to look",
+          "type": "para"
+        },
+        {
+          "text": "everywhere to get",
+          "type": "line"
+        },
+        {
+          "text": "different kinds!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "ViridianForestNorthGateGramps",
+      "values": [
+        {
+          "text": "Have you noticed",
+          "type": "text"
+        },
+        {
+          "text": "the bushes on the",
+          "type": "line"
+        },
+        {
+          "text": "roadside?",
+          "type": "cont"
+        },
+        {
+          "text": "They can be cut",
+          "type": "para"
+        },
+        {
+          "text": "down by a special",
+          "type": "line"
+        },
+        {
+          "text": "#MON move.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

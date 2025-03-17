@@ -1,0 +1,167 @@
+{
+  "name": "ROUTE 8",
+  "width": 30,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route8.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\saffroncity.json",
+      "offset": -4
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\lavendertown.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route8_super_nerd1"
+    },
+    {
+      "name": "route8_gambler1"
+    },
+    {
+      "name": "route8_super_nerd2"
+    },
+    {
+      "name": "route8_cooltrainer_f1"
+    },
+    {
+      "name": "route8_super_nerd3"
+    },
+    {
+      "name": "route8_cooltrainer_f2"
+    },
+    {
+      "name": "route8_cooltrainer_f3"
+    },
+    {
+      "name": "route8_gambler2"
+    },
+    {
+      "name": "route8_cooltrainer_f4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 5,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route8_super_nerd1"
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route8_gambler1"
+    },
+    {
+      "x": 42,
+      "y": 6,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route8_super_nerd2"
+    },
+    {
+      "x": 26,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route8_cooltrainer_f1"
+    },
+    {
+      "x": 26,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route8_super_nerd3"
+    },
+    {
+      "x": 26,
+      "y": 5,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route8_cooltrainer_f2"
+    },
+    {
+      "x": 26,
+      "y": 6,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route8_cooltrainer_f3"
+    },
+    {
+      "x": 46,
+      "y": 13,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route8_gambler2"
+    },
+    {
+      "x": 51,
+      "y": 12,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route8_cooltrainer_f4"
+    }
+  ],
+  "warps": [
+    {
+      "x": 1,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 3,
+      "text": "text_route8_underground_sign"
+    }
+  ],
+  "scripts": [
+    "script_route8_default",
+    "script_route8_start_battle",
+    "script_route8_end_battle"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "texts": [
+    {
+      "name": "Route12Gate2FBrunetteGirlYouCanHaveThis",
+      "values": [
+        {
+          "text": "My #MON's",
+          "type": "text"
+        },
+        {
+          "text": "ashes are stored",
+          "type": "line"
+        },
+        {
+          "text": "in #MON TOWER.",
+          "type": "cont"
+        },
+        {
+          "text": "You can have this",
+          "type": "para"
+        },
+        {
+          "text": "TM. I don't need",
+          "type": "line"
+        },
+        {
+          "text": "it any more...",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route12Gate2FBrunetteGirlReceivedTM39",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "TM39!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route12Gate2FBrunetteGirlTM39Explanation",
+      "values": [
+        {
+          "text": "TM39 is a move",
+          "type": "text"
+        },
+        {
+          "text": "called SWIFT.",
+          "type": "line"
+        },
+        {
+          "text": "It's very accurate,",
+          "type": "para"
+        },
+        {
+          "text": "so use it during",
+          "type": "line"
+        },
+        {
+          "text": "battles you can't",
+          "type": "cont"
+        },
+        {
+          "text": "afford to lose.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route12Gate2FBrunetteGirlTM39NoRoom",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "room for this.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route12Gate2FLeftBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "A man fishing!",
+          "type": "para"
+        }
+      ]
+    },
+    {
+      "name": "Route12Gate2FRightBinoculars",
+      "values": [
+        {
+          "text": "Looked into the",
+          "type": "text"
+        },
+        {
+          "text": "binoculars.",
+          "type": "line"
+        },
+        {
+          "text": "It's #MON TOWER!",
+          "type": "para"
+        }
+      ]
+    }
+  ]
+}

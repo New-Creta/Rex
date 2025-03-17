@@ -1,0 +1,183 @@
+{
+  "name": "ROUTE 12",
+  "width": 10,
+  "height": 54,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route12.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\lavendertown.json",
+      "offset": 0
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route13.json",
+      "offset": -20
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route11.json",
+      "offset": 27
+    }
+  ],
+  "objects": [
+    {
+      "name": "route12_snorlax"
+    },
+    {
+      "name": "route12_fisher1"
+    },
+    {
+      "name": "route12_fisher2"
+    },
+    {
+      "name": "route12_cooltrainer_m"
+    },
+    {
+      "name": "route12_super_nerd"
+    },
+    {
+      "name": "route12_fisher3"
+    },
+    {
+      "name": "route12_fisher4"
+    },
+    {
+      "name": "route12_fisher5"
+    },
+    {
+      "name": "route12_tm_pay_day"
+    },
+    {
+      "name": "route12_iron"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 62,
+      "sprite": "sprite_snorlax",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route12_snorlax"
+    },
+    {
+      "x": 14,
+      "y": 31,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route12_fisher1"
+    },
+    {
+      "x": 5,
+      "y": 39,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route12_fisher2"
+    },
+    {
+      "x": 11,
+      "y": 92,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route12_cooltrainer_m"
+    },
+    {
+      "x": 14,
+      "y": 76,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route12_super_nerd"
+    },
+    {
+      "x": 12,
+      "y": 40,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route12_fisher3"
+    },
+    {
+      "x": 9,
+      "y": 52,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route12_fisher4"
+    },
+    {
+      "x": 6,
+      "y": 87,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route12_fisher5"
+    },
+    {
+      "x": 14,
+      "y": 35,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route12_tm_pay_day"
+    },
+    {
+      "x": 5,
+      "y": 89,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route12_iron"
+    }
+  ],
+  "warps": [
+    {
+      "x": 10,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 11,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 10,
+      "y": 21,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 11,
+      "y": 77,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 13,
+      "y": 13,
+      "text": "text_route12_sign"
+    },
+    {
+      "x": 11,
+      "y": 63,
+      "text": "text_route12_sport_fishing_sign"
+    }
+  ],
+  "scripts": [
+    "script_route12_default",
+    "script_route12_start_battle",
+    "script_route12_end_battle",
+    "script_route12_snorlax_post_battle"
+  ]
+}

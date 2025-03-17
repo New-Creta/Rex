@@ -1,0 +1,496 @@
+{
+  "texts": [
+    {
+      "name": "PewterGymBrockPreBattle",
+      "values": [
+        {
+          "text": "I'm BROCK!",
+          "type": "text"
+        },
+        {
+          "text": "I'm PEWTER's GYM",
+          "type": "line"
+        },
+        {
+          "text": "LEADER!",
+          "type": "cont"
+        },
+        {
+          "text": "I believe in rock",
+          "type": "para"
+        },
+        {
+          "text": "hard defense and",
+          "type": "line"
+        },
+        {
+          "text": "determination!",
+          "type": "cont"
+        },
+        {
+          "text": "That's why my",
+          "type": "para"
+        },
+        {
+          "text": "#MON are all",
+          "type": "line"
+        },
+        {
+          "text": "the rock-type!",
+          "type": "cont"
+        },
+        {
+          "text": "Do you still want",
+          "type": "para"
+        },
+        {
+          "text": "to challenge me?",
+          "type": "line"
+        },
+        {
+          "text": "Fine then! Show",
+          "type": "cont"
+        },
+        {
+          "text": "me your best!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymBrockPostBattleAdvice",
+      "values": [
+        {
+          "text": "There are all",
+          "type": "text"
+        },
+        {
+          "text": "kinds of trainers",
+          "type": "line"
+        },
+        {
+          "text": "in the world!",
+          "type": "cont"
+        },
+        {
+          "text": "You appear to be",
+          "type": "para"
+        },
+        {
+          "text": "very gifted as a",
+          "type": "line"
+        },
+        {
+          "text": "#MON trainer!",
+          "type": "cont"
+        },
+        {
+          "text": "Go to the GYM in",
+          "type": "para"
+        },
+        {
+          "text": "CERULEAN and test",
+          "type": "line"
+        },
+        {
+          "text": "your abilities!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymBrockWaitTakeThis",
+      "values": [
+        {
+          "text": "Wait! Take this",
+          "type": "text"
+        },
+        {
+          "text": "with you!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymReceivedTM34",
+      "values": [
+        {
+          "text": "<PLAYER> received",
+          "type": "text"
+        },
+        {
+          "text": "TM34!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "TM34Explanation",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "A TM contains a",
+          "type": "para"
+        },
+        {
+          "text": "technique that",
+          "type": "line"
+        },
+        {
+          "text": "can be taught to",
+          "type": "cont"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        },
+        {
+          "text": "A TM is good only",
+          "type": "para"
+        },
+        {
+          "text": "once! So when you",
+          "type": "line"
+        },
+        {
+          "text": "use one to teach",
+          "type": "cont"
+        },
+        {
+          "text": "a new technique,",
+          "type": "cont"
+        },
+        {
+          "text": "pick the #MON",
+          "type": "cont"
+        },
+        {
+          "text": "carefully!",
+          "type": "cont"
+        },
+        {
+          "text": "TM34 contains",
+          "type": "para"
+        },
+        {
+          "text": "BIDE!",
+          "type": "line"
+        },
+        {
+          "text": "Your #MON will",
+          "type": "para"
+        },
+        {
+          "text": "absorb damage in",
+          "type": "line"
+        },
+        {
+          "text": "battle then pay",
+          "type": "cont"
+        },
+        {
+          "text": "it back double!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymTM34NoRoom",
+      "values": [
+        {
+          "text": "You don't have",
+          "type": "text"
+        },
+        {
+          "text": "room for this!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymBrockReceivedBoulderBadge",
+      "values": [
+        {
+          "text": "I took",
+          "type": "text"
+        },
+        {
+          "text": "you for granted.",
+          "type": "line"
+        },
+        {
+          "text": "As proof of your",
+          "type": "para"
+        },
+        {
+          "text": "victory, here's",
+          "type": "line"
+        },
+        {
+          "text": "the BOULDERBADGE!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER> received",
+          "type": "para"
+        },
+        {
+          "text": "the BOULDERBADGE!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymBrockBoulderBadgeInfo",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "That's an official",
+          "type": "para"
+        },
+        {
+          "text": "#MON LEAGUE",
+          "type": "line"
+        },
+        {
+          "text": "BADGE!",
+          "type": "cont"
+        },
+        {
+          "text": "Its bearer's",
+          "type": "para"
+        },
+        {
+          "text": "#MON become",
+          "type": "line"
+        },
+        {
+          "text": "more powerful!",
+          "type": "cont"
+        },
+        {
+          "text": "The technique",
+          "type": "para"
+        },
+        {
+          "text": "FLASH can now be",
+          "type": "line"
+        },
+        {
+          "text": "used any time!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymCooltrainerMBattle",
+      "values": [
+        {
+          "text": "Stop right there,",
+          "type": "text"
+        },
+        {
+          "text": "kid!",
+          "type": "line"
+        },
+        {
+          "text": "You're still light",
+          "type": "para"
+        },
+        {
+          "text": "years from facing",
+          "type": "line"
+        },
+        {
+          "text": "BROCK!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymCooltrainerMEndBattle",
+      "values": [
+        {
+          "text": "Darn!",
+          "type": "text"
+        },
+        {
+          "text": "Light years isn't",
+          "type": "para"
+        },
+        {
+          "text": "time! It measures",
+          "type": "line"
+        },
+        {
+          "text": "distance!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymCooltrainerMAfterBattle",
+      "values": [
+        {
+          "text": "You're pretty hot,",
+          "type": "text"
+        },
+        {
+          "text": "but not as hot",
+          "type": "line"
+        },
+        {
+          "text": "as BROCK!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymGuidePreAdvice",
+      "values": [
+        {
+          "text": "Hiya! I can tell",
+          "type": "text"
+        },
+        {
+          "text": "you have what it",
+          "type": "line"
+        },
+        {
+          "text": "takes to become a",
+          "type": "cont"
+        },
+        {
+          "text": "#MON champ!",
+          "type": "cont"
+        },
+        {
+          "text": "I'm no trainer,",
+          "type": "para"
+        },
+        {
+          "text": "but I can tell",
+          "type": "line"
+        },
+        {
+          "text": "you how to win!",
+          "type": "cont"
+        },
+        {
+          "text": "Let me take you",
+          "type": "para"
+        },
+        {
+          "text": "to the top!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymGuideBeginAdvice",
+      "values": [
+        {
+          "text": "All right! Let's",
+          "type": "text"
+        },
+        {
+          "text": "get happening!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymGuideAdvice",
+      "values": [
+        {
+          "text": "The 1st #MON",
+          "type": "text"
+        },
+        {
+          "text": "out in a match is",
+          "type": "line"
+        },
+        {
+          "text": "at the top of the",
+          "type": "cont"
+        },
+        {
+          "text": "#MON LIST!",
+          "type": "cont"
+        },
+        {
+          "text": "By changing the",
+          "type": "para"
+        },
+        {
+          "text": "order of #MON,",
+          "type": "line"
+        },
+        {
+          "text": "matches could be",
+          "type": "cont"
+        },
+        {
+          "text": "made easier!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymGuideFreeService",
+      "values": [
+        {
+          "text": "It's a free",
+          "type": "text"
+        },
+        {
+          "text": "service! Let's",
+          "type": "line"
+        },
+        {
+          "text": "get happening!",
+          "type": "cont"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PewterGymGuidePostBattle",
+      "values": [
+        {
+          "text": "Just as I thought!",
+          "type": "text"
+        },
+        {
+          "text": "You're #MON",
+          "type": "line"
+        },
+        {
+          "text": "champ material!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

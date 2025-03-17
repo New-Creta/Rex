@@ -1,0 +1,51 @@
+{
+  "name": "CinnabarLabFossilRoom",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LAB.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarLabFossilRoom.blk",
+  "border_block_idx": 23,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabarlabfossilroom_scientist1"
+    },
+    {
+      "name": "cinnabarlabfossilroom_scientist2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_scientist",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_cinnabarlabfossilroom_scientist1"
+    },
+    {
+      "x": 7,
+      "y": 6,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_cinnabarlabfossilroom_scientist2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

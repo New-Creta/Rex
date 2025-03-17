@@ -1,0 +1,99 @@
+{
+  "name": "PokemonTower5F",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonTower5F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemontower5f_channeler1"
+    },
+    {
+      "name": "pokemontower5f_channeler2"
+    },
+    {
+      "name": "pokemontower5f_channeler3"
+    },
+    {
+      "name": "pokemontower5f_channeler4"
+    },
+    {
+      "name": "pokemontower5f_channeler5"
+    },
+    {
+      "name": "pokemontower5f_nugget"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 8,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower5f_channeler1"
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemontower5f_channeler2"
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemontower5f_channeler3"
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemontower5f_channeler4"
+    },
+    {
+      "x": 9,
+      "y": 16,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemontower5f_channeler5"
+    },
+    {
+      "x": 6,
+      "y": 14,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower5f_nugget"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_pokemontower5f_default",
+    "script_pokemontower5f_start_battle",
+    "script_pokemontower5f_end_battle"
+  ]
+}

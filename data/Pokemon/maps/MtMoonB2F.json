@@ -1,0 +1,147 @@
+{
+  "name": "MtMoonB2F",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\MtMoonB2F.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mtmoonb2f_super_nerd"
+    },
+    {
+      "name": "mtmoonb2f_rocket1"
+    },
+    {
+      "name": "mtmoonb2f_rocket2"
+    },
+    {
+      "name": "mtmoonb2f_rocket3"
+    },
+    {
+      "name": "mtmoonb2f_rocket4"
+    },
+    {
+      "name": "mtmoonb2f_dome_fossil"
+    },
+    {
+      "name": "mtmoonb2f_helix_fossil"
+    },
+    {
+      "name": "mtmoonb2f_hp_up"
+    },
+    {
+      "name": "mtmoonb2f_tm_mega_punch"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_mtmoonb2f_super_nerd"
+    },
+    {
+      "x": 11,
+      "y": 16,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonb2f_rocket1"
+    },
+    {
+      "x": 15,
+      "y": 22,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonb2f_rocket2"
+    },
+    {
+      "x": 29,
+      "y": 11,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoonb2f_rocket3"
+    },
+    {
+      "x": 29,
+      "y": 17,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_mtmoonb2f_rocket4"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "sprite": "sprite_fossil",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonb2f_dome_fossil"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "sprite": "sprite_fossil",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonb2f_helix_fossil"
+    },
+    {
+      "x": 25,
+      "y": 21,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonb2f_hp_up"
+    },
+    {
+      "x": 29,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonb2f_tm_mega_punch"
+    }
+  ],
+  "warps": [
+    {
+      "x": 25,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 21,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 15,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_mtmoonb2f_default",
+    "script_mtmoonb2f_start_battle",
+    "script_mtmoonb2f_end_battle",
+    "script_mtmoonb2f_defeated_super_nerd",
+    "script_mtmoonb2f_move_super_nerd",
+    "script_mtmoonb2f_super_nerd_takes_other_fossil"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "name": "RockTunnel1F",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\CAVERN.json",
+  "map_blocks": "Pokemon\\map_blocks\\RockTunnel1F.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "rocktunnel1f_hiker1"
+    },
+    {
+      "name": "rocktunnel1f_hiker2"
+    },
+    {
+      "name": "rocktunnel1f_hiker3"
+    },
+    {
+      "name": "rocktunnel1f_super_nerd"
+    },
+    {
+      "name": "rocktunnel1f_cooltrainer_f1"
+    },
+    {
+      "name": "rocktunnel1f_cooltrainer_f2"
+    },
+    {
+      "name": "rocktunnel1f_cooltrainer_f3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 7,
+      "y": 5,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rocktunnel1f_hiker1"
+    },
+    {
+      "x": 5,
+      "y": 16,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rocktunnel1f_hiker2"
+    },
+    {
+      "x": 17,
+      "y": 15,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_rocktunnel1f_hiker3"
+    },
+    {
+      "x": 23,
+      "y": 8,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_rocktunnel1f_super_nerd"
+    },
+    {
+      "x": 37,
+      "y": 21,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_rocktunnel1f_cooltrainer_f1"
+    },
+    {
+      "x": 22,
+      "y": 24,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rocktunnel1f_cooltrainer_f2"
+    },
+    {
+      "x": 32,
+      "y": 24,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_rocktunnel1f_cooltrainer_f3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 15,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 15,
+      "y": 33,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 15,
+      "y": 35,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 37,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 37,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 11,
+      "y": 29,
+      "text": "text_rocktunnel1f_sign"
+    }
+  ],
+  "scripts": [
+    "script_rocktunnel1f_default",
+    "script_rocktunnel1f_start_battle",
+    "script_rocktunnel1f_end_battle"
+  ]
+}

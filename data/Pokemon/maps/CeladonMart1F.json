@@ -1,0 +1,75 @@
+{
+  "name": "CeladonMart1F",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMart1F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmart1f_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 3,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmart1f_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 11,
+      "y": 4,
+      "text": "text_celadonmart1f_directory_sign"
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "text": "text_celadonmart1f_current_floor_sign"
+    }
+  ],
+  "scripts": []
+}

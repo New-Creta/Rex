@@ -1,0 +1,78 @@
+{
+  "name": "CeruleanGym",
+  "width": 5,
+  "height": 7,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanGym.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ceruleangym_misty"
+    },
+    {
+      "name": "ceruleangym_cooltrainer_f"
+    },
+    {
+      "name": "ceruleangym_swimmer"
+    },
+    {
+      "name": "ceruleangym_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_brunette_girl",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleangym_misty"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ceruleangym_cooltrainer_f"
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ceruleangym_swimmer"
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleangym_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_ceruleangym_default",
+    "script_ceruleangym_start_battle",
+    "script_ceruleangym_end_battle",
+    "script_ceruleangym_misty_post_battle"
+  ]
+}

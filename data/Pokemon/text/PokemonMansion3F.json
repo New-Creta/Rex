@@ -1,0 +1,111 @@
+{
+  "texts": [
+    {
+      "name": "PokemonMansion3FSuperNerdBattle",
+      "values": [
+        {
+          "text": "This place is",
+          "type": "text"
+        },
+        {
+          "text": "like, huge!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FSuperNerdEndBattle",
+      "values": [
+        {
+          "text": "Ayah!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FSuperNerdAfterBattle",
+      "values": [
+        {
+          "text": "I wonder where",
+          "type": "text"
+        },
+        {
+          "text": "my partner went.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistBattle",
+      "values": [
+        {
+          "text": "My mentor once",
+          "type": "text"
+        },
+        {
+          "text": "lived here.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistEndBattle",
+      "values": [
+        {
+          "text": "Whew!",
+          "type": "text"
+        },
+        {
+          "text": "Overwhelming!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FScientistAfterBattle",
+      "values": [
+        {
+          "text": "So, you're stuck?",
+          "type": "text"
+        },
+        {
+          "text": "Try jumping off",
+          "type": "line"
+        },
+        {
+          "text": "over there!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PokemonMansion3FDiary",
+      "values": [
+        {
+          "text": "Diary: Feb. 6",
+          "type": "text"
+        },
+        {
+          "text": "MEW gave birth.",
+          "type": "line"
+        },
+        {
+          "text": "We named the",
+          "type": "para"
+        },
+        {
+          "text": "newborn MEWTWO.",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

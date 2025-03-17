@@ -1,0 +1,121 @@
+{
+  "name": "ROUTE 24",
+  "width": 10,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route24.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\ceruleancity.json",
+      "offset": -5
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route25.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route24_cooltrainer_m1"
+    },
+    {
+      "name": "route24_cooltrainer_m2"
+    },
+    {
+      "name": "route24_cooltrainer_m3"
+    },
+    {
+      "name": "route24_cooltrainer_f1"
+    },
+    {
+      "name": "route24_youngster1"
+    },
+    {
+      "name": "route24_cooltrainer_f2"
+    },
+    {
+      "name": "route24_youngster2"
+    },
+    {
+      "name": "route24_tm_thunder_wave"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 11,
+      "y": 15,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_cooltrainer_m1"
+    },
+    {
+      "x": 5,
+      "y": 20,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route24_cooltrainer_m2"
+    },
+    {
+      "x": 11,
+      "y": 19,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_cooltrainer_m3"
+    },
+    {
+      "x": 10,
+      "y": 22,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route24_cooltrainer_f1"
+    },
+    {
+      "x": 11,
+      "y": 25,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_youngster1"
+    },
+    {
+      "x": 10,
+      "y": 28,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route24_cooltrainer_f2"
+    },
+    {
+      "x": 11,
+      "y": 31,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route24_youngster2"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route24_tm_thunder_wave"
+    }
+  ],
+  "warps": [],
+  "bg_events": [],
+  "scripts": [
+    "script_route24_default",
+    "script_route24_start_battle",
+    "script_route24_end_battle",
+    "script_route24_after_rocket_battle",
+    "script_route24_player_moving"
+  ]
+}

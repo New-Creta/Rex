@@ -1,0 +1,75 @@
+{
+  "name": "ChampionsRoom",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\ChampionsRoom.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "championsroom_rival"
+    },
+    {
+      "name": "championsroom_oak"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_championsroom_rival"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "sprite": "sprite_oak",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_championsroom_oak"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_championsroom_default",
+    "script_championsroom_player_enters",
+    "script_championsroom_rival_ready_to_battle",
+    "script_championsroom_rival_defeated",
+    "script_championsroom_oak_arrives",
+    "script_championsroom_oak_congratulates_player",
+    "script_championsroom_oak_disappointed_with_rival",
+    "script_championsroom_oak_come_with_me",
+    "script_championsroom_oak_exits",
+    "script_championsroom_player_follows_oak",
+    "script_championsroom_cleanup_script"
+  ]
+}

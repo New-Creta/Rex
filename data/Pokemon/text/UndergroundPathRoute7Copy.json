@@ -1,0 +1,108 @@
+{
+  "texts": [
+    {
+      "name": "UndergroundPathRoute7CopyUnusedGirl",
+      "values": [
+        {
+          "text": "I want to shop at",
+          "type": "text"
+        },
+        {
+          "text": "the dept. store",
+          "type": "line"
+        },
+        {
+          "text": "in CELADON but...",
+          "type": "cont"
+        },
+        {
+          "text": "There are so many",
+          "type": "para"
+        },
+        {
+          "text": "rough looking",
+          "type": "line"
+        },
+        {
+          "text": "people there.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "UndergroundPathRoute7CopyUnusedTeamRocketHadAHideout",
+      "values": [
+        {
+          "text": "TEAM ROCKET had a",
+          "type": "text"
+        },
+        {
+          "text": "secret hideout in",
+          "type": "line"
+        },
+        {
+          "text": "CELADON CITY?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "UndergroundPathRoute7CopyUnusedMiddleAgedMan",
+      "values": [
+        {
+          "text": "You're here to",
+          "type": "text"
+        },
+        {
+          "text": "shop in CELADON?",
+          "type": "line"
+        },
+        {
+          "text": "Just step outside",
+          "type": "para"
+        },
+        {
+          "text": "and head west!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "UndergroundPathRoute7CopyUnusedGoesUnderSaffron",
+      "values": [
+        {
+          "text": "The UNDERGROUND",
+          "type": "text"
+        },
+        {
+          "text": "PATH goes beneath",
+          "type": "line"
+        },
+        {
+          "text": "SAFFRON and leads",
+          "type": "cont"
+        },
+        {
+          "text": "to LAVENDER.",
+          "type": "cont"
+        },
+        {
+          "text": "If you're heading",
+          "type": "para"
+        },
+        {
+          "text": "to CERULEAN, go",
+          "type": "line"
+        },
+        {
+          "text": "to the building",
+          "type": "cont"
+        },
+        {
+          "text": "across the road.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

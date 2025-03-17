@@ -1,0 +1,58 @@
+{
+  "name": "Route12Gate1F",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route12Gate1F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route12gate1f_guard"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 1,
+      "y": 3,
+      "sprite": "sprite_guard",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route12gate1f_guard"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

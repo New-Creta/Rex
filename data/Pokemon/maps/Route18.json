@@ -1,0 +1,100 @@
+{
+  "name": "ROUTE 18",
+  "width": 25,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route18.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route17.json",
+      "offset": 0
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\fuchsiacity.json",
+      "offset": -4
+    }
+  ],
+  "objects": [
+    {
+      "name": "route18_cooltrainer_m1"
+    },
+    {
+      "name": "route18_cooltrainer_m2"
+    },
+    {
+      "name": "route18_cooltrainer_m3"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 36,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route18_cooltrainer_m1"
+    },
+    {
+      "x": 40,
+      "y": 15,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route18_cooltrainer_m2"
+    },
+    {
+      "x": 42,
+      "y": 13,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route18_cooltrainer_m3"
+    }
+  ],
+  "warps": [
+    {
+      "x": 33,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 33,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 40,
+      "y": 8,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 40,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 43,
+      "y": 7,
+      "text": "text_route18_sign"
+    },
+    {
+      "x": 33,
+      "y": 5,
+      "text": "text_route18_cycling_road_sign"
+    }
+  ],
+  "scripts": [
+    "script_route18_default",
+    "script_route18_start_battle",
+    "script_route18_end_battle"
+  ]
+}

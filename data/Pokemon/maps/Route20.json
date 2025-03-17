@@ -1,0 +1,165 @@
+{
+  "name": "SEA ROUTE 20",
+  "width": 50,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route20.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\cinnabarisland.json",
+      "offset": 0
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route19.json",
+      "offset": -18
+    }
+  ],
+  "objects": [
+    {
+      "name": "route20_swimmer1"
+    },
+    {
+      "name": "route20_swimmer2"
+    },
+    {
+      "name": "route20_swimmer3"
+    },
+    {
+      "name": "route20_swimmer4"
+    },
+    {
+      "name": "route20_swimmer5"
+    },
+    {
+      "name": "route20_swimmer6"
+    },
+    {
+      "name": "route20_cooltrainer_m"
+    },
+    {
+      "name": "route20_swimmer7"
+    },
+    {
+      "name": "route20_swimmer8"
+    },
+    {
+      "name": "route20_swimmer9"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 87,
+      "y": 8,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer1"
+    },
+    {
+      "x": 68,
+      "y": 11,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer2"
+    },
+    {
+      "x": 45,
+      "y": 10,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer3"
+    },
+    {
+      "x": 55,
+      "y": 14,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route20_swimmer4"
+    },
+    {
+      "x": 38,
+      "y": 13,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer5"
+    },
+    {
+      "x": 87,
+      "y": 13,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer6"
+    },
+    {
+      "x": 34,
+      "y": 9,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_cooltrainer_m"
+    },
+    {
+      "x": 25,
+      "y": 7,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer7"
+    },
+    {
+      "x": 24,
+      "y": 12,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route20_swimmer8"
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route20_swimmer9"
+    }
+  ],
+  "warps": [
+    {
+      "x": 48,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 58,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 51,
+      "y": 7,
+      "text": "text_route20_seafoam_islands_west_sign"
+    },
+    {
+      "x": 57,
+      "y": 11,
+      "text": "text_route20_seafoam_islands_east_sign"
+    }
+  ],
+  "scripts": [
+    "script_route20_default",
+    "script_route20_start_battle",
+    "script_route20_end_battle"
+  ]
+}

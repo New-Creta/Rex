@@ -1,0 +1,147 @@
+{
+  "name": "SEA ROUTE 19",
+  "width": 10,
+  "height": 27,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route19.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\fuchsiacity.json",
+      "offset": -5
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route20.json",
+      "offset": 18
+    }
+  ],
+  "objects": [
+    {
+      "name": "route19_cooltrainer_m1"
+    },
+    {
+      "name": "route19_cooltrainer_m2"
+    },
+    {
+      "name": "route19_swimmer1"
+    },
+    {
+      "name": "route19_swimmer2"
+    },
+    {
+      "name": "route19_swimmer3"
+    },
+    {
+      "name": "route19_swimmer4"
+    },
+    {
+      "name": "route19_swimmer5"
+    },
+    {
+      "name": "route19_swimmer6"
+    },
+    {
+      "name": "route19_swimmer7"
+    },
+    {
+      "name": "route19_swimmer8"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 8,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_cooltrainer_m1"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_cooltrainer_m2"
+    },
+    {
+      "x": 13,
+      "y": 25,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_swimmer1"
+    },
+    {
+      "x": 4,
+      "y": 27,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route19_swimmer2"
+    },
+    {
+      "x": 16,
+      "y": 31,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route19_swimmer3"
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route19_swimmer4"
+    },
+    {
+      "x": 8,
+      "y": 43,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route19_swimmer5"
+    },
+    {
+      "x": 11,
+      "y": 43,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route19_swimmer6"
+    },
+    {
+      "x": 9,
+      "y": 42,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route19_swimmer7"
+    },
+    {
+      "x": 10,
+      "y": 44,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route19_swimmer8"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 11,
+      "y": 9,
+      "text": "text_route19_sign"
+    }
+  ],
+  "scripts": [
+    "script_route19_default",
+    "script_route19_start_battle",
+    "script_route19_end_battle"
+  ]
+}

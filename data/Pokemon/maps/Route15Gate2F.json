@@ -1,0 +1,40 @@
+{
+  "name": "Route15Gate2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route15Gate2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route15gate2f_oaks_aide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route15gate2f_oaks_aide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 6,
+      "y": 2,
+      "text": "text_route15gate2f_binoculars"
+    }
+  ],
+  "scripts": []
+}

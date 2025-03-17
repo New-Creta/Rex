@@ -1,0 +1,52 @@
+{
+  "name": "LancesRoom",
+  "width": 13,
+  "height": 13,
+  "tileset": "Pokemon\\tilesets\\DOJO.json",
+  "map_blocks": "Pokemon\\map_blocks\\LancesRoom.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "lancesroom_lance"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 1,
+      "sprite": "sprite_lance",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_lancesroom_lance"
+    }
+  ],
+  "warps": [
+    {
+      "x": 24,
+      "y": 16,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_lancesroom_default",
+    "script_lancesroom_lance_start_battle",
+    "script_lancesroom_lance_end_battle",
+    "script_lancesroom_player_is_moving",
+    "script_lancesroom_noop"
+  ]
+}

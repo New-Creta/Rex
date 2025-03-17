@@ -1,0 +1,33 @@
+{
+  "name": "CeladonMartElevator",
+  "width": 2,
+  "height": 2,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMartElevator.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 1,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 0,
+      "text": "text_celadonmartelevator"
+    }
+  ],
+  "scripts": []
+}

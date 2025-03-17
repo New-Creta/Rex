@@ -1,0 +1,56 @@
+{
+  "name": "Route11Gate2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route11Gate2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route11gate2f_youngster"
+    },
+    {
+      "name": "route11gate2f_oaks_aide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 2,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_route11gate2f_youngster"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route11gate2f_oaks_aide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 2,
+      "text": "text_route11gate2f_left_binoculars"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "text": "text_route11gate2f_right_binoculars"
+    }
+  ],
+  "scripts": []
+}

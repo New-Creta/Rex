@@ -1,0 +1,40 @@
+{
+  "name": "Daycare",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Daycare.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "daycare_gentleman"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_daycare_gentleman"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

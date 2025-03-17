@@ -1,0 +1,51 @@
+{
+  "name": "CeladonMansionRoofHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMansionRoofHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmansion_roof_house_hiker"
+    },
+    {
+      "name": "celadonmansion_roof_house_eevee_pokeball"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 2,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmansion_roof_house_hiker"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_celadonmansion_roof_house_eevee_pokeball"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

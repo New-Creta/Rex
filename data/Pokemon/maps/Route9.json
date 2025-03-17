@@ -1,0 +1,147 @@
+{
+  "name": "ROUTE 9",
+  "width": 30,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route9.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\ceruleancity.json",
+      "offset": -4
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route10.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route9_cooltrainer_f1"
+    },
+    {
+      "name": "route9_cooltrainer_m1"
+    },
+    {
+      "name": "route9_cooltrainer_m2"
+    },
+    {
+      "name": "route9_cooltrainer_f2"
+    },
+    {
+      "name": "route9_hiker1"
+    },
+    {
+      "name": "route9_hiker2"
+    },
+    {
+      "name": "route9_youngster1"
+    },
+    {
+      "name": "route9_hiker3"
+    },
+    {
+      "name": "route9_youngster2"
+    },
+    {
+      "name": "route9_tm_teleport"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 13,
+      "y": 10,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route9_cooltrainer_f1"
+    },
+    {
+      "x": 24,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route9_cooltrainer_m1"
+    },
+    {
+      "x": 31,
+      "y": 7,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route9_cooltrainer_m2"
+    },
+    {
+      "x": 48,
+      "y": 8,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route9_cooltrainer_f2"
+    },
+    {
+      "x": 16,
+      "y": 15,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route9_hiker1"
+    },
+    {
+      "x": 43,
+      "y": 3,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route9_hiker2"
+    },
+    {
+      "x": 22,
+      "y": 2,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route9_youngster1"
+    },
+    {
+      "x": 45,
+      "y": 15,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route9_hiker3"
+    },
+    {
+      "x": 40,
+      "y": 8,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route9_youngster2"
+    },
+    {
+      "x": 10,
+      "y": 15,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route9_tm_teleport"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 25,
+      "y": 7,
+      "text": "text_route9_sign"
+    }
+  ],
+  "scripts": [
+    "script_route9_default",
+    "script_route9_start_battle",
+    "script_route9_end_battle"
+  ]
+}

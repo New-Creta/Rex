@@ -1,0 +1,160 @@
+{
+  "texts": [
+    {
+      "name": "PalletTownOakHeyWaitDontGoOut",
+      "values": [
+        {
+          "text": "OAK: Hey! Wait!",
+          "type": "text"
+        },
+        {
+          "text": "Don't go out!@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownOakItsUnsafe",
+      "values": [
+        {
+          "text": "OAK: It's unsafe!",
+          "type": "text"
+        },
+        {
+          "text": "Wild #MON live",
+          "type": "line"
+        },
+        {
+          "text": "in tall grass!",
+          "type": "cont"
+        },
+        {
+          "text": "You need your own",
+          "type": "para"
+        },
+        {
+          "text": "#MON for your",
+          "type": "line"
+        },
+        {
+          "text": "protection.",
+          "type": "cont"
+        },
+        {
+          "text": "I know!",
+          "type": "cont"
+        },
+        {
+          "text": "Here, come with",
+          "type": "para"
+        },
+        {
+          "text": "me!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownGirl",
+      "values": [
+        {
+          "text": "I'm raising",
+          "type": "text"
+        },
+        {
+          "text": "#MON too!",
+          "type": "line"
+        },
+        {
+          "text": "When they get",
+          "type": "para"
+        },
+        {
+          "text": "strong, they can",
+          "type": "line"
+        },
+        {
+          "text": "protect me!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownFisher",
+      "values": [
+        {
+          "text": "Technology is",
+          "type": "text"
+        },
+        {
+          "text": "incredible!",
+          "type": "line"
+        },
+        {
+          "text": "You can now store",
+          "type": "para"
+        },
+        {
+          "text": "and recall items",
+          "type": "line"
+        },
+        {
+          "text": "and #MON as",
+          "type": "cont"
+        },
+        {
+          "text": "data via PC!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownOaksLabSign",
+      "values": [
+        {
+          "text": "OAK #MON",
+          "type": "text"
+        },
+        {
+          "text": "RESEARCH LAB",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownSign",
+      "values": [
+        {
+          "text": "PALLET TOWN",
+          "type": "text"
+        },
+        {
+          "text": "Shades of your",
+          "type": "line"
+        },
+        {
+          "text": "journey await!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownPlayersHouseSign",
+      "values": [
+        {
+          "text": "<PLAYER>'s house ",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "PalletTownRivalsHouseSign",
+      "values": [
+        {
+          "text": "<RIVAL>'s house ",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

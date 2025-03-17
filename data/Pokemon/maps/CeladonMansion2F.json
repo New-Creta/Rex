@@ -1,0 +1,45 @@
+{
+  "name": "CeladonMansion2F",
+  "width": 4,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\MANSION.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMansion2F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 6,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 4,
+      "y": 9,
+      "text": "text_celadonmansion2f_meeting_room_sign"
+    }
+  ],
+  "scripts": []
+}

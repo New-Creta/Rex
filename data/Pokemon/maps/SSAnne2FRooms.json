@@ -1,0 +1,236 @@
+{
+  "name": "SSAnne2FRooms",
+  "width": 12,
+  "height": 8,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnne2FRooms.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssanne2frooms_gentleman1"
+    },
+    {
+      "name": "ssanne2frooms_fisher"
+    },
+    {
+      "name": "ssanne2frooms_gentleman2"
+    },
+    {
+      "name": "ssanne2frooms_cooltrainer_f"
+    },
+    {
+      "name": "ssanne2frooms_gentleman3"
+    },
+    {
+      "name": "ssanne2frooms_max_ether"
+    },
+    {
+      "name": "ssanne2frooms_gentleman4"
+    },
+    {
+      "name": "ssanne2frooms_gramps"
+    },
+    {
+      "name": "ssanne2frooms_rare_candy"
+    },
+    {
+      "name": "ssanne2frooms_gentleman5"
+    },
+    {
+      "name": "ssanne2frooms_little_boy"
+    },
+    {
+      "name": "ssanne2frooms_brunette_girl"
+    },
+    {
+      "name": "ssanne2frooms_beauty"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_gentleman1"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne2frooms_fisher"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_gentleman2"
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_cooltrainer_f"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman3"
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_max_ether"
+    },
+    {
+      "x": 21,
+      "y": 2,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman4"
+    },
+    {
+      "x": 22,
+      "y": 1,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gramps"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_rare_candy"
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ssanne2frooms_gentleman5"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_little_boy",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_ssanne2frooms_little_boy"
+    },
+    {
+      "x": 22,
+      "y": 12,
+      "sprite": "sprite_brunette_girl",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_ssanne2frooms_brunette_girl"
+    },
+    {
+      "x": 20,
+      "y": 12,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_ssanne2frooms_beauty"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 22,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 23,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 2,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 12,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 22,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 23,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_ssanne2frooms_default",
+    "script_ssanne2frooms_start_battle",
+    "script_ssanne2frooms_end_battle"
+  ]
+}

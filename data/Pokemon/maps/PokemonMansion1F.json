@@ -1,0 +1,102 @@
+{
+  "name": "PokemonMansion1F",
+  "width": 15,
+  "height": 14,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonMansion1F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemonmansion1f_scientist"
+    },
+    {
+      "name": "pokemonmansion1f_escape_rope"
+    },
+    {
+      "name": "pokemonmansion1f_carbos"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 17,
+      "y": 17,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemonmansion1f_scientist"
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansion1f_escape_rope"
+    },
+    {
+      "x": 18,
+      "y": 21,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemonmansion1f_carbos"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 6,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 7,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 23,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 26,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 27,
+      "y": 27,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_pokemonmansion1f_default",
+    "script_pokemonmansion1f_start_battle",
+    "script_pokemonmansion1f_end_battle"
+  ]
+}

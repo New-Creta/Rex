@@ -1,0 +1,69 @@
+{
+  "name": "BillsHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\INTERIOR.json",
+  "map_blocks": "Pokemon\\map_blocks\\BillsHouse.blk",
+  "border_block_idx": 13,
+  "connections": [],
+  "objects": [
+    {
+      "name": "billshouse_bill_pokemon"
+    },
+    {
+      "name": "billshouse_bill1"
+    },
+    {
+      "name": "billshouse_bill2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 5,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_pokemon"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_ss_ticket"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_billshouse_bill_check_out_my_rare_pokemon"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_billshouse_default",
+    "script_billshouse_pokemon_walk_to_machine",
+    "script_billshouse_pokemon_enters_machine",
+    "script_billshouse_bill_exits_machine",
+    "script_billshouse_cleanup",
+    "script_billshouse_pc"
+  ]
+}

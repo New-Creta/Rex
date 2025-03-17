@@ -1,0 +1,27 @@
+{
+  "name": "VermilionDock",
+  "width": 14,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\SHIP_PORT.json",
+  "map_blocks": "Pokemon\\map_blocks\\VermilionDock.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [],
+  "object_events": [],
+  "warps": [
+    {
+      "x": 14,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 6
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

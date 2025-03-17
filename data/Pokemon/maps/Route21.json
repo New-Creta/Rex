@@ -1,0 +1,130 @@
+{
+  "name": "SEA ROUTE 21",
+  "width": 10,
+  "height": 45,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route21.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\pallettown.json",
+      "offset": 0
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\cinnabarisland.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route21_fisher1"
+    },
+    {
+      "name": "route21_fisher2"
+    },
+    {
+      "name": "route21_swimmer1"
+    },
+    {
+      "name": "route21_swimmer2"
+    },
+    {
+      "name": "route21_swimmer3"
+    },
+    {
+      "name": "route21_swimmer4"
+    },
+    {
+      "name": "route21_swimmer5"
+    },
+    {
+      "name": "route21_fisher3"
+    },
+    {
+      "name": "route21_fisher4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 24,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route21_fisher1"
+    },
+    {
+      "x": 6,
+      "y": 25,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route21_fisher2"
+    },
+    {
+      "x": 10,
+      "y": 31,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route21_swimmer1"
+    },
+    {
+      "x": 12,
+      "y": 30,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route21_swimmer2"
+    },
+    {
+      "x": 16,
+      "y": 63,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route21_swimmer3"
+    },
+    {
+      "x": 5,
+      "y": 71,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route21_swimmer4"
+    },
+    {
+      "x": 15,
+      "y": 71,
+      "sprite": "sprite_swimmer",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route21_swimmer5"
+    },
+    {
+      "x": 14,
+      "y": 56,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route21_fisher3"
+    },
+    {
+      "x": 17,
+      "y": 57,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route21_fisher4"
+    }
+  ],
+  "warps": [],
+  "bg_events": [],
+  "scripts": [
+    "script_route21_default",
+    "script_route21_start_battle",
+    "script_route21_end_battle"
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "name": "ROUTE 14",
+  "width": 10,
+  "height": 27,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route14.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route15.json",
+      "offset": 18
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\route13.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route14_cooltrainer_m1"
+    },
+    {
+      "name": "route14_cooltrainer_m2"
+    },
+    {
+      "name": "route14_cooltrainer_m3"
+    },
+    {
+      "name": "route14_cooltrainer_m4"
+    },
+    {
+      "name": "route14_cooltrainer_m5"
+    },
+    {
+      "name": "route14_cooltrainer_m6"
+    },
+    {
+      "name": "route14_biker1"
+    },
+    {
+      "name": "route14_biker2"
+    },
+    {
+      "name": "route14_biker3"
+    },
+    {
+      "name": "route14_biker4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route14_cooltrainer_m1"
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route14_cooltrainer_m2"
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route14_cooltrainer_m3"
+    },
+    {
+      "x": 14,
+      "y": 15,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route14_cooltrainer_m4"
+    },
+    {
+      "x": 15,
+      "y": 31,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route14_cooltrainer_m5"
+    },
+    {
+      "x": 6,
+      "y": 49,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route14_cooltrainer_m6"
+    },
+    {
+      "x": 5,
+      "y": 39,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route14_biker1"
+    },
+    {
+      "x": 4,
+      "y": 30,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route14_biker2"
+    },
+    {
+      "x": 15,
+      "y": 30,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route14_biker3"
+    },
+    {
+      "x": 4,
+      "y": 31,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route14_biker4"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 13,
+      "text": "text_route14_sign"
+    }
+  ],
+  "scripts": [
+    "script_route14_default",
+    "script_route14_start_battle",
+    "script_route14_end_battle"
+  ]
+}

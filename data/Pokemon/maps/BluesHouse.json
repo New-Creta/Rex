@@ -1,0 +1,65 @@
+{
+  "name": "BluesHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\BluesHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "blueshouse_daisy1"
+    },
+    {
+      "name": "blueshouse_daisy2"
+    },
+    {
+      "name": "blueshouse_town_map"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_daisy",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_blueshouse_daisy_sitting"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "sprite": "sprite_daisy",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_blueshouse_daisy_walking"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_blueshouse_town_map"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_blueshouse_default",
+    "script_blueshouse_noop"
+  ]
+}

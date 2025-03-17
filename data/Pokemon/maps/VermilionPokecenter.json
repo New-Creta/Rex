@@ -1,0 +1,73 @@
+{
+  "name": "VermilionPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\VermilionPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "vermilionpokecenter_nurse"
+    },
+    {
+      "name": "vermilionpokecenter_fishing_guru"
+    },
+    {
+      "name": "vermilionpokecenter_sailor"
+    },
+    {
+      "name": "vermilionpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_vermilionpokecenter_nurse"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_vermilionpokecenter_fishing_guru"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "sprite": "sprite_sailor",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_vermilionpokecenter_sailor"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_vermilionpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

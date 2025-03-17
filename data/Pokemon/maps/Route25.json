@@ -1,0 +1,149 @@
+{
+  "name": "ROUTE 25",
+  "width": 30,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route25.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route24.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route25_youngster1"
+    },
+    {
+      "name": "route25_youngster2"
+    },
+    {
+      "name": "route25_cooltrainer_m"
+    },
+    {
+      "name": "route25_cooltrainer_f1"
+    },
+    {
+      "name": "route25_youngster3"
+    },
+    {
+      "name": "route25_cooltrainer_f2"
+    },
+    {
+      "name": "route25_hiker1"
+    },
+    {
+      "name": "route25_hiker2"
+    },
+    {
+      "name": "route25_hiker3"
+    },
+    {
+      "name": "route25_tm_seismic_toss"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 14,
+      "y": 2,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route25_youngster1"
+    },
+    {
+      "x": 18,
+      "y": 5,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route25_youngster2"
+    },
+    {
+      "x": 24,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route25_cooltrainer_m"
+    },
+    {
+      "x": 18,
+      "y": 8,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route25_cooltrainer_f1"
+    },
+    {
+      "x": 32,
+      "y": 3,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route25_youngster3"
+    },
+    {
+      "x": 37,
+      "y": 4,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route25_cooltrainer_f2"
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route25_hiker1"
+    },
+    {
+      "x": 23,
+      "y": 9,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route25_hiker2"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route25_hiker3"
+    },
+    {
+      "x": 22,
+      "y": 2,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route25_tm_seismic_toss"
+    }
+  ],
+  "warps": [
+    {
+      "x": 45,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 43,
+      "y": 3,
+      "text": "text_route25_bill_sign"
+    }
+  ],
+  "scripts": [
+    "script_route25_default",
+    "script_route25_start_battle",
+    "script_route25_end_battle"
+  ]
+}

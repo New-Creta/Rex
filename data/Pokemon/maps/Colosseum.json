@@ -1,0 +1,27 @@
+{
+  "name": "Colosseum",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\CLUB.json",
+  "map_blocks": "Pokemon\\map_blocks\\Colosseum.blk",
+  "border_block_idx": 14,
+  "connections": [],
+  "objects": [
+    {
+      "name": "colosseum_opponent"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 2,
+      "sprite": "sprite_red",
+      "action": "stay",
+      "direction": "any_dir",
+      "text": "text_colosseum_opponent"
+    }
+  ],
+  "warps": [],
+  "bg_events": [],
+  "scripts": []
+}

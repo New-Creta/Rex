@@ -1,0 +1,62 @@
+{
+  "name": "VermilionPidgeyHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\VermilionPidgeyHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "vermilionpidgeyhouse_youngster"
+    },
+    {
+      "name": "vermilionpidgeyhouse_pidgey"
+    },
+    {
+      "name": "vermilionpidgeyhouse_letter"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_vermilionpidgeyhouse_youngster"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "sprite": "sprite_bird",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_vermilionpidgeyhouse_pidgey"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_paper",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_vermilionpidgeyhouse_letter"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

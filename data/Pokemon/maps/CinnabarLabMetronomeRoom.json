@@ -1,0 +1,67 @@
+{
+  "name": "CinnabarLabMetronomeRoom",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LAB.json",
+  "map_blocks": "Pokemon\\map_blocks\\CinnabarLabMetronomeRoom.blk",
+  "border_block_idx": 23,
+  "connections": [],
+  "objects": [
+    {
+      "name": "cinnabarlabmetronomeroom_scientist1"
+    },
+    {
+      "name": "cinnabarlabmetronomeroom_scientist2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_cinnabarlabmetronomeroom_scientist1"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_scientist",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_cinnabarlabmetronomeroom_scientist2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 0,
+      "y": 4,
+      "text": "text_cinnabarlabmetronomeroom_pc_keyboard"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "text": "text_cinnabarlabmetronomeroom_pc_monitor"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "text": "text_cinnabarlabmetronomeroom_amber_pipe"
+    }
+  ],
+  "scripts": []
+}

@@ -1,0 +1,515 @@
+{
+  "texts": [
+    {
+      "name": "Route15CooltrainerF1Battle",
+      "values": [
+        {
+          "text": "Let me try out the",
+          "type": "text"
+        },
+        {
+          "text": "#MON I just",
+          "type": "line"
+        },
+        {
+          "text": "got in a trade!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF1EndBattle",
+      "values": [
+        {
+          "text": "Not",
+          "type": "text"
+        },
+        {
+          "text": "good enough!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF1AfterBattle",
+      "values": [
+        {
+          "text": "You can't change",
+          "type": "text"
+        },
+        {
+          "text": "the nickname of",
+          "type": "line"
+        },
+        {
+          "text": "any #MON you",
+          "type": "cont"
+        },
+        {
+          "text": "get in a trade.",
+          "type": "cont"
+        },
+        {
+          "text": "Only the Original",
+          "type": "para"
+        },
+        {
+          "text": "Trainer can.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF2Battle",
+      "values": [
+        {
+          "text": "You look gentle,",
+          "type": "text"
+        },
+        {
+          "text": "so I think I can",
+          "type": "line"
+        },
+        {
+          "text": "beat you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF2EndBattle",
+      "values": [
+        {
+          "text": "No,",
+          "type": "text"
+        },
+        {
+          "text": "wrong!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF2AfterBattle",
+      "values": [
+        {
+          "text": "I'm afraid of",
+          "type": "text"
+        },
+        {
+          "text": "BIKERs, they look",
+          "type": "line"
+        },
+        {
+          "text": "so ugly and mean!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM1Battle",
+      "values": [
+        {
+          "text": "When I whistle, I",
+          "type": "text"
+        },
+        {
+          "text": "can summon bird",
+          "type": "line"
+        },
+        {
+          "text": "#MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM1EndBattle",
+      "values": [
+        {
+          "text": "Ow!",
+          "type": "text"
+        },
+        {
+          "text": "That's tragic!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM1AfterBattle",
+      "values": [
+        {
+          "text": "Maybe I'm not cut",
+          "type": "text"
+        },
+        {
+          "text": "out for battles.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM2Battle",
+      "values": [
+        {
+          "text": "Hmm? My birds are",
+          "type": "text"
+        },
+        {
+          "text": "shivering! You're",
+          "type": "line"
+        },
+        {
+          "text": "good, aren't you?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM2EndBattle",
+      "values": [
+        {
+          "text": "Just",
+          "type": "text"
+        },
+        {
+          "text": "as I thought!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerM2AfterBattle",
+      "values": [
+        {
+          "text": "Did you know moves",
+          "type": "text"
+        },
+        {
+          "text": "like EARTHQUAKE",
+          "type": "line"
+        },
+        {
+          "text": "don't have any",
+          "type": "cont"
+        },
+        {
+          "text": "effect on birds?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty1Battle",
+      "values": [
+        {
+          "text": "Oh, you're a",
+          "type": "text"
+        },
+        {
+          "text": "little cutie!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty1EndBattle",
+      "values": [
+        {
+          "text": "You looked",
+          "type": "text"
+        },
+        {
+          "text": "so cute too!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty1AfterBattle",
+      "values": [
+        {
+          "text": "I forgive you!",
+          "type": "text"
+        },
+        {
+          "text": "I can take it!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty2Battle",
+      "values": [
+        {
+          "text": "I raise #MON",
+          "type": "text"
+        },
+        {
+          "text": "because I live",
+          "type": "line"
+        },
+        {
+          "text": "alone!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty2EndBattle",
+      "values": [
+        {
+          "text": "I didn't",
+          "type": "text"
+        },
+        {
+          "text": "ask for this!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15Beauty2AfterBattle",
+      "values": [
+        {
+          "text": "I just like going",
+          "type": "text"
+        },
+        {
+          "text": "home to be with",
+          "type": "line"
+        },
+        {
+          "text": "my #MON!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker1Battle",
+      "values": [
+        {
+          "text": "Hey kid! C'mon!",
+          "type": "text"
+        },
+        {
+          "text": "I just got these!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker1EndBattle",
+      "values": [
+        {
+          "text": "Why",
+          "type": "text"
+        },
+        {
+          "text": "not?",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker1AfterBattle",
+      "values": [
+        {
+          "text": "You only live",
+          "type": "text"
+        },
+        {
+          "text": "once, so I live",
+          "type": "line"
+        },
+        {
+          "text": "as an outlaw!",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET RULES!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker2Battle",
+      "values": [
+        {
+          "text": "Fork over all your",
+          "type": "text"
+        },
+        {
+          "text": "cash when you",
+          "type": "line"
+        },
+        {
+          "text": "lose to me, kid!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker2EndBattle",
+      "values": [
+        {
+          "text": "That",
+          "type": "text"
+        },
+        {
+          "text": "can't be true!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15Biker2AfterBattle",
+      "values": [
+        {
+          "text": "I was just joking",
+          "type": "text"
+        },
+        {
+          "text": "about the money!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF3Battle",
+      "values": [
+        {
+          "text": "What's cool?",
+          "type": "text"
+        },
+        {
+          "text": "Trading #MON!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF3EndBattle",
+      "values": [
+        {
+          "text": "I",
+          "type": "text"
+        },
+        {
+          "text": "said trade!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF3AfterBattle",
+      "values": [
+        {
+          "text": "I trade #MON",
+          "type": "text"
+        },
+        {
+          "text": "with my friends!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF4Battle",
+      "values": [
+        {
+          "text": "Want to play with",
+          "type": "text"
+        },
+        {
+          "text": "my #MON?",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF4EndBattle",
+      "values": [
+        {
+          "text": "I was",
+          "type": "text"
+        },
+        {
+          "text": "too impatient!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "Route15CooltrainerF4AfterBattle",
+      "values": [
+        {
+          "text": "I'll go train with",
+          "type": "text"
+        },
+        {
+          "text": "weaker people.@",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route15Sign",
+      "values": [
+        {
+          "text": "ROUTE 15",
+          "type": "text"
+        },
+        {
+          "text": "West to FUCHSIA",
+          "type": "line"
+        },
+        {
+          "text": "CITY",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

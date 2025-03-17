@@ -1,0 +1,88 @@
+{
+  "texts": [
+    {
+      "name": "SafariZoneWestRestHouseSign",
+      "values": [
+        {
+          "text": "REST HOUSE",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneWestFindWardensTeethSign",
+      "values": [
+        {
+          "text": "REQUEST NOTICE",
+          "type": "text"
+        },
+        {
+          "text": "Please find the",
+          "type": "para"
+        },
+        {
+          "text": "SAFARI WARDEN's",
+          "type": "line"
+        },
+        {
+          "text": "lost GOLD TEETH.",
+          "type": "cont"
+        },
+        {
+          "text": "They're around",
+          "type": "cont"
+        },
+        {
+          "text": "here somewhere.",
+          "type": "cont"
+        },
+        {
+          "text": "Reward offered!",
+          "type": "para"
+        },
+        {
+          "text": "Contact: WARDEN",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneWestTrainerTips",
+      "values": [
+        {
+          "text": "TRAINER TIPS",
+          "type": "text"
+        },
+        {
+          "text": "Zone Exploration",
+          "type": "para"
+        },
+        {
+          "text": "Campaign!",
+          "type": "line"
+        },
+        {
+          "text": "The Search for",
+          "type": "para"
+        },
+        {
+          "text": "the SECRET HOUSE!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SafariZoneWestSign",
+      "values": [
+        {
+          "text": "AREA 3",
+          "type": "text"
+        },
+        {
+          "text": "EAST: CENTER AREA",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

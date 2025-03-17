@@ -1,0 +1,42 @@
+{
+  "texts": [
+    {
+      "name": "Route2GateOaksAideFlashExplanation",
+      "values": [
+        {
+          "text": "The HM FLASH",
+          "type": "text"
+        },
+        {
+          "text": "lights even the",
+          "type": "line"
+        },
+        {
+          "text": "darkest dungeons.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route2GateYoungster",
+      "values": [
+        {
+          "text": "Once a #MON",
+          "type": "text"
+        },
+        {
+          "text": "learns FLASH, you",
+          "type": "line"
+        },
+        {
+          "text": "can get through",
+          "type": "cont"
+        },
+        {
+          "text": "ROCK TUNNEL.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

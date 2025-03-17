@@ -1,0 +1,73 @@
+{
+  "name": "RockTunnelPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\RockTunnelPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "rocktunnelpokecenter_nurse"
+    },
+    {
+      "name": "rocktunnelpokecenter_gentleman"
+    },
+    {
+      "name": "rocktunnelpokecenter_fisher"
+    },
+    {
+      "name": "rocktunnelpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rocktunnelpokecenter_nurse"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_rocktunnelpokecenter_gentleman"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_rocktunnelpokecenter_fisher"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rocktunnelpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

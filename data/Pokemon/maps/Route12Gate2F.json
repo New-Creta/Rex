@@ -1,0 +1,45 @@
+{
+  "name": "Route12Gate2F",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route12Gate2F.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "route12gate2f_brunette_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 4,
+      "sprite": "sprite_brunette_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_route12gate2f_brunette_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 7,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 1,
+      "y": 2,
+      "text": "text_route12gate2f_left_binoculars"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "text": "text_route12gate2f_right_binoculars"
+    }
+  ],
+  "scripts": []
+}

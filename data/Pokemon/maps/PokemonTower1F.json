@@ -1,0 +1,90 @@
+{
+  "name": "PokemonTower1F",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonTower1F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemontower1f_receptionist"
+    },
+    {
+      "name": "pokemontower1f_middle_aged_woman"
+    },
+    {
+      "name": "pokemontower1f_balding_guy"
+    },
+    {
+      "name": "pokemontower1f_girl"
+    },
+    {
+      "name": "pokemontower1f_channeler"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 15,
+      "y": 13,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_pokemontower1f_receptionist"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "sprite": "sprite_middle_aged_woman",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower1f_middle_aged_woman"
+    },
+    {
+      "x": 8,
+      "y": 12,
+      "sprite": "sprite_balding_guy",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower1f_balding_guy"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower1f_girl"
+    },
+    {
+      "x": 17,
+      "y": 7,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemontower1f_channeler"
+    }
+  ],
+  "warps": [
+    {
+      "x": 10,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 11,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

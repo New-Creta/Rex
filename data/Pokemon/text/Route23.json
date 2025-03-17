@@ -1,0 +1,128 @@
+{
+  "texts": [
+    {
+      "name": "Route23YouDontHaveTheBadgeYet",
+      "values": [
+        {
+          "text": "You can pass here",
+          "type": "text"
+        },
+        {
+          "text": "only if you have",
+          "type": "line"
+        },
+        {
+          "text": "the @",
+          "type": "cont"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": "!",
+          "type": "text"
+        },
+        {
+          "text": "You don't have the",
+          "type": "para"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": " yet!",
+          "type": "text"
+        },
+        {
+          "text": "You have to have",
+          "type": "para"
+        },
+        {
+          "text": "it to get to",
+          "type": "line"
+        },
+        {
+          "text": "#MON LEAGUE!@",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "Route23OhThatIsTheBadge",
+      "values": [
+        {
+          "text": "You can pass here",
+          "type": "text"
+        },
+        {
+          "text": "only if you have",
+          "type": "line"
+        },
+        {
+          "text": "the @",
+          "type": "cont"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": "!",
+          "type": "text"
+        },
+        {
+          "text": "Oh! That is the",
+          "type": "para"
+        },
+        {
+          "text": "@",
+          "type": "line"
+        },
+        {
+          "text": "text_ram wcd6d",
+          "type": "text"
+        },
+        {
+          "text": "!@",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "Route23GoRightAhead",
+      "values": [
+        {
+          "text": "text_start",
+          "type": "text"
+        },
+        {
+          "text": "OK then! Please,",
+          "type": "para"
+        },
+        {
+          "text": "go right ahead!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "Route23VictoryRoadGateSign",
+      "values": [
+        {
+          "text": "VICTORY ROAD GATE",
+          "type": "text"
+        },
+        {
+          "text": "- #MON LEAGUE",
+          "type": "line"
+        }
+      ]
+    }
+  ]
+}

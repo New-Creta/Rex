@@ -1,0 +1,21 @@
+{
+  "texts": [
+    {
+      "name": "Route5UndergroundPathSign",
+      "values": [
+        {
+          "text": "UNDERGROUND PATH",
+          "type": "text"
+        },
+        {
+          "text": "CERULEAN CITY -",
+          "type": "line"
+        },
+        {
+          "text": "VERMILION CITY",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

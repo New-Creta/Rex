@@ -1,0 +1,66 @@
+{
+  "name": "CeladonMartRoof",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMartRoof.blk",
+  "border_block_idx": 66,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmartroof_super_nerd"
+    },
+    {
+      "name": "celadonmartroof_little_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 4,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_celadonmartroof_super_nerd"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "sprite": "sprite_little_girl",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_celadonmartroof_little_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 15,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 10,
+      "y": 1,
+      "text": "text_celadonmartroof_vending_machine1"
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "text": "text_celadonmartroof_vending_machine2"
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "text": "text_celadonmartroof_vending_machine3"
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "text": "text_celadonmartroof_current_floor_sign"
+    }
+  ],
+  "scripts": []
+}

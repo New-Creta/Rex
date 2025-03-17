@@ -1,0 +1,128 @@
+{
+  "name": "ROUTE 6",
+  "width": 10,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route6.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\saffroncity.json",
+      "offset": -5
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\vermilioncity.json",
+      "offset": -5
+    }
+  ],
+  "objects": [
+    {
+      "name": "route6_cooltrainer_m1"
+    },
+    {
+      "name": "route6_cooltrainer_f1"
+    },
+    {
+      "name": "route6_youngster1"
+    },
+    {
+      "name": "route6_cooltrainer_m2"
+    },
+    {
+      "name": "route6_cooltrainer_f2"
+    },
+    {
+      "name": "route6_youngster2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 21,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route6_cooltrainer_m1"
+    },
+    {
+      "x": 11,
+      "y": 21,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route6_cooltrainer_f1"
+    },
+    {
+      "x": 0,
+      "y": 15,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route6_youngster1"
+    },
+    {
+      "x": 11,
+      "y": 31,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route6_cooltrainer_m2"
+    },
+    {
+      "x": 11,
+      "y": 30,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route6_cooltrainer_f2"
+    },
+    {
+      "x": 19,
+      "y": 26,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route6_youngster2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 9,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 17,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 19,
+      "y": 15,
+      "text": "text_route6_underground_path_sign"
+    }
+  ],
+  "scripts": [
+    "script_route6_default",
+    "script_route6_start_battle",
+    "script_route6_end_battle"
+  ]
+}

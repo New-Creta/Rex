@@ -1,0 +1,93 @@
+{
+  "texts": [
+    {
+      "name": "HallOfFameOak",
+      "values": [
+        {
+          "text": "OAK: Er-hem!",
+          "type": "text"
+        },
+        {
+          "text": "Congratulations",
+          "type": "line"
+        },
+        {
+          "text": "<PLAYER>!",
+          "type": "cont"
+        },
+        {
+          "text": "This floor is the",
+          "type": "para"
+        },
+        {
+          "text": "#MON HALL OF",
+          "type": "line"
+        },
+        {
+          "text": "FAME!",
+          "type": "cont"
+        },
+        {
+          "text": "#MON LEAGUE",
+          "type": "para"
+        },
+        {
+          "text": "champions are",
+          "type": "line"
+        },
+        {
+          "text": "honored for their",
+          "type": "cont"
+        },
+        {
+          "text": "exploits here!",
+          "type": "cont"
+        },
+        {
+          "text": "Their #MON are",
+          "type": "para"
+        },
+        {
+          "text": "also recorded in",
+          "type": "line"
+        },
+        {
+          "text": "the HALL OF FAME!",
+          "type": "cont"
+        },
+        {
+          "text": "<PLAYER>! You have",
+          "type": "para"
+        },
+        {
+          "text": "endeavored hard",
+          "type": "line"
+        },
+        {
+          "text": "to become the new",
+          "type": "cont"
+        },
+        {
+          "text": "LEAGUE champion!",
+          "type": "cont"
+        },
+        {
+          "text": "Congratulations,",
+          "type": "para"
+        },
+        {
+          "text": "<PLAYER>, you and",
+          "type": "line"
+        },
+        {
+          "text": "your #MON are",
+          "type": "cont"
+        },
+        {
+          "text": "HALL OF FAMERs!",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

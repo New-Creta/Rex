@@ -1,0 +1,172 @@
+{
+  "name": "ROUTE 17",
+  "width": 10,
+  "height": 72,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route17.blk",
+  "border_block_idx": 67,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route16.json",
+      "offset": 0
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route18.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route17_biker1"
+    },
+    {
+      "name": "route17_biker2"
+    },
+    {
+      "name": "route17_biker3"
+    },
+    {
+      "name": "route17_biker4"
+    },
+    {
+      "name": "route17_biker5"
+    },
+    {
+      "name": "route17_biker6"
+    },
+    {
+      "name": "route17_biker7"
+    },
+    {
+      "name": "route17_biker8"
+    },
+    {
+      "name": "route17_biker9"
+    },
+    {
+      "name": "route17_biker10"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 19,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route17_biker1"
+    },
+    {
+      "x": 11,
+      "y": 16,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route17_biker2"
+    },
+    {
+      "x": 4,
+      "y": 18,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route17_biker3"
+    },
+    {
+      "x": 7,
+      "y": 32,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route17_biker4"
+    },
+    {
+      "x": 14,
+      "y": 34,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route17_biker5"
+    },
+    {
+      "x": 17,
+      "y": 58,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route17_biker6"
+    },
+    {
+      "x": 2,
+      "y": 68,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route17_biker7"
+    },
+    {
+      "x": 14,
+      "y": 98,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_route17_biker8"
+    },
+    {
+      "x": 5,
+      "y": 98,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route17_biker9"
+    },
+    {
+      "x": 10,
+      "y": 118,
+      "sprite": "sprite_biker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route17_biker10"
+    }
+  ],
+  "warps": [],
+  "bg_events": [
+    {
+      "x": 9,
+      "y": 51,
+      "text": "text_route17_notice_sign1"
+    },
+    {
+      "x": 9,
+      "y": 63,
+      "text": "text_route17_trainer_tips1"
+    },
+    {
+      "x": 9,
+      "y": 75,
+      "text": "text_route17_trainer_tips2"
+    },
+    {
+      "x": 9,
+      "y": 87,
+      "text": "text_route17_sign"
+    },
+    {
+      "x": 9,
+      "y": 111,
+      "text": "text_route17_notice_sign2"
+    },
+    {
+      "x": 9,
+      "y": 141,
+      "text": "text_route17_cycling_road_ends_sign"
+    }
+  ],
+  "scripts": [
+    "script_route17_default",
+    "script_route17_start_battle",
+    "script_route17_end_battle"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "ROUTE 22",
+  "width": 20,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route22.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route23.json",
+      "offset": 0
+    },
+    {
+      "direction": "East",
+      "map": "Pokemon\\maps\\viridiancity.json",
+      "offset": -4
+    }
+  ],
+  "objects": [
+    {
+      "name": "route22_rival1"
+    },
+    {
+      "name": "route22_rival2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 25,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route22_rival1"
+    },
+    {
+      "x": 25,
+      "y": 5,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_route22_rival2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 8,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 7,
+      "y": 11,
+      "text": "text_route22_pokemon_league_sign"
+    }
+  ],
+  "scripts": [
+    "script_route22_default",
+    "script_route22_rival1_start_battle",
+    "script_route22_rival1_after_battle",
+    "script_route22_rival1_exit",
+    "script_route22_rival2_start_battle",
+    "script_route22_rival2_after_battle",
+    "script_route22_rival2_exit",
+    "script_route22_noop"
+  ]
+}

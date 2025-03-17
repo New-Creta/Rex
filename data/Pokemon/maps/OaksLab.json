@@ -1,0 +1,170 @@
+{
+  "name": "OaksLab",
+  "width": 5,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\DOJO.json",
+  "map_blocks": "Pokemon\\map_blocks\\OaksLab.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "oakslab_rival"
+    },
+    {
+      "name": "oakslab_charmander_poke_ball"
+    },
+    {
+      "name": "oakslab_squirtle_poke_ball"
+    },
+    {
+      "name": "oakslab_bulbasaur_poke_ball"
+    },
+    {
+      "name": "oakslab_oak1"
+    },
+    {
+      "name": "oakslab_pokedex1"
+    },
+    {
+      "name": "oakslab_pokedex2"
+    },
+    {
+      "name": "oakslab_oak2"
+    },
+    {
+      "name": "oakslab_girl"
+    },
+    {
+      "name": "oakslab_scientist1"
+    },
+    {
+      "name": "oakslab_scientist2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_blue",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_rival"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_charmander_poke_ball"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_squirtle_poke_ball"
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_bulbasaur_poke_ball"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_oak",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_oakslab_oak1"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_pokedex1"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_pokedex",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_pokedex2"
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "sprite": "sprite_oak",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_oakslab_oak2"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_oakslab_girl"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_scientist1"
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "sprite": "sprite_scientist",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_oakslab_scientist2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_oakslab_default",
+    "script_oakslab_oak_enters_lab",
+    "script_oakslab_hide_show_oaks",
+    "script_oakslab_player_enters_lab",
+    "script_oakslab_followed_oak",
+    "script_oakslab_oak_choose_mon_speech",
+    "script_oakslab_player_dont_go_away_script",
+    "script_oakslab_player_forced_to_walk_back_script",
+    "script_oakslab_chose_starter_script",
+    "script_oakslab_rival_chooses_starter",
+    "script_oakslab_rival_challenges_player",
+    "script_oakslab_rival_start_battle",
+    "script_oakslab_rival_end_battle",
+    "script_oakslab_rival_starts_exit",
+    "script_oakslab_player_watch_rival_exit",
+    "script_oakslab_rival_arrives_at_oaks_request",
+    "script_oakslab_oak_gives_pokedex",
+    "script_oakslab_rival_leaves_with_pokedex",
+    "script_oakslab_noop"
+  ]
+}

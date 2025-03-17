@@ -1,0 +1,317 @@
+{
+  "texts": [
+    {
+      "name": "SilphCo5FSilphWorkerMThatsYouRight",
+      "values": [
+        {
+          "text": "TEAM ROCKET is",
+          "type": "text"
+        },
+        {
+          "text": "in an uproar over",
+          "type": "line"
+        },
+        {
+          "text": "some intruder.",
+          "type": "cont"
+        },
+        {
+          "text": "That's you right?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FSilphWorkerMYoureOurHero",
+      "values": [
+        {
+          "text": "TEAM ROCKET took",
+          "type": "text"
+        },
+        {
+          "text": "off! You're our",
+          "type": "line"
+        },
+        {
+          "text": "hero! Thank you!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket1Battle",
+      "values": [
+        {
+          "text": "I heard a kid was",
+          "type": "text"
+        },
+        {
+          "text": "wandering around.",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket1EndBattle",
+      "values": [
+        {
+          "text": "Boom!",
+          "type": "text"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket1AfterBattle",
+      "values": [
+        {
+          "text": "It's not smart",
+          "type": "text"
+        },
+        {
+          "text": "to pick a fight",
+          "type": "line"
+        },
+        {
+          "text": "with TEAM ROCKET!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FScientistBattle",
+      "values": [
+        {
+          "text": "We study #",
+          "type": "text"
+        },
+        {
+          "text": "BALL technology",
+          "type": "line"
+        },
+        {
+          "text": "on this floor!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FScientistEndBattle",
+      "values": [
+        {
+          "text": "Dang!",
+          "type": "text"
+        },
+        {
+          "text": "Blast it!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FScientistAfterBattle",
+      "values": [
+        {
+          "text": "We worked on the",
+          "type": "text"
+        },
+        {
+          "text": "ultimate #",
+          "type": "line"
+        },
+        {
+          "text": "BALL which would",
+          "type": "cont"
+        },
+        {
+          "text": "catch anything!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRockerBattle",
+      "values": [
+        {
+          "text": "Whaaat? There",
+          "type": "text"
+        },
+        {
+          "text": "shouldn't be any",
+          "type": "line"
+        },
+        {
+          "text": "children here?",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRockerEndBattle",
+      "values": [
+        {
+          "text": "Oh",
+          "type": "text"
+        },
+        {
+          "text": "goodness!",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRockerAfterBattle",
+      "values": [
+        {
+          "text": "You're only on 5F.",
+          "type": "text"
+        },
+        {
+          "text": "It's a long way",
+          "type": "line"
+        },
+        {
+          "text": "to my BOSS!",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2Battle",
+      "values": [
+        {
+          "text": "Show TEAM ROCKET",
+          "type": "text"
+        },
+        {
+          "text": "a little respect!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2EndBattle",
+      "values": [
+        {
+          "text": "Cough...",
+          "type": "text"
+        },
+        {
+          "text": "Cough...",
+          "type": "line"
+        },
+        {
+          "text": "prompt",
+          "type": "prompt"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FRocket2AfterBattle",
+      "values": [
+        {
+          "text": "Which reminds me.",
+          "type": "text"
+        },
+        {
+          "text": "KOFFING evolves",
+          "type": "para"
+        },
+        {
+          "text": "into WEEZING!",
+          "type": "line"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport1",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "#MON LAB",
+          "type": "para"
+        },
+        {
+          "text": "created PORYGON,",
+          "type": "line"
+        },
+        {
+          "text": "the first virtual",
+          "type": "cont"
+        },
+        {
+          "text": "reality #MON.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport2",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "Over 160 #MON",
+          "type": "para"
+        },
+        {
+          "text": "techniques have",
+          "type": "line"
+        },
+        {
+          "text": "been confirmed.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "SilphCo5FPokemonReport3",
+      "values": [
+        {
+          "text": "It's a #MON",
+          "type": "text"
+        },
+        {
+          "text": "REPORT!",
+          "type": "line"
+        },
+        {
+          "text": "4 #MON evolve",
+          "type": "para"
+        },
+        {
+          "text": "only when traded",
+          "type": "line"
+        },
+        {
+          "text": "by link-cable.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

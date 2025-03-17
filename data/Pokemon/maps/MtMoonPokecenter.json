@@ -1,0 +1,95 @@
+{
+  "name": "MtMoonPokecenter",
+  "width": 7,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\POKECENTER.json",
+  "map_blocks": "Pokemon\\map_blocks\\MtMoonPokecenter.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mtmoonpokecenter_nurse"
+    },
+    {
+      "name": "mtmoonpokecenter_youngster"
+    },
+    {
+      "name": "mtmoonpokecenter_gentleman"
+    },
+    {
+      "name": "mtmoonpokecenter_magikarp_salesman"
+    },
+    {
+      "name": "mtmoonpokecenter_clipboard"
+    },
+    {
+      "name": "mtmoonpokecenter_link_receptionist"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 1,
+      "sprite": "sprite_nurse",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonpokecenter_nurse"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoonpokecenter_youngster"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_mtmoonpokecenter_gentleman"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "sprite": "sprite_middle_aged_man",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_mtmoonpokecenter_magikarp_salesman"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_clipboard",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_mtmoonpokecenter_clipboard"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "sprite": "sprite_link_receptionist",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_mtmoonpokecenter_link_receptionist"
+    }
+  ],
+  "warps": [
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

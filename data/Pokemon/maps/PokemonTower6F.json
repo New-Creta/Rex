@@ -1,0 +1,90 @@
+{
+  "name": "PokemonTower6F",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\PokemonTower6F.blk",
+  "border_block_idx": 1,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pokemontower6f_channeler1"
+    },
+    {
+      "name": "pokemontower6f_channeler2"
+    },
+    {
+      "name": "pokemontower6f_channeler3"
+    },
+    {
+      "name": "pokemontower6f_rare_candy"
+    },
+    {
+      "name": "pokemontower6f_x_accuracy"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 12,
+      "y": 10,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pokemontower6f_channeler1"
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pokemontower6f_channeler2"
+    },
+    {
+      "x": 16,
+      "y": 5,
+      "sprite": "sprite_channeler",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_pokemontower6f_channeler3"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower6f_rare_candy"
+    },
+    {
+      "x": 14,
+      "y": 14,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_pokemontower6f_x_accuracy"
+    }
+  ],
+  "warps": [
+    {
+      "x": 18,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 9,
+      "y": 16,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_pokemontower6f_default",
+    "script_pokemontower6f_start_battle",
+    "script_pokemontower6f_end_battle",
+    "script_pokemontower6f_player_moving",
+    "script_pokemontower6f_marowak_battle"
+  ]
+}

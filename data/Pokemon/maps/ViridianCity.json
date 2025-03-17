@@ -1,0 +1,176 @@
+{
+  "name": "VIRIDIAN CITY",
+  "width": 20,
+  "height": 18,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianCity.blk",
+  "border_block_idx": 15,
+  "connections": [
+    {
+      "direction": "North",
+      "map": "Pokemon\\maps\\route2.json",
+      "offset": 5
+    },
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\route1.json",
+      "offset": 5
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route22.json",
+      "offset": 4
+    }
+  ],
+  "objects": [
+    {
+      "name": "viridiancity_youngster1"
+    },
+    {
+      "name": "viridiancity_gambler1"
+    },
+    {
+      "name": "viridiancity_youngster2"
+    },
+    {
+      "name": "viridiancity_girl"
+    },
+    {
+      "name": "viridiancity_old_man_sleepy"
+    },
+    {
+      "name": "viridiancity_fisher"
+    },
+    {
+      "name": "viridiancity_old_man"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 13,
+      "y": 20,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_viridiancity_youngster1"
+    },
+    {
+      "x": 30,
+      "y": 8,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiancity_gambler1"
+    },
+    {
+      "x": 30,
+      "y": 25,
+      "sprite": "sprite_youngster",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_viridiancity_youngster2"
+    },
+    {
+      "x": 17,
+      "y": 9,
+      "sprite": "sprite_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_viridiancity_girl"
+    },
+    {
+      "x": 18,
+      "y": 9,
+      "sprite": "sprite_gambler_asleep",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridiancity_old_man_sleepy"
+    },
+    {
+      "x": 6,
+      "y": 23,
+      "sprite": "sprite_fisher",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_viridiancity_fisher"
+    },
+    {
+      "x": 17,
+      "y": 5,
+      "sprite": "sprite_gambler",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_viridiancity_old_man"
+    }
+  ],
+  "warps": [
+    {
+      "x": 23,
+      "y": 25,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 29,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 15,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 9,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 32,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 17,
+      "y": 17,
+      "text": "text_viridiancity_sign"
+    },
+    {
+      "x": 19,
+      "y": 1,
+      "text": "text_viridiancity_trainer_tips1"
+    },
+    {
+      "x": 21,
+      "y": 29,
+      "text": "text_viridiancity_trainer_tips2"
+    },
+    {
+      "x": 30,
+      "y": 19,
+      "text": "text_viridiancity_mart_sign"
+    },
+    {
+      "x": 24,
+      "y": 25,
+      "text": "text_viridiancity_pokecenter_sign"
+    },
+    {
+      "x": 27,
+      "y": 7,
+      "text": "text_viridiancity_gym_sign"
+    }
+  ],
+  "scripts": [
+    "script_viridiancity_default",
+    "script_viridiancity_old_man_start_catch_training",
+    "script_viridiancity_old_man_end_catch_training",
+    "script_viridiancity_player_moving_down"
+  ]
+}

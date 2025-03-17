@@ -1,0 +1,40 @@
+{
+  "name": "SSAnne3F",
+  "width": 10,
+  "height": 3,
+  "tileset": "Pokemon\\tilesets\\SHIP.json",
+  "map_blocks": "Pokemon\\map_blocks\\SSAnne3F.blk",
+  "border_block_idx": 12,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ssanne3f_sailor"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 9,
+      "y": 3,
+      "sprite": "sprite_sailor",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ssanne3f_sailor"
+    }
+  ],
+  "warps": [
+    {
+      "x": 0,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

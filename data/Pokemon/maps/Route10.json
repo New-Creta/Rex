@@ -1,0 +1,143 @@
+{
+  "name": "ROUTE 10",
+  "width": 10,
+  "height": 36,
+  "tileset": "Pokemon\\tilesets\\OVERWORLD.json",
+  "map_blocks": "Pokemon\\map_blocks\\Route10.blk",
+  "border_block_idx": 44,
+  "connections": [
+    {
+      "direction": "South",
+      "map": "Pokemon\\maps\\lavendertown.json",
+      "offset": 0
+    },
+    {
+      "direction": "West",
+      "map": "Pokemon\\maps\\route9.json",
+      "offset": 0
+    }
+  ],
+  "objects": [
+    {
+      "name": "route10_super_nerd1"
+    },
+    {
+      "name": "route10_hiker1"
+    },
+    {
+      "name": "route10_super_nerd2"
+    },
+    {
+      "name": "route10_cooltrainer_f1"
+    },
+    {
+      "name": "route10_hiker2"
+    },
+    {
+      "name": "route10_cooltrainer_f2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 10,
+      "y": 44,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route10_super_nerd1"
+    },
+    {
+      "x": 3,
+      "y": 57,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_route10_hiker1"
+    },
+    {
+      "x": 14,
+      "y": 64,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route10_super_nerd2"
+    },
+    {
+      "x": 7,
+      "y": 25,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_route10_cooltrainer_f1"
+    },
+    {
+      "x": 3,
+      "y": 61,
+      "sprite": "sprite_hiker",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route10_hiker2"
+    },
+    {
+      "x": 7,
+      "y": 54,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_route10_cooltrainer_f2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 11,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 8,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 8,
+      "y": 53,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 6,
+      "y": 39,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 7,
+      "y": 19,
+      "text": "text_route10_rocktunnel_north_sign"
+    },
+    {
+      "x": 12,
+      "y": 19,
+      "text": "text_route10_pokecenter_sign"
+    },
+    {
+      "x": 9,
+      "y": 55,
+      "text": "text_route10_rocktunnel_south_sign"
+    },
+    {
+      "x": 5,
+      "y": 41,
+      "text": "text_route10_powerplant_sign"
+    }
+  ],
+  "scripts": [
+    "script_route10_default",
+    "script_route10_start_battle",
+    "script_route10_end_battle"
+  ]
+}

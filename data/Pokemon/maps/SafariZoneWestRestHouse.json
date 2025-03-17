@@ -1,0 +1,62 @@
+{
+  "name": "SafariZoneWestRestHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\SafariZoneWestRestHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "safarizonewestresthouse_scientist"
+    },
+    {
+      "name": "safarizonewestresthouse_cooltrainer_m"
+    },
+    {
+      "name": "safarizonewestresthouse_silph_worker_f"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_scientist",
+      "action": "walk",
+      "direction": "any_dir",
+      "text": "text_safarizonewestresthouse_scientist"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_safarizonewestresthouse_cooltrainer_m"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "sprite": "sprite_silph_worker_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_safarizonewestresthouse_silph_worker_f"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

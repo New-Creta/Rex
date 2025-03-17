@@ -1,0 +1,73 @@
+{
+  "name": "WardensHouse",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LAB.json",
+  "map_blocks": "Pokemon\\map_blocks\\WardensHouse.blk",
+  "border_block_idx": 23,
+  "connections": [],
+  "objects": [
+    {
+      "name": "wardenshouse_warden"
+    },
+    {
+      "name": "wardenshouse_rare_candy"
+    },
+    {
+      "name": "wardenshouse_boulder"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_warden",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_wardenshouse_warden"
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_wardenshouse_rare_candy"
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "sprite": "sprite_boulder",
+      "action": "stay",
+      "direction": "boulder_movement_byte_2",
+      "text": "text_wardenshouse_boulder"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 4,
+      "y": 3,
+      "text": "text_wardenshouse_display_left"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "text": "text_wardenshouse_display_right"
+    }
+  ],
+  "scripts": []
+}

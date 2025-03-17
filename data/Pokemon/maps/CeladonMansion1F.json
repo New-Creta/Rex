@@ -1,0 +1,97 @@
+{
+  "name": "CeladonMansion1F",
+  "width": 4,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\MANSION.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMansion1F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmansion1f_meowth"
+    },
+    {
+      "name": "celadonmansion1f_granny"
+    },
+    {
+      "name": "celadonmansion1f_clefairy"
+    },
+    {
+      "name": "celadonmansion1f_nidoranf"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 0,
+      "y": 5,
+      "sprite": "sprite_monster",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_celadonmansion1f_meowth"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "sprite": "sprite_granny",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmansion1f_granny"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "sprite": "sprite_fairy",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_celadonmansion1f_clefairy"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "sprite": "sprite_monster",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_celadonmansion1f_nidoranf"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 4,
+      "y": 9,
+      "text": "text_celadonmansion1f_managers_suite_sign"
+    }
+  ],
+  "scripts": []
+}

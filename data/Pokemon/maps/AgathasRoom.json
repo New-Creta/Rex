@@ -1,0 +1,58 @@
+{
+  "name": "AgathasRoom",
+  "width": 5,
+  "height": 6,
+  "tileset": "Pokemon\\tilesets\\CEMETERY.json",
+  "map_blocks": "Pokemon\\map_blocks\\AgathasRoom.blk",
+  "border_block_idx": 0,
+  "connections": [],
+  "objects": [
+    {
+      "name": "agathasroom_agatha"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 2,
+      "sprite": "sprite_agatha",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_agathasroom_agatha"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_agathasroom_default",
+    "script_agathasroom_agatha_start_battle",
+    "script_agathasroom_agatha_end_battle",
+    "script_agathasroom_player_is_moving",
+    "script_agathasroom_noop"
+  ]
+}

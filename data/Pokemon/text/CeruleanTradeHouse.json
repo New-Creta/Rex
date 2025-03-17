@@ -1,0 +1,33 @@
+{
+  "texts": [
+    {
+      "name": "CeruleanTradeHouseGranny",
+      "values": [
+        {
+          "text": "My husband likes",
+          "type": "text"
+        },
+        {
+          "text": "trading #MON.",
+          "type": "line"
+        },
+        {
+          "text": "If you are a",
+          "type": "para"
+        },
+        {
+          "text": "collector, would",
+          "type": "line"
+        },
+        {
+          "text": "you please trade",
+          "type": "cont"
+        },
+        {
+          "text": "with him?",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

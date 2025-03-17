@@ -1,0 +1,166 @@
+{
+  "name": "GameCorner",
+  "width": 10,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\GameCorner.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "gamecorner_beauty1"
+    },
+    {
+      "name": "gamecorner_clerk1"
+    },
+    {
+      "name": "gamecorner_middle_aged_man1"
+    },
+    {
+      "name": "gamecorner_beauty2"
+    },
+    {
+      "name": "gamecorner_fishing_guru"
+    },
+    {
+      "name": "gamecorner_middle_aged_woman"
+    },
+    {
+      "name": "gamecorner_gym_guide"
+    },
+    {
+      "name": "gamecorner_gambler"
+    },
+    {
+      "name": "gamecorner_clerk2"
+    },
+    {
+      "name": "gamecorner_gentleman"
+    },
+    {
+      "name": "gamecorner_rocket"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 6,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_gamecorner_beauty1"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_gamecorner_clerk1"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "sprite": "sprite_middle_aged_man",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_gamecorner_middle_aged_man1"
+    },
+    {
+      "x": 2,
+      "y": 13,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_gamecorner_beauty2"
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_gamecorner_fishing_guru"
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "sprite": "sprite_middle_aged_woman",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_gamecorner_middle_aged_woman"
+    },
+    {
+      "x": 8,
+      "y": 14,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_gamecorner_gym_guide"
+    },
+    {
+      "x": 11,
+      "y": 15,
+      "sprite": "sprite_gambler",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_gamecorner_gambler"
+    },
+    {
+      "x": 14,
+      "y": 11,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_gamecorner_clerk2"
+    },
+    {
+      "x": 17,
+      "y": 13,
+      "sprite": "sprite_gentleman",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_gamecorner_gentleman"
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_gamecorner_rocket"
+    }
+  ],
+  "warps": [
+    {
+      "x": 15,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 16,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 17,
+      "y": 4,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 9,
+      "y": 4,
+      "text": "text_gamecorner_poster"
+    }
+  ],
+  "scripts": [
+    "script_gamecorner_default",
+    "script_gamecorner_rocket_battle",
+    "script_gamecorner_rocket_exit"
+  ]
+}

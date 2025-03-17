@@ -1,0 +1,67 @@
+{
+  "name": "PewterGym",
+  "width": 5,
+  "height": 7,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\PewterGym.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "pewtergym_brock"
+    },
+    {
+      "name": "pewtergym_cooltrainer_m"
+    },
+    {
+      "name": "pewtergym_gym_guide"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 1,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pewtergym_brock"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "sprite": "sprite_cooltrainer_m",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_pewtergym_cooltrainer_m"
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "sprite": "sprite_gym_guide",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_pewtergym_gym_guide"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_pewtergym_default",
+    "script_pewtergym_start_battle",
+    "script_pewtergym_end_battle",
+    "script_pewtergym_brock_post_battle"
+  ]
+}

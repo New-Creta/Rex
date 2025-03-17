@@ -1,0 +1,62 @@
+{
+  "name": "BikeShop",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\CLUB.json",
+  "map_blocks": "Pokemon\\map_blocks\\BikeShop.blk",
+  "border_block_idx": 14,
+  "connections": [],
+  "objects": [
+    {
+      "name": "bikeshop_clerk"
+    },
+    {
+      "name": "bikeshop_middle_aged_woman"
+    },
+    {
+      "name": "bikeshop_youngster"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 6,
+      "y": 2,
+      "sprite": "sprite_bike_shop_clerk",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_bikeshop_clerk"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "sprite": "sprite_middle_aged_woman",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_bikeshop_middle_aged_woman"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_bikeshop_youngster"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 5
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

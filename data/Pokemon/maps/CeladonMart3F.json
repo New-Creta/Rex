@@ -1,0 +1,151 @@
+{
+  "name": "CeladonMart3F",
+  "width": 10,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\LOBBY.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonMart3F.blk",
+  "border_block_idx": 15,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadonmart3f_clerk"
+    },
+    {
+      "name": "celadonmart3f_gameboy_kid1"
+    },
+    {
+      "name": "celadonmart3f_gameboy_kid2"
+    },
+    {
+      "name": "celadonmart3f_gameboy_kid3"
+    },
+    {
+      "name": "celadonmart3f_little_boy"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 16,
+      "y": 5,
+      "sprite": "sprite_clerk",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_celadonmart3f_clerk"
+    },
+    {
+      "x": 11,
+      "y": 6,
+      "sprite": "sprite_gameboy_kid",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_celadonmart3f_gameboy_kid1"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "sprite": "sprite_gameboy_kid",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmart3f_gameboy_kid2"
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "sprite": "sprite_gameboy_kid",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadonmart3f_gameboy_kid3"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "sprite": "sprite_little_boy",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_celadonmart3f_little_boy"
+    }
+  ],
+  "warps": [
+    {
+      "x": 12,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 16,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 2,
+      "y": 4,
+      "text": "text_celadonmart3f_snes1"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "text": "text_celadonmart3f_rpg"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "text": "text_celadonmart3f_snes2"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "text": "text_celadonmart3f_sports_game"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "text": "text_celadonmart3f_snes3"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "text": "text_celadonmart3f_puzzle_game"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "text": "text_celadonmart3f_snes4"
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "text": "text_celadonmart3f_fighting_game"
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "text": "text_celadonmart3f_current_floor_sign"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "text": "text_celadonmart3f_pokemon_poster1"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "text": "text_celadonmart3f_pokemon_poster2"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "text": "text_celadonmart3f_pokemon_poster3"
+    }
+  ],
+  "scripts": []
+}

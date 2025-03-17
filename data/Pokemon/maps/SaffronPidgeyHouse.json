@@ -1,0 +1,73 @@
+{
+  "name": "SaffronPidgeyHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\SaffronPidgeyHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "saffronpidgeyhouse_brunette_girl"
+    },
+    {
+      "name": "saffronpidgeyhouse_pidgey"
+    },
+    {
+      "name": "saffronpidgeyhouse_youngster"
+    },
+    {
+      "name": "saffronpidgeyhouse_paper"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 3,
+      "sprite": "sprite_brunette_girl",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_saffronpidgeyhouse_brunette_girl"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "sprite": "sprite_bird",
+      "action": "walk",
+      "direction": "up_down",
+      "text": "text_saffronpidgeyhouse_pidgey"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "sprite": "sprite_youngster",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_saffronpidgeyhouse_youngster"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_paper",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_saffronpidgeyhouse_paper"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

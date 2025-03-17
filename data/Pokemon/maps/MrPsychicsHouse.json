@@ -1,0 +1,40 @@
+{
+  "name": "MrPsychicsHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\MrPsychicsHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "mrpsychicshouse_mr_psychic"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_mrpsychicshouse_mr_psychic"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

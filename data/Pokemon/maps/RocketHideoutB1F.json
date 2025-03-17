@@ -1,0 +1,128 @@
+{
+  "name": "RocketHideoutB1F",
+  "width": 15,
+  "height": 14,
+  "tileset": "Pokemon\\tilesets\\FACILITY.json",
+  "map_blocks": "Pokemon\\map_blocks\\RocketHideoutB1F.blk",
+  "border_block_idx": 46,
+  "connections": [],
+  "objects": [
+    {
+      "name": "rockethideoutb1f_rocket1"
+    },
+    {
+      "name": "rockethideoutb1f_rocket2"
+    },
+    {
+      "name": "rockethideoutb1f_rocket3"
+    },
+    {
+      "name": "rockethideoutb1f_rocket4"
+    },
+    {
+      "name": "rockethideoutb1f_rocket5"
+    },
+    {
+      "name": "rockethideoutb1f_escape_rope"
+    },
+    {
+      "name": "rockethideoutb1f_hyper_potion"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 26,
+      "y": 8,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_rockethideoutb1f_rocket1"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_rockethideoutb1f_rocket2"
+    },
+    {
+      "x": 18,
+      "y": 17,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_rockethideoutb1f_rocket3"
+    },
+    {
+      "x": 15,
+      "y": 25,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_rockethideoutb1f_rocket4"
+    },
+    {
+      "x": 28,
+      "y": 18,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_rockethideoutb1f_rocket5"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_rockethideoutb1f_escape_rope"
+    },
+    {
+      "x": 9,
+      "y": 17,
+      "sprite": "sprite_poke_ball",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_rockethideoutb1f_hyper_potion"
+    }
+  ],
+  "warps": [
+    {
+      "x": 23,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 3
+    },
+    {
+      "x": 24,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 21,
+      "y": 24,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    },
+    {
+      "x": 25,
+      "y": 19,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_rockethideoutb1f_default",
+    "script_rockethideoutb1f_start_battle",
+    "script_rockethideoutb1f_end_battle"
+  ]
+}

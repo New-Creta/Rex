@@ -1,0 +1,63 @@
+{
+  "name": "ViridianForestNorthGate",
+  "width": 5,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\FOREST_GATE.json",
+  "map_blocks": "Pokemon\\map_blocks\\ViridianForestNorthGate.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "viridianforestnorthgate_super_nerd"
+    },
+    {
+      "name": "viridianforestnorthgate_gramps"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 3,
+      "y": 2,
+      "sprite": "sprite_super_nerd",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforestnorthgate_super_nerd"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "sprite": "sprite_gramps",
+      "action": "stay",
+      "direction": "none",
+      "text": "text_viridianforestnorthgate_gramps"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    }
+  ],
+  "bg_events": [],
+  "scripts": []
+}

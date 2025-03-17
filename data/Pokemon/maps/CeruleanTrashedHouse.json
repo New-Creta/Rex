@@ -1,0 +1,63 @@
+{
+  "name": "CeruleanTrashedHouse",
+  "width": 4,
+  "height": 4,
+  "tileset": "Pokemon\\tilesets\\HOUSE.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeruleanTrashedHouse.blk",
+  "border_block_idx": 10,
+  "connections": [],
+  "objects": [
+    {
+      "name": "ceruleantrashedhouse_fishing_guru"
+    },
+    {
+      "name": "ceruleantrashedhouse_girl"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 2,
+      "y": 1,
+      "sprite": "sprite_fishing_guru",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_ceruleantrashedhouse_fishing_guru"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "sprite": "sprite_girl",
+      "action": "walk",
+      "direction": "left_right",
+      "text": "text_ceruleantrashedhouse_girl"
+    }
+  ],
+  "warps": [
+    {
+      "x": 2,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 8
+    }
+  ],
+  "bg_events": [
+    {
+      "x": 3,
+      "y": 0,
+      "text": "text_ceruleantrashedhouse_wall_hole"
+    }
+  ],
+  "scripts": []
+}

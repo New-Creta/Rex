@@ -1,0 +1,103 @@
+{
+  "name": "SilphCo11F",
+  "width": 9,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\INTERIOR.json",
+  "map_blocks": "Pokemon\\map_blocks\\SilphCo11F.blk",
+  "border_block_idx": 13,
+  "connections": [],
+  "objects": [
+    {
+      "name": "silphco11f_silph_president"
+    },
+    {
+      "name": "silphco11f_beauty"
+    },
+    {
+      "name": "silphco11f_giovanni"
+    },
+    {
+      "name": "silphco11f_rocket1"
+    },
+    {
+      "name": "silphco11f_rocket2"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 7,
+      "y": 5,
+      "sprite": "sprite_silph_president",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco11f_silph_president"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco11f_beauty"
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "sprite": "sprite_giovanni",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_silphco11f_giovanni"
+    },
+    {
+      "x": 3,
+      "y": 16,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco11f_rocket1"
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "sprite": "sprite_rocket",
+      "action": "stay",
+      "direction": "up",
+      "text": "text_silphco11f_rocket2"
+    }
+  ],
+  "warps": [
+    {
+      "x": 9,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 2
+    },
+    {
+      "x": 13,
+      "y": 0,
+      "dst_map_id": -1,
+      "dst_warp_id": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "dst_map_id": -1,
+      "dst_warp_id": 10
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "dst_map_id": -1,
+      "dst_warp_id": 4
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_silphco11f_default",
+    "script_silphco11f_start_battle",
+    "script_silphco11f_end_battle",
+    "script_silphco11f_giovanni_facing",
+    "script_silphco11f_giovanni_start_battle",
+    "script_silphco11f_giovanni_after_battle"
+  ]
+}

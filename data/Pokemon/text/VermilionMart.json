@@ -1,0 +1,78 @@
+{
+  "texts": [
+    {
+      "name": "VermilionMartCooltrainerM",
+      "values": [
+        {
+          "text": "There are evil",
+          "type": "text"
+        },
+        {
+          "text": "people who will",
+          "type": "line"
+        },
+        {
+          "text": "use #MON for",
+          "type": "cont"
+        },
+        {
+          "text": "criminal acts.",
+          "type": "cont"
+        },
+        {
+          "text": "TEAM ROCKET",
+          "type": "para"
+        },
+        {
+          "text": "traffics in rare",
+          "type": "line"
+        },
+        {
+          "text": "#MON.",
+          "type": "cont"
+        },
+        {
+          "text": "They also abandon",
+          "type": "para"
+        },
+        {
+          "text": "#MON that they",
+          "type": "line"
+        },
+        {
+          "text": "consider not to",
+          "type": "cont"
+        },
+        {
+          "text": "be popular or",
+          "type": "cont"
+        },
+        {
+          "text": "useful.",
+          "type": "cont"
+        }
+      ]
+    },
+    {
+      "name": "VermilionMartCooltrainerF",
+      "values": [
+        {
+          "text": "I think #MON",
+          "type": "text"
+        },
+        {
+          "text": "can be good or",
+          "type": "line"
+        },
+        {
+          "text": "evil. It depends",
+          "type": "cont"
+        },
+        {
+          "text": "on the trainer.",
+          "type": "cont"
+        }
+      ]
+    }
+  ]
+}

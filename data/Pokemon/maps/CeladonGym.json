@@ -1,0 +1,122 @@
+{
+  "name": "CeladonGym",
+  "width": 5,
+  "height": 9,
+  "tileset": "Pokemon\\tilesets\\GYM.json",
+  "map_blocks": "Pokemon\\map_blocks\\CeladonGym.blk",
+  "border_block_idx": 3,
+  "connections": [],
+  "objects": [
+    {
+      "name": "celadongym_erika"
+    },
+    {
+      "name": "celadongym_cooltrainer_f1"
+    },
+    {
+      "name": "celadongym_beauty1"
+    },
+    {
+      "name": "celadongym_cooltrainer_f2"
+    },
+    {
+      "name": "celadongym_beauty2"
+    },
+    {
+      "name": "celadongym_cooltrainer_f3"
+    },
+    {
+      "name": "celadongym_beauty3"
+    },
+    {
+      "name": "celadongym_cooltrainer_f4"
+    }
+  ],
+  "object_events": [
+    {
+      "x": 4,
+      "y": 3,
+      "sprite": "sprite_silph_worker_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_erika"
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "right",
+      "text": "text_celadongym_cooltrainer_f1"
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "left",
+      "text": "text_celadongym_beauty1"
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_cooltrainer_f2"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_beauty2"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_cooltrainer_f3"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "sprite": "sprite_beauty",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_beauty3"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "sprite": "sprite_cooltrainer_f",
+      "action": "stay",
+      "direction": "down",
+      "text": "text_celadongym_cooltrainer_f4"
+    }
+  ],
+  "warps": [
+    {
+      "x": 4,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    },
+    {
+      "x": 5,
+      "y": 17,
+      "dst_map_id": -1,
+      "dst_warp_id": 7
+    }
+  ],
+  "bg_events": [],
+  "scripts": [
+    "script_celadongym_default",
+    "script_celadongym_start_battle",
+    "script_celadongym_end_battle",
+    "script_celadongym_erika_post_battle"
+  ]
+}
