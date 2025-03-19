@@ -4,7 +4,7 @@
 #include "rex_engine/memory/blob_view.h"
 #include "rex_engine/engine/types.h"
 
-TEST_CASE("Blob View - default construction")
+TEST_CASE("TEST - Blob View - default construction")
 {
   rex::memory::BlobView view;
 
@@ -12,7 +12,7 @@ TEST_CASE("Blob View - default construction")
   REX_CHECK(view.size() == 0);
 }
 
-TEST_CASE("Blob view - construct from blob")
+TEST_CASE("TEST - Blob view - construct from blob")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -27,7 +27,7 @@ TEST_CASE("Blob view - construct from blob")
   REX_CHECK(view.read<s32>() == 1);
 }
 
-TEST_CASE("Blob view - construct from ptr and size")
+TEST_CASE("TEST - Blob view - construct from ptr and size")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -41,7 +41,7 @@ TEST_CASE("Blob view - construct from ptr and size")
   REX_CHECK(view.read<s32>() == 1);
 }
 
-TEST_CASE("Blob view - copy construction")
+TEST_CASE("TEST - Blob view - copy construction")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -62,7 +62,7 @@ TEST_CASE("Blob view - copy construction")
   REX_CHECK(view2.read<s32>() == 1);
 }
 
-TEST_CASE("Blow view - move construction")
+TEST_CASE("TEST - Blow view - move construction")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -83,7 +83,7 @@ TEST_CASE("Blow view - move construction")
   REX_CHECK(view2.read<s32>() == 1);
 }
 
-TEST_CASE("BlobView - Copy assignment")
+TEST_CASE("TEST - Blob View - Copy assignment")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -128,7 +128,7 @@ TEST_CASE("BlobView - Copy assignment")
   REX_CHECK(view3.read<s32>() == 2);
 }
 
-TEST_CASE("BlobView - Move assignment")
+TEST_CASE("TEST - Blob View - Move assignment")
 {
   auto data = rsl::make_unique<s32[]>(1);
   data[0] = 1;
@@ -173,7 +173,7 @@ TEST_CASE("BlobView - Move assignment")
   REX_CHECK(view3.read<s32>() == 2);
 }
 
-TEST_CASE("BlobView - reading")
+TEST_CASE("TEST - Blob View - reading")
 {
   auto arr = rsl::make_unique<s32[]>(3);
   arr[0] = 1;

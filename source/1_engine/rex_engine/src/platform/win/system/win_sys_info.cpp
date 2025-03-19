@@ -10,7 +10,7 @@ namespace rex
 {
   namespace sys_info
   {
-    s32 number_physical_cores()
+    s32 num_physical_cores()
     {
       static s32 core_count = 0;
 
@@ -45,7 +45,7 @@ namespace rex
       return core_count;
     }
 
-    s32 number_logical_processors()
+    s32 num_logical_processors()
     {
       static s32 core_count = 0;
 

@@ -11,6 +11,7 @@
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_directx/resources/dx_unordered_access_buffer.h"
 
 #include "WinPixEventRuntime/pix3.h"
 
@@ -56,6 +57,12 @@ namespace rex
       DxUploadBuffer* dx_upload_buffer = d3d::to_dx12(resource);
       transition_buffer(dx_upload_buffer, dx_upload_buffer->dx_object(), state);
     }
+    // Transition an unordered access buffer to a new resource state
+    void DxCopyContext::transition_buffer(UnorderedAccessBuffer* resource, ResourceState state)
+    {
+      DxUnorderedAccessBuffer* dx_unordered_access_buffer = d3d::to_dx12(resource);
+      transition_buffer(dx_unordered_access_buffer, dx_unordered_access_buffer->dx_object(), state);
+    }
     // Transition a texture to a new resource state
     void DxCopyContext::transition_buffer(Texture2D* resource, ResourceState state)
     {
@@ -71,6 +78,7 @@ namespace rex
     }
     void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_constant_buffer->dx_object(), data, size, offset);
@@ -83,6 +91,7 @@ namespace rex
     }
     void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_vertex_buffer->dx_object(), data, size, offset);
@@ -95,10 +104,25 @@ namespace rex
     }
     void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_index_buffer->dx_object(), data, size, offset);
     }
+    // Update an unordered access buffer's data
+    void DxCopyContext::update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
+    void DxCopyContext::update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
+    {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
+      DxUnorderedAccessBuffer* dx_ua_buffer = d3d::to_dx12(buffer);
+      transition_buffer(buffer, ResourceState::CopyDest);
+      update_buffer(dx_ua_buffer->dx_object(), data, size, offset);
+    }
+
     // Update a texture's data on the gpu
     void DxCopyContext::update_texture2d(Texture2D* texture, const void* data)
     {

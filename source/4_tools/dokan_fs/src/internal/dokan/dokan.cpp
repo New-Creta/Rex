@@ -333,6 +333,8 @@ VOID DispatchEvent(PDOKAN_IO_EVENT ioEvent)
 
 VOID OnDeviceIoCtlFailed(PDOKAN_INSTANCE DokanInstance, DWORD Result)
 {
+  REX_UNUSED_PARAM(Result);
+
   if(!DokanInstance->FileSystemStopped)
   {
     DbgPrint(L"Dokan Fatal: Closing IO processing for dokan instance {} with error code {:#x} and unmounting volume.", DokanInstance->DeviceName, Result);
@@ -745,8 +747,7 @@ int DOKANAPI DokanCreateFileSystem(_In_ PDOKAN_OPTIONS DokanOptions, _In_ PDOKAN
      );
   if(dokanInstance->GlobalDevice == INVALID_HANDLE_VALUE)
   {
-    DWORD lastError = GetLastError();
-    DbgPrint("Dokan Error: CreatFile failed to open {}: {}", rsl::to_string(rsl::wstring_view(DOKAN_GLOBAL_DEVICE_NAME)), lastError);
+    DbgPrint("Dokan Error: CreatFile failed to open {}: {}", rsl::to_string(rsl::wstring_view(DOKAN_GLOBAL_DEVICE_NAME)), GetLastError());
     DeleteDokanInstance(dokanInstance);
     return DOKAN_DRIVER_INSTALL_ERROR;
   }
@@ -787,8 +788,7 @@ int DOKANAPI DokanCreateFileSystem(_In_ PDOKAN_OPTIONS DokanOptions, _In_ PDOKAN
   );
   if(dokanInstance->Device == INVALID_HANDLE_VALUE)
   {
-    DWORD lastError = GetLastError();
-    DbgPrint("Dokan Error: CreatFile failed to open {}: {}", rsl::to_string(rsl::wstring_view(rawDeviceName)), lastError);
+    DbgPrint("Dokan Error: CreatFile failed to open {}: {}", rsl::to_string(rsl::wstring_view(rawDeviceName)), GetLastError());
     DeleteDokanInstance(dokanInstance);
     return DOKAN_DRIVER_INSTALL_ERROR;
   }
@@ -1234,8 +1234,7 @@ BOOL SendToDevice(LPCWSTR DeviceName, DWORD IoControlCode, PVOID InputBuffer, UL
 
   if(device == INVALID_HANDLE_VALUE)
   {
-    DWORD dwErrorCode = GetLastError();
-    DbgPrint("Dokan Error: Failed to open {} with code {}", rsl::to_string(rsl::wstring_view(DeviceName)), dwErrorCode);
+    DbgPrint("Dokan Error: Failed to open {} with code {}", rsl::to_string(rsl::wstring_view(DeviceName)), GetLastError());
     return FALSE;
   }
 

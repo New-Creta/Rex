@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/numeric.h"
 
-TEST_CASE("merging signed integers together")
+TEST_CASE("TEST - Numeric - merging signed integers together")
 {
   s32 high = 0xAA;
   s32 low = 0XBB;
@@ -12,7 +12,7 @@ TEST_CASE("merging signed integers together")
   REX_CHECK(res == 0x000000AA000000BB);
 }
 
-TEST_CASE("merging unsigned integers together")
+TEST_CASE("TEST - Numeric - merging unsigned integers together")
 {
   u32 high = 0xAA;
   u32 low = 0XBB;
@@ -22,7 +22,7 @@ TEST_CASE("merging unsigned integers together")
   REX_CHECK(res == 0x000000AA000000BB);
 }
 
-TEST_CASE("splitting integer into smaller integers")
+TEST_CASE("TEST - Numeric - splitting integer into smaller integers")
 {
   u64 input = 0x000000AA000000BB;
 

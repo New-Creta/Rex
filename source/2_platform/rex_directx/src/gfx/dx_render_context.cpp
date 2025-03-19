@@ -10,15 +10,16 @@
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
-#include "rex_renderer_core/resources/clear_state.h"
+#include "rex_directx/resources/dx_unordered_access_buffer.h"
+#include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_rhi.h"
+#include "rex_directx/system/dx_gal.h"
 #include "rex_directx/utility/dx_util.h"
 
 #include "WinPixEventRuntime/pix3.h"
 
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/graphics.h"
 
 namespace rex
 {
@@ -72,6 +73,12 @@ namespace rex
     {
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_index_buffer->dx_object(), state);
+    }
+    // Transition an index buffer's resource state
+    void DxRenderContext::transition_buffer(UnorderedAccessBuffer* resource, ResourceState state)
+    {
+      DxUnorderedAccessBuffer* dx_unordered_access_buffer = d3d::to_dx12(resource);
+      transition_buffer(resource, dx_unordered_access_buffer->dx_object(), state);
     }
     // Transition a upload buffer's resource state
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
@@ -141,7 +148,7 @@ namespace rex
 
     }
     // Set the vertex buffer of the context
-    void DxRenderContext::set_vertex_buffer(VertexBuffer* vb)
+    void DxRenderContext::set_vertex_buffer(VertexBuffer* vb, s32 startSlot)
     {
       DxVertexBuffer* dx_vb = d3d::to_dx12(vb);
 
@@ -150,7 +157,7 @@ namespace rex
       view.SizeInBytes = narrow_cast<s32>(vb->size().size_in_bytes());
       view.StrideInBytes = static_cast<UINT>(vb->vertex_size());
 
-      m_cmd_list->IASetVertexBuffers(0, 1, &view);
+      m_cmd_list->IASetVertexBuffers(startSlot, 1, &view);
     }
     // Set the index buffer of the context
     void DxRenderContext::set_index_buffer(IndexBuffer* ib)
@@ -184,9 +191,9 @@ namespace rex
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set a view table of the context
-    void DxRenderContext::bind_view_table(s32 paramIdx, ResourceView* startView)
+    void DxRenderContext::bind_view_table(s32 paramIdx, const ResourceView* startView)
     {
-      DxResourceView* dx_start_view = d3d::to_dx12(startView);
+      const DxResourceView* dx_start_view = d3d::to_dx12(startView);
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
     }
     // Bind a constant buffer to the context
@@ -197,6 +204,29 @@ namespace rex
     void DxRenderContext::bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer)
     {
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, constantBuffer->gpu_address());
+    }
+    void DxRenderContext::bind_texture2d(s32 paramIdx, Texture2D* texture)
+    {
+    //  const ResourceView* gpu_handle = gpu_engine()->try_get_texture_gpu_handle(texture);
+
+    //  // If the texture is not on the GPU yet, copy it there first
+    //  if (gpu_handle == nullptr)
+    //  {
+    //    rsl::vector<const ResourceView*> views;
+    //    views.push_back(texture->resource_view());
+    //    auto copy_ctx = new_copy_ctx();
+    //    auto start_handle = copy_ctx->copy_views(ViewHeapType::Texture2D, views);
+    //    gpu_handle = start_handle.get();
+				//gpu_engine()->notify_textures_presence_on_gpu(texture, rsl::move(start_handle));
+    //  }
+
+      rsl::vector<const ResourceView*> views;
+      views.push_back(texture->resource_view());
+      auto copy_ctx = new_copy_ctx();
+      auto start_handle = copy_ctx->copy_views(ViewHeapType::Texture2D, views);
+
+			// Textures need to be bind using a view table and cannot be bound directly
+      bind_view_table(paramIdx, start_handle);
     }
     // Bind a shader resource to the context
     void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)

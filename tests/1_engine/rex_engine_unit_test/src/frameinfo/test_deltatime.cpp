@@ -3,7 +3,7 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_std/thread.h"
 
-TEST_CASE("Deltatime Updates")
+TEST_CASE("TEST - Delta Time - Updates")
 {
   rex::DeltaTime dt{};
 

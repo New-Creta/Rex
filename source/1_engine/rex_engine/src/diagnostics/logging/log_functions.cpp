@@ -1,6 +1,8 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/cmdline/cmdline.h"
+#include "rex_engine/diagnostics/debug.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/internal/details/diag_thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"
@@ -45,8 +47,12 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     void init_log_verbosity()
-    {
+    {      
       LogVerbosity verbosity = LogVerbosity::Info;
+      if (rex::is_debugger_attached())
+      {
+        verbosity = LogVerbosity::Debug;
+      }
 
       // read the required log versboity from the commandline
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogVerbosity");
@@ -76,7 +82,7 @@ namespace rex
       // Setup the path where logs will go using a mounting point
       // With mounting points, we abstract away the hardcoded paths
       // so we can always set them elsewhere at runtime if we want to
-      rex::vfs::mount_for_session(rex::MountingPoint::Logs, "logs");
+      rex::vfs::mount(rex::MountingPoint::Logs, path::join(vfs::current_session_root(), "logs"));
 
       // Enable file sinks. The vfs is initialized by now, and the path for logs as well
       // we can start using file sinks
@@ -110,7 +116,7 @@ namespace rex
       // If the logging system has been initialized, we log to files as well
       if(g_enable_file_sinks)
       {
-        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), rsl::format("{}.log", project_name())), true));
+        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::project_log_path(), true));
       }
 
       rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;

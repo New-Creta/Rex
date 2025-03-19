@@ -1,9 +1,9 @@
 #include "regina/cube_scene.h"
 
-#include "rex_renderer_core/primitives/mesh_factory.h"
-#include "rex_renderer_core/primitives/box.h"
-#include "rex_renderer_core/gfx/vertex.h"
-#include "rex_renderer_core/components/transform_component.h"
+#include "rex_engine/gfx/primitives/mesh_factory.h"
+#include "rex_engine/gfx/primitives/box.h"
+#include "rex_engine/gfx/core/vertex.h"
+#include "rex_engine/components/transform_component.h"
 
 #include "rex_engine/memory/blob_writer.h"
 
@@ -11,15 +11,15 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/scenegraph/entity.h"
-#include "rex_renderer_core/components/mesh_component.h"
+#include "rex_engine/gfx/system/gal.h"
+#include "rex_engine/entities/entity.h"
+#include "rex_engine/gfx/components/mesh_component.h"
 
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_renderer_core/materials/material_system.h"
+#include "rex_engine/gfx/materials/material_system.h"
 
-#include "rex_renderer_core/primitives/sphere.h"
+#include "rex_engine/gfx/primitives/sphere.h"
 
 namespace regina
 {

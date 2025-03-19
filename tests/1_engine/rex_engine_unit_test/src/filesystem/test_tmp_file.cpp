@@ -5,9 +5,9 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/directory.h"
 
-TEST_CASE("Empty Temp File")
+TEST_CASE("TEST - Temp File - Empty")
 {
-  rsl::string filename;
+  rex::TempString filename;
   {
     rex::TempFile tmp_file;
     filename.assign(tmp_file.filepath());
@@ -17,7 +17,7 @@ TEST_CASE("Empty Temp File")
   }
   REX_CHECK(rex::file::exists(filename) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
   {
 
@@ -33,9 +33,9 @@ TEST_CASE("Empty Temp File")
   REX_CHECK(rex::file::exists(filename) == false);
 }
 
-TEST_CASE("Temp File With Text")
+TEST_CASE("TEST - Temp File - With Text")
 {
-  rsl::string filename;
+  rex::TempString filename;
   {
     rex::TempFile tmp_file;
     filename.assign(tmp_file.filepath());
@@ -50,7 +50,7 @@ TEST_CASE("Temp File With Text")
   }
   REX_CHECK(rex::file::exists(filename) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
 
   {

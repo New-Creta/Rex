@@ -38,3 +38,6 @@ crash-*
 *.dmp
 data/_sessions/
 data/imgui.ini
+data/RexEngineAutoTest/_sessions/
+source/1_engine/rex_engine/include/public/rex_engine/cmdline/cmd_args.h
+source/1_engine/rex_engine/include/public/rex_engine/filesystem/mounting_point.h

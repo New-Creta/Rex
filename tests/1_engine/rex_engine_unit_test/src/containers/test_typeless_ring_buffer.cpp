@@ -2,23 +2,29 @@
 
 #include "rex_engine/containers/typeless_ring_buffer.h"
 
-TEST_CASE("TypelessRingBuffer - basic operations")
+TEST_CASE("TEST - TypelessRingBuffer - basic operations")
 {
   rex::TypelessRingBuffer ring_buffer(10_bytes);
+  REX_CHECK(ring_buffer.size() == 10);
+  REX_CHECK(ring_buffer.max_count() == 10);
+  REX_CHECK(ring_buffer.count() == 0);
 
   s32 x = 0xFFEEDDCC;
   ring_buffer.write(&x, sizeof(x));
+  REX_CHECK(ring_buffer.count() == sizeof(x));
 
   s32 y = 0;
   ring_buffer.peek(&y, sizeof(y));
   REX_CHECK(y == x);
+  REX_CHECK(ring_buffer.count() == sizeof(x));
 
   s32 z = 0;
   ring_buffer.read(&z, sizeof(z));
   REX_CHECK(z == x);
+  REX_CHECK(ring_buffer.count() == 0);
 }
 
-TEST_CASE("TypelessRingBuffer - wrapping")
+TEST_CASE("TEST - TypelessRingBuffer - wrapping")
 {
   rex::TypelessRingBuffer ring_buffer(12_bytes);
 
@@ -28,6 +34,7 @@ TEST_CASE("TypelessRingBuffer - wrapping")
   ring_buffer.write(&a, sizeof(a));
   ring_buffer.write(&b, sizeof(b));
   ring_buffer.write(&c, sizeof(c));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
 
   s32 z, y, x;
   ring_buffer.read(&z, sizeof(z));
@@ -36,21 +43,24 @@ TEST_CASE("TypelessRingBuffer - wrapping")
   REX_CHECK(z == a);
   REX_CHECK(y == b);
   REX_CHECK(x == c);
+  REX_CHECK(ring_buffer.count() == 0);
 
   ring_buffer.write(&c, sizeof(c));
   ring_buffer.write(&b, sizeof(b));
   ring_buffer.write(&a, sizeof(a));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
 
   ring_buffer.read(&z, sizeof(z));
   ring_buffer.read(&y, sizeof(y));
   ring_buffer.read(&x, sizeof(x));
+  REX_CHECK(ring_buffer.count() == 0);
 
   REX_CHECK(z == c);
   REX_CHECK(y == b);
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - wrapping by splitting data")
+TEST_CASE("TEST - TypelessRingBuffer - wrapping by splitting data")
 {
   rex::TypelessRingBuffer ring_buffer(10_bytes);
 
@@ -81,7 +91,7 @@ TEST_CASE("TypelessRingBuffer - wrapping by splitting data")
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - resetting")
+TEST_CASE("TEST - TypelessRingBuffer - resetting")
 {
   rex::TypelessRingBuffer ring_buffer(24_bytes);
 
@@ -91,28 +101,47 @@ TEST_CASE("TypelessRingBuffer - resetting")
   ring_buffer.write(&a, sizeof(a));
   ring_buffer.write(&b, sizeof(b));
   ring_buffer.write(&c, sizeof(c));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
 
   s32 z, y, x;
   ring_buffer.read(&z, sizeof(z));
   ring_buffer.read(&y, sizeof(y));
   ring_buffer.read(&x, sizeof(x));
+  REX_CHECK(ring_buffer.count() == 0);
+  REX_CHECK(x == c);
+  REX_CHECK(y == b);
+  REX_CHECK(z == a);
 
   ring_buffer.reset();
+  REX_CHECK(ring_buffer.count() == 0);
+  REX_CHECK(z == a);
+  REX_CHECK(y == b);
+  REX_CHECK(x == c);
 
   ring_buffer.write(&c, sizeof(c));
   ring_buffer.write(&b, sizeof(b));
   ring_buffer.write(&a, sizeof(a));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
+
+  ring_buffer.reset();
+  REX_CHECK(ring_buffer.count() == 0);
+
+  ring_buffer.write(&c, sizeof(c));
+  ring_buffer.write(&b, sizeof(b));
+  ring_buffer.write(&a, sizeof(a));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
 
   ring_buffer.read(&z, sizeof(z));
   ring_buffer.read(&y, sizeof(y));
   ring_buffer.read(&x, sizeof(x));
+  REX_CHECK(ring_buffer.count() == 0);
 
   REX_CHECK(z == c);
   REX_CHECK(y == b);
   REX_CHECK(x == a);
 }
 
-TEST_CASE("TypelessRingBuffer - skipping")
+TEST_CASE("TEST - TypelessRingBuffer - skipping")
 {
   rex::TypelessRingBuffer ring_buffer(24_bytes);
 
@@ -122,6 +151,7 @@ TEST_CASE("TypelessRingBuffer - skipping")
   ring_buffer.write(&a, sizeof(a));
   ring_buffer.write(&b, sizeof(b));
   ring_buffer.write(&c, sizeof(c));
+  REX_CHECK(ring_buffer.count() == sizeof(a) + sizeof(b) + sizeof(c));
 
   s32 z, y, x;
   ring_buffer.read(&z, sizeof(z));
@@ -130,4 +160,9 @@ TEST_CASE("TypelessRingBuffer - skipping")
 
   REX_CHECK(z == a);
   REX_CHECK(x == c);
+  REX_CHECK(ring_buffer.count() == 0);
+
+  ring_buffer.write(&a, sizeof(a));
+  ring_buffer.write(&b, sizeof(b));
+  ring_buffer.write(&c, sizeof(c));
 }

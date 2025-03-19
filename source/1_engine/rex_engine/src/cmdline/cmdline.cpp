@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"
@@ -143,10 +144,7 @@ namespace rex
           value = arg.substr(equal_pos + 1);
 
           // Remove the quote at the beginning if it starts with one
-          if(value.starts_with('"'))
-          {
-            value = value.substr(1);
-          }
+          value = remove_quotes(value);
         }
         // if the argument is of type -EnableSomething
         else
@@ -252,7 +250,7 @@ namespace rex
 #endif
     }
 
-    void log_cmdline()
+    void print()
     {
       if(g_cmd_line.length() > 0)
       {
@@ -273,12 +271,15 @@ namespace rex
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
-      return g_cmd_line_args->get_argument(arg);
-    }
+      // If commandline arguments aren't initialized yet, we can't return a proper argument's value
+      // in which case we return a null optional and the user is meant to move their code
+      // to a point after the commandline is initialized.
+      if (!g_cmd_line_args)
+      {
+        return rsl::nullopt;
+      }
 
-    rsl::string_view get()
-    {
-      return g_cmd_line;
+      return g_cmd_line_args->get_argument(arg);
     }
 
   } // namespace cmdline

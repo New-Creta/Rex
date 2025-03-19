@@ -5,7 +5,7 @@
 #include "rex_engine/memory/pointer_math.h"
 
 #include "rex_directx/resources/dx_sampler_2d.h"
-#include "rex_renderer_core/system/gpu_engine.h"
+#include "rex_engine/gfx/system/gpu_engine.h"
 
 namespace rex
 {
@@ -22,6 +22,8 @@ namespace rex
       m_view_heap_type                = desc.Type;
       m_num_views               = static_cast<s32>(desc.NumDescriptors);
       m_view_size               = static_cast<s32>(m_device->GetDescriptorHandleIncrementSize(m_view_heap_type)); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+
+      init_null_handle();
     }
 
     // Create a render target view and return a handle pointing to it
@@ -76,6 +78,23 @@ namespace rex
 
       return cbv_handle;
     }
+    // Create a unordered access buffer view and return a handle pointing to it
+    DxResourceView DxViewHeap::create_uav(ID3D12Resource* resource, rsl::memory_size size)
+    {
+      REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a unordered access view from a view heap that's not configured to create unordered access views");
+
+      D3D12_UNORDERED_ACCESS_VIEW_DESC uav_desc{};
+      uav_desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+      uav_desc.Buffer.FirstElement = 0;
+      uav_desc.Format = DXGI_FORMAT_R32_UINT;
+      uav_desc.Buffer.NumElements = static_cast<UINT>(size / sizeof(d3d::format_byte_size(uav_desc.Format)));
+
+      DxResourceView uav_handle = new_free_handle();
+      m_device->CreateUnorderedAccessView(resource, nullptr, &uav_desc, uav_handle);
+
+      return uav_handle;
+    }
+
     // Create a shader resource view pointing to a texture and return a handle pointing to this view
     DxResourceView DxViewHeap::create_texture2d_srv(ID3D12Resource* resource)
     {
@@ -107,7 +126,7 @@ namespace rex
     }
 
     // Copy the given views into this heap
-    rsl::unique_ptr<ResourceView> DxViewHeap::copy_views(const rsl::vector<ResourceView*>& views)
+    rsl::unique_ptr<ResourceView> DxViewHeap::copy_views(const rsl::vector<const ResourceView*>& views)
     {
       if (views.empty())
       {
@@ -117,17 +136,17 @@ namespace rex
       rsl::unique_ptr<DxResourceView> free_handle = rsl::make_unique<DxResourceView>(new_free_handle(views.size()));
 
       CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
-      for (ResourceView* view : views)
+      for (const ResourceView* view : views)
       {
         cpu_handle = m_null_view.cpu_handle();
         // It's possible a null view is provided if the parameter has not been set yet
         if (view != nullptr)
         {
-          DxResourceView* src_handle = d3d::to_dx12(view);
+          const DxResourceView* src_handle = d3d::to_dx12(view);
           cpu_handle = src_handle->cpu_handle();
+          m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), cpu_handle, m_view_heap_type);
         }
 
-        m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), cpu_handle, m_view_heap_type);
         (*free_handle)++;
       }
 
@@ -169,7 +188,7 @@ namespace rex
         gpu_handle = m_view_heap->GetGPUDescriptorHandleForHeapStart();
       }
 
-      return DxResourceView(cpu_handle, gpu_handle, m_view_heap_type, m_view_size);
+      return DxResourceView(cpu_handle, gpu_handle, m_view_heap_type, m_view_size, m_is_shader_visible);
     }
     // Create a handle pointing to no resource
     void DxViewHeap::init_null_handle()
@@ -177,10 +196,17 @@ namespace rex
       m_null_view = new_free_handle();
       switch (m_view_heap_type)
       {
-      case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:    m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_SHADER_RESOURCE_VIEW_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:        m_device->CreateSampler(rsl::Nullptr<const D3D12_SAMPLER_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:            m_device->CreateRenderTargetView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_RENDER_TARGET_VIEW_DESC>, m_null_view);
-      case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:            m_device->CreateDepthStencilView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_DEPTH_STENCIL_VIEW_DESC>, m_null_view);
+      case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+      {
+        D3D12_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
+        shader_resource_view_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        shader_resource_view_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        shader_resource_view_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        shader_resource_view_desc.Texture2D.MipLevels = 1;
+        shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
+        shader_resource_view_desc.Texture2D.ResourceMinLODClamp = 0.0f;
+        m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, &shader_resource_view_desc, m_null_view); break;
+      }
       default: break;
       }
     }

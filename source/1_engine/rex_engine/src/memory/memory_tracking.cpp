@@ -12,6 +12,7 @@
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/types.h"
+#include "rex_engine/engine/globals.h"
 
 namespace rex
 {
@@ -114,7 +115,7 @@ namespace rex
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
     m_max_mem_budget       = static_cast<s64>(maxMemUsage);
-    m_mem_stats_on_startup = query_memory_stats();
+    m_mem_stats_on_startup = query_all_memory_stats();
   }
 
   MemoryHeader* MemoryTracker::track_alloc(void* mem, card64 size)
@@ -124,7 +125,7 @@ namespace rex
 
     rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
     rex::MemoryHeader* dbg_header_addr   = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-    const card32 frame_idx               = globals::frame_info().index();
+    const card32 frame_idx               = rex::globals().frame_info.index();
     const CallStack callstack            = current_callstack();
 
     // track the callstack, if we this callstack allocated memory before
@@ -143,6 +144,7 @@ namespace rex
 
     rex::MemoryHeader* header = new(dbg_header_addr) MemoryHeader(tag, mem, rsl::memory_size(size), thread_id, frame_idx, callstack);
 
+    ++m_num_total_allocations;
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
     allocation_headers().push_back(header);
@@ -196,8 +198,8 @@ namespace rex
 
   void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
   {
-    thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
     ++thread_local_mem_tag_index();
+    thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
   }
   void MemoryTracker::pop_tag() // NOLINT(readability-convert-member-functions-to-static)
   {
@@ -211,17 +213,17 @@ namespace rex
 
   void MemoryTracker::dump_stats_to_file(rsl::string_view filepath)
   {
-    MemoryUsageStats stats = current_stats();
+    MemoryAllocationStats stats = current_allocation_stats();
 
     static UntrackedAllocator allocator {};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
 
     DebugStringStream ss(rsl::io::openmode::in | rsl::io::openmode::out, dbg_alloc);
 
-    for(count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    for(count_t i = 0; i < stats.tracking_stats.usage_per_tag.size(); ++i)
     {
       const MemoryTag tag = static_cast<MemoryTag>(i);
-      ss << rsl::format("{}: {} bytes\n", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
+      ss << rsl::format("{}: {} bytes\n", rsl::enum_refl::enum_name(tag), stats.tracking_stats.usage_per_tag[i]);
     }
 
     ss << "----------------------------\n";
@@ -258,36 +260,47 @@ namespace rex
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
 
-    vfs::save_to_file(MountingPoint::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
+    vfs::write_to_file(MountingPoint::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
   }
 
-  MemoryUsageStats MemoryTracker::current_stats()
+  MemoryTrackingStats MemoryTracker::current_tracking_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    MemoryUsageStats stats {};
-    stats.usage_per_tag      = m_usage_per_tag;
-    stats.allocation_headers = allocation_headers();
-    stats.tracked_mem_usage  = m_mem_usage.value();
+    MemoryTrackingStats stats{};
+    stats.usage_per_tag = m_usage_per_tag;
+    stats.used_memory = m_mem_usage.value();
+    stats.max_used_memory = m_mem_usage.max_value();
+    stats.num_alive_allocations = allocation_info_table().size();
+    stats.num_total_allocations = m_num_total_allocations;
+
     return stats;
   }
 
-  MemoryUsageStats MemoryTracker::get_pre_init_stats()
+  MemoryAllocationStats MemoryTracker::current_allocation_stats()
+  {
+    MemoryAllocationStats stats {};
+    stats.tracking_stats = current_tracking_stats();
+    stats.allocation_headers = allocation_headers();
+    return stats;
+  }
+
+  MemoryAllocationStats MemoryTracker::get_pre_init_stats()
   {
     return get_stats_for_frame(-1); // allocations that happen before initialization have -1 as frame index
   }
 
-  MemoryUsageStats MemoryTracker::get_init_stats()
+  MemoryAllocationStats MemoryTracker::get_init_stats()
   {
     return get_stats_for_frame(0); // allocations that happen at initialization have 0 as frame index
   }
 
-  MemoryUsageStats MemoryTracker::get_stats_for_frame(card32 idx)
+  MemoryAllocationStats MemoryTracker::get_stats_for_frame(card32 idx)
   {
     rsl::unique_lock lock(m_mem_tracking_mutex);
     const DebugVector<MemoryHeader*> alloc_headers = allocation_headers(); // copy here on purpose as we don't want any race conditions when looping over it
     lock.unlock();
 
-    MemoryUsageStats stats {};
+    MemoryAllocationStats stats {};
     stats.allocation_headers.reserve(alloc_headers.size());
 
     for(MemoryHeader* header: alloc_headers)
@@ -295,7 +308,7 @@ namespace rex
       if(header->frame_index() == idx)
       {
         stats.allocation_headers.push_back(header);
-        stats.usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size();
+        stats.tracking_stats.usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size();
       }
       else if(header->frame_index() > idx)
       {

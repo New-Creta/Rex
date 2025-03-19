@@ -10,7 +10,7 @@ namespace rex
     bool log_mem_usage_before_tracking_impl()
     {
       output_debug_string("Memory usage before any allocation");
-      log_mem_usage();
+      debug_log_mem_usage();
       return true;
     }
 

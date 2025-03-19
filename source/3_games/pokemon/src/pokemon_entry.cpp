@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_engine/system/process.h"
 #include "pokemon/game_session.h"
 
 #include "imgui/imgui.h"
@@ -23,7 +24,7 @@ namespace pokemon
 
   void update()
   {
-    ImGui::ShowDemoWindow();
+    g_game_session->update();
   }
 
   void shutdown()
@@ -40,15 +41,16 @@ namespace rex
   {
     rex::ApplicationCreationParams app_params(platformParams);
 
-    app_params.gui_params.window_width = 1280;
+    app_params.gui_params.window_width = 720;
     app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title = "Pokemon: Rex";
+    app_params.gui_params.window_title.assign(rsl::format("Pokemon: Rex | PID: {}", rex::current_process_id()));
 
-    app_params.create_window = true;
+    app_params.is_gui_app = true;
 
     app_params.engine_params.app_init_func = pokemon::initialise;
     app_params.engine_params.app_update_func = pokemon::update;
     app_params.engine_params.app_shutdown_func = pokemon::shutdown;
+    app_params.engine_params.app_name.assign("Pokemon: Rex");
 
     return app_params;
   }

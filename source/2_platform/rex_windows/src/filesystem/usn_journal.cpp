@@ -124,7 +124,7 @@ namespace rex
 
     void UsnJournal::save_last_usn()
     {
-      rex::vfs::save_to_file(m_last_usn_filepath, &m_last_usn, sizeof(m_last_usn), rex::vfs::AppendToFile::no);
+      rex::vfs::write_to_file(m_last_usn_filepath, &m_last_usn, sizeof(m_last_usn), rex::vfs::AppendToFile::no);
     }
   } // namespace win32
 } // namespace rex

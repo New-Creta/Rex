@@ -121,8 +121,8 @@ public class RegenerateProjects : Project
     }
 
     conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Use what's previously generated
-    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -use_default_config -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -IDE None";
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -use-default-config -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
     conf.CustomBuildSettings.CleanCommand = "";
     conf.CustomBuildSettings.OutputFile = "";
   }
@@ -140,6 +140,9 @@ public abstract class BasicCPPProject : Project
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
 
+  // The path where you can find the text based data for this project, if there is any
+  protected string DataPath = null;
+
   public BasicCPPProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     LoadToolPaths();
@@ -147,12 +150,37 @@ public abstract class BasicCPPProject : Project
     ClangToolsEnabled = ProjectGen.Settings.ClangToolsEnabled;
 
     ResourceFilesExtensions.Add(".json");
+    ResourceFilesExtensions.Add(".ini");
+    ResourceFilesExtensions.Add(".hlsl");
   }
 
   // Legacy function and should be removed
   public string GenerateName(string name)
   {
     return name;
+  }
+
+  // This gets called by Sharpmake to resolve filters for files
+  public override bool ResolveFilterPathForFile(string relativeFilePath, out string filterPath)
+  {
+    filterPath = "";
+
+    if (!string.IsNullOrEmpty(DataPath))
+    {
+      string fileExtension = Path.GetExtension(relativeFilePath);
+      if (ResourceFilesExtensions.Contains(fileExtension))
+      {
+        // If the file does not exist under the source root path, we assume it's a data file
+        // the relative path is from the source root directory, so if it starts with the double dots, it means it's not under there
+        if (relativeFilePath.StartsWith("..") || !File.Exists(Path.Combine(SourceRootPath, relativeFilePath)))
+        {
+          filterPath = Utils.DataFilterPath(SourceRootPath, DataPath, relativeFilePath);
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   // This gets called before any configuration gets performed
@@ -170,6 +198,9 @@ public abstract class BasicCPPProject : Project
     // We read the code generation file in the pre config step
     // so it's only done once (Configure is called for every target)
     ReadCodeGenerationConfigFile();
+
+    // Setup the data paths so they're added to the project, if there are any
+    SetupDataPaths();
   }
 
   // This is called by Sharpmake and acts as the configure entry point.
@@ -302,6 +333,7 @@ public abstract class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Compiler.FunctionLevelLinking.Disable);
     conf.Options.Add(Options.Vc.Compiler.FloatingPointExceptions.Disable);
     conf.Options.Add(Options.Vc.Compiler.OpenMP.Disable);
+    conf.Options.Add(Options.Vc.Compiler.BigObj.Enable);
 
     if (!ProjectGen.Settings.UnityBuildsDisabled)
     {
@@ -352,8 +384,14 @@ public abstract class BasicCPPProject : Project
     }
 
     // We always add the include folder of the project to its include paths
-    conf.IncludePaths.Add($@"{SourceRootPath}\include");
-    conf.IncludePrivatePaths.Add($@"{SourceRootPath}\include_private");
+    if (AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include\public"))
+    {
+      AddPrivateIncludeIfExists(conf, $@"{SourceRootPath}\include\private");
+    }
+    else
+    {
+      AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include");
+    }
   }
   // Setup rules that need to be defined based on optimization settings
   // This usually means adding or removing defines, but other options are available as well.
@@ -515,6 +553,13 @@ public abstract class BasicCPPProject : Project
   protected virtual void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     // Nothing to implement
+  }
+  protected void AddPrivateIncludeIfExists(RexConfiguration conf, string path)
+  {
+    if (Directory.Exists(path))
+    {
+      conf.IncludePrivatePaths.Add(path);
+    }
   }
   #endregion
 
@@ -747,6 +792,26 @@ public abstract class BasicCPPProject : Project
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
+
+  // Add the include path to the configuration, if the path exists
+  private bool AddPublicIncludeIfExists(RexConfiguration conf, string path)
+  {
+    if (Directory.Exists(path))
+    {
+      conf.IncludePaths.Add(path);
+      return true;
+    }
+
+    return false;
+  }
+  // Make sharpmake aware of the shader paths
+  private void SetupDataPaths()
+  {
+    if (!string.IsNullOrEmpty(DataPath))
+    {
+      AdditionalSourceRootPaths.Add(DataPath);
+    }
+  }
 }
 
 // This is the base class for every C# project used in the rex solution
@@ -968,19 +1033,6 @@ public class TestProject : BasicCPPProject
         break;
       default:
         break;
-    }
-  }
-
-  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
-  {
-    base.SetupConfigSettings(conf, target);
-
-    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
-
-    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
-    {
-      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
     }
   }
 

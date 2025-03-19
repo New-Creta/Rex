@@ -15,6 +15,13 @@ public class RexDirectX : PlatformProject
     SourceRootPath = ThisFileFolder;
   }
 
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    conf.add_public_define("REX_USING_DIRECTX");
+  }
+
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
     base.SetupLibDependencies(conf, target);
@@ -25,7 +32,6 @@ public class RexDirectX : PlatformProject
     conf.LibraryFiles.Add("dxguid.lib");
 
     conf.AddPublicDependency<RexStd>(target);
-    conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexPIX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
 
@@ -36,9 +42,9 @@ public class RexDirectX : PlatformProject
       case Config.coverage:
       case Config.sanitization:
         conf.add_public_define("REX_ENABLE_DX_CALL");
-        conf.add_public_define("REX_ENABLE_DX12_DEBUG_LAYER");
         conf.add_public_define("REX_ENABLE_IMGUI");
         conf.add_public_define("REX_ENABLE_DEBUG_RESOURCE_NAMES");
+        conf.add_public_define("REX_ENABLE_DX12_DEBUG_LAYER");
         conf.add_public_define("REX_ENABLE_GFX_DEBUGGING");
         conf.add_public_define("REX_ENABLE_DXGI_DEBUG_LAYER");
         conf.add_public_define("REX_ENABLE_DEBUG_SHADER_COMPILATION");

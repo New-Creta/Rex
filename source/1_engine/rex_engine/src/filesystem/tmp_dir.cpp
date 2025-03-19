@@ -6,15 +6,15 @@
 
 namespace rex
 {
-  TempDirectory::TempDirectory(rsl::string_view directory)
+  TempDirectory::TempDirectory(rsl::string_view root)
   {
-    m_dirname = path::abs_path(path::join(directory, path::random_dir()));
+    m_dirname.assign(path::abs_path(path::join(root, path::random_dir())));
     directory::create(m_dirname);
   }
 
   TempDirectory::~TempDirectory()
   {
-    directory::del_recusrive(m_dirname);
+    directory::del_recursive(m_dirname);
   }
 
   Error TempDirectory::create_file(rsl::string_view filename)

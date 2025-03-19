@@ -26,7 +26,7 @@ namespace rex
 
 
     // back up function in case we fail to find an auto test
-    bool bad_init()
+    bool bad_init(const ApplicationCreationParams&)
     {
       return false;
     }
@@ -44,9 +44,11 @@ namespace rex
 
   rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams& platformParams)
   {
+    // Make sure logging is initalized before we do anything else
+
     rsl::optional<rsl::string_view> cmdline = rex::cmdline::get_argument("AutoTest");
 
-    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline. Commandline: {}", rex::cmdline::get());
+    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline.");
 
     rsl::vector<auto_test::AutoTest> auto_tests = auto_test::auto_test_entry();
 

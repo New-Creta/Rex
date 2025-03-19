@@ -43,6 +43,5 @@ public class RexWindows : PlatformProject
       default:
         break;
     }
-    conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

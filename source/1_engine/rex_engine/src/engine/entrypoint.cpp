@@ -9,21 +9,26 @@
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
 
+#include "rex_engine/engine/mutable_globals.h"
+
 namespace rex
 {
   namespace internal
   {
     void log_pre_init_results()
     {
+      REX_INFO(LogEngine, "Startup: {}", rsl::current_timepoint());
+
       // Now log the commandline we started the app with
-      cmdline::log_cmdline();
+      cmdline::print();
 
       // Log early on if any sanitization is enabled
       // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
       log_sanitization();
 
       REX_INFO(LogEngine, "Vfs Root: {}", rex::vfs::root());
-      REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::session_data_root());
+      REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::current_session_root());
+      REX_INFO(LogEngine, "Log Path: {}", rex::project_log_path());
     }
 
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
@@ -57,6 +62,10 @@ namespace rex
         attach_debugger();
       }
 
+      // Assign a very small buffer to the single frame allocator so it can be used
+      // It'll be overwritten later
+      rex::mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(1_mib, 1);
+
       // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
       // If we decide to limit this more aggresively, we can move this initialization to the initialize function
@@ -76,9 +85,7 @@ namespace rex
 
     void post_app_shutdown()
     {
-      vfs::shutdown();
-
-      cmdline::shutdown();
+      mut_globals().single_frame_allocator.reset();
     }
   } // namespace internal
 } // namespace rex

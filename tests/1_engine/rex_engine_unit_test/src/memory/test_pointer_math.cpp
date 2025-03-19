@@ -4,7 +4,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/memory.h"
 
-TEST_CASE("Pointer math jumping forward - positive number")
+TEST_CASE("TEST - Pointer math jumping forward - positive number")
 {
   rsl::unique_array<rsl::byte> data = rsl::make_unique<rsl::byte[]>(5);
 
@@ -20,7 +20,7 @@ TEST_CASE("Pointer math jumping forward - positive number")
   ptr = (rsl::byte*)rex::jump_forward(ptr, 15);
   REX_CHECK(ptr - og_ptr == 21);
 }
-TEST_CASE("Pointer math jumping forward - negative number")
+TEST_CASE("TEST - Pointer math jumping forward - negative number")
 {
   rsl::unique_array<rsl::byte> data = rsl::make_unique<rsl::byte[]>(5);
 
@@ -37,7 +37,7 @@ TEST_CASE("Pointer math jumping forward - negative number")
   REX_CHECK(og_ptr - ptr == 21);
 }
 
-TEST_CASE("Pointer math jump backward - positive number")
+TEST_CASE("TEST - Pointer math jump backward - positive number")
 {
   rsl::unique_array<rsl::byte> data = rsl::make_unique<rsl::byte[]>(5);
 
@@ -53,7 +53,7 @@ TEST_CASE("Pointer math jump backward - positive number")
   ptr = (rsl::byte*)rex::jump_backward(ptr, 15);
   REX_CHECK(og_ptr - ptr == 21);
 }
-TEST_CASE("Pointer math jump backward - negative number")
+TEST_CASE("TEST - Pointer math jump backward - negative number")
 {
   rsl::unique_array<rsl::byte> data = rsl::make_unique<rsl::byte[]>(5);
 
@@ -70,7 +70,7 @@ TEST_CASE("Pointer math jump backward - negative number")
   REX_CHECK(ptr - og_ptr == 21);
 }
 
-TEST_CASE("Pointer math alignment")
+TEST_CASE("TEST - Pointer math alignment")
 {
   s32 size = 4;
 

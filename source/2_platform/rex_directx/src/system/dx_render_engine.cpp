@@ -1,11 +1,13 @@
 #include "rex_directx/system/dx_render_engine.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   namespace gfx
   {
-    DxRenderEngine::DxRenderEngine(ResourceStateTracker* globalResourceStateTracker)
-      : gfx::RenderEngine(globalResourceStateTracker)
+    DxRenderEngine::DxRenderEngine(GpuEngine* gpuEngine, ResourceStateTracker* globalResourceStateTracker)
+      : gfx::RenderEngine(gpuEngine, globalResourceStateTracker)
     {}
 
     // Initialize all the resources required for the compute engine
@@ -28,7 +30,7 @@ namespace rex
     // Allocate a render context
     rsl::unique_ptr<GraphicsContext> DxRenderEngine::allocate_new_context(CommandAllocator* alloc)
     {
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, GraphicsEngineType::Render);
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = dx_gal()->create_commandlist(alloc, GraphicsEngineType::Render);
 
       cmdlist->Close();
       return rsl::make_unique<DxRenderContext>(this, cmdlist);

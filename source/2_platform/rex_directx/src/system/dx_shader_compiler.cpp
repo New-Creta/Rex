@@ -1,7 +1,7 @@
 #include "rex_directx/system/dx_shader_compiler.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_renderer_core/system/compile_shader.h"
+#include "rex_engine/gfx/system/compile_shader.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
@@ -29,7 +29,7 @@ namespace rex
       }
 
       // Loop over the include paths and find the first valid path
-      rsl::string find_file(rsl::string_view filename)
+      TempString find_file(rsl::string_view filename)
       {
         auto it = rsl::find_if(m_include_paths.cbegin(), m_include_paths.cend(),
         [&](rsl::string_view includePath)
@@ -39,12 +39,12 @@ namespace rex
 
         return it != m_include_paths.cend()
         ? path::join(*it, filename)
-        : rsl::string("");
+        : TempString("");
       }
 
       STDMETHOD(Open)(D3D_INCLUDE_TYPE /*includeType*/, LPCSTR filename, LPCVOID /*parentData*/, LPCVOID* dataDoublePtr, uint32* bytesDoublePtr) override
       {
-        rsl::string include_path = find_file(rsl::string_view(filename));
+        TempString include_path = find_file(rsl::string_view(filename));
         if (include_path.empty())
         {
           return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);

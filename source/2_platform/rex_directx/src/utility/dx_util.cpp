@@ -1,7 +1,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_directx/utility/d3dx12.h"
 
-#include "rex_renderer_core/gfx/index_buffer_format.h"
+#include "rex_engine/gfx/core/index_buffer_format.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/engine/invalid_object.h"
 
@@ -26,14 +26,15 @@
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
+#include "rex_directx/resources/dx_unordered_access_buffer.h"
 #include "rex_directx/system/dx_view_heap.h"
-#include "rex_renderer_core/system/shader_param_declaration.h"
+#include "rex_engine/gfx/system/shader_param_declaration.h"
 
-#include "rex_renderer_core/shader_reflection/shader_signature.h"
+#include "rex_engine/gfx/shader_reflection/shader_signature.h"
 
-#include "rex_renderer_core/materials/material_system.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/system/graphics_engine.h"
+#include "rex_engine/gfx/materials/material_system.h"
+#include "rex_engine/gfx/system/gal.h"
+#include "rex_engine/gfx/system/graphics_engine.h"
 
 #include "rex_directx/system/dx_shader_root_parameters.h"
 
@@ -124,6 +125,9 @@ namespace rex
 
         case DXGI_FORMAT_R24G8_TYPELESS:
         case DXGI_FORMAT_D24_UNORM_S8_UINT:
+        case DXGI_FORMAT_R32_SINT:
+        case DXGI_FORMAT_R32_UINT:
+        case DXGI_FORMAT_R32_TYPELESS:
           return 4;
 
         case DXGI_FORMAT_R8G8_TYPELESS:
@@ -638,6 +642,7 @@ namespace rex
         case ViewHeapType::RenderTarget:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         case ViewHeapType::DepthStencil:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
         case ViewHeapType::Sampler:         return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        case ViewHeapType::Undefined:       return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
         }
 
         return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
@@ -678,9 +683,11 @@ namespace rex
       {
         switch (type)
         {
-        case rex::gfx::ShaderParameterType::ConstantBuffer:    return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-        case rex::gfx::ShaderParameterType::Texture:           return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-        case rex::gfx::ShaderParameterType::Sampler:           return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        case rex::gfx::ShaderParameterType::ConstantBuffer:       return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+        case rex::gfx::ShaderParameterType::Texture:              return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+        case rex::gfx::ShaderParameterType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        case rex::gfx::ShaderParameterType::ByteAddress:          return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+        case rex::gfx::ShaderParameterType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
         default: break;
         }
 
@@ -728,6 +735,10 @@ namespace rex
       {
         return static_cast<DxResourceView*>(resourceView);
       }
+      const DxResourceView* to_dx12(const ResourceView* resourceView)
+      {
+        return static_cast<const DxResourceView*>(resourceView);
+      }
       DxFence* to_dx12(Fence* fence)
       {
         return static_cast<DxFence*>(fence);
@@ -756,6 +767,10 @@ namespace rex
       {
         return static_cast<DxDepthStencilBuffer*>(depthStencilBuffer);
       }
+      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* depthStencilBuffer)
+      {
+        return static_cast<DxUnorderedAccessBuffer*>(depthStencilBuffer);
+      }
       DxPipelineState* to_dx12(PipelineState* pso)
       {
         return static_cast<DxPipelineState*>(pso);
@@ -768,11 +783,23 @@ namespace rex
         for (const ShaderParameterDeclaration& param : parameters)
         {
           // Constant buffers are expected to be bound inline
-          if (param.type == ShaderParameterType::ConstantBuffer)
+          if (param.type == ShaderParameterType::ConstantBuffer || param.type == ShaderParameterType::UnorderedAccessView)
           {
-            REX_ASSERT_X(param.ranges.size() == 1, "Constant buffer are expected to be bound independantly and not in ranges");
+            REX_ASSERT_X(param.ranges.size() == 1, "Constant buffers and unordered access buffers are expected to be bound independantly and not in ranges");
             const ViewRangeDeclaration& view_range = param.ranges.front();
-            dx_params.root_parameters.emplace_back().InitAsConstantBufferView(view_range.base_register, view_range.register_space, to_dx12(param.visibility));
+            
+            switch (param.type)
+            {
+            case ShaderParameterType::ConstantBuffer:
+              dx_params.root_parameters.emplace_back().InitAsConstantBufferView(view_range.base_register, view_range.register_space, to_dx12(param.visibility));
+              break;
+            case ShaderParameterType::UnorderedAccessView:
+              dx_params.root_parameters.emplace_back().InitAsUnorderedAccessView(view_range.base_register, view_range.register_space, to_dx12(param.visibility));
+              break;
+            default:
+              REX_ASSERT("Invalid shader parameter type to be bound directly");
+              break;
+            }
           }
           // All other type of parameters are expected to be tied within ranges
           else

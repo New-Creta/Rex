@@ -113,7 +113,7 @@ namespace rex
         , m_last_log_secs(0)
     {
       rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
-      m_formatters.push_back(rsl::make_unique<details::FullFormatter>(details::PaddingInfo {}));
+      m_formatters.push_back(make_unique_debug<details::FullTimeFormatter>(details::PaddingInfo {}));
     }
 
     //-------------------------------------------------------------------------
@@ -169,198 +169,198 @@ namespace rex
       switch(flag)
       {
         case('+'): // default formatter
-          m_formatters.push_back(rsl::make_unique<details::FullFormatter>(padding));
+          m_formatters.push_back(make_unique_debug<details::FullFormatter>(padding));
           m_need_localtime = true;
           break;
 
         case 'n': // logger name
-          m_formatters.push_back(rsl::make_unique<details::NameFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::NameFormatter<Padder>>(padding));
           break;
 
         case 'l': // level
-          m_formatters.push_back(rsl::make_unique<details::LevelFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::LevelFormatter<Padder>>(padding));
           break;
 
         case 'L': // short level
-          m_formatters.push_back(rsl::make_unique<details::ShortLevelFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ShortLevelFormatter<Padder>>(padding));
           break;
 
         case('t'): // thread id
-          m_formatters.push_back(rsl::make_unique<details::t_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::t_Formatter<Padder>>(padding));
           break;
 
         case('v'): // the message text
-          m_formatters.push_back(rsl::make_unique<details::v_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::v_Formatter<Padder>>(padding));
           break;
 
         case('a'): // weekday
-          m_formatters.push_back(rsl::make_unique<details::a_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::a_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('A'): // short weekday
-          m_formatters.push_back(rsl::make_unique<details::A_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::A_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('b'):
         case('h'): // month
-          m_formatters.push_back(rsl::make_unique<details::b_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::b_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('B'): // short month
-          m_formatters.push_back(rsl::make_unique<details::B_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::B_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('c'): // datetime
-          m_formatters.push_back(rsl::make_unique<details::c_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::c_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('C'): // year 2 digits
-          m_formatters.push_back(rsl::make_unique<details::C_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::C_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('Y'): // year 4 digits
-          m_formatters.push_back(rsl::make_unique<details::Y_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::Y_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('D'):
         case('x'): // datetime MM/DD/YY
-          m_formatters.push_back(rsl::make_unique<details::D_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::D_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('m'): // month 1-12
-          m_formatters.push_back(rsl::make_unique<details::m_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::m_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('d'): // day of month 1-31
-          m_formatters.push_back(rsl::make_unique<details::d_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::d_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('H'): // hours 24
-          m_formatters.push_back(rsl::make_unique<details::H_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::H_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('I'): // hours 12
-          m_formatters.push_back(rsl::make_unique<details::I_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::I_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('M'): // minutes
-          m_formatters.push_back(rsl::make_unique<details::M_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::M_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('S'): // seconds
-          m_formatters.push_back(rsl::make_unique<details::S_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::S_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('e'): // milliseconds
-          m_formatters.push_back(rsl::make_unique<details::e_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::e_Formatter<Padder>>(padding));
           break;
 
         case('f'): // microseconds
-          m_formatters.push_back(rsl::make_unique<details::f_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::f_Formatter<Padder>>(padding));
           break;
 
         case('F'): // nanoseconds
-          m_formatters.push_back(rsl::make_unique<details::F_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::F_Formatter<Padder>>(padding));
           break;
 
         case('E'): // seconds since epoch
-          m_formatters.push_back(rsl::make_unique<details::E_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::E_Formatter<Padder>>(padding));
           break;
 
         case('p'): // am/pm
-          m_formatters.push_back(rsl::make_unique<details::p_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::p_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('r'): // 12 hour clock 02:55:02 pm
-          m_formatters.push_back(rsl::make_unique<details::r_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::r_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('R'): // 24-hour HH:MM time
-          m_formatters.push_back(rsl::make_unique<details::R_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::R_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('T'):
         case('X'): // ISO 8601 time format (HH:MM:SS)
-          m_formatters.push_back(rsl::make_unique<details::T_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::T_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('z'): // timezone
-          m_formatters.push_back(rsl::make_unique<details::z_Formatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::z_Formatter<Padder>>(padding));
           m_need_localtime = true;
           break;
 
         case('P'): // pid
-          m_formatters.push_back(rsl::make_unique<details::ProcessIdentifierFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ProcessIdentifierFormatter<Padder>>(padding));
           break;
 
         case('^'): // color range start
-          m_formatters.push_back(rsl::make_unique<details::ColorStartFormatter>(padding));
+          m_formatters.push_back(make_unique_debug<details::ColorStartFormatter>(padding));
           break;
 
         case('$'): // color range end
-          m_formatters.push_back(rsl::make_unique<details::ColorStopFormatter>(padding));
+          m_formatters.push_back(make_unique_debug<details::ColorStopFormatter>(padding));
           break;
 
         case('@'): // source location (filename:filenumber)
-          m_formatters.push_back(rsl::make_unique<details::SourceLocationFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::SourceLocationFormatter<Padder>>(padding));
           break;
 
         case('s'): // short source filename - without directory name
-          m_formatters.push_back(rsl::make_unique<details::ShortFileNameFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ShortFileNameFormatter<Padder>>(padding));
           break;
 
         case('g'): // full source filename
-          m_formatters.push_back(rsl::make_unique<details::SourceFileNameFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::SourceFileNameFormatter<Padder>>(padding));
           break;
 
         case('#'): // source line number
-          m_formatters.push_back(rsl::make_unique<details::SourceLineNumberFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::SourceLineNumberFormatter<Padder>>(padding));
           break;
 
         case('!'): // source funcname
-          m_formatters.push_back(rsl::make_unique<details::SourceFunctionNameFormatter<Padder>>(padding));
+          m_formatters.push_back(make_unique_debug<details::SourceFunctionNameFormatter<Padder>>(padding));
           break;
 
         case('%'): // % char
-          m_formatters.push_back(rsl::make_unique<details::CharacterFormatter>('%'));
+          m_formatters.push_back(make_unique_debug<details::CharacterFormatter>('%'));
           break;
 
         case('u'): // elapsed time since last log message in nanos
-          m_formatters.push_back(rsl::make_unique<details::ElapsedFormatter<Padder, rsl::chrono::nanoseconds>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ElapsedFormatter<Padder, rsl::chrono::nanoseconds>>(padding));
           break;
 
         case('i'): // elapsed time since last log message in micros
-          m_formatters.push_back(rsl::make_unique<details::ElapsedFormatter<Padder, rsl::chrono::microseconds>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ElapsedFormatter<Padder, rsl::chrono::microseconds>>(padding));
           break;
 
         case('o'): // elapsed time since last log message in millis
-          m_formatters.push_back(rsl::make_unique<details::ElapsedFormatter<Padder, rsl::chrono::milliseconds>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ElapsedFormatter<Padder, rsl::chrono::milliseconds>>(padding));
           break;
 
         case('O'): // elapsed time since last log message in seconds
-          m_formatters.push_back(rsl::make_unique<details::ElapsedFormatter<Padder, rsl::chrono::seconds>>(padding));
+          m_formatters.push_back(make_unique_debug<details::ElapsedFormatter<Padder, rsl::chrono::seconds>>(padding));
           break;
 
         default: // Unknown flag appears as is
-          auto unknown_flag = rsl::make_unique<details::AggregateFormatter>();
+          auto unknown_flag = make_unique_debug<details::AggregateFormatter>();
 
           if(!padding.truncate)
           {
@@ -374,7 +374,7 @@ namespace rex
           else
           {
             padding.truncate = details::Truncate::no;
-            m_formatters.push_back(rsl::make_unique<details::SourceFunctionNameFormatter<Padder>>(padding));
+            m_formatters.push_back(make_unique_debug<details::SourceFunctionNameFormatter<Padder>>(padding));
             unknown_flag->add_ch(flag);
             m_formatters.push_back((rsl::move(unknown_flag)));
           }
@@ -387,7 +387,7 @@ namespace rex
     void PatternFormatter::compile_pattern_impl(rsl::string_view pattern)
     {
       auto end = pattern.end();
-      rsl::unique_ptr<details::AggregateFormatter> user_chars;
+      unique_debug_ptr<details::AggregateFormatter> user_chars;
       m_formatters.clear();
       for(auto it = pattern.begin(); it != end; ++it)
       {
@@ -421,7 +421,7 @@ namespace rex
         {
           if(!user_chars)
           {
-            user_chars = rsl::make_unique<details::AggregateFormatter>();
+            user_chars = make_unique_debug<details::AggregateFormatter>();
           }
           user_chars->add_ch(*it);
         }

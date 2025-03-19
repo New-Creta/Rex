@@ -13,7 +13,7 @@ namespace rex::test
   };
 }
 
-TEST_CASE("StateController Default Construction")
+TEST_CASE("TEST - StateController - Default Construction")
 {
   rex::StateController<rex::test::TestEnum> state_controller;
 
@@ -22,7 +22,7 @@ TEST_CASE("StateController Default Construction")
   REX_CHECK(state_controller.has_state(rex::test::TestEnum::ThirdBit) == false);
 }
 
-TEST_CASE("StateController Value Construction")
+TEST_CASE("TEST - StateController - Value Construction")
 {
   {
     rex::StateController<rex::test::TestEnum> state_controller(rex::test::TestEnum::FirstBit);
@@ -46,7 +46,7 @@ TEST_CASE("StateController Value Construction")
   }
 }
 
-TEST_CASE("StateController Changing State")
+TEST_CASE("TEST - StateController - Changing State")
 {
   rex::StateController<rex::test::TestEnum> state_controller;
 
@@ -66,7 +66,7 @@ TEST_CASE("StateController Changing State")
   REX_CHECK(state_controller.has_state(rex::test::TestEnum::ThirdBit) == true);
 }
 
-TEST_CASE("StateController Adding State")
+TEST_CASE("TEST - StateController - Adding State")
 {
   rex::StateController<rex::test::TestEnum> state_controller;
 
@@ -86,7 +86,7 @@ TEST_CASE("StateController Adding State")
   REX_CHECK(state_controller.has_state(rex::test::TestEnum::ThirdBit) == true);
 }
 
-TEST_CASE("StateController Removing State")
+TEST_CASE("TEST - StateController - Removing State")
 {
   rex::StateController<rex::test::TestEnum> state_controller(static_cast<rex::test::TestEnum>(0b00000111));
 
@@ -106,7 +106,7 @@ TEST_CASE("StateController Removing State")
   REX_CHECK(state_controller.has_state(rex::test::TestEnum::ThirdBit) == false);
 }
 
-TEST_CASE("StateController Integration Tests")
+TEST_CASE("TEST - StateController - Integration Tests")
 {
   rex::StateController<rex::test::TestEnum> state_controller;
 

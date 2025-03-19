@@ -11,6 +11,7 @@ public class RexEngine : EngineProject
     Name = "RexEngine";
     GenerateTargets();
 
+    // Add the root where all sources can be found under
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
 
@@ -20,6 +21,8 @@ public class RexEngine : EngineProject
     SourceFilesExcludeRegex.Add("unix/*");
     //// Only needs to happen on Linux
     //SourceFilesExcludeRegex.Add("win/*");
+
+    DataPath = Path.Combine(Globals.Root, "data", "rex");
   }
 
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
@@ -28,6 +31,13 @@ public class RexEngine : EngineProject
 
     conf.AddPublicDependency<RexStd>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
+    conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
+    conf.AddPublicDependency<Entt>(target, DependencySetting.Default);
+
+    if (conf.Platform == Platform.win32 || conf.Platform == Platform.win64)
+    {
+      conf.LibraryFiles.Add("Setupapi.lib");
+    }
   }
 
   protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)
@@ -117,6 +127,8 @@ public class RexEngine : EngineProject
   {
     base.SetupConfigSettings(conf, target);
 
+    conf.add_public_define("GLM_FORCE_SILENT_WARNINGS");
+    
     switch (ProjectGen.Settings.GraphicsAPI)
     {
       case ProjectGen.GraphicsAPI.OpenGL:

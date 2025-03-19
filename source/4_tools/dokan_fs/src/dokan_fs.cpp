@@ -575,6 +575,7 @@ NTSTATUS DOKAN_CALLBACK MirrorReadFile(LPCWSTR FileName, LPVOID Buffer, DWORD Bu
   }
   else
   {
+    REX_UNUSED_PARAM(offset);
     REX_INFO(LogDokan, "\tByte to read: {}, Byte read {}, offset {}", BufferLength, *ReadLength, offset);
   }
 
@@ -1769,7 +1770,7 @@ namespace rex
     app_params.engine_params.app_update_func   = dokan_fs::update;
     app_params.engine_params.app_shutdown_func = dokan_fs::shutdown;
 
-    app_params.create_window = false;
+    app_params.is_gui_app = false;
 
     return app_params;
   }

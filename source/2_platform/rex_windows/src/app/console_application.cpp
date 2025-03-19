@@ -53,7 +53,6 @@ namespace rex
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
           : m_app_creation_params(rsl::move(appCreationParams))
           , m_app_instance(appInstance)
-          , m_app_name(appCreationParams.gui_params.window_title)
       {
         g_this_app = m_app_instance;
 
@@ -71,11 +70,11 @@ namespace rex
         SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
         input::internal::set_global_input_handler(m_input);
 
-        event_system().subscribe<QuitApp>([this](const QuitApp& /*event*/) { m_app_instance->quit(); });
+        event_system().subscribe<QuitApp>([this](const QuitApp& event) { m_app_instance->quit(event.reason(), event.exit_code()); });
 
-        if (!m_app_name.empty())
+        if (!m_app_instance->app_name().empty())
         {
-          SetConsoleTitleA(m_app_name.data());
+          SetConsoleTitleA(m_app_instance->app_name().data());
         }
 
         return m_on_initialize(m_app_creation_params);
@@ -105,7 +104,6 @@ namespace rex
 
     private:
       CoreApplication* m_app_instance;
-      rsl::string m_app_name;
       ApplicationCreationParams m_app_creation_params;
 
       rsl::function<bool(const ApplicationCreationParams&)> m_on_initialize;

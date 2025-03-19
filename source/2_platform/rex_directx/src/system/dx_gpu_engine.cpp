@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/gfx/imgui/imgui_window.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/utility/dx_util.h"
@@ -22,7 +23,8 @@
 #include "rex_directx/system/dx_compute_engine.h"
 #include "rex_directx/system/dx_copy_engine.h"
 
-#include "rex_directx/imgui/dx_imgui_window.h"
+
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
 
 namespace rex
 {
@@ -30,11 +32,11 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogDxGpuEngine);
 
-    DxGpuEngine::DxGpuEngine(const OutputWindowUserData& userData, rsl::unique_ptr<DxDevice> device, dxgi::AdapterManager* adapterManager)
+    DxGpuEngine::DxGpuEngine(const OutputWindowUserData& userData, DxDevice* device, dxgi::AdapterManager* adapterManager)
       : GpuEngine(userData)
-      , m_device(rsl::move(device))
+      , m_device(device)
       , m_adapter_manager(adapterManager)
-      , m_heap(rhi::create_resource_heap())
+      , m_heap(dx_gal()->create_resource_heap())
       , m_shader_compiler()
     {
     }
@@ -43,6 +45,11 @@ namespace rex
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_buffer(rsl::memory_size size)
     {
       return m_heap->create_buffer(size);
+    }
+    // Allocate a 1D buffer on the gpu that allows for unordered access, returning a DirectX resource
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_unordered_access_buffer(rsl::memory_size size)
+    {
+      return m_heap->create_unordered_access_buffer(size);
     }
     // Allocate a 2D buffer on the gpu, returning a DirectX resource
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(s32 width, s32 height, TextureFormat format)
@@ -75,6 +82,11 @@ namespace rex
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::DepthStencil))->create_dsv(resource.Get());
     }
+    DxResourceView DxGpuEngine::create_uav(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
+    {
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::UnorderedAccess))->create_uav(resource.Get(), size);
+    }
+
     rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const SamplerDesc& desc)
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::Sampler))->create_sampler2d(desc);
@@ -89,15 +101,15 @@ namespace rex
     // Initialize the various sub engines
     rsl::unique_ptr<RenderEngine> DxGpuEngine::init_render_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxRenderEngine>(resourceStateTracker);
+      return rsl::make_unique<DxRenderEngine>(this, resourceStateTracker);
     }
     rsl::unique_ptr<CopyEngine> DxGpuEngine::init_copy_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxCopyEngine>(resourceStateTracker);
+      return rsl::make_unique<DxCopyEngine>(this, resourceStateTracker);
     }
     rsl::unique_ptr<ComputeEngine> DxGpuEngine::init_compute_engine(ResourceStateTracker* resourceStateTracker)
     {
-      return rsl::make_unique<DxComputeEngine>(resourceStateTracker);
+      return rsl::make_unique<DxComputeEngine>(this, resourceStateTracker);
     }
 
     // Initialize the resource heap which keeps track of all gpu resources
@@ -118,7 +130,7 @@ namespace rex
     // Allocate a new view heap of a given type
     rsl::unique_ptr<ViewHeap> DxGpuEngine::allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible)
     {
-      return rhi::create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
+      return dx_gal()->create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
     }
   }
 }

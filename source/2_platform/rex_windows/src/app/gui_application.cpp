@@ -9,10 +9,10 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_renderer_core/gfx/depth_info.h"
-#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/core/depth_info.h"
+#include "rex_engine/gfx/core/renderer_output_window_user_data.h"
+#include "rex_engine/gfx/system/gal.h"
+#include "rex_engine/gfx/graphics.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
@@ -32,11 +32,13 @@
 #include "rex_engine/event_system/events/app/quit_app.h"
 #include "rex_engine/settings/settings.h"
 
-#include "rex_renderer_core/imgui/imgui_renderer.h"
+#include "rex_engine/gfx/imgui/imgui_renderer.h"
 
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/tracked_allocator.h"
+
+#include "rex_directx/system/dx_gal.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -45,6 +47,8 @@ namespace rex
 {
   namespace win
   {
+    DEFINE_LOG_CATEGORY(LogGuiApplication);
+
     class GuiApplication::Internal
     {
     public:
@@ -73,6 +77,8 @@ namespace rex
           return result;
         }
 
+        REX_INFO(LogWindows, "Pre user entry systems initialized");
+
         // call client code so it can get initialized
         result = m_on_initialize(m_app_creation_params);
 
@@ -88,6 +94,8 @@ namespace rex
           REX_ERROR(LogWindows, "Post user initialization failed. exiting.");
           return result;
         }
+
+        REX_INFO(LogWindows, "All engine systems initialized");
 
         return result;
       }
@@ -244,7 +252,7 @@ namespace rex
         subscribe_window_events();
 
         output_debug_string("Memory usage before graphics initialization");
-        log_mem_usage();
+        debug_log_mem_usage();
 
         if(!init_gfx())
         {
@@ -253,7 +261,7 @@ namespace rex
         }
 
         output_debug_string("Memory usage after graphics initialization");
-        log_mem_usage();
+        debug_log_mem_usage();
 
         return true;
       }
@@ -262,9 +270,6 @@ namespace rex
         // When the renderer is initialized we can show the window
         m_window->show();
 
-        // Add the imgui renderer, which is our main UI renderer for the moment
-        gfx::add_renderer<gfx::ImGuiRenderer>(m_window->primary_display_handle());
-
         return true;
       }
       rsl::unique_ptr<Window> create_window()
@@ -272,7 +277,9 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowInfo window_info;
-        window_info.title    = m_app_creation_params.gui_params.window_title;
+        window_info.title    = m_app_creation_params.gui_params.window_title.empty() 
+          ? m_app_instance->app_name()
+          : m_app_creation_params.gui_params.window_title;
         window_info.viewport = {0, 0, m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height};
 
         if(wnd->create(m_app_creation_params.platform_params->instance, m_app_creation_params.platform_params->show_cmd, window_info))
@@ -285,12 +292,12 @@ namespace rex
       }
       void subscribe_window_events()
       {
-        event_system().subscribe<WindowClose>([this](const WindowClose& /*evt*/) { event_system().enqueue_event(QuitApp()); });
+        event_system().subscribe<WindowClose>([this](const WindowClose& /*evt*/) { event_system().enqueue_event(QuitApp("Window closed")); });
         event_system().subscribe<WindowActivated>( [this](const WindowActivated& /*evt*/) { m_app_instance->resume(); });
         event_system().subscribe<WindowDeactivated>( [this](const WindowDeactivated& /*evt*/) { m_app_instance->pause(); });
         event_system().subscribe<WindowStartResize>( [this](const WindowStartResize& /*evt*/) { on_start_resize(); });
         event_system().subscribe<WindowEndResize>( [this](const WindowEndResize& /*evt*/) { on_stop_resize(); });
-        event_system().subscribe<QuitApp>( [this](const QuitApp& /*evt*/) { m_app_instance->quit(); });
+        event_system().subscribe<QuitApp>( [this](const QuitApp& evt) { m_app_instance->quit(evt.reason(), evt.exit_code()); });
         event_system().subscribe<WindowResize>( [this](const WindowResize& evt) 
           { 
             switch (evt.resize_type())
@@ -323,9 +330,14 @@ namespace rex
         user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::get_int("max_frames_in_flight", 3);
 
-        gfx::init(user_data);
+#ifdef REX_USING_DIRECTX
+        gfx::init(rsl::make_unique<gfx::DirectXInterface>(), user_data);
+#else
+#error "No Graphics API defined"
+#endif
 
-        REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
+        // Add the imgui renderer, which is our main UI renderer for the moment
+        gfx::add_renderer<gfx::ImGuiRenderer>(m_window->primary_display_handle());
 
         return true;
       }

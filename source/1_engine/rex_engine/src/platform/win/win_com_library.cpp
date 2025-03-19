@@ -45,7 +45,7 @@ namespace rex
           }
 
           // Read a symbolic link's path and return the path it actually points to
-          rsl::string read_link(rsl::string_view filepath) // NOLINT(readability-convert-member-functions-to-static)
+          TempString read_link(rsl::string_view filepath) // NOLINT(readability-convert-member-functions-to-static)
           {
             IShellLinkW* psl = nullptr;
             HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -73,7 +73,7 @@ namespace rex
               psl->Release();
             }
 
-            return rsl::string(res);
+            return TempString(res);
           }
 
           // Increase the amount of reference the com lib has on this thread
@@ -137,7 +137,7 @@ namespace rex
       }
 
       // Read a symbolic link's path and return the path it actually points to
-      rsl::string read_link(rsl::string_view filepath)
+      TempString read_link(rsl::string_view filepath)
       {
         return internal::com_library().read_link(filepath);
       }

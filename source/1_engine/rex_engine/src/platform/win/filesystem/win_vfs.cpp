@@ -36,36 +36,7 @@ namespace rex
 {
   namespace vfs
   {
-    memory::Blob read_file(rsl::string_view filepath)
-    {
-      const rsl::string fullpath = abs_path(filepath);
-      return rex::file::read_file(fullpath);
-    }
 
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
-    {
-      const rsl::string fullpath = abs_path(filepath);
-      if (shouldAppend)
-      {
-        return rex::file::append_text(fullpath, rsl::string_view((const char8*)data, narrow_cast<s32>(size)));
-      }
-      else
-      {
-        return rex::file::save_to_file(fullpath, data, size);
-      }
-    }
-
-    Error create_dir(rsl::string_view path)
-    {
-      const rsl::string fullpath = abs_path(path);
-      return directory::create(fullpath);
-    }
-
-    Error create_dirs(rsl::string_view path)
-    {
-      const rsl::string fullpath = abs_path(path);
-      return directory::create_recursive(fullpath);
-    }
 
   } // namespace vfs
 } // namespace rex

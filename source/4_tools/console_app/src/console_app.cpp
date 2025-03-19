@@ -47,12 +47,12 @@ namespace console_app_example
     (void)p.release();
   }
 
-  void display_mem_usage_stats(const rex::MemoryUsageStats& stats)
+  void display_mem_usage_stats(const rex::MemoryAllocationStats& stats)
   {
-    for(count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    for(count_t i = 0; i < stats.tracking_stats.usage_per_tag.size(); ++i)
     {
       const rex::MemoryTag tag = static_cast<rex::MemoryTag>(i);
-      REX_INFO(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
+      REX_INFO(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.tracking_stats.usage_per_tag[i]);
     }
 
     REX_INFO(LogConsoleApp, "----------------------------");
@@ -88,7 +88,7 @@ namespace console_app_example
 
     if(rex::input::is_key_pressed('Q'))
     {
-      rex::event_system().enqueue_event(rex::QuitApp());
+      rex::event_system().enqueue_event(rex::QuitApp("Q pressed"));
     }
   }
   void shutdown() {}

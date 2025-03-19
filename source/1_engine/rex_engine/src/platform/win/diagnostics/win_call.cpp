@@ -11,15 +11,16 @@ rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl:
     : m_error(GetLastError())
     , m_error_success(errorSuccess.get())
 {
+  // GetLastError() is not always cleared when a function succeeds
+  // So we just clear it ourselves
+  // We do this here so that the logging itself won't complain about there still be an error in the pool
+  clear_win_errors();
+
   if(has_failed())
   {
     const HRESULT hr = HRESULT_FROM_WIN32(m_error);
     m_error_message  = report_win_error(hr, winFunc, file, function, lineNr);
   }
-
-  // GetLastError() is not always cleared when a function succeeds
-  // So we just clear it ourselves
-  clear_win_errors();
 }
 
 rex::win::WinCall::WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)

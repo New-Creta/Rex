@@ -16,7 +16,7 @@ namespace rex
       {
         // To maximize core usage, we query the amount of local processors
         // and create a thread for each one of them.
-        const s32 num_threads_to_spawn = rex::sys_info::number_logical_processors();
+        const s32 num_threads_to_spawn = rex::sys_info::num_logical_processors();
         m_threads.reserve(num_threads_to_spawn);
         m_idle_threads.reserve(num_threads_to_spawn);
 

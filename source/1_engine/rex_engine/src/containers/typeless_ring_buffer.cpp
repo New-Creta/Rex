@@ -29,10 +29,15 @@ namespace rex
 
     // the src is simply the input
     // the dst is wherever we currently are in the buffer for writing
-    const rsl::byte* src = static_cast<const rsl::byte*>(data);
-    rsl::byte* dst = m_data.get() + m_put_pos;
-    rsl::memcpy(dst, src, size_to_copy);
-    m_put_pos += size_to_copy;
+		rsl::byte* dst = m_data.get() + m_put_pos;
+		const rsl::byte* src = static_cast<const rsl::byte*>(data);
+
+    // If we can still put data into the buffer without wrapping, let's do so
+    if (size_to_copy > 0)
+    {
+      rsl::memcpy(dst, src, size_to_copy);
+      m_put_pos += size_to_copy;
+    }
 
     // If we still have bytes to write, wrap around and write the remaining bytes
     s32 remaining_size = static_cast<s32>(size.size_in_bytes() - size_to_copy);
@@ -55,10 +60,8 @@ namespace rex
     // Read in the data
     peek(data, size);
 
-    // update how many bytes we have available for reading
-    m_num_reads_available -= static_cast<s32>(size);
-
     // update the get pos to the right position
+    // also update the num reads that are available
     skip(static_cast<s32>(size));
   }
   // Read x amount of bytes from the buffer, without increasing the read offset
@@ -74,11 +77,14 @@ namespace rex
     // the dst is simply the data argument passed in
     const rsl::byte* src = m_data.get() + m_get_pos;
     rsl::byte* dst = static_cast<rsl::byte*>(data);
-    rsl::memcpy(dst, src, size_to_copy);
-    s32 remaining_size = static_cast<s32>(size.size_in_bytes() - size_to_copy);
+    if (size_to_copy > 0)
+    {
+      rsl::memcpy(dst, src, size_to_copy);
+    }
 
     // If there's still data we need to read, wrap around
     // and read it from the beginning of the buffer
+		s32 remaining_size = static_cast<s32>(size.size_in_bytes() - size_to_copy);
     if (remaining_size > 0)
     {
       // If we wrap around, we reset our source to the beginning of our buffer
@@ -99,12 +105,29 @@ namespace rex
   // increments the read offset by the given amount
   void TypelessRingBuffer::skip(s32 offset)
   {
-    REX_ASSERT_X(offset >= 0, "Invalid offset given to typeless ring buffer");
+    REX_ASSERT_X(offset >= 0, "Negative offset given to typeless ring buffer for skipping, this is not allowed");
+    REX_ASSERT_X(offset <= m_num_reads_available, "Offset given for skipping in ring buffer is bigger than the number of reads available, this is not allowed");
 
     m_get_pos += offset;
-    if (m_get_pos > m_data.count())
+    m_num_reads_available -= offset;
+    if (m_get_pos >= m_data.count())
     {
       m_get_pos -= m_data.count();
     }
+  }
+  // returns the number of items in the buffer
+  s32 TypelessRingBuffer::count() const
+  {
+    return m_num_reads_available;
+  }
+  // returns the max number of items the buffer can hold
+  s32 TypelessRingBuffer::max_count() const
+  {
+    return m_data.count();
+  }
+  // returns the byte size of the buffer
+  s32 TypelessRingBuffer::size() const
+  {
+    return m_data.byte_size();
   }
 }

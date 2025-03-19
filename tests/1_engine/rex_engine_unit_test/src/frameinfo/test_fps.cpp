@@ -3,14 +3,14 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_std/thread.h"
 
-TEST_CASE("Fps Updating")
+TEST_CASE("TEST - Fps - Updating")
 {
   rex::FPS fps{};
 
-  fps.update();
+  //fps.update();
 
   using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(1s);
+  //rsl::this_thread::sleep_for(1s);
 
   // A few consequetive updates to increase fps
   fps.update();

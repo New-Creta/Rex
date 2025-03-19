@@ -12,22 +12,12 @@ namespace rex
     DEFINE_LOG_CATEGORY(LogDebugInterface);
 
 #ifdef REX_ENABLE_GFX_DEBUGGING
-    constexpr bool g_enable_dx12_severity_message     = false;
-    constexpr bool g_enable_dx12_severity_info        = false;
-    constexpr bool g_enable_dx12_severity_warning     = false;
-    constexpr bool g_enable_dx12_severity_error       = true;
-    constexpr bool g_enable_dx12_severity_corruption  = true;
     constexpr bool g_enable_dxgi_severity_message     = false;
     constexpr bool g_enable_dxgi_severity_info        = false;
     constexpr bool g_enable_dxgi_severity_warning     = false;
     constexpr bool g_enable_dxgi_severity_error       = true;
     constexpr bool g_enable_dxgi_severity_corruption  = true;
 #else
-    constexpr bool g_enable_dx12_severity_message     = false;
-    constexpr bool g_enable_dx12_severity_info        = false;
-    constexpr bool g_enable_dx12_severity_warning     = false;
-    constexpr bool g_enable_dx12_severity_error       = false;
-    constexpr bool g_enable_dx12_severity_corruption  = false;
     constexpr bool g_enable_dxgi_severity_message     = false;
     constexpr bool g_enable_dxgi_severity_info        = false;
     constexpr bool g_enable_dxgi_severity_warning     = false;

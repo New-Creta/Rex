@@ -691,7 +691,7 @@ namespace proj_fs
     GUID instance_id;
     CoCreateGuid(&instance_id);
 
-    if (!rex::vfs::save_to_file("virt_root.txt", &instance_id, sizeof(instance_id), rex::vfs::AppendToFile::no))
+    if (!rex::vfs::write_to_file("virt_root.txt", &instance_id, sizeof(instance_id), rex::vfs::AppendToFile::no))
     {
       return false;
     }
@@ -744,51 +744,88 @@ namespace proj_fs
 
   void RegistryFilesystem::notify_file_opened(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - OPENED - \t\t\t\t{}", app, path);
   }
   void RegistryFilesystem::notify_file_created(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - CLOSED - \t\t{}", app, path);
   }
   void RegistryFilesystem::notify_file_overwritten(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - MODIFIED - \t\t{}", app, path);
   }
   void RegistryFilesystem::notify_pre_delete(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - TRIES TO DELETE - \t\t{}", app, path);
   }
   void RegistryFilesystem::notify_pre_rename(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(oldPath);
+    REX_UNUSED_PARAM(newPath);
+
     REX_INFO(LogProjFs, "{} - TRIES TO RENAME - \t\t{} to {}", app, oldPath, newPath);
   }
   void RegistryFilesystem::notify_pre_set_hardlink(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
+    REX_UNUSED_PARAM(newHardlink);
+    REX_UNUSED_PARAM(hardLinkTarget);
+
     REX_INFO(LogProjFs, "TRYING TO HARDLINK FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
   void RegistryFilesystem::notify_renamed(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(oldPath);
+    REX_UNUSED_PARAM(newPath);
+
     REX_INFO(LogProjFs, "{} - RENAMED - \t\t{} TO {}", app, oldPath, newPath);
   }
   void RegistryFilesystem::notify_hardlink_created(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
+    REX_UNUSED_PARAM(newHardlink);
+    REX_UNUSED_PARAM(hardLinkTarget);
+
     REX_INFO(LogProjFs, "HARDLINK CREATED FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
   void RegistryFilesystem::notify_closed_no_modification(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - CLOSED NO MODIFICATION - \t\t{}", app, path);
 
   }
   void RegistryFilesystem::notify_closed_with_modification(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - CLOSED WITH MODIFICATION - \t\t{}", app, path);
   }
   void RegistryFilesystem::notify_closed_with_deletion(rsl::string_view app, rsl::string_view path)
   {
+    REX_UNUSED_PARAM(app);
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "{} - CLOSED WITH DELETION - \t\t{}", app, path);
   }
   void RegistryFilesystem::notify_pre_hydration(rsl::string_view path)
   {
+    REX_UNUSED_PARAM(path);
+
     REX_INFO(LogProjFs, "HYDRATED {}", path);
   }
 }

@@ -5,5 +5,12 @@
       "\"ExampleArgument2\", \"Example argument, not used for anything other than testing if it works.\"",
       "\"ExampleArgumentWithEqual\", \"Example argument with equal sign. not used for anything other than testing if it works\""
     ]
+  },
+  "MountingPoints": {
+    "Content": [
+      "TestPath1",
+      "TestPath2",
+      "TestPath3"
+    ]
   }
 }

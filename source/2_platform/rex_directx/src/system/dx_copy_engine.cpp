@@ -1,5 +1,7 @@
 #include "rex_directx/system/dx_copy_engine.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   namespace gfx
@@ -25,14 +27,14 @@ namespace rex
     // Copy Engine
     // -------------------------------------
 
-    DxCopyEngine::DxCopyEngine(ResourceStateTracker* globalResourceStateTracker)
-      : gfx::CopyEngine(globalResourceStateTracker)
+    DxCopyEngine::DxCopyEngine(GpuEngine* gpuEngine, ResourceStateTracker* globalResourceStateTracker)
+      : gfx::CopyEngine(gpuEngine, globalResourceStateTracker)
     {}
 
     // Initialize all the resources required for the compute engine
     void DxCopyEngine::init()
     {
-      m_upload_buffer = rhi::create_upload_buffer(5_mib);
+      m_upload_buffer = dx_gal()->create_upload_buffer(5_mib);
     }
 
     // Prepare a new frame
@@ -63,7 +65,7 @@ namespace rex
     // Allocate a copy context
     rsl::unique_ptr<GraphicsContext> DxCopyEngine::allocate_new_context(CommandAllocator* alloc)
     {
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, GraphicsEngineType::Copy);
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = dx_gal()->create_commandlist(alloc, GraphicsEngineType::Copy);
       cmdlist->Close();
       return rsl::make_unique<DxCopyContext>(this, cmdlist);
     }

@@ -13,38 +13,11 @@
 #include <cstdlib>
 #include <wrl/client.h>
 
+#include "rex_engine/system/video_driver.h"
+
 namespace
 {
   const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
-
-  //-------------------------------------------------------------------------
-  /**
-   * The VendorId is a unique identifier assigned by the PCI-SIG (Peripheral Component Interconnect Special Interest Group)
-   * to identify the manufacturer of a PCI device, including graphics adapters.
-   * The VendorId is a 16-bit unsigned integer that is typically included in
-   * the PCI Configuration space of the device.
-   */
-  enum class Vendor
-  {
-    UNKNOWN = 0,
-    AMD = 0x1002,
-    NVIDIA = 0x10DE,
-    INTEL = 0x163C
-  };
-
-  //-------------------------------------------------------------------------
-  rsl::small_stack_string vendor_to_string(s32 vendor)
-  {
-    // Enum reflection is not possible here as the integer values are
-    // outside the valid range of values [0, 127] for this enumeration type
-    switch (static_cast<Vendor>(vendor))
-    {
-    case Vendor::AMD: return rsl::small_stack_string("AMD");
-    case Vendor::NVIDIA: return rsl::small_stack_string("NVIDIA");
-    case Vendor::INTEL: return rsl::small_stack_string("INTEL");
-    default: return rsl::small_stack_string("Unknown Vendor");
-    }
-  }
 
   //-------------------------------------------------------------------------
   template <typename DXGIAdapterDesc>
@@ -53,7 +26,7 @@ namespace
     rex::GpuDescription desc;
 
     desc.name = rsl::small_stack_string(rex::to_multibyte(dxgiDesc.Description, desc.name.max_size()));
-    desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
+    desc.vendor_name = rex::vendor_to_string(dxgiDesc.VendorId);
 
     desc.vendor_id = dxgiDesc.VendorId;
     desc.device_id = dxgiDesc.DeviceId;

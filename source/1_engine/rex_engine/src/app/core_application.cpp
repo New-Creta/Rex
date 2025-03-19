@@ -13,7 +13,10 @@
 #include "rex_std/bonus/utility.h"
 
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/profiling/instrumentor.h"
+#include "rex_engine/profiling/scoped_timer.h"
+#include "rex_engine/cmdline/cmdline.h"
+
+#include "rex_engine/engine/mutable_globals.h"
 
 #include <cstdlib>
 
@@ -21,24 +24,20 @@ namespace rex
 {
   DEFINE_LOG_CATEGORY(LogCoreApp);
 
-  namespace globals
-  {
-    FrameInfo g_frame_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-
-    //-------------------------------------------------------------------------
-    const FrameInfo& frame_info()
-    {
-      return g_frame_info;
-    }
-  } // namespace globals
-
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& /*engineParams*/)
-      : m_app_state(ApplicationState::Created)
+  CoreApplication::CoreApplication(const EngineParams& engineParams)
+		: m_app_state(ApplicationState::Created)
+    , m_app_name(engineParams.app_name)
+    , m_exit_code(0)
   {
   }
   //-------------------------------------------------------------------------
-  CoreApplication::~CoreApplication() = default;
+  CoreApplication::~CoreApplication()
+  {
+    vfs::shutdown();
+
+    cmdline::shutdown();
+  }
 
   //--------------------------------------------------------------------------------------------
   s32 CoreApplication::run()
@@ -48,7 +47,7 @@ namespace rex
 
     // Log memory usage before initialization has started
     output_debug_string("Memory usage before initialization");
-    log_mem_usage();
+    debug_log_mem_usage();
 
     // this calls our internal init code, to initialize the gui application
     // afterwards it calls into client code and initializes the code there
@@ -61,7 +60,7 @@ namespace rex
 
     // Log memory usage after initialization has finished
     output_debug_string("Memory usage after initialization");
-    log_mem_usage();
+    debug_log_mem_usage();
 
     // calls into gui application update code
     // then calls into the client update code provided by the EngineParams before
@@ -69,7 +68,7 @@ namespace rex
 
     // shutdown is automatically called from the scopeguard
 
-    return EXIT_SUCCESS;
+    return m_exit_code;
   }
 
   //-------------------------------------------------------------------------
@@ -85,9 +84,19 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::quit()
+  void CoreApplication::quit(rsl::string_view reason, s32 exitCode)
   {
-    mark_for_destroy();
+    REX_UNUSED_PARAM(reason);
+
+    REX_INFO(LogCoreApp, "Quitting app. Reason: {}", reason);
+
+    mark_for_destroy(exitCode);
+  }
+
+  //-------------------------------------------------------------------------
+  bool CoreApplication::is_initializing() const
+  {
+    return m_app_state.has_state(ApplicationState::Initializing);
   }
 
   //-------------------------------------------------------------------------
@@ -109,9 +118,22 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
+  bool CoreApplication::is_shutting_down() const
+  {
+    return m_app_state.has_state(ApplicationState::ShuttingDown);
+  }
+  //--------------------------------------------------------------------------------------------
+  rsl::string_view CoreApplication::app_name() const
+  {
+    return m_app_name;
+  }
+
+  //--------------------------------------------------------------------------------------------
   bool CoreApplication::initialize()
   {
     m_app_state.change_state(ApplicationState::Initializing);
+
+    init_globals();
 
     // Loads the mounts of the engine
     // this will make it easier to access files under these paths
@@ -124,7 +146,9 @@ namespace rex
     // - vfs needs to be initialized
     load_settings();
 
-    globals::g_frame_info.update();
+    rex::mut_globals().frame_info.update();
+
+    REX_INFO(LogCoreApp, "core engine systems initialized");
     const bool res = platform_init();
 
     // Some settings get overriden in the editor and the project
@@ -140,9 +164,11 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::update()
   {
-    globals::g_frame_info.update();
+    rex::mut_globals().frame_info.update();
+    rex::mut_globals().single_frame_allocator->adv_frame();
 
-    REX_INFO(LogCoreApp, "DT: {}", globals::g_frame_info.delta_time().to_milliseconds());
+    REX_INFO(LogCoreApp, "FPS: {}", rex::globals().frame_info.fps().get());
+    REX_INFO(LogCoreApp, "Delta time: {}", rex::globals().frame_info.delta_time().to_seconds());
 
     platform_update();
   }
@@ -151,12 +177,14 @@ namespace rex
   {
     platform_shutdown();
 
-    // nothing to implement
+    end_profiling_session();
   }
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::mark_for_destroy()
+  void CoreApplication::mark_for_destroy(s32 exitCode)
   {
+    m_app_state.remove_state(ApplicationState::Paused); // It's possible the application is currently paused, in which case, remove that flag
     m_app_state.add_state(ApplicationState::MarkedForDestroy);
+    m_exit_code = exitCode;
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::loop()
@@ -200,6 +228,13 @@ namespace rex
     {
       settings::load(file);
     }
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::init_globals()
+  {
+    s32 mem_size = static_cast<s32>(settings::get_int("SingleFrameAllocatorSize", static_cast<s32>(1_mib)));
+    mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(mem_size, 1);
   }
 
 } // namespace rex

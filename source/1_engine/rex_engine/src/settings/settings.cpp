@@ -3,7 +3,8 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/text_processing/ini_processor.h"
+#include "rex_engine/filesystem/path.h"
+#include "rex_engine/text_processing/ini.h"
 #include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/unordered_map.h"
@@ -12,7 +13,7 @@ namespace rex
 {
   namespace settings
   {
-    DEFINE_LOG_CATEGORY(Settings);
+    DEFINE_LOG_CATEGORY(LogSettings);
 
     namespace internal
     {
@@ -49,11 +50,12 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_setting(rsl::string_view name)
       {
-        rsl::string name_lower(name.length(), '\0');
+        TempString name_lower(name.length(), '\0');
         rsl::to_lower(name.data(), name_lower.data(), name.length());
-        if (all_settings().contains(name_lower))
+        rsl::string_view name_lower_view = name_lower;
+        if (all_settings().contains(name_lower_view))
         {
-          return all_settings().at(name_lower);
+          return all_settings().at(name_lower_view);
         }
         return rsl::nullopt;
       }
@@ -91,22 +93,40 @@ namespace rex
 
       return defaultVal;
     }
+    bool get_bool(rsl::string_view name, bool defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stob(get_string(name)).value_or(defaultVal);
+      }
+
+      return defaultVal;
+    }
 
     // set s asetting in the global map
     void set(rsl::string_view name, rsl::string_view val)
     {
-      internal::all_settings()[name].assign(val);
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(val);
     }
 
     // Set a setting from an int. This supports adding new settings
     void set(rsl::string_view name, s32 val)
     {
-      internal::all_settings()[name].assign(rsl::to_string(val));
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(rsl::to_string(val));
     }
     // Set a setting from a float. This supports adding new settings
     void set(rsl::string_view name, f32 val)
     {
-      internal::all_settings()[name].assign(rsl::to_string(val));
+      rsl::string name_lower(name);
+      rsl::to_lower(name_lower.cbegin(), name_lower.begin(), name_lower.size());
+
+      internal::all_settings()[name_lower].assign(rsl::to_string(val));
     }
 
     // Load a settings file and adds it settings to the settings
@@ -117,24 +137,27 @@ namespace rex
       // of course if the path doesn't exist, we exit early
       if(!file::exists(path))
       {
+        REX_ERROR(LogSettings, "Cannot load settings, file doesn't exist. File: {}", path);
         return;
       }
 
-      // Settings are just plain ini files
+      // LogSettings are just plain ini files
       // so we can use the ini processor here
-      memory::Blob settings_data = vfs::read_file(path);
-      IniProcessor ini_processor(settings_data);
-      Error error                = ini_processor.process();
-
-      REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
-      REX_ERROR_X(Settings, !error, "Error: {}", error.error_msg());
+      rex::ini::Ini ini_content = rex::ini::read_from_file(path);
+      if (ini_content.is_discarded())
+      {
+        REX_ERROR(LogSettings, "Cannot read settings file {}", rex::path::abs_path(path));
+        REX_ERROR(LogSettings, ini_content.parse_error().error_msg());
+      }
 
       // Loop over the processed settings and add them to the global map
-      for(const rsl::key_value<const rsl::string_view, IniHeaderWithItems>& header_with_items : ini_processor.all_items())
+      rsl::vector<ini::IniBlock> blocks = ini_content.all_blocks();
+
+      for(const ini::IniBlock& block : ini_content.all_blocks())
       {
-        for(const rsl::key_value<const rsl::string_view, rsl::string_view>& item : header_with_items.value.all_items())
+        for (const auto[key, value] : block.all_items())
         {
-          internal::add_new_settings(header_with_items.value.header(), item.key, item.value);
+          internal::add_new_settings(block.header(), key, value);
         }
       }
     }

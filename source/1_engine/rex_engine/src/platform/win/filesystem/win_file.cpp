@@ -43,11 +43,12 @@ namespace rex
     // Read from a file
     memory::Blob read_file(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if (!exists(full_path))
       {
         REX_ERROR(LogFile, "Failed to read file as it doesn't exist: {}", quoted(full_path));
+        return {};
       }
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),               // Path to file
@@ -70,7 +71,7 @@ namespace rex
       const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
       if (file_size == 0)
       {
-        return memory::Blob();
+        return {};
       }
 
       rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size); // NOLINT(modernize-aError-c-arrays)
@@ -83,9 +84,9 @@ namespace rex
       return memory::Blob(rsl::move(buffer));
     }
     // Save content to a file
-    Error save_to_file(rsl::string_view filepath, const void* data, card64 size)
+    Error write_to_file(rsl::string_view filepath, const void* data, card64 size)
     {
-      const rsl::string fullpath = path::abs_path(filepath);
+      const rsl::string_view fullpath = path::abs_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(fullpath.data(),           // Path to file
         GENERIC_WRITE,             // General read and write access
@@ -115,14 +116,14 @@ namespace rex
     }
     Error append_line(rsl::string_view path, rsl::string_view line)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if (is_readonly(full_path))
       {
         return Error::create_with_log(LogFile, "File \"\" is read only. Cannot append lines", full_path);
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),             // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),             // Path to file
         GENERIC_READ | GENERIC_WRITE,  // General read and write access
         FILE_SHARE_READ,               // Other processes can also read the file
         NULL,                          // No SECURITY_ATTRIBUTES
@@ -150,14 +151,14 @@ namespace rex
     // Append lines to a file
     Error append_lines(rsl::string_view path, const rsl::vector<rsl::string>& lines)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
         return Error::create_with_log(LogFile, "File \"\" is read only. Cannot append lines", full_path);
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),             // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),             // Path to file
                                                                 GENERIC_READ | GENERIC_WRITE,  // General read and write access
                                                                 FILE_SHARE_READ,               // Other processes can also read the file
                                                                 NULL,                          // No SECURITY_ATTRIBUTES
@@ -186,14 +187,14 @@ namespace rex
     // Append text to a file
     Error append_text(rsl::string_view path, rsl::string_view txt)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
         return Error::create_with_log(LogFile, "File \"{}\" is read only. Cannot append lines", full_path);
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),            // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),            // Path to file
                                                                 GENERIC_READ | GENERIC_WRITE, // General read and write access
                                                                 FILE_SHARE_READ,              // Other processes can also read the file
                                                                 NULL,                         // No SECURITY_ATTRIBUTES
@@ -217,14 +218,14 @@ namespace rex
     // Trunc a file, removing all content
     Error trunc(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
         return Error::create_with_log(LogFile, "File \"{}\" is read only. Cannot append lines", full_path);
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),              // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),              // Path to file
                                                                 GENERIC_READ | GENERIC_WRITE,   // General read and write access
                                                                 FILE_SHARE_READ,                // Other processes can also read the file
                                                                 NULL,                           // No SECURITY_ATTRIBUTES
@@ -256,9 +257,9 @@ namespace rex
         return Error::create_with_log(LogFile, "Cannot copy to a file that already exists if overwriting is disabled");
       }
 
-      const rsl::string full_src = path::abs_path(src);
-      const rsl::string full_dst = path::abs_path(dst);
-      const bool success = WIN_SUCCESS(CopyFileA(full_src.c_str(), full_dst.c_str(), !overwriteIfExist)); // NOLINT(readability-implicit-bool-conversion)
+      const rsl::string_view full_src = path::abs_path(src);
+      const rsl::string_view full_dst = path::abs_path(dst);
+      const bool success = WIN_SUCCESS(CopyFileA(full_src.data(), full_dst.data(), !overwriteIfExist)); // NOLINT(readability-implicit-bool-conversion)
       return success
         ? Error::no_error()
         : Error::create_with_log(LogFile, "cannot copy \"{}\" to \"{}\"", full_src, full_dst);
@@ -271,15 +272,15 @@ namespace rex
         return Error::create_with_log(LogFile, "Cannot move a file to itself");
       }
 
-      const rsl::string full_src = path::abs_path(src);
-      const rsl::string full_dst = path::abs_path(dst);
+      const rsl::string_view full_src = path::abs_path(src);
+      const rsl::string_view full_dst = path::abs_path(dst);
 
       if(file::exists(full_dst))
       {
         return Error::create_with_log(LogFile, "Cannot move to \"{}\", file already exists", dst);
       }
 
-      const bool success = WIN_SUCCESS(MoveFileA(full_src.c_str(), full_dst.c_str()));
+      const bool success = WIN_SUCCESS(MoveFileA(full_src.data(), full_dst.data()));
 
       return success
         ? Error::no_error()
@@ -288,14 +289,14 @@ namespace rex
     // Create a new empty file
     Error create(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if(file::exists(full_path))
       {
         return Error::create_with_log(LogFile, "cannot create file at \"{}\" as it already exists", full_path);
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),         // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),         // Path to file
                                                                 GENERIC_WRITE,             // General read and write access
                                                                 FILE_SHARE_READ,           // Other processes can also read the file
                                                                 NULL,                      // No SECURITY_ATTRIBUTES
@@ -312,14 +313,14 @@ namespace rex
     // Delete a file
     Error del(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       if(!file::exists(full_path))
       {
         return Error::create_with_log(LogFile, "cannot delete file at \"{}\" as it doesn't exist", full_path);
       }
 
-      const bool success = WIN_SUCCESS(DeleteFileA(full_path.c_str()));
+      const bool success = WIN_SUCCESS(DeleteFileA(full_path.data()));
       return success
         ? Error::no_error()
         : Error::create_with_log(LogFile, "Failed to delete file at \"{}\"", full_path);
@@ -327,7 +328,7 @@ namespace rex
     // return the file size
     card64 size(rsl::string_view path)
     {
-      const rsl::string full_path       = path::abs_path(path);
+      const rsl::string_view full_path       = path::abs_path(path);
       const rsl::win::handle file = internal::open_file_for_attribs(full_path);
 
       // When we have an invalid handle, we simply return the input
@@ -343,12 +344,12 @@ namespace rex
     // Check if a file exists
     bool exists(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
 
       // It's possible the error returned here is ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND
       // because we can't ignore both, we just call it without wrapping it in WIN_CALL
       // and manually reset the windows error if an error has occurred
-      const DWORD attribs   = GetFileAttributesA(full_path.c_str());
+      const DWORD attribs   = GetFileAttributesA(full_path.data());
 
       if(attribs == INVALID_FILE_ATTRIBUTES)
       {
@@ -366,42 +367,42 @@ namespace rex
     // Check if a file is marked read only
     bool is_readonly(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return false;
       }
 
-      const DWORD attribs = GetFileAttributesA(full_path.c_str());
+      const DWORD attribs = GetFileAttributesA(full_path.data());
       return attribs & FILE_ATTRIBUTE_READONLY; // NOLINT(readability-implicit-bool-conversion)
     }
     // Set a file to be readonly
     Error set_readonly(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return Error::create_with_log(LogFile, "Can't set readonly attribute for \"{}\" as the file doesn't exist", full_path);
       }
 
-      DWORD attribs = GetFileAttributesA(full_path.c_str());
+      DWORD attribs = GetFileAttributesA(full_path.data());
       attribs |= FILE_ATTRIBUTE_READONLY;
-      SetFileAttributesA(full_path.c_str(), attribs);
+      SetFileAttributesA(full_path.data(), attribs);
 
       return Error::no_error();
     }
     // Remove the readonly flag of a file
     Error remove_readonly(rsl::string_view path)
     {
-      const rsl::string full_path = path::abs_path(path);
+      const rsl::string_view full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return Error::create_with_log(LogFile, "Can't remove readonly attribute for \"{}\" as the file doesn't exist", full_path);
       }
 
-      DWORD attribs = GetFileAttributesA(full_path.c_str());
+      DWORD attribs = GetFileAttributesA(full_path.data());
       attribs &= ~FILE_ATTRIBUTE_READONLY; // NOLINT(hicpp-signed-bitwise)
-      SetFileAttributesA(full_path.c_str(), attribs);
+      SetFileAttributesA(full_path.data(), attribs);
 
       return Error::no_error();
     }

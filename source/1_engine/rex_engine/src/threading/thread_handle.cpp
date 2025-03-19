@@ -34,6 +34,11 @@ namespace rex
       m_thread->run(rsl::move(func), arg);
     }
 
+    const internal::Thread* ThreadHandle::thread() const
+    {
+      return m_thread;
+    }
+
     void ThreadHandle::return_me_to_thread_pool()
     {
       if(m_thread)

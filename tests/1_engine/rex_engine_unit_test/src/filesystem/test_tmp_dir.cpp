@@ -5,9 +5,9 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 
-TEST_CASE("Empty Temp Dir")
+TEST_CASE("TEST - Temp Dir - Empty Temp Dir")
 {
-  rsl::string dirname;
+  rex::TempString dirname;
   {
     rex::TempDirectory tmp_dir{};
     dirname.assign(tmp_dir.dirname());
@@ -16,7 +16,7 @@ TEST_CASE("Empty Temp Dir")
   }
   REX_CHECK(rex::directory::exists(dirname) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
   {
     rex::TempDirectory tmp_dir(test_directory);
@@ -30,11 +30,11 @@ TEST_CASE("Empty Temp Dir")
   REX_CHECK(rex::directory::exists(dirname) == false);
 }
 
-TEST_CASE("Temp Dir With Files")
+TEST_CASE("TEST - Temp Dir - With Files")
 {
-  rsl::string random_file1 = rex::path::random_filename();
-  rsl::string random_file2 = rex::path::random_filename();
-  rsl::string dirname;
+  rex::TempString random_file1 = rex::path::random_filename();
+  rex::TempString random_file2 = rex::path::random_filename();
+  rex::TempString dirname;
   {
     rex::TempDirectory tmp_dir{};
     dirname.assign(tmp_dir.dirname());
@@ -49,7 +49,7 @@ TEST_CASE("Temp Dir With Files")
   REX_CHECK(rex::file::exists(rex::path::join(dirname, random_file1)) == false);
   REX_CHECK(rex::file::exists(rex::path::join(dirname, random_file2)) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
   {
 
@@ -73,11 +73,11 @@ TEST_CASE("Temp Dir With Files")
   REX_CHECK(rex::file::exists(rex::path::join(dirname, random_file2)) == false);
 }
 
-TEST_CASE("Temp Dir With Directories")
+TEST_CASE("TEST - Temp Dir - With Directories")
 {
-  rsl::string dirname;
-  rsl::string random_dir1 = rex::path::random_dir();
-  rsl::string random_dir2 = rex::path::random_dir();
+  rex::TempString dirname;
+  rex::TempString random_dir1 = rex::path::random_dir();
+  rex::TempString random_dir2 = rex::path::random_dir();
   {
     rex::TempDirectory tmp_dir{};
     dirname.assign(tmp_dir.dirname());
@@ -92,7 +92,7 @@ TEST_CASE("Temp Dir With Directories")
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir1)) == false);
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir2)) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
   {
 
@@ -116,15 +116,15 @@ TEST_CASE("Temp Dir With Directories")
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir2)) == false);
 }
 
-TEST_CASE("Temp Dir With Files And Directories")
+TEST_CASE("TEST - Temp Dir - With Files And Directories")
 {
-  rsl::string random_file1 = rex::path::random_filename();
-  rsl::string random_file2 = rex::path::random_filename();
+  rex::TempString random_file1 = rex::path::random_filename();
+  rex::TempString random_file2 = rex::path::random_filename();
 
-  rsl::string random_dir1 = rex::path::random_dir();
-  rsl::string random_dir2 = rex::path::random_dir();
+  rex::TempString random_dir1 = rex::path::random_dir();
+  rex::TempString random_dir2 = rex::path::random_dir();
 
-  rsl::string dirname;
+  rex::TempString dirname;
   {
     rex::TempDirectory tmp_dir{};
     dirname.assign(tmp_dir.dirname());
@@ -146,7 +146,7 @@ TEST_CASE("Temp Dir With Files And Directories")
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir1)) == false);
   REX_CHECK(rex::directory::exists(rex::path::join(dirname, random_dir2)) == false);
 
-  rsl::string test_directory = rex::path::abs_path("test_directory");
+  rex::TempString test_directory = rex::path::abs_path("test_directory");
   rex::directory::create(test_directory);
   {
     rex::TempDirectory tmp_dir(test_directory);
