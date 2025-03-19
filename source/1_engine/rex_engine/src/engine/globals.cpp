@@ -3,6 +3,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: REX GLOBALS
+
 namespace rex
 {
 	Globals g_globals{};

@@ -120,8 +120,7 @@ namespace rex
       rex::TempHeapScope tmp_heap_scope{};
       const TempString full_path = path::abs_path(path);
 
-			rsl::vector<rsl::string> entries = list_entries(full_path);
-			if (!entries.empty())
+			if (!is_empty(full_path))
 			{
 				return Error::create_with_log(LogDirectory, "Failed to delete directory as it wasn't empty. Directory: \"{}\"", full_path);
 			}

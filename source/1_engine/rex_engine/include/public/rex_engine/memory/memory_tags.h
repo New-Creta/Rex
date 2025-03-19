@@ -18,11 +18,11 @@ namespace rex
     // MemoryTag values for ConsoleApp
     ConsoleApp,
  
-    // MemoryTag values for Regina
-    Editor,
- 
     // MemoryTag values for Pokemon
     Pokemon,
+ 
+    // MemoryTag values for Regina
+    Editor,
  
     // MemoryTag values for RexWindows
     Windows,

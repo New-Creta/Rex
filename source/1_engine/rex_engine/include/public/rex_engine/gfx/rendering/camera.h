@@ -6,6 +6,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/math/deg_angle.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: CAMERA
+
 namespace rex
 {
 	namespace gfx

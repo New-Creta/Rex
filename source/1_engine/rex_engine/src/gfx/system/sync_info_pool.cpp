@@ -1,5 +1,7 @@
 #include "rex_engine/gfx/system/sync_info_pool.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

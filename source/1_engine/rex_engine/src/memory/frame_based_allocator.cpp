@@ -4,6 +4,8 @@
 
 #include "rex_engine/engine/globals.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
+
 namespace rex
 {
 	FrameBasedAllocator::FrameBasedAllocator(rsl::memory_size size, s32 maxFrames)

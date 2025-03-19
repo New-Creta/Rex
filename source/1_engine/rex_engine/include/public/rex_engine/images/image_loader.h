@@ -5,6 +5,8 @@
 #include "rex_std/memory.h"
 #include "rex_std/string_view.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ASSET LOADING
+
 namespace rex
 {
 	struct ImageLoadResult

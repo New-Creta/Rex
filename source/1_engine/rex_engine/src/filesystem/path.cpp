@@ -681,7 +681,7 @@ namespace rex
       return rsl::is_alpha(path[0]) &&
         path[1] == ':';
     }
-    // Returns true fi the path is pointing to the root
+    // Returns true if the path is pointing to the root
     bool is_root(rsl::string_view path)
     {
       // Only slashes

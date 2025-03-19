@@ -6,6 +6,8 @@
 
 #include "rex_engine/gfx/components/mesh_component.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ECS
+
 namespace rex
 {
 	namespace gfx

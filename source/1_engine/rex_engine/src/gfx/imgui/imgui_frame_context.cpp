@@ -7,6 +7,8 @@
 #include "rex_engine/gfx/resources/index_buffer.h"
 #include "imgui/imgui.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

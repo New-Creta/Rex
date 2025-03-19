@@ -8,6 +8,8 @@
 
 #include "rex_std/bonus/utility.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

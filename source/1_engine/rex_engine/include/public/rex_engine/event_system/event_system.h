@@ -12,6 +12,8 @@
 
 namespace rex
 {
+  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: EVENT SYSTEM
+
   // A subscription handle is a handle the user could optional keep
   // if they ever want to remove a subscription from the event system at a future time
   class SubscriptionHandle

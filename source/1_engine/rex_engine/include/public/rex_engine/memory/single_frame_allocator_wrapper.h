@@ -4,6 +4,8 @@
 
 namespace rex
 {
+  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
+
 	class SingleFrameAllocatorWrapper
 	{
 	public:

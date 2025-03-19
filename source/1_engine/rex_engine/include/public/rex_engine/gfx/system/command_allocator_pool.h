@@ -10,6 +10,8 @@
 #include "rex_engine/gfx/system/command_allocator.h"
 #include "rex_engine/gfx/core/graphics_engine_type.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

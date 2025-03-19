@@ -30,6 +30,8 @@
 
 // This is the interface of the main application with the graphics engine
 
+ // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   struct GpuDescription;

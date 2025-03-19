@@ -8,6 +8,7 @@
 #include "rex_std/bonus/math/deg_angle.h"
 #include "rex_std/bonus/math/rad_angle.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ECS
 namespace rex
 {
 	namespace gfx

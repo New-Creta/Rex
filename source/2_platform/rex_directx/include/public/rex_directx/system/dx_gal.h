@@ -26,6 +26,8 @@
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/engine/types.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 struct ID3D12GraphicsCommandList;
 
 namespace rex

@@ -1,5 +1,7 @@
 #include "rex_engine/entities/entity.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ECS
+
 namespace rex
 {
 	namespace gfx

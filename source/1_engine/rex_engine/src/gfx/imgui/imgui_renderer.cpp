@@ -138,6 +138,8 @@ namespace rex
     // Init the colors for imgui to use
     void ImGuiRenderer::init_colors()
     {
+      // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: IMGUI COLORS
+
       ImVec4* colors = ImGui::GetStyle().Colors;
       colors[ImGuiCol_Text]                   = ImVec4(0.75f, 0.75f, 0.75f, 1.00f);
       colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);

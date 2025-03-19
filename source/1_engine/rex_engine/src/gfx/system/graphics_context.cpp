@@ -5,6 +5,8 @@
 #include "rex_engine/gfx/system/graphics_engine.h"
 #include "rex_engine/gfx/system/gpu_engine.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

@@ -20,27 +20,13 @@ namespace
   const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
 
   //-------------------------------------------------------------------------
-  rsl::small_stack_string vendor_to_string(s32 vendor)
-  {
-    // Enum reflection is not possible here as the integer values are
-    // outside the valid range of values [0, 127] for this enumeration type
-    switch (static_cast<rex::Vendor>(vendor))
-    {
-    case rex::Vendor::Amd: return rsl::small_stack_string("AMD");
-    case rex::Vendor::Nvidia: return rsl::small_stack_string("NVIDIA");
-    case rex::Vendor::Intel: return rsl::small_stack_string("INTEL");
-    default: return rsl::small_stack_string("Unknown Vendor");
-    }
-  }
-
-  //-------------------------------------------------------------------------
   template <typename DXGIAdapterDesc>
   rex::GpuDescription convert_description(const DXGIAdapterDesc& dxgiDesc)
   {
     rex::GpuDescription desc;
 
     desc.name = rsl::small_stack_string(rex::to_multibyte(dxgiDesc.Description, desc.name.max_size()));
-    desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
+    desc.vendor_name = rex::vendor_to_string(dxgiDesc.VendorId);
 
     desc.vendor_id = dxgiDesc.VendorId;
     desc.device_id = dxgiDesc.DeviceId;

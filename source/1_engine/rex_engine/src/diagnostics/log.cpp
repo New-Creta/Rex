@@ -6,6 +6,8 @@
 
 #include "rex_std/format.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: LOG PROJECT PATH
+
 namespace rex
 {
 	TempString project_log_path()

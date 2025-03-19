@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rex_std/string_view.h"
+#include "rex_std/bonus/string.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -31,6 +33,8 @@ namespace rex
 
 	VideoDriverInfo query_video_driver(rsl::string_view deviceName);
 	rsl::string nvidia_unified_version(rsl::string_view internalVersion);
+	rsl::small_stack_string vendor_to_string(s32 vendor);
+
 }
 
 #ifdef REX_PLATFORM_WINDOWS

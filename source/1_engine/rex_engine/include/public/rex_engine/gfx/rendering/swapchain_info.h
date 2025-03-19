@@ -5,6 +5,8 @@
 #include "rex_engine/gfx/core/viewport.h"
 #include "rex_engine/gfx/core/scissor_rect.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: SWAPCHAIN INFO
+
 namespace rex
 {
 	namespace gfx

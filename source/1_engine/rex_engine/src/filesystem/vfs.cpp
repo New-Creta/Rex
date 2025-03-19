@@ -280,7 +280,7 @@ namespace rex
       g_closing_thread = rsl::thread(wait_for_read_requests);
     }
 
-    rsl::string current_timepoint_str()
+    rsl::string current_timepoint_for_filename()
     {
       const rsl::time_point current_time = rsl::current_timepoint();
       rsl::string timepoint_str(rsl::format("{}_{}", current_time.date().to_string_without_weekday(), current_time.time().to_string()));
@@ -297,7 +297,7 @@ namespace rex
       g_root_paths.project_root.assign(path::join(vfs::root(), project_name()));
       g_root_paths.sessions_root.assign(path::join(vfs::root(), "_sessions"));
       g_root_paths.project_sessions_root.assign(path::join(sessions_root(), project_name()));
-      g_root_paths.current_session_root.assign(path::join(project_sessions_root(), current_timepoint_str()));
+      g_root_paths.current_session_root.assign(path::join(project_sessions_root(), current_timepoint_for_filename()));
     }
 
     void init()

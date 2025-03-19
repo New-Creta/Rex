@@ -11,6 +11,8 @@
 #include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/rendering/swapchain_info.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   namespace gfx
@@ -53,10 +55,6 @@ namespace rex
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt());
       render_ctx->execute_on_gpu();
-
-      //// Empty out the view heaps so that new views can be copied into it
-      //m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Texture2D)->clear();
-      //m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
     // Present the new frame to the main window
     void GpuEngine::present()
@@ -118,6 +116,40 @@ namespace rex
       }
 
       return nullptr;
+    }
+
+    const ResourceView* GpuEngine::try_get_gpu_views(const rsl::vector<const ResourceView*>& views) const
+    {
+      // Hash all pointers together to calculate the final hash
+      u64 seed = 0;
+      for (const ResourceView* cpuView : views)
+      {
+        seed = rsl::internal::hash_combine(seed, rsl::comp_hash(cpuView));
+      }
+
+      if (m_resources_on_gpu.contains(seed))
+      {
+        return m_resources_on_gpu.at(seed).get();
+      }
+
+      return nullptr;
+    }
+		const ResourceView* GpuEngine::try_get_gpu_view(const ResourceView* cpuView) const
+		{
+      return try_get_gpu_views( { cpuView } );
+		}
+    const ResourceView* GpuEngine::notify_views_on_gpu(const rsl::vector<const ResourceView*>& views, rsl::unique_ptr<ResourceView> gpuView)
+    {
+      u64 seed = 0;
+      for (const ResourceView* cpuView : views)
+      {
+        seed = rsl::internal::hash_combine(seed, rsl::comp_hash(cpuView));
+      }
+
+      const ResourceView* result = gpuView.get();
+      m_resources_on_gpu[seed] = rsl::move(gpuView);
+
+      return result;
     }
 
     // Returns a specific descriptor heap based on type

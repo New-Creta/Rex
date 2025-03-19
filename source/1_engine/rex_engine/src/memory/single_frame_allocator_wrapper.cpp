@@ -2,6 +2,8 @@
 
 #include "rex_engine/engine/mutable_globals.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
+
 namespace rex
 {
   void* SingleFrameAllocatorWrapper::allocate(const s32 count)

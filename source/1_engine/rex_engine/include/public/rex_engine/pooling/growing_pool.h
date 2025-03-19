@@ -9,6 +9,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/object_with_destruction_callback.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   // This is a usability type alias but a user is not expected to create this themselves

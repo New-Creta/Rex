@@ -107,7 +107,7 @@ namespace rex
 
 			auto copy_ctx = new_copy_ctx();
 			auto start_handle = copy_ctx->copy_views(target_view_heap_type, m_views);
-			ctx->bind_view_table(slot(), start_handle.get());
+			ctx->bind_view_table(slot(), start_handle);
 		}
 
 		void ViewTableShaderParam::update_view(ViewOffset offset, const ResourceView* view)

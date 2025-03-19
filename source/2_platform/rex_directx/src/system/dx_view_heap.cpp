@@ -207,9 +207,6 @@ namespace rex
         shader_resource_view_desc.Texture2D.ResourceMinLODClamp = 0.0f;
         m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, &shader_resource_view_desc, m_null_view); break;
       }
-      //case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:        m_device->CreateSampler(rsl::Nullptr<const D3D12_SAMPLER_DESC>, m_null_view); break;
-      //case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:            m_device->CreateRenderTargetView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_RENDER_TARGET_VIEW_DESC>, m_null_view); break;
-      //case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:            m_device->CreateDepthStencilView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_DEPTH_STENCIL_VIEW_DESC>, m_null_view); break;
       default: break;
       }
     }

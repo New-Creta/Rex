@@ -5,6 +5,8 @@
 #include "rex_directx/gfx/dx_compute_context.h"
 #include "rex_directx/gfx/dx_copy_context.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

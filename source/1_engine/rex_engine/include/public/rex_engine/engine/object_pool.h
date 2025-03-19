@@ -5,6 +5,8 @@
 
 namespace rex
 {
+	// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECTS
+
 	class Object;
 	namespace internal
 	{

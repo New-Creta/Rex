@@ -6,6 +6,7 @@
 #include "entt/entt.hpp"
 #include "rex_std/unordered_map.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ECS
 
 namespace rex
 {

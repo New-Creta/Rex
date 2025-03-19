@@ -1,5 +1,7 @@
 #include "rex_engine/gfx/rendering/camera.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: CAMERA
+
 namespace rex
 {
 	namespace gfx

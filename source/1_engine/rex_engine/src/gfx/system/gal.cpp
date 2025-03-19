@@ -1,5 +1,7 @@
 #include "rex_engine/gfx/system/gal.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
 	namespace gfx

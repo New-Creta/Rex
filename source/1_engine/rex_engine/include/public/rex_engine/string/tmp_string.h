@@ -7,6 +7,8 @@
 
 #include "rex_engine/memory/single_frame_allocator_wrapper.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
+
 namespace rex
 {
 	// This string should not be accessed directly

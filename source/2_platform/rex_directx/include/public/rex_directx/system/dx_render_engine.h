@@ -4,6 +4,8 @@
 #include "rex_directx/gfx/dx_render_context.h"
 #include "rex_directx/system/dx_gal.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   namespace gfx

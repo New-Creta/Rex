@@ -21,6 +21,9 @@ namespace rex
     class RenderTarget;
   }
 
+  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
   namespace gfx
   {
     struct ContextResetData

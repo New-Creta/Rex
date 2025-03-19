@@ -7,6 +7,8 @@
 #include "rex_engine/gfx/resources/raster_state.h"
 #include "rex_engine/gfx/resources/depth_stencil_state.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ASSET LOADING
+
 namespace rex
 {
 	namespace gfx

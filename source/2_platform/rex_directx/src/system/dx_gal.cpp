@@ -60,6 +60,8 @@
 #include "rex_engine/gfx/system/input_layout_cache.h"
 #include "rex_engine/gfx/system/root_signature_cache.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
 	namespace gfx

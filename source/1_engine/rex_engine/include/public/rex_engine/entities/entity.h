@@ -8,6 +8,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ECS
+
 namespace rex
 {
 	namespace gfx

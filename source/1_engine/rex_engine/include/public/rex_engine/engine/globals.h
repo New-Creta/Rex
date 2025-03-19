@@ -5,6 +5,8 @@
 
 namespace rex
 {
+	// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: REX GLOBALS
+
 	struct Globals
 	{
 		rsl::unique_ptr<FrameBasedAllocator> single_frame_allocator;

@@ -8,6 +8,8 @@
 
 #include "rex_engine/containers/vector_utils.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
 namespace rex
 {
   namespace gfx

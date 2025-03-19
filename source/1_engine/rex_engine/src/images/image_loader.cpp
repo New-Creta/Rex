@@ -6,6 +6,8 @@
 #include "rex_engine/text_processing/text_processing.h"
 #include "rex_engine/engine/defines.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: ASSET LOADING
+
 namespace rex
 {
 	ImageLoadResult load_image(rsl::string_view filepath)

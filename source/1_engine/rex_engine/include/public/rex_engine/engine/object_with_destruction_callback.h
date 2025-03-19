@@ -5,6 +5,8 @@
 
 namespace rex
 {
+  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: OBJECT WITH DESTRUCTION CALLBACK
+
   // Wrapper around an object belonging to the pool
   // It'll automatically return it back to the pool when it goes out of scope
   // The pool is responsible of creating the callable to return this object back to itself.

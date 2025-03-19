@@ -19,6 +19,8 @@
 
 #include "rex_std/unordered_map.h"
 
+// #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: GRAPHICS
+
 namespace rex
 {
   namespace gfx
@@ -61,6 +63,9 @@ namespace rex
 
       void notify_textures_presence_on_gpu(Texture2D* texture, rsl::unique_ptr<ResourceView> resourceView);
       const ResourceView* try_get_texture_gpu_handle(Texture2D* texture) const;
+      const ResourceView* try_get_gpu_views(const rsl::vector<const ResourceView*>& views) const;
+      const ResourceView* try_get_gpu_view(const ResourceView* cpuView) const;
+      const ResourceView* notify_views_on_gpu(const rsl::vector<const ResourceView*>& views, rsl::unique_ptr<ResourceView> gpuView);
 
     protected:
       // Initialize the various sub engines
@@ -106,6 +111,7 @@ namespace rex
       ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
 
       rsl::unordered_map<Texture2D*, rsl::unique_ptr<ResourceView>> m_textures_on_gpu;
+      rsl::unordered_map<u64, rsl::unique_ptr<ResourceView>> m_resources_on_gpu;
     };
   }
 }
