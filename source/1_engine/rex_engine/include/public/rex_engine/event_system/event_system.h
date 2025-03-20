@@ -5,10 +5,11 @@
 #include "rex_std/unordered_map.h"
 #include "rex_std/bonus/utility.h"
 
-#include "rex_engine/containers/typeless_ring_buffer.h"
 #include "rex_engine/event_system/event_dispatcher.h"
 
 #include "rex_engine/diagnostics/log.h"
+
+#include "rex_engine/memory/allocators/stack_allocator.h"
 
 namespace rex
 {
@@ -66,9 +67,14 @@ namespace rex
     void enqueue_event(const Event& ev)
     {
       static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
-      REX_ASSERT_X(m_event_queue.count() + ev.event_size() < m_event_queue.max_count(), "Writting too many events in 1 frame, event buffer is full. Num queued events: {}", m_num_events_queued);
-      m_num_events_queued++;
-      m_event_queue.write(&ev, sizeof(ev));
+      REX_ASSERT_X(m_event_allocator.can_allocate(sizeof(ev)), "Writting too many events in 1 frame, event buffer is full. Num queued events: {}", m_enqueued_events.size());
+
+      // Allocate space for the new event
+      Event* newEvent = m_event_allocator.allocate<Event>();
+      rsl::memcpy(newEvent, rsl::addressof(ev), sizeof(ev));
+
+      // Push the new event to the list
+      m_enqueued_events.push_back(newEvent);
     }
 
     // fire off an event to be handled immediately.
@@ -100,10 +106,9 @@ namespace rex
 
   private:
     rsl::unordered_map<rsl::type_id_t, rsl::unique_ptr<EventDispatcherBase>> m_dispatchers;
-    TypelessRingBuffer m_event_queue;
-    rsl::vector<rsl::byte> m_intermediate_event_data;
+    StackAllocator m_event_allocator;
+    rsl::vector<EventBase*> m_enqueued_events;
     static constexpr rsl::memory_size s_event_queue_byte_size = 256_kib;
-    s32 m_num_events_queued; // flag to indicate events were queued this frame
   };
   EventSystem& event_system();
 } // namespace rex

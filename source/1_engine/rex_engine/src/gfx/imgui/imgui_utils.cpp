@@ -87,8 +87,8 @@ namespace rex
 		void image(const rex::gfx::Texture2D* tex)
 		{
 			ImVec2 texSize{};
-			texSize.x = tex->width();
-			texSize.y = tex->height();
+			texSize.x = static_cast<f32>(tex->width());
+			texSize.y = static_cast<f32>(tex->height());
 			ImGui::Image((ImTextureID)tex, texSize);
 		}
 
