@@ -62,11 +62,11 @@ namespace regina
 				}
 				if (ImGui::MenuItem("Show ImGui Demo", false, &m_show_imgui_demo))
 				{
-					m_show_imgui_demo != m_show_imgui_demo;
+					m_show_imgui_demo = !m_show_imgui_demo;
 				}
 				if (ImGui::MenuItem("Show ImGui Style Editor", false, &m_show_imgui_style_editor))
 				{
-					m_show_imgui_style_editor != m_show_imgui_style_editor;
+					m_show_imgui_style_editor = !m_show_imgui_style_editor;
 				}
 
 				ImGui::EndMenu();

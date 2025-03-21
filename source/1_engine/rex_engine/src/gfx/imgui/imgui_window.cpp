@@ -1,5 +1,5 @@
 #include "rex_engine/gfx/imgui/imgui_window.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 
 #include "rex_engine/gfx/imgui/imgui_device.h"
 #include "rex_engine/gfx/imgui/imgui_window_render_params.h"

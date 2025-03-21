@@ -13,7 +13,7 @@
 #include "rex_engine/engine/project.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"

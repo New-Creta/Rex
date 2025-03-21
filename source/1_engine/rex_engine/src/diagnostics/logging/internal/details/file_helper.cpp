@@ -10,7 +10,7 @@
 #include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 
 #include <cerrno>
 

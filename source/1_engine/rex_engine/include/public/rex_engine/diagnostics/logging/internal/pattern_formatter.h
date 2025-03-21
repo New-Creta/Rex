@@ -7,7 +7,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/engine/constants.h"
 #include "rex_engine/engine/debug_types.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/chrono.h"
 #include "rex_std/memory.h"

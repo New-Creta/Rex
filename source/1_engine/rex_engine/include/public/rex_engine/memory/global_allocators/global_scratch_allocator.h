@@ -1,14 +1,12 @@
 #pragma once
 
-#include "rex_engine/memory/frame_based_allocator.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
-  // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
-
-	class SingleFrameAllocatorWrapper
-	{
-	public:
+  class GlobalScratchAllocator
+  {
+  public:
     void* allocate(const s32 count);    // deallocates the storage reference by the pointer p.
     void deallocate(void* const ptr, s32 count);
 
@@ -24,13 +22,13 @@ namespace rex
     {
       p->~U();
     }
-	};
+  };
 
-  constexpr bool operator==(const SingleFrameAllocatorWrapper& /*unused*/, const SingleFrameAllocatorWrapper& /*unused*/)
+  constexpr bool operator==(const GlobalScratchAllocator& /*unused*/, const GlobalScratchAllocator& /*unused*/)
   {
     return true;
   }
-  constexpr bool operator!=(const SingleFrameAllocatorWrapper& /*unused*/, const SingleFrameAllocatorWrapper& /*unused*/)
+  constexpr bool operator!=(const GlobalScratchAllocator& /*unused*/, const GlobalScratchAllocator& /*unused*/)
   {
     return false;
   }

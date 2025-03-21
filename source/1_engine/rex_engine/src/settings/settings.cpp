@@ -151,9 +151,9 @@ namespace rex
       }
 
       // Loop over the processed settings and add them to the global map
-      rsl::vector<ini::IniBlock> blocks = ini_content.all_blocks();
+      rsl::vector<ini::IniBlock<>> blocks = ini_content.all_blocks();
 
-      for(const ini::IniBlock& block : ini_content.all_blocks())
+      for(const ini::IniBlock<>& block : ini_content.all_blocks())
       {
         for (const auto[key, value] : block.all_items())
         {

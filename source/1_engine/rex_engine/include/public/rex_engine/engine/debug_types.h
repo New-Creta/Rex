@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/untracked_allocator.h"
+#include "rex_engine/memory/global_allocators/global_debug_allocator.h"
+#include "rex_engine/memory/allocators/untracked_allocator.h"
 #include "rex_std/sstream.h"
 #include "rex_std/string.h"
 #include "rex_std/unordered_map.h"

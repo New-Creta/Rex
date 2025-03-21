@@ -1,4 +1,4 @@
-#include "rex_engine/memory/frame_based_allocator.h"
+#include "rex_engine/memory/allocators/frame_based_allocator.h"
 
 #include "rex_engine/diagnostics/assert.h"
 

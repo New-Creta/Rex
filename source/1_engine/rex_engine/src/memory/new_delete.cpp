@@ -1,6 +1,6 @@
 #include "rex_engine/memory/new_delete.h"
 
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_std/bonus/types.h"
 
 #include <vcruntime_new.h>

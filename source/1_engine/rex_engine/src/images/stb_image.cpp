@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 
 // Cannot implement the bellow until rex has a realloc implementation
 //#define STBI_MALLOC(sz)           operator new(sz)

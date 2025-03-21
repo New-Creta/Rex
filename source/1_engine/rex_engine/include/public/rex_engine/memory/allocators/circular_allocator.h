@@ -24,13 +24,7 @@ namespace rex
 			return static_cast<T*>(allocate(sizeof(T), alignof(T)));
 		}
 
-
-		void deallocate(pointer ptr, size_type size);
-		template <typename T>
-		void deallocate(T* ptr)
-		{
-			deallocate(ptr, sizeof(T));
-		}
+		void deallocate(pointer ptr, size_type size = 0);
 
 		template <typename U, typename... Args>
 		void  construct(U* p, Args&&... args)

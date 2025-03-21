@@ -3,6 +3,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/memory/pointer_math.h"
 
+#include "rex_engine/engine/casting.h"
+
 namespace rex
 {
 	CircularAllocator::CircularAllocator(rsl::unique_array<rsl::byte> buffer)
@@ -19,7 +21,7 @@ namespace rex
 		// As we're not given a type, we need to make sure our memory is aligned within the buffer
 		m_current = align(m_current, alignment);
 
-		s32 space_available_until_end = m_end - m_current;
+		s32 space_available_until_end = narrow_cast<s32>(m_end - m_current);
 		if (space_available_until_end < size)
 		{
 			// If we can't find the entire allocation
@@ -38,12 +40,15 @@ namespace rex
 
 	CircularAllocator::pointer CircularAllocator::allocate(size_type size)
 	{
-		u64 alignment = alignof(rsl::max_align);
+		s32 alignment = narrow_cast<s32>(alignof(rsl::max_align));
 		return allocate(size, alignment);
 	}
 	void CircularAllocator::deallocate(pointer ptr, size_type size)
 	{
 		// Nothing to implement
+
+		REX_UNUSED_PARAM(ptr);
+		REX_UNUSED_PARAM(size);
 	}
 
 	bool CircularAllocator::operator==(const CircularAllocator& rhs) const

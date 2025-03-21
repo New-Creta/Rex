@@ -52,6 +52,7 @@ namespace rex
     // Initialization
     void mount_engine_paths();
     void load_settings();
+    void init_allocators();
     void init_globals();
 
   private:

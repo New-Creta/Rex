@@ -1,4 +1,4 @@
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/memory_stats.h"

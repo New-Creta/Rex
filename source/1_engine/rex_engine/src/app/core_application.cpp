@@ -11,6 +11,7 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/settings/settings.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_engine/text_processing/ini.h"
 
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/profiling/scoped_timer.h"
@@ -133,6 +134,8 @@ namespace rex
   {
     m_app_state.change_state(ApplicationState::Initializing);
 
+    init_allocators();
+
     init_globals();
 
     // Loads the mounts of the engine
@@ -226,8 +229,24 @@ namespace rex
 
     for(const rsl::string_view file: files)
     {
+      REX_VERBOSE(LogCoreApp, "Loading settings file: {}", file);
       settings::load(file);
     }
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::init_allocators()
+  {
+    // Allocate a buffer to use for reading the file's content
+    ini::Ini memory_settings = ini::read_from_file("memory_settings.ini");
+
+    // Read the settings of the file
+    s32 single_frame_heap_size = rsl::stoi(memory_settings.get("heaps", "single_frame_heap_size")).value();
+    s32 scratch_heap_size = rsl::stoi(memory_settings.get("heaps", "scratch_heap_size")).value();
+
+    // Initialize the global heaps and its allocators using the settings loaded from disk
+    mut_globals().allocators.single_frame_allocator = rsl::make_unique<StackAllocator>(rsl::make_unique<rsl::byte[]>(single_frame_heap_size));
+    mut_globals().allocators.scratch_allocator = rsl::make_unique<CircularAllocator>(rsl::make_unique<rsl::byte[]>(scratch_heap_size));
   }
 
   //--------------------------------------------------------------------------------------------

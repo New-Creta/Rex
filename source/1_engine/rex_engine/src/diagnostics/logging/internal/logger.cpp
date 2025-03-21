@@ -3,7 +3,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_engine/engine/types.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_std/bonus/atomic/atomic.h"
 
 // IWYU pragma: no_include <built-in>

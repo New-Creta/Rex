@@ -5,7 +5,7 @@
 #include "rex_std/string.h"
 #include "rex_std/string_view.h"
 
-#include "rex_engine/memory/single_frame_allocator_wrapper.h"
+//#include "rex_engine/memory/allocators/single_frame_allocator_wrapper.h"
 
 // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
 
@@ -17,7 +17,7 @@ namespace rex
 	// the user should convert it to a string_view.
 	// If the storage of the tmp string is expected to last for longer than a single frame, it should be converted
 	// to a string instead.
-	using TempString = rsl::basic_string<char8, rsl::char_traits<char8>, SingleFrameAllocatorWrapper>;
+	using TempString = rsl::string;
 	template <typename T>
-	using TempVector = rsl::vector<T, SingleFrameAllocatorWrapper>;
+	using TempVector = rsl::vector<T>;
 }

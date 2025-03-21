@@ -411,7 +411,7 @@ namespace rex
     // Converts forward slashes to backward slashes
     TempString norm_path(rsl::string_view path)
     {
-      const TempVector<rsl::string_view> splitted_path = rsl::split<rex::SingleFrameAllocatorWrapper>(path, "/\\");
+      const TempVector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
       TempVector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
 
       // loop over each path component in the given path

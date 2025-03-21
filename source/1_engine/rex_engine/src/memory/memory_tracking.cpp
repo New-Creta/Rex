@@ -7,7 +7,7 @@
 #include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_std/bonus/time/timepoint.h"

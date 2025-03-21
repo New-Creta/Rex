@@ -8,7 +8,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_std/memory.h"
 
 // under windows using fwrite to non-binary stream results in \r\r\n (see issue #1675)

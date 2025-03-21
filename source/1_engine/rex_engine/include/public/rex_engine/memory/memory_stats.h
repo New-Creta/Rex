@@ -5,8 +5,8 @@
 #include "rex_std/bonus/utility/high_water_mark.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_engine/memory/memory_tags.h"
-#include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/untracked_allocator.h"
+#include "rex_engine/memory/global_allocators/global_debug_allocator.h"
+#include "rex_engine/memory/allocators/untracked_allocator.h"
 
 namespace rex
 {

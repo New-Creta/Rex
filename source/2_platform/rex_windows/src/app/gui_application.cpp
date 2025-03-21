@@ -7,7 +7,7 @@
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/gfx/core/depth_info.h"
 #include "rex_engine/gfx/core/renderer_output_window_user_data.h"
@@ -36,7 +36,7 @@
 
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
-#include "rex_engine/memory/tracked_allocator.h"
+#include "rex_engine/memory/allocators/tracked_allocator.h"
 
 #include "rex_directx/system/dx_gal.h"
 

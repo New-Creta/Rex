@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/imgui/imgui_renderer.h"
 
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
 

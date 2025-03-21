@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/memory/debug_allocator.h"
+#include "rex_engine/memory/global_allocators/global_debug_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/memory/pointer_math.h"
