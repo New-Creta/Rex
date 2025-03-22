@@ -132,6 +132,13 @@ namespace rex
 				// Make sure we remove all leading and trailing whitespaces
 				line = rex::strip(line);
 
+				// When reading from a file into a pre existing buffer
+				// all trailing bytes will be zeroed.
+				if (rsl::all_of(line.cbegin(), line.cend(), [](char8 c) {return c == '\0';}))
+				{
+					continue;
+				}
+
 				// Headers are surrounded with '[' and ']'
 				if (line.starts_with('[') && line.ends_with(']'))
 				{

@@ -76,9 +76,11 @@ namespace rex
     void shutdown();
 
     REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
+    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
+    void read_file(MountingPoint root, rsl::string_view filepath, rsl::byte* buffer, s32 size);
+    void read_file(rsl::string_view filepath, rsl::byte* buffer, s32 size);
     REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
-    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
     Error create_file(MountingPoint root, rsl::string_view filepath);
     Error create_file(rsl::string_view filepath);
     Error write_to_file(MountingPoint root, rsl::string_view filepath, rsl::string_view text, AppendToFile shouldAppend);

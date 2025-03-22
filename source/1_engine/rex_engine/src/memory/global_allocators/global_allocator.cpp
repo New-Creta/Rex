@@ -39,7 +39,7 @@ namespace rex
     bool create_minimal_global_allocators(GlobalAllocator& alloc)
     {
       s32 minimal_global_alloc_size = static_cast<s32>(1_kib);
-      output_debug_string("Creating a minimal scratch allocator of 1KiB for early startup");
+      output_debug_string(rsl::format("Creating a minimal scratch allocator of {} bytes for early startup", minimal_global_alloc_size));
 
       // Cannot use make_unique or alloc_unique here
       // make_unique would cause a circular dependency and we'd get a deadlock the second time the GlobalAllocator ctor is called

@@ -391,6 +391,22 @@ namespace rex
       rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
       return read_file(path);
     }
+    memory::Blob read_file(rsl::string_view filepath)
+    {
+      const scratch_string fullpath = abs_path(filepath);
+      return rex::file::read_file(fullpath);
+    }
+    void read_file(MountingPoint root, rsl::string_view filepath, rsl::byte* buffer, s32 size)
+    {
+      filepath = path::remove_quotes(filepath);
+      rsl::string_view path = path::join(g_mounted_roots.at(root), filepath);
+      read_file(path, buffer, size);
+    }
+    void read_file(rsl::string_view filepath, rsl::byte* buffer, s32 size)
+    {
+      const scratch_string fullpath = abs_path(filepath);
+      return rex::file::read_file(fullpath, buffer, size);
+    }
 
     ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
     {
@@ -619,11 +635,6 @@ namespace rex
       return Error::create_with_log(LogVfs, "Cannot delete \"{}\" as it's not a file", fullpath);
     }
 
-    memory::Blob read_file(rsl::string_view filepath)
-    {
-      const rsl::string_view fullpath = abs_path(filepath);
-      return rex::file::read_file(fullpath);
-    }
 
     Error write_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {

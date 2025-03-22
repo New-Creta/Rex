@@ -22,6 +22,8 @@ namespace rex
     {
       p->~U();
     }
+
+    bool has_allocated_ptr(void* ptr) const;
   };
 
   constexpr bool operator==(const GlobalScratchAllocator& /*unused*/, const GlobalScratchAllocator& /*unused*/)

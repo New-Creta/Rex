@@ -24,6 +24,8 @@ namespace rex
     {
       p->~U();
     }
+
+    bool has_allocated_ptr(void* ptr) const;
 	};
 
   constexpr bool operator==(const GlobalSingleFrameAllocator& /*unused*/, const GlobalSingleFrameAllocator& /*unused*/)

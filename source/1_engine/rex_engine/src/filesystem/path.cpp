@@ -294,6 +294,7 @@ namespace rex
           rsl::string_view cwd = path::cwd();
           res.insert(0, cwd.substr(0, 2)); // This prepends the drive letter and colon
         }
+
         return res;
       }
 

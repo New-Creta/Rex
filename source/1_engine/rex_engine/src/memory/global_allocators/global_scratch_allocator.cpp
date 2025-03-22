@@ -18,4 +18,8 @@ namespace rex
     return (rsl::numeric_limits<s32>::max)();
   }
 
+  bool GlobalScratchAllocator::has_allocated_ptr(void* ptr) const
+  {
+    return globals().allocators.scratch_allocator->has_allocated_ptr(ptr);
+  }
 }

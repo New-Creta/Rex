@@ -38,12 +38,45 @@ namespace rex
 
         return file;
       }
+
+      // filepath is assumed to exist
+      struct file_info
+      {
+        rsl::win::handle handle;
+        s32 file_size;
+      };
+      file_info open_file_for_reading(rsl::string_view filepath)
+      {
+        file_info file_info{};
+
+        rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(filepath.data(),               // Path to file
+          GENERIC_READ,              // General read and write access
+          FILE_SHARE_READ,           // Other processes can also read the file
+          NULL,                      // No SECURITY_ATTRIBUTES
+          OPEN_EXISTING,             // Open the file, only if it exists
+          FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+          NULL                       // No template file
+        ),
+          ERROR_ALREADY_EXISTS));
+
+        file_info.handle = rsl::move(handle);
+        if (!file_info.handle.is_valid())
+        {
+          REX_ERROR(LogFile, "Failed to open file {}", quoted(filepath));
+          return {};
+        }
+
+        file_info.file_size = static_cast<card32>(GetFileSize(file_info.handle.get(), nullptr));
+
+        return file_info;
+      }
+
     } // namespace internal
 
     // Read from a file
     memory::Blob read_file(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if (!exists(full_path))
       {
@@ -51,37 +84,62 @@ namespace rex
         return {};
       }
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),               // Path to file
-        GENERIC_READ,              // General read and write access
-        FILE_SHARE_READ,           // Other processes can also read the file
-        NULL,                      // No SECURITY_ATTRIBUTES
-        OPEN_EXISTING,             // Open the file, only if it exists
-        FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-        NULL                       // No template file
-      ),
-        ERROR_ALREADY_EXISTS));
-
-      if (!handle.is_valid())
+      internal::file_info file_info = internal::open_file_for_reading(full_path);
+      if (!file_info.handle.is_valid())
       {
         REX_ERROR(LogFile, "Failed to open file {}", quoted(full_path));
         return {};
       }
 
       // prepare a buffer to receive the file content
-      const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
-      if (file_size == 0)
+      // early return if the file is empty
+      if (file_info.file_size <= 0)
       {
         return {};
       }
 
-      rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size); // NOLINT(modernize-aError-c-arrays)
+      rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_info.file_size); // NOLINT(modernize-aError-c-arrays)
 
       // actually read the file
       DWORD bytes_read = 0;
-      WIN_CALL(ReadFile(handle.get(), buffer.get(), static_cast<DWORD>(buffer.count()), &bytes_read, NULL));
+      WIN_CALL(ReadFile(file_info.handle.get(), buffer.get(), static_cast<DWORD>(buffer.count()), &bytes_read, NULL));
 
       // return the buffer
       return memory::Blob(rsl::move(buffer));
+    }
+    // Read from a file
+    void read_file(rsl::string_view path, rsl::byte* buffer, s64 size)
+    {
+      const scratch_string full_path = path::abs_path(path);
+
+      if (!exists(full_path))
+      {
+        REX_ERROR(LogFile, "Failed to read file as it doesn't exist: {}", quoted(full_path));
+        return;
+      }
+
+      internal::file_info file_info = internal::open_file_for_reading(full_path);
+      if (!file_info.handle.is_valid())
+      {
+        REX_ERROR(LogFile, "Failed to open file {}", quoted(full_path));
+        return;
+      }
+
+      // prepare a buffer to receive the file content
+      // early return if the file is empty
+      if (file_info.file_size == 0)
+      {
+        return;
+      }
+
+      if (file_info.file_size > size)
+      {
+        REX_ERROR(LogFile, "Buffer not big enough to store entire file. file: {} buffer size: {} file size: {}", quoted(full_path), size, file_info.file_size);
+      }
+
+      // actually read the file
+      DWORD bytes_read = 0;
+      WIN_CALL(ReadFile(file_info.handle.get(), buffer, static_cast<DWORD>(size), &bytes_read, NULL));
     }
     // Save content to a file
     Error write_to_file(rsl::string_view filepath, const void* data, card64 size)
@@ -116,7 +174,7 @@ namespace rex
     }
     Error append_line(rsl::string_view path, rsl::string_view line)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if (is_readonly(full_path))
       {
@@ -151,7 +209,7 @@ namespace rex
     // Append lines to a file
     Error append_lines(rsl::string_view path, const rsl::vector<rsl::string>& lines)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
@@ -187,7 +245,7 @@ namespace rex
     // Append text to a file
     Error append_text(rsl::string_view path, rsl::string_view txt)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
@@ -218,7 +276,7 @@ namespace rex
     // Trunc a file, removing all content
     Error trunc(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if(is_readonly(full_path))
       {
@@ -289,7 +347,7 @@ namespace rex
     // Create a new empty file
     Error create(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if(file::exists(full_path))
       {
@@ -313,7 +371,7 @@ namespace rex
     // Delete a file
     Error del(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       if(!file::exists(full_path))
       {
@@ -328,7 +386,7 @@ namespace rex
     // return the file size
     card64 size(rsl::string_view path)
     {
-      const rsl::string_view full_path       = path::abs_path(path);
+      scratch_string full_path       = path::abs_path(path);
       const rsl::win::handle file = internal::open_file_for_attribs(full_path);
 
       // When we have an invalid handle, we simply return the input
@@ -344,7 +402,7 @@ namespace rex
     // Check if a file exists
     bool exists(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
 
       // It's possible the error returned here is ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND
       // because we can't ignore both, we just call it without wrapping it in WIN_CALL
@@ -367,7 +425,7 @@ namespace rex
     // Check if a file is marked read only
     bool is_readonly(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return false;
@@ -379,7 +437,7 @@ namespace rex
     // Set a file to be readonly
     Error set_readonly(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return Error::create_with_log(LogFile, "Can't set readonly attribute for \"{}\" as the file doesn't exist", full_path);
@@ -394,7 +452,7 @@ namespace rex
     // Remove the readonly flag of a file
     Error remove_readonly(rsl::string_view path)
     {
-      const rsl::string_view full_path = path::abs_path(path);
+      scratch_string full_path = path::abs_path(path);
       if(!exists(full_path))
       {
         return Error::create_with_log(LogFile, "Can't remove readonly attribute for \"{}\" as the file doesn't exist", full_path);

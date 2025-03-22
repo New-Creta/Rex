@@ -81,6 +81,12 @@ namespace rex
 
     void post_app_shutdown()
     {
+      // Release the global allocators and their heaps
+      // They won't be used anymore post this point
+      // they need to be manually release or otherwise memory tracking
+      // will crash as the globals get destructed after the memory tracker
+      mut_globals().allocators.scratch_allocator.reset();
+      mut_globals().allocators.single_frame_allocator.reset();
     }
   } // namespace internal
 } // namespace rex

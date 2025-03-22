@@ -11,7 +11,6 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/settings/settings.h"
 #include "rex_std/bonus/utility.h"
-#include "rex_engine/text_processing/ini.h"
 
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/profiling/scoped_timer.h"
@@ -134,14 +133,14 @@ namespace rex
   {
     m_app_state.change_state(ApplicationState::Initializing);
 
-    init_allocators();
-
-    init_globals();
-
     // Loads the mounts of the engine
     // this will make it easier to access files under these paths
     // in the future
     mount_engine_paths();
+
+    init_boot_settings();
+
+    init_globals();
 
     // load the settings of the engine as early as possible
     // however it does have a few dependencies that need to be set up first
@@ -235,14 +234,23 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::init_allocators()
+  void CoreApplication::init_boot_settings()
   {
     // Allocate a buffer to use for reading the file's content
-    ini::Ini memory_settings = ini::read_from_file("memory_settings.ini");
+    ini::Ini boot_settings = ini::read_from_file(vfs::abs_path(MountingPoint::EngineSettings, "boot.ini"));
 
+    init_allocators(boot_settings);
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::init_allocators(const rex::ini::Ini& bootSettings)
+  {
     // Read the settings of the file
-    s32 single_frame_heap_size = 1000000; // rsl::stoi(memory_settings.get("heaps", "single_frame_heap_size")).value();
-    s32 scratch_heap_size = 1000000; // rsl::stoi(memory_settings.get("heaps", "scratch_heap_size")).value();
+    s32 single_frame_heap_size = rsl::stoi(bootSettings.get("heaps", "single_frame_heap_size")).value();
+    s32 scratch_heap_size = rsl::stoi(bootSettings.get("heaps", "scratch_heap_size")).value();
+
+    REX_ASSERT_X(single_frame_heap_size > 0, "Single frame heap setting indicates 0 size. The setting is either missing or 0. Please add a setting to \"heaps\" with name \"single_frame_heap_size\" in memory_settings.ini");
+    REX_ASSERT_X(scratch_heap_size > 0, "Scratch heap setting indicates 0 size. The setting is either missing or 0. Please add a setting to \"heaps\" with name \"scratch_heap_size\" in memory_settings.ini");
 
     // Initialize the global heaps and its allocators using the settings loaded from disk
     mut_globals().allocators.single_frame_allocator = rsl::make_unique<StackAllocator<GlobalAllocator>>(single_frame_heap_size);

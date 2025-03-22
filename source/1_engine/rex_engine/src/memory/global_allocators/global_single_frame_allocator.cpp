@@ -20,4 +20,8 @@ namespace rex
     return (rsl::numeric_limits<s32>::max)();
   }
 
+  bool GlobalSingleFrameAllocator::has_allocated_ptr(void* ptr) const
+  {
+    return globals().allocators.single_frame_allocator->has_allocated_ptr(ptr);
+  }
 }

@@ -4,6 +4,7 @@
 #include "rex_engine/engine/state_controller.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/text_processing/ini.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
@@ -52,7 +53,8 @@ namespace rex
     // Initialization
     void mount_engine_paths();
     void load_settings();
-    void init_allocators();
+    void init_boot_settings();
+    void init_allocators(const rex::ini::Ini& bootSettings);
     void init_globals();
 
   private:

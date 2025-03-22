@@ -17,6 +17,8 @@ namespace rex
 
     // Read from a file
     memory::Blob read_file(rsl::string_view path);
+    // Read from a file
+    void read_file(rsl::string_view path, rsl::byte* buffer, s64 size);
     // Save content to a file
     Error write_to_file(rsl::string_view filepath, const void* data, card64 size);
     // Append a single line to a file

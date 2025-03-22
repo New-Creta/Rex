@@ -71,11 +71,15 @@ namespace rex
       ptr->~T();
     }
 
+    bool has_allocated_ptr(void* ptr) const
+    {
+      return m_buffer.get() <= ptr && ptr < m_buffer.get() + m_buffer.count();
+    }
+
     bool operator==(const StackAllocator& rhs) const
     {
       return m_buffer.get() == rhs.m_buffer.get();
     }
-
     bool operator!=(const StackAllocator& rhs) const
     {
       return !(*this == rhs);
