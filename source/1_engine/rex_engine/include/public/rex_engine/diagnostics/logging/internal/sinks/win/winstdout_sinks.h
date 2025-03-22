@@ -68,7 +68,7 @@ namespace rex
         // throw only if non stdout/stderr target is requested (probably regular file and not console).
         if(m_handle == INVALID_HANDLE_VALUE && file != stdout && file != stderr)
         {
-          throw_rexlog_ex(rex::DebugString("rex::log::stdout_sink_base: _get_osfhandle() failed"), errno);
+          throw_rexlog_ex(rex::debug_string("rex::log::stdout_sink_base: _get_osfhandle() failed"), errno);
         }
       }
 
@@ -89,7 +89,7 @@ namespace rex
         const bool ok       = ::WriteFile(m_handle, formatted.data(), size, &bytes_written, nullptr) != 0;
         if(!ok)
         {
-          rex::DebugString err(rex::global_debug_allocator());
+          rex::debug_string err(rex::GlobalDebugAllocator());
           err += "stdout_sink_base: WriteFile() failed. GetLastError(): ";
           err += rsl::to_string(::GetLastError());
           throw_rexlog_ex(err);
@@ -155,27 +155,27 @@ namespace rex
 
     // factory methods
     template <typename Factory>
-    rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName)
+    rsl::shared_ptr<Logger> stdout_logger_mt(const rex::debug_string& loggerName)
     {
-      return Factory::template create<sinks::StdoutSinkMt>(rex::DebugString(loggerName));
+      return Factory::template create<sinks::StdoutSinkMt>(rex::debug_string(loggerName));
     }
 
     template <typename Factory>
-    rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName)
+    rsl::shared_ptr<Logger> stdout_logger_st(const rex::debug_string& loggerName)
     {
-      return Factory::template create<sinks::StdoutSinkSt>(rex::DebugString(loggerName));
+      return Factory::template create<sinks::StdoutSinkSt>(rex::debug_string(loggerName));
     }
 
     template <typename Factory>
-    rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName)
+    rsl::shared_ptr<Logger> stderr_logger_mt(const rex::debug_string& loggerName)
     {
-      return Factory::template create<sinks::StderrSinkMt>(rex::DebugString(loggerName));
+      return Factory::template create<sinks::StderrSinkMt>(rex::debug_string(loggerName));
     }
 
     template <typename Factory>
-    rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName)
+    rsl::shared_ptr<Logger> stderr_logger_st(const rex::debug_string& loggerName)
     {
-      return Factory::template create<sinks::StderrSinkSt>(rex::DebugString(loggerName));
+      return Factory::template create<sinks::StderrSinkSt>(rex::debug_string(loggerName));
     }
 
   } // namespace log

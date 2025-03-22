@@ -14,8 +14,8 @@ namespace rex
         template <typename Sink, typename... SinkArgs>
         static rsl::shared_ptr<rex::log::Logger> create(rsl::string_view loggerName, SinkArgs&&... args)
         {
-          auto sink       = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
-          auto new_logger = rsl::allocate_shared<rex::log::Logger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink));
+          auto sink       = rsl::allocate_shared<Sink>(rex::GlobalDebugAllocator(), rsl::forward<SinkArgs>(args)...);
+          auto new_logger = rsl::allocate_shared<rex::log::Logger>(rex::GlobalDebugAllocator(), rsl::move(loggerName), rsl::move(sink));
           details::Registry::instance().initialize_logger(new_logger);
           return new_logger;
         }
@@ -41,12 +41,12 @@ namespace rex
           auto tp = registry_inst.thread_pool();
           if(tp == nullptr)
           {
-            tp = rsl::allocate_shared<details::ThreadPool>(rex::global_debug_allocator(), g_default_async_q_size, 1U);
+            tp = rsl::allocate_shared<details::ThreadPool>(rex::GlobalDebugAllocator(), g_default_async_q_size, 1U);
             registry_inst.set_thread_pool(tp);
           }
 
-          auto sink       = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
-          auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
+          auto sink       = rsl::allocate_shared<Sink>(rex::GlobalDebugAllocator(), rsl::forward<SinkArgs>(args)...);
+          auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::GlobalDebugAllocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
           registry_inst.initialize_logger(new_logger);
           return new_logger;
         }

@@ -17,7 +17,7 @@ namespace rex
 	// the user should convert it to a string_view.
 	// If the storage of the tmp string is expected to last for longer than a single frame, it should be converted
 	// to a string instead.
-	using TempString = rsl::string;
-	template <typename T>
-	using TempVector = rsl::vector<T>;
+	//using temp_string = rsl::string;
+	//template <typename T>
+	//using temp_vector = rsl::vector<T>;
 }

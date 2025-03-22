@@ -83,9 +83,9 @@ namespace rex
     }
     // Sets a new working directory and returns the old one
     // A valid and existing path is expected or an assert is raised
-    TempString set_cwd(rsl::string_view dir)
+    scratch_string set_cwd(rsl::string_view dir)
     {
-      TempString fulldir = rex::path::abs_path(dir);
+      scratch_string fulldir = rex::path::abs_path(dir);
 
       REX_ASSERT_X(is_valid_path(fulldir), "dir is not a valid path, cannot change the working directory. Dir: {}", fulldir);
       REX_ASSERT_X(directory::exists(fulldir), "dir specified for working dir doesn't exist. This is not allowed. Dir: {}", fulldir);
@@ -93,23 +93,23 @@ namespace rex
       rsl::string_view cwd = path::cwd();
       SetCurrentDirectoryA(fulldir.data());
 
-      return TempString(cwd);
+      return scratch_string(cwd);
     }
     // Returns the path of the current user's temp folder
-    TempString temp_path()
+    scratch_string temp_path()
     {
       rsl::big_stack_string str;
       GetTempPathA(str.max_size(), str.data()); // NOLINT(readability-static-accessed-through-instance)
       str.reset_null_termination_offset();
-      return TempString(str);
+      return scratch_string(str);
     }
     // For symlinks, returns the path the link points to
     // Otherwise returns the input
-    TempString real_path(rsl::string_view path)
+    scratch_string real_path(rsl::string_view path)
     {
       // It's a bit tricky to get the real path as there are multiple ways
       // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
-      TempString fullpath = abs_path(path);
+      scratch_string fullpath = abs_path(path);
 
       fullpath = rex::path::norm_path(fullpath);
 
@@ -122,7 +122,7 @@ namespace rex
       // If the path is a .lnk file, we can read its link
       if(rex::path::extension(fullpath).ends_with(".lnk"))
       {
-        TempString res = rex::win::com_lib::read_link(fullpath);
+        scratch_string res = rex::win::com_lib::read_link(fullpath);
         res.replace("\\", "/");
         return res;
       }
@@ -139,7 +139,7 @@ namespace rex
         return fullpath;
       }
 
-      TempString res(stack_res);
+      scratch_string res(stack_res);
       res.replace("\\", "/");
       return res;
     }

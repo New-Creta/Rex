@@ -48,7 +48,7 @@ namespace rex
       private:
         rsl::chrono::microseconds max_skip_duration_;
         log_clock::time_point last_msg_time_;
-        rex::DebugString last_msg_payload_;
+        rex::debug_string last_msg_payload_;
         s32 skip_counter_ = 0;
         level::LevelEnum log_level_;
       };

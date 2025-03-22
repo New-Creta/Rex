@@ -34,7 +34,7 @@ namespace rex
 
       private:
         details::FileHelper m_file_helper;
-        DebugString m_filename;
+        debug_string m_filename;
       };
 
       template <typename Mutex>

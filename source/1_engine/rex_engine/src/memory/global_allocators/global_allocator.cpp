@@ -2,70 +2,79 @@
 
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/memory_stats.h"
+#include "rex_engine/memory/alloc_unique.h"
+
+#include "rex_engine/engine/mutable_globals.h"
 
 namespace rex
 {
   namespace internal
   {
-    bool log_mem_usage_before_tracking_impl()
+    bool log_mem_usage_before_tracking()
     {
       output_debug_string("Memory usage before any allocation");
       debug_log_mem_usage();
       return true;
     }
 
-    void log_mem_usage_before_tracking()
-    {
-      // Store result in static bool so we only log once
-      static const bool s_is_initialized = log_mem_usage_before_tracking_impl();
-    }
+		BackendOSAllocator& backend_allocator()
+		{
+#ifdef REX_ENABLE_MEM_TRACKING
+      static UntrackedAllocator untracked_alloc{};
+      static TrackedAllocator alloc(untracked_alloc);
+#else
+      static UntrackedAllocator alloc{};
+#endif
+			return alloc;
+		}
 
-    template <typename T>
-    T create_global_allocator()
+    bool init_backend_allocator()
     {
       log_mem_usage_before_tracking();
 
-      static UntrackedAllocator untracked_alloc {};
-      static T alloc(untracked_alloc);
-
-      return alloc;
+      backend_allocator(); // simply touch it so that the local static get initialized
+      return true;
     }
 
+    bool create_minimal_global_allocators(GlobalAllocator& alloc)
+    {
+      s32 minimal_global_alloc_size = static_cast<s32>(1_kib);
+      output_debug_string("Creating a minimal scratch allocator of 1KiB for early startup");
+
+      // Cannot use make_unique or alloc_unique here
+      // make_unique would cause a circular dependency and we'd get a deadlock the second time the GlobalAllocator ctor is called
+      // alloc_unique cannot be used here as that'd return a unique_ptr without a default_deleter argument
+      CircularAllocator<GlobalAllocator>* ptr = alloc.allocate<CircularAllocator<GlobalAllocator>>();
+      alloc.construct(ptr, minimal_global_alloc_size, alloc);
+      mut_globals().allocators.scratch_allocator = rsl::unique_ptr<CircularAllocator<GlobalAllocator>>(ptr);
+
+      return mut_globals().allocators.scratch_allocator != nullptr;
+    }
   } // namespace internal
 
-  GlobalAllocator& global_allocator()
+
+  GlobalAllocator::GlobalAllocator()
   {
-#ifdef REX_ENABLE_MEM_TRACKING
-    static GlobalAllocator alloc = internal::create_global_allocator<GlobalAllocator>();
-#else
-    static GlobalAllocator alloc;
-#endif
-    return alloc;
+    static bool s_init_backend_allocator = internal::init_backend_allocator();
+    static bool s_create_minimal_global_allocator = internal::create_minimal_global_allocators(*this);
   }
 
-  GlobalDebugAllocator& global_debug_allocator()
+  GlobalAllocator::pointer GlobalAllocator::allocate(rsl::memory_size size) // NOLINT(readability-convert-member-functions-to-static)
   {
-    static GlobalDebugAllocator alloc = internal::create_global_allocator<GlobalDebugAllocator>();
-
-    return alloc;
+    return internal::backend_allocator().allocate(size.size_in_bytes());
+  }
+  GlobalAllocator::pointer GlobalAllocator::allocate(card64 size) // NOLINT(readability-convert-member-functions-to-static)
+  {
+    return internal::backend_allocator().allocate(size);
   }
 
-  void* alloc(rsl::memory_size size)
+  void GlobalAllocator::deallocate(pointer ptr, rsl::memory_size size) // NOLINT(readability-convert-member-functions-to-static)
   {
-    return global_allocator().allocate(size);
+    internal::backend_allocator().deallocate(ptr, size.size_in_bytes());
   }
-  void dealloc(void* ptr, rsl::memory_size size)
+  void GlobalAllocator::deallocate(pointer ptr, card64 size) // NOLINT(readability-convert-member-functions-to-static)
   {
-    global_allocator().deallocate(ptr, size);
-  }
-
-  void* debug_alloc(rsl::memory_size size)
-  {
-    return global_debug_allocator().allocate(size);
-  }
-  void debug_dealloc(void* ptr, rsl::memory_size size)
-  {
-    global_debug_allocator().deallocate(ptr, size);
+    internal::backend_allocator().deallocate(ptr, size);
   }
 
 } // namespace rex

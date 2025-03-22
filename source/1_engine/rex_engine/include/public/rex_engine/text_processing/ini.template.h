@@ -184,7 +184,7 @@ namespace rex
 			Allocator alloc;
 			auto blob = alloc_unique<rsl::byte[]>(alloc, 1_kib);
 
-			//rex::vfs::read_file(filepath, blob.get(), blob.count());
+			rex::vfs::read_file(filepath, blob.get(), blob.count());
 			return rex::ini::parse<Allocator>(rsl::string_view(char_cast(blob.get()), blob.count()));
 		}
 	}

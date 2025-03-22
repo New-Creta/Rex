@@ -2,13 +2,13 @@
 
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/memory/global_allocators/global_allocator.h"
+#include "rex_engine/memory/alloc_unique.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_engine/gfx/system/gal.h"
 #include "rex_engine/gfx/resources/texture_2d.h"
 #include "rex_engine/gfx/core/texture_format.h"
-
 
 #include "rex_engine/gfx/imgui/imgui_frame_context.h"
 #include "rex_engine/gfx/imgui/imgui_viewport.h"
@@ -132,7 +132,7 @@ namespace rex
     void ImGuiRenderer::init_main_imgui_viewport()
     {
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      main_viewport->RendererUserData = debug_alloc<RexImGuiViewport>(main_viewport);
+      main_viewport->RendererUserData = alloc_unique_debug<RexImGuiViewport>(main_viewport).release();
     }
 
     // Init the colors for imgui to use
@@ -305,7 +305,7 @@ namespace rex
       if (RexImGuiViewport* vd = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
         rsl::destroy_at(vd);
-        debug_dealloc(vd, sizeof(RexImGuiViewport));
+        GlobalDebugAllocator().deallocate(vd, sizeof(RexImGuiViewport));
 
         main_viewport->RendererUserData = nullptr;
       }

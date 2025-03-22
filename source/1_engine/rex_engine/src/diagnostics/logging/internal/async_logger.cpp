@@ -86,7 +86,7 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::shared_ptr<rex::log::Logger> rex::log::AsyncLogger::clone(rsl::string_view newName)
     {
-      auto cloned = rsl::allocate_shared<rex::log::AsyncLogger>(rex::global_debug_allocator(), *this);
+      auto cloned = rsl::allocate_shared<rex::log::AsyncLogger>(rex::GlobalDebugAllocator(), *this);
 
       cloned->set_name(newName);
 

@@ -6,7 +6,7 @@ namespace rex
 {
   // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
 
-	class SingleFrameAllocatorWrapper
+	class GlobalSingleFrameAllocator
 	{
 	public:
     void* allocate(const s32 count);    // deallocates the storage reference by the pointer p.
@@ -26,11 +26,11 @@ namespace rex
     }
 	};
 
-  constexpr bool operator==(const SingleFrameAllocatorWrapper& /*unused*/, const SingleFrameAllocatorWrapper& /*unused*/)
+  constexpr bool operator==(const GlobalSingleFrameAllocator& /*unused*/, const GlobalSingleFrameAllocator& /*unused*/)
   {
     return true;
   }
-  constexpr bool operator!=(const SingleFrameAllocatorWrapper& /*unused*/, const SingleFrameAllocatorWrapper& /*unused*/)
+  constexpr bool operator!=(const GlobalSingleFrameAllocator& /*unused*/, const GlobalSingleFrameAllocator& /*unused*/)
   {
     return false;
   }

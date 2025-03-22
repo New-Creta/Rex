@@ -16,7 +16,7 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     Logger::Logger(rsl::string_view name)
-        : m_name(rex::DebugString(name))
+        : m_name(rex::debug_string(name))
         , m_sinks()
         , m_level(static_cast<s32>(details::Registry::instance().get_global_level()))
     {
@@ -182,8 +182,8 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::shared_ptr<Logger> Logger::clone(rsl::string_view loggerName)
     {
-      auto cloned    = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
-      cloned->m_name = rex::DebugString(loggerName);
+      auto cloned    = rsl::allocate_shared<Logger>(rex::GlobalDebugAllocator(), *this);
+      cloned->m_name = rex::debug_string(loggerName);
       return cloned;
     }
 
@@ -249,7 +249,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void Logger::set_name(rsl::string_view name)
     {
-      m_name = rex::DebugString(name);
+      m_name = rex::debug_string(name);
     }
 
     //-------------------------------------------------------------------------

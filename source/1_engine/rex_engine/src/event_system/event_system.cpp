@@ -20,7 +20,7 @@ namespace rex
   }
 
   EventSystem::EventSystem()
-    : m_event_allocator(rsl::make_unique<rsl::byte[]>(s_event_queue_byte_size))
+    : m_event_allocator(s_event_queue_byte_size)
   {
   }
 

@@ -49,7 +49,7 @@ namespace rex
         // See https://github.com/gabime/rex::log/issues/609
         void sleep_for_millis(unsigned int milliseconds) noexcept;
 
-        rex::DebugString filename_to_str(const filename_t& filename);
+        rex::debug_string filename_to_str(const filename_t& filename);
 
         int pid() noexcept;
 

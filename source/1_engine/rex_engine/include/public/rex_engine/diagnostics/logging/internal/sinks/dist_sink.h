@@ -25,7 +25,7 @@ namespace rex
       {
       public:
         DistSink() = default;
-        explicit DistSink(const rex::DebugVector<rsl::shared_ptr<AbstractSink>>& sinks);
+        explicit DistSink(const rex::debug_vector<rsl::shared_ptr<AbstractSink>>& sinks);
 
         DistSink(const DistSink&)            = delete;
         DistSink& operator=(const DistSink&) = delete;
@@ -34,7 +34,7 @@ namespace rex
 
         void add_sink(rsl::shared_ptr<AbstractSink> subSink);
         void remove_sink(rsl::shared_ptr<AbstractSink> subSink);
-        void set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks);
+        void set_sinks(rex::debug_vector<rsl::shared_ptr<AbstractSink>> sinks);
 
       protected:
         void sink_it_impl(const details::LogMsg& msg) override;
@@ -43,11 +43,11 @@ namespace rex
         void set_formatter_impl(PatternFormatter sinkFormatter) override;
 
       private:
-        rex::DebugVector<rsl::shared_ptr<AbstractSink>> m_sinks;
+        rex::debug_vector<rsl::shared_ptr<AbstractSink>> m_sinks;
       };
 
       template <typename Mutex>
-      DistSink<Mutex>::DistSink(const rex::DebugVector<rsl::shared_ptr<AbstractSink>>& sinks)
+      DistSink<Mutex>::DistSink(const rex::debug_vector<rsl::shared_ptr<AbstractSink>>& sinks)
           : m_sinks(sinks)
       {
       }
@@ -67,7 +67,7 @@ namespace rex
       }
 
       template <typename Mutex>
-      void DistSink<Mutex>::set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
+      void DistSink<Mutex>::set_sinks(rex::debug_vector<rsl::shared_ptr<AbstractSink>> sinks)
       {
         rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::m_mutex);
         m_sinks = rsl::move(sinks);

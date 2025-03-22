@@ -316,9 +316,9 @@ namespace rex
 #endif
         }
 
-        rex::DebugString filename_to_str(const filename_t& filename)
+        rex::debug_string filename_to_str(const filename_t& filename)
         {
-          return rex::DebugString(filename);
+          return rex::debug_string(filename);
         }
 
         int pid() noexcept

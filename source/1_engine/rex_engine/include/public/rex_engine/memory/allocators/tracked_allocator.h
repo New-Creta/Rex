@@ -82,12 +82,17 @@ namespace rex
 
       return mem_block;
     }
+    template <typename T>
+    REX_NO_DISCARD T* allocate()
+    {
+      return static_cast<T*>(allocate(sizeof(T)));
+    }
 
-    void deallocate(pointer ptr, rsl::memory_size size)
+    void deallocate(pointer ptr, rsl::memory_size size = 0)
     {
       deallocate(ptr, size.size_in_bytes());
     }
-    void deallocate(pointer ptr, size_type size)
+    void deallocate(pointer ptr, size_type size =0)
     {
       if(ptr == nullptr)
       {

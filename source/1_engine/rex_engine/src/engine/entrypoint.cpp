@@ -62,10 +62,6 @@ namespace rex
         attach_debugger();
       }
 
-      // Assign a very small buffer to the single frame allocator so it can be used
-      // It'll be overwritten later
-      rex::mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(1_mib, 1);
-
       // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
       // If we decide to limit this more aggresively, we can move this initialization to the initialize function
@@ -85,7 +81,6 @@ namespace rex
 
     void post_app_shutdown()
     {
-      mut_globals().single_frame_allocator.reset();
     }
   } // namespace internal
 } // namespace rex

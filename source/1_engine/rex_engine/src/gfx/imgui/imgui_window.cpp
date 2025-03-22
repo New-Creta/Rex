@@ -15,7 +15,7 @@ namespace rex
     // Create a new imgui window object
     void imgui_create_window(ImGuiViewport* viewport)
     {
-      ImGuiWindow* imgui_window = rex::debug_alloc<ImGuiWindow>(viewport, imgui_device());
+      ImGuiWindow* imgui_window = alloc_unique_debug<ImGuiWindow>(viewport, imgui_device()).release();
       viewport->RendererUserData = imgui_window;
     }
     // Destroy an imgui window object
@@ -25,7 +25,7 @@ namespace rex
       {
         imgui_window->wait_for_pending_operations();
         rsl::destroy_at(imgui_window);
-        rex::debug_dealloc(imgui_window, sizeof(ImGuiWindow));
+        GlobalDebugAllocator().deallocate(imgui_window, sizeof(ImGuiWindow));
       }
       viewport->RendererUserData = nullptr;
     }

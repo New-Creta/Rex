@@ -3,7 +3,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/diagnostics/stacktrace.h"
-#include "rex_engine/engine/debug_types.h"
+#include "rex_engine/memory/memory_types.h"
 #include "rex_engine/engine/defines.h"
 #include "rex_std/bonus/types.h"
 
@@ -11,9 +11,9 @@ namespace rex
 {
   DEFINE_LOG_CATEGORY(LogAssert);
 
-  DebugVector<AssertContext>& contexts()
+  debug_vector<AssertContext>& contexts()
   {
-    thread_local DebugVector<AssertContext> contexts;
+    thread_local debug_vector<AssertContext> contexts;
     return contexts;
   }
 

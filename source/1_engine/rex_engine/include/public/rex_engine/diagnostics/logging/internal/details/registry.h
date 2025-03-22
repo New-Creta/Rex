@@ -22,7 +22,7 @@ namespace rex
     class Logger;
 
     using LoggerObjectPtr    = rsl::shared_ptr<Logger>;
-    using LoggerObjectPtrMap = rex::DebugHashTable<rex::DebugString, LoggerObjectPtr>;
+    using LoggerObjectPtrMap = rex::debug_hash_map<rex::debug_string, LoggerObjectPtr>;
 
     namespace details
     {

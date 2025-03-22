@@ -7,6 +7,6 @@
 // #TODO: Remaining cleanup of development/Pokemon -> main merge. ID: HEAP AND ALLOCATORS
 namespace rex
 {
-	template <typename T>
-	using TempVector = rsl::vector<T>;
+	//template <typename T>
+	//using temp_vector = rsl::vector<T>;
 }

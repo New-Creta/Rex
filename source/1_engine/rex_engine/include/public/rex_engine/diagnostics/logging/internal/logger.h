@@ -27,7 +27,7 @@ namespace rex
 {
   namespace log
   {
-    using Sinks = rex::DebugVector<sink_ptr>;
+    using Sinks = rex::debug_vector<sink_ptr>;
 
     class Logger
     {
@@ -40,7 +40,7 @@ namespace rex
       //-------------------------------------------------------------------------
       template <typename It>
       Logger(rsl::string_view name, It begin, It end)
-          : m_name(rex::DebugString(name))
+          : m_name(rex::debug_string(name))
           , m_sinks(begin, end)
           , m_level(static_cast<s32>(details::Registry::instance().get_global_level()))
       {
@@ -170,7 +170,7 @@ namespace rex
       void set_name(rsl::string_view name);
 
     private:
-      rex::DebugString m_name;
+      rex::debug_string m_name;
       Sinks m_sinks;
       rex::log::level_t m_level;
       rex::log::level_t m_flush_level {static_cast<s32>(level::LevelEnum::Off)};

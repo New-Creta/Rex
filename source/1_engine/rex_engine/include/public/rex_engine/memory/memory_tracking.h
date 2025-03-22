@@ -5,6 +5,7 @@
 #include "rex_engine/memory/global_allocators/global_debug_allocator.h"
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
+#include "rex_engine/memory/memory_types.h"
 #include "rex_engine/memory/allocators/untracked_allocator.h"
 #include "rex_std/array.h"
 #include "rex_std/bonus/attributes.h"
@@ -29,7 +30,7 @@ namespace rex
     MemoryTrackingStats tracking_stats;
 
     // A list of all allocation headers. Good for memory allocation debugging
-    rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
+    debug_vector<MemoryHeader*> allocation_headers;
   };
 
   class MemoryTracker

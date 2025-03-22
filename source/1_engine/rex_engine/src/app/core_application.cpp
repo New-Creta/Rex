@@ -168,7 +168,7 @@ namespace rex
   void CoreApplication::update()
   {
     rex::mut_globals().frame_info.update();
-    rex::mut_globals().single_frame_allocator->adv_frame();
+    rex::mut_globals().allocators.single_frame_allocator->reset();
 
     REX_INFO(LogCoreApp, "FPS: {}", rex::globals().frame_info.fps().get());
     REX_INFO(LogCoreApp, "Delta time: {}", rex::globals().frame_info.delta_time().to_seconds());
@@ -241,19 +241,17 @@ namespace rex
     ini::Ini memory_settings = ini::read_from_file("memory_settings.ini");
 
     // Read the settings of the file
-    s32 single_frame_heap_size = rsl::stoi(memory_settings.get("heaps", "single_frame_heap_size")).value();
-    s32 scratch_heap_size = rsl::stoi(memory_settings.get("heaps", "scratch_heap_size")).value();
+    s32 single_frame_heap_size = 1000000; // rsl::stoi(memory_settings.get("heaps", "single_frame_heap_size")).value();
+    s32 scratch_heap_size = 1000000; // rsl::stoi(memory_settings.get("heaps", "scratch_heap_size")).value();
 
     // Initialize the global heaps and its allocators using the settings loaded from disk
-    mut_globals().allocators.single_frame_allocator = rsl::make_unique<StackAllocator>(rsl::make_unique<rsl::byte[]>(single_frame_heap_size));
-    mut_globals().allocators.scratch_allocator = rsl::make_unique<CircularAllocator>(rsl::make_unique<rsl::byte[]>(scratch_heap_size));
+    mut_globals().allocators.single_frame_allocator = rsl::make_unique<StackAllocator<GlobalAllocator>>(single_frame_heap_size);
+    mut_globals().allocators.scratch_allocator = rsl::make_unique<CircularAllocator<GlobalAllocator>>(scratch_heap_size);
   }
 
   //--------------------------------------------------------------------------------------------
   void CoreApplication::init_globals()
   {
-    s32 mem_size = static_cast<s32>(settings::get_int("SingleFrameAllocatorSize", static_cast<s32>(1_mib)));
-    mut_globals().single_frame_allocator = rsl::make_unique<FrameBasedAllocator>(mem_size, 1);
   }
 
 } // namespace rex

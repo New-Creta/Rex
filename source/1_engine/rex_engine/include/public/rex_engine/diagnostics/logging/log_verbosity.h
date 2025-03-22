@@ -87,6 +87,6 @@ namespace rex
 //     * @param verbosity verbosity in string form (e.g., "Log", "Warning", or "Fatal")
 //     * @returns Parsed verbosity from the string (or Log if the string was invalid)
 //     */
-//    LogVerbosity parse_log_verbosity_from_string(const rex::DebugString& verbosity);
+//    LogVerbosity parse_log_verbosity_from_string(const rex::debug_string& verbosity);
 //  } // namespace conversions
 //} // namespace rex

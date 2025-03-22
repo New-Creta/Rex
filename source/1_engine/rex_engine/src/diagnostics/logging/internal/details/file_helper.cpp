@@ -71,7 +71,7 @@ namespace rex
           details::os::sleep_for_millis(s_open_interval);
         }
 
-        rex::DebugString err(rex::global_debug_allocator());
+        rex::debug_string err;
         err += "Failed opening file ";
         err += os::filename_to_str(m_filename);
         err += " for writing";
@@ -92,7 +92,7 @@ namespace rex
       {
         if(fflush(m_fd) != 0)
         {
-          rex::DebugString err(rex::global_debug_allocator());
+          rex::debug_string err;
           err += "Failed flush to file ";
           err += os::filename_to_str(m_filename);
           err += " %d";
@@ -104,7 +104,7 @@ namespace rex
       {
         if(!os::fsync(m_fd))
         {
-          rex::DebugString err(rex::global_debug_allocator());
+          rex::debug_string err;
           err += "Failed to fsync file ";
           err += os::filename_to_str(m_filename);
           err += " %d";
@@ -140,7 +140,7 @@ namespace rex
 
         // if(fwrite(data, 1, msg_size, m_fd) != msg_size)
         //{
-        //   rex::DebugString err(rex::global_debug_allocator());
+        //   rex::debug_string err;
         //   err += "Failed writing to file ";
         //   err += os::filename_to_str(m_filename);
         //   err += " %d";
@@ -152,7 +152,7 @@ namespace rex
       {
         if(m_fd == nullptr)
         {
-          rex::DebugString err(rex::global_debug_allocator());
+          rex::debug_string err;
           err += "Cannot use size() on closed file ";
           err += os::filename_to_str(m_filename);
           printf("%s", err.data());

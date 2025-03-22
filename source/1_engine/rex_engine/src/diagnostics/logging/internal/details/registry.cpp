@@ -173,11 +173,11 @@ namespace rex
 
       void Registry::register_logger_impl(LoggerObjectPtr newLogger)
       {
-        auto logger_name = rex::DebugString(newLogger->name());
+        auto logger_name = rex::debug_string(newLogger->name());
 
         if(m_loggers.find(logger_name) != m_loggers.end())
         {
-          rex::DebugString err(rex::global_debug_allocator());
+          rex::debug_string err;
           err += "Logger with name '";
           err += logger_name;
           err += "' already exists";

@@ -4,6 +4,7 @@
 #include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/memory_types.h"
 #include "rex_std/bonus/atomic/atomic.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/chrono.h"
@@ -26,13 +27,13 @@ namespace rex
       class AbstractSink;
     } // namespace sinks
 
-    using filename_t      = rex::DebugString;
-    using memory_buf_t    = rex::DebugString;
+    using filename_t      = rex::debug_string;
+    using memory_buf_t    = rex::debug_string;
     using level_t         = rsl::atomic<int>;
     using log_clock       = rsl::chrono::system_clock;
     using sink_ptr        = rsl::shared_ptr<sinks::AbstractSink>;
     using sinks_init_list = rsl::initializer_list<sink_ptr>;
-    using err_handler     = rsl::function<void(const rex::DebugString& errMsg)>;
+    using err_handler     = rsl::function<void(const rex::debug_string& errMsg)>;
 
     template <typename... Args>
     using format_string_t = rsl::format_string<Args...>;

@@ -23,9 +23,8 @@ namespace rex
 
       void list_entries(rsl::string_view path, Recursive goRecursive, rsl::Out<rsl::vector<rsl::string>> outResult)
       {
-        rex::TempHeapScope tmp_heap_scope{};
         WIN32_FIND_DATAA ffd;
-        TempString full_path = rex::path::abs_path(path);
+        scratch_string full_path = rex::path::abs_path(path);
         full_path += "\\*";
         HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -35,8 +34,8 @@ namespace rex
           return;
         }
 
-        TempVector<TempString> dirs;
-        TempString fullpath;
+        temp_vector<scratch_string> dirs;
+        scratch_string fullpath;
         do // NOLINT(cppcoreguidelines-avoid-do-while)
         {
           s32 length = rsl::strlen(ffd.cFileName);
@@ -73,8 +72,7 @@ namespace rex
     // Create a new directory
     Error create(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_path = path::abs_path(path);
+      const scratch_string full_path = path::abs_path(path);
       if(exists(full_path))
       {
         return Error::create_with_log(LogDirectory, "Cannot create directory \"{}\" as it already exists", full_path);
@@ -89,8 +87,7 @@ namespace rex
     // Create a directory recursively, creating all sub directories until the leaf dir
     Error create_recursive(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString fullpath = path::abs_path(path);
+      const scratch_string fullpath = path::abs_path(path);
       const rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
 
       rsl::string to_create;
@@ -117,8 +114,7 @@ namespace rex
     // Delete a directory
     Error del(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_path = path::abs_path(path);
+      const scratch_string full_path = path::abs_path(path);
 
 			if (!is_empty(full_path))
 			{
@@ -134,8 +130,7 @@ namespace rex
     // Delete a directory recursively, including all files and sub folders
     Error del_recursive(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_path = path::abs_path(path);
+      const scratch_string full_path = path::abs_path(path);
 
       Error error = Error::no_error();
 
@@ -164,8 +159,7 @@ namespace rex
     // Return if a directory exists
     bool exists(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_path = path::abs_path(path);
+      const scratch_string full_path = path::abs_path(path);
 
       // It's possible the error returned here is ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND
       // because we can't ignore both, we just call it without wrapping it in WIN_CALL
@@ -188,9 +182,8 @@ namespace rex
     // Copy a directory and its content
     Error copy(rsl::string_view src, rsl::string_view dst) // NOLINT(misc-no-recursion)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_src = path::abs_path(src);
-      const TempString full_dst = path::abs_path(dst);
+      const scratch_string full_src = path::abs_path(src);
+      const scratch_string full_dst = path::abs_path(dst);
 
       const rsl::vector<rsl::string> all_files = list_files(full_src);
       const rsl::vector<rsl::string> all_dirs  = list_dirs(full_src);
@@ -203,8 +196,8 @@ namespace rex
 
       for(const rsl::string_view file_entry: all_files)
       {
-        const TempString rel_path  = path::rel_path(file_entry, full_src);
-        const TempString entry_dst = path::join(full_dst, rel_path);
+        const scratch_string rel_path  = path::rel_path(file_entry, full_src);
+        const scratch_string entry_dst = path::join(full_dst, rel_path);
         error = file::copy(file_entry, entry_dst);
         if (error)
         {
@@ -214,8 +207,8 @@ namespace rex
 
       for(const rsl::string_view dir_entry: all_dirs)
       {
-        const TempString rel_path  = path::rel_path(dir_entry, full_src);
-        const TempString entry_dst = path::join(full_dst, rel_path);
+        const scratch_string rel_path  = path::rel_path(dir_entry, full_src);
+        const scratch_string entry_dst = path::join(full_dst, rel_path);
         error = create(entry_dst);
         if (error)
         {
@@ -233,9 +226,8 @@ namespace rex
     // Move/Rename a directory
     Error move(rsl::string_view src, rsl::string_view dst)
     {
-      rex::TempHeapScope tmp_heap_scope{};
-      const TempString full_src = path::abs_path(src);
-      const TempString full_dst = path::abs_path(dst);
+      const scratch_string full_src = path::abs_path(src);
+      const scratch_string full_dst = path::abs_path(dst);
 
       const bool success = MoveFileA(full_src.c_str(), full_dst.c_str());
 
@@ -248,9 +240,8 @@ namespace rex
     // as in, it has no files or directories
     bool is_empty(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd;
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -284,9 +275,8 @@ namespace rex
     // List the number of entries under a directory
     s32 num_entries(rsl::string_view path, Recursive goRecursive)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd;
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -298,8 +288,8 @@ namespace rex
 
       s32 num_entries = 0;
 
-      TempVector<TempString> dirs;
-      TempString fullpath;
+      temp_vector<scratch_string> dirs;
+      scratch_string fullpath;
       do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
         s32 length = rsl::strlen(ffd.cFileName);
@@ -334,9 +324,8 @@ namespace rex
     // List the number of directories under a directory
     s32 num_dirs(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd;
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -351,7 +340,7 @@ namespace rex
       {
         s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
-        const TempString full_filename = path::join(path, name);
+        const scratch_string full_filename = path::join(path, name);
         if (exists(full_filename) && name != "." && name != "..")
         {
           ++num_dirs;
@@ -368,9 +357,8 @@ namespace rex
     // List the number of files under a directory
     s32 num_files(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd{};
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -385,7 +373,7 @@ namespace rex
       {
         const s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
-        TempString full_filename = path::join(path, name);
+        scratch_string full_filename = path::join(path, name);
         if (file::exists(full_filename))
         {
           ++num_files;
@@ -415,9 +403,8 @@ namespace rex
     // List all directories under a directory
     rsl::vector<rsl::string> list_dirs(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd;
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -436,7 +423,7 @@ namespace rex
       {
         s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
-        const TempString full_filename = path::join(path, name);
+        const scratch_string full_filename = path::join(path, name);
         if(exists(full_filename) && name != "." && name != "..")
         {
           result.push_back(rsl::string(full_filename));
@@ -453,9 +440,8 @@ namespace rex
     // List all files under a directory
     rsl::vector<rsl::string> list_files(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       WIN32_FIND_DATAA ffd {};
-      TempString full_path = rex::path::abs_path(path);
+      scratch_string full_path = rex::path::abs_path(path);
       full_path += "\\*";
       HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
@@ -474,7 +460,7 @@ namespace rex
       {
         const s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
-        TempString full_filename = path::join(path, name);
+        scratch_string full_filename = path::join(path, name);
         if(file::exists(full_filename))
         {
           result.push_back(rsl::string(full_filename));
@@ -492,7 +478,6 @@ namespace rex
     // Return the creation time of a directory
     rsl::time_point creation_time(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       const rsl::win::handle file = internal::open_file_for_attribs(path);
 
       // When we have an invalid handle, we return 0
@@ -509,7 +494,6 @@ namespace rex
     // Return the access time of a directory
     rsl::time_point access_time(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       const rsl::win::handle file = internal::open_file_for_attribs(path);
 
       // When we have an invalid handle, we return 0
@@ -526,7 +510,6 @@ namespace rex
     // Return the modification time of a directory
     rsl::time_point modification_time(rsl::string_view path)
     {
-      rex::TempHeapScope tmp_heap_scope{};
       const rsl::win::handle file = internal::open_file_for_attribs(path);
 
       // When we have an invalid handle, we return 0

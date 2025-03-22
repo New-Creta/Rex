@@ -914,7 +914,7 @@ namespace rex
         void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override;
 
       private:
-        rex::DebugString m_string;
+        rex::debug_string m_string;
       };
 
       //-------------------------------------------------------------------------
@@ -948,7 +948,7 @@ namespace rex
 
       private:
         rsl::chrono::seconds m_cache_timestamp {0};
-        DebugString m_cached_datetime;
+        debug_string m_cached_datetime;
       };
 
       //-------------------------------------------------------------------------
@@ -963,7 +963,7 @@ namespace rex
 
       private:
         rsl::chrono::seconds m_cache_timestamp {0};
-        DebugString m_cached_datetime;
+        debug_string m_cached_datetime;
       };
 
     } // namespace details

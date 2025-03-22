@@ -111,7 +111,7 @@ namespace rex
       private:
         q_type m_q;
 
-        rex::DebugVector<rsl::thread> m_threads;
+        rex::debug_vector<rsl::thread> m_threads;
       };
 
     } // namespace details

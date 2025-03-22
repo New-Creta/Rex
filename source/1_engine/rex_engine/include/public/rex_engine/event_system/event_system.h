@@ -9,6 +9,7 @@
 
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_engine/memory/global_allocators/global_allocator.h"
 #include "rex_engine/memory/allocators/stack_allocator.h"
 
 namespace rex
@@ -106,7 +107,7 @@ namespace rex
 
   private:
     rsl::unordered_map<rsl::type_id_t, rsl::unique_ptr<EventDispatcherBase>> m_dispatchers;
-    StackAllocator m_event_allocator;
+    StackAllocator<GlobalAllocator> m_event_allocator;
     rsl::vector<EventBase*> m_enqueued_events;
     static constexpr rsl::memory_size s_event_queue_byte_size = 256_kib;
   };

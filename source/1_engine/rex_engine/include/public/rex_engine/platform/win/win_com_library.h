@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/memory/memory_types.h"
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_std/bonus/string.h"
@@ -35,7 +36,7 @@ namespace rex::win
     bool is_initialized();
 
     // Read a symbolic link's path and return the path it actually points to
-    TempString read_link(rsl::string_view filepath);
+    scratch_string read_link(rsl::string_view filepath);
 
     // Create a com object using the com lib
     template <typename ComObject>

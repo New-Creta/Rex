@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/memory/global_allocators/global_debug_allocator.h"
 #include "rex_engine/memory/allocators/tracked_allocator.h"
 #include "rex_engine/memory/allocators/untracked_allocator.h"
 
@@ -8,78 +7,59 @@
 
 namespace rex
 {
+  // The global allocator is the allocator that speaks directly to the OS to request memory
+  // Allocations from the global allocator are to be avoided as they may require a kernell call
+  // Prefer other global allocators of the engine instead
+
   // Type aliases
 #ifdef REX_ENABLE_MEM_TRACKING
-  using GlobalAllocator = TrackedAllocator<UntrackedAllocator>;
+  using BackendOSAllocator = TrackedAllocator<UntrackedAllocator>;
 #else
-  using GlobalAllocator = UntrackedAllocator;
+  using BackendOSAllocator = UntrackedAllocator;
 #endif
 
-  using GlobalDebugAllocator = DebugAllocator<UntrackedAllocator>;
-
-  // Accessors
-  GlobalAllocator& global_allocator();
-  GlobalDebugAllocator& global_debug_allocator();
-
-  // Global memory allocations
-  void* alloc(rsl::memory_size size);
-  void dealloc(void* ptr, rsl::memory_size size);
-  void* debug_alloc(rsl::memory_size size);
-  void debug_dealloc(void* ptr, rsl::memory_size size);
-
-  template <typename T, typename ... Args>
-  T* alloc(Args&& ... args)
-  {
-    void* mem = alloc(sizeof(T));
-    new (mem) T(rsl::forward<Args>(args)...);
-    return static_cast<T*>(mem);
-  }
-  template <typename T>
-  void dealloc(T* ptr)
-  {
-    ptr->~T();
-    dealloc(ptr, sizeof(T));
-  }
-  template <typename T, typename ... Args>
-  T* debug_alloc(Args&& ... args)
-  {
-    void* mem = debug_alloc(sizeof(T));
-    new (mem) T(rsl::forward<Args>(args)...);
-    return static_cast<T*>(mem);
-  }
-  template <typename T>
-  void debug_dealloc(T* ptr)
-  {
-    ptr->~T();
-    debug_dealloc(ptr, sizeof(T));
-  }
-
-  // Debug Unique Pointer
-  template <typename T>
-  struct DebugDelete
+  class GlobalAllocator
   {
   public:
-    constexpr DebugDelete() = default;
+    using size_type = card64;
+    using pointer = void*;
 
-    template <typename T2, rsl::enable_if_t<rsl::is_convertible_v<T2*, T*>, bool> = true>
-    constexpr DebugDelete(const DebugDelete<T2>& /*unused*/) // NOLINT(google-explicit-constructor)
+    GlobalAllocator();
+
+    REX_NO_DISCARD pointer allocate(rsl::memory_size size);
+    REX_NO_DISCARD pointer allocate(size_type size);
+    template <typename T>
+    REX_NO_DISCARD T* allocate()
     {
+      return static_cast<T*>(allocate(sizeof(T)));
     }
 
-    constexpr void operator()(T* ptr) const
+    void deallocate(pointer ptr, rsl::memory_size size = 0);
+    void deallocate(pointer ptr, size_type size = 0);
+    template <typename T>
+    void deallocate(T* ptr)
     {
-      static_assert(sizeof(T) > 0, "can't delete an incomplete type"); // NOLINT(bugprone-sizeof-expression)
-      debug_dealloc(ptr);
+      return deallocate(ptr, sizeof(T));
+    }
+
+    template <typename U, typename... Args>
+    void construct(U* p, Args&&... args)
+    {
+      new(static_cast<void*>(p)) U(rsl::forward<Args>(args)...);
+    }
+    template <typename T>
+    void destroy(T* ptr)
+    {
+      ptr->~T();
+    }
+
+    bool operator==(const UntrackedAllocator& /*other*/) const
+    {
+      return true;
+    }
+    bool operator!=(const UntrackedAllocator& rhs) const
+    {
+      return !(*this == rhs);
     }
   };
-  template <typename T>
-  using unique_debug_ptr = rsl::unique_ptr<T, DebugDelete<T>>;
-
-  template <typename T, typename ... Args>
-  unique_debug_ptr<T> make_unique_debug(Args&& ... args)
-  {
-    unique_debug_ptr<T> ptr(debug_alloc<T>(rsl::forward<Args>(args)...));
-    return ptr;
-  }
-
 } // namespace rex

@@ -7,6 +7,7 @@
 #include "rex_engine/filesystem/read_request.h"
 #include "rex_engine/diagnostics/error.h"
 #include "rex_engine/memory/blob.h"
+#include "rex_engine/memory/memory_types.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/string.h"
@@ -96,8 +97,8 @@ namespace rex
     bool is_dir(rsl::string_view path);
     bool is_file(MountingPoint root, rsl::string_view path);
     bool is_file(rsl::string_view path);
-    TempString abs_path(rsl::string_view path);
-    TempString abs_path(MountingPoint root, rsl::string_view path);
+    scratch_string abs_path(rsl::string_view path);
+    scratch_string abs_path(MountingPoint root, rsl::string_view path);
 
     rsl::string_view mount_path(MountingPoint mount);
     bool is_mounted(MountingPoint mount);
