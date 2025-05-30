@@ -58,6 +58,8 @@ namespace rex
       }
 
       conf.AddProject<PokemonProject>(target);
+      conf.AddProject<HttpClient>(target);
+      conf.AddProject<HttpServer>(target);
     }
 
     protected void GenerateTargets()
