@@ -27,7 +27,7 @@ namespace rex
       void* platformWindowHandle;
     };
 
-    class ImGuiRenderer : public Renderer
+    class ImGuiRenderer : public LegacyRenderer
     {
     public:
       ImGuiRenderer(const ImGuiRendererCreationInfo& creationInfo);
