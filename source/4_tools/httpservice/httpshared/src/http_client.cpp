@@ -42,7 +42,7 @@ namespace http
 		}
 
 		Request req;
-		req.method						= "GET";
+		req.method						= HttpMethod::Get;
 		req.path							= path;
 		req.headers						= desc.headers;
 		req.response_handler	= rsl::move(desc.response_handler);
@@ -63,7 +63,7 @@ namespace http
 	Result ClientBase::head(const HeadRequestDesc& desc)
 	{
 		Request req;
-		req.method = "HEAD";
+		req.method = HttpMethod::Head;
 		req.headers = desc.headers;
 		req.path.assign(desc.path);
 		if (m_max_timeout_msec > 0) 
