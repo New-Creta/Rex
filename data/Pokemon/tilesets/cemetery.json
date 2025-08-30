@@ -1,6 +1,6 @@
 {
   "type_name": "TilesetAsset",
-  "tileset": "Pokemon/tilesets/cemetry.png",
+  "tileset": "Pokemon/tilesets/cemetery.png",
   "tile_size": {
     "x": 8,
     "y": 8
