@@ -73,5 +73,7 @@ namespace regina
 		rsl::unique_ptr<rex::gfx::ResourceView> m_render_target_srv;
 
 		rsl::unique_ptr<rex::gfx::TileRenderPass> m_tile_render_pass;
+
+		f32 m_tile_zoom;
 	};
 }

@@ -29,6 +29,7 @@ namespace rex
 
 			void set_tilemap(const rex::Tilemap* tilemap);
 			void set_tileset(const rex::TilesetAsset* tileset);
+			void set_tile_zoom(f32 zoom);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -52,6 +53,8 @@ namespace rex
 			rex::gfx::RenderTarget* m_render_target;
 			const rex::Tilemap* m_tilemap;
 			const rex::TilesetAsset* m_tileset;
+
+			f32 m_tile_zoom;
 		};
 	}
 }

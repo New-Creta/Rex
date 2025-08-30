@@ -16,7 +16,8 @@ namespace regina
 		: m_name(name)
 		, m_tilemap(tilemap)
 		, m_tileset(tileset)
-		, m_screen_tile_resolution({resolution.x / 8, resolution.y / 8 })
+		, m_screen_tile_resolution({ resolution.x / 8, resolution.y / 8 })
+		, m_tile_zoom(1.0f)
 	{
 		m_render_target = rex::gfx::gal::instance()->create_render_target(resolution.x, resolution.y, rex::gfx::TextureFormat::Unorm4);
 		m_render_target->debug_set_name("viewport render target");
@@ -29,9 +30,12 @@ namespace regina
 	{
 		// based on the camera position, create a tilemap, the same size as the viewport's resolution
 		// the camera has a zoom. more tiles are drawn depending on zoom
+		m_tile_render_pass->set_tile_zoom(m_tile_zoom);
+		m_screen_tile_resolution.x = (m_render_target->width() / 8.0f) / m_tile_zoom;
+		m_screen_tile_resolution.y = (m_render_target->height() / 8.0f) / m_tile_zoom;
+
 		rsl::pointi32 top_left = top_left_from_camera_pos(m_camera_pos);
 		update_screen_tilemap(top_left);
-
 		return false;
 	}
 
@@ -48,7 +52,9 @@ namespace regina
 			ImGui::DragInt("x: ", &m_camera_pos.x);
 			ImGui::DragInt("y: ", &m_camera_pos.y);
 
-			ImVec2 imageSize{ (f32)m_screen_tile_resolution.x * m_tileset->tile_size().x, (f32)m_screen_tile_resolution.y * m_tileset->tile_size().y };
+			ImGui::DragFloat("zoom", &m_tile_zoom, 0.01f);
+
+			ImVec2 imageSize{ (f32)m_render_target->width(), (f32)m_render_target->height() };
 			ImGui::Image((ImTextureID)m_render_target_srv.get(), imageSize);
 		}
 	}

@@ -18,7 +18,9 @@ namespace rex
 			: m_render_target(rt)
 			, m_tilemap(tilemap)
 			, m_tileset(tileset)
+			, m_tile_zoom(1.0f)
 		{
+			init();
 		}
 
 		void TileRenderPass::set_tilemap(const rex::Tilemap* tilemap)
@@ -30,7 +32,14 @@ namespace rex
 		void TileRenderPass::set_tileset(const rex::TilesetAsset* tileset)
 		{
 			m_tileset = tileset;
+			init();
 		}
+		void TileRenderPass::set_tile_zoom(f32 zoom)
+		{
+			m_tile_zoom = zoom;
+			init();
+		}
+
 		void TileRenderPass::render(rex::gfx::RenderContext* renderCtx)
 		{
 			if (!m_tilemap)
@@ -48,9 +57,10 @@ namespace rex
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
 			renderCtx->set_render_target(m_render_target);
+			renderCtx->clear_render_target(m_render_target);
 
-			s32 render_target_width = m_render_target->width();
-			s32 render_target_height = m_render_target->height();
+			s32 render_target_width = m_render_target->width();  //m_tilemap->width_in_px();// m_render_target->width();
+			s32 render_target_height = m_render_target->height();  //m_tilemap->height_in_px();// m_render_target->height();
 
 			f32 viewport_width = static_cast<f32>(render_target_width);
 			f32 viewport_height = static_cast<f32>(render_target_height);
@@ -68,6 +78,11 @@ namespace rex
 
 		void TileRenderPass::init()
 		{
+			if (m_tilemap == nullptr || m_tileset == nullptr)
+			{
+				return;
+			}
+
 			auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 
 			init_vb(render_ctx.get());
@@ -83,8 +98,13 @@ namespace rex
 			s32 render_target_height = m_render_target->height();
 			rsl::pointi8 tile_size = m_tileset->tile_size();
 
-			s32 render_target_width_in_tiles = render_target_width / tile_size.x;
-			s32 render_target_height_in_tiles = render_target_height / tile_size.y;
+			f32 tile_size_x = tile_size.x;
+			f32 tile_size_y = tile_size.y;
+			tile_size_x *= m_tile_zoom;
+			tile_size_y *= m_tile_zoom;
+
+			s32 render_target_width_in_tiles = render_target_width / tile_size_x;
+			s32 render_target_height_in_tiles = render_target_height / tile_size_y;
 
 			f32 inv_tile_width = 2.0f / render_target_width_in_tiles;
 			f32 inv_tile_height = 2.0f / render_target_height_in_tiles;
@@ -104,12 +124,21 @@ namespace rex
 			tile_vertices[2] = TileVertex{ rsl::point<f32>(0,              -inv_tile_height), rsl::point<f32>(0.0f,     uv_height) };
 			tile_vertices[3] = TileVertex{ rsl::point<f32>(inv_tile_width, -inv_tile_height), rsl::point<f32>(uv_width, uv_height) };
 
-			m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
+			if (!m_tiles_vb_gpu)
+			{
+				m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
+			}
+
 			renderCtx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(TileVertex));
 			renderCtx->transition_buffer(m_tiles_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
 		}
 		void TileRenderPass::init_ib(rex::gfx::RenderContext* renderCtx)
 		{
+			if (m_tiles_ib_gpu)
+			{
+				return;
+			}
+
 			const s32 num_indices_per_tile = 6;
 			rsl::array<u16, 6> tile_ib{};
 
@@ -149,9 +178,14 @@ namespace rex
 			s32 render_target_width = m_render_target->width();
 			s32 render_target_height = m_render_target->height();
 			rsl::pointi8 tile_size = m_tileset->tile_size();
+			
+			f32 tile_size_x = tile_size.x;
+			f32 tile_size_y = tile_size.y;
+			tile_size_x *= m_tile_zoom;
+			tile_size_y *= m_tile_zoom;
 
-			s32 render_target_width_in_tiles = render_target_width / tile_size.x;
-			s32 render_target_height_in_tiles = render_target_height / tile_size.y;
+			f32 render_target_width_in_tiles = render_target_width / tile_size_x;
+			f32 render_target_height_in_tiles = render_target_height / tile_size_y;
 
 			f32 uv_width = tile_size.x / (f32)tileset_width;
 			f32 uv_height = tile_size.y / (f32)tileset_height;
@@ -168,12 +202,18 @@ namespace rex
 			render_metadata.inv_tile_screen_width = inv_tile_width;
 			render_metadata.inv_tile_screen_height = inv_tile_height;
 
-			m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
+			if (m_tile_render_info == nullptr)
+			{
+				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
+			}
 			renderCtx->update_buffer(m_tile_render_info.get(), &render_metadata, sizeof(render_metadata));
 		}
 		void TileRenderPass::init_tile_indices_uab(rex::gfx::RenderContext* renderCtx)
 		{
-			m_tiles_indices_buffer = rex::gfx::gal::instance()->create_unordered_access_buffer(m_tilemap->num_tiles());
+			if (!m_tiles_indices_buffer || m_tiles_indices_buffer->size() < m_tilemap->num_tiles())
+			{
+				m_tiles_indices_buffer = rex::gfx::gal::instance()->create_unordered_access_buffer(m_tilemap->num_tiles());
+			}
 		}
 		void TileRenderPass::init_render_pass()
 		{
@@ -182,6 +222,7 @@ namespace rex
 			m_render_pass_desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
 			// We're rendering directly to the back buffer
+			m_render_pass_desc.framebuffer_desc.clear();
 			m_render_pass_desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
 
 			// Assign the shaders used for the tile renderer
