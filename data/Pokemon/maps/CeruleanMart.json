@@ -2,7 +2,7 @@
   "name": "CeruleanMart",
   "width": 4,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\MART.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\POKECENTER.json",
   "map_blocks": "Pokemon\\map_blocks\\CeruleanMart.blk",
   "border_block_idx": 0,
   "connections": [],

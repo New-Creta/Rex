@@ -3,7 +3,7 @@
   "name": "WardensHouse",
   "width": 5,
   "height": 4,
-  "blockset": "Pokemon\\tilesets\\LAB.json",
+  "blockset": "Pokemon\\blocksets\\LAB.json",
   "map_blocks": "Pokemon\\map_blocks\\WardensHouse.blk",
   "border_block_idx": 23,
   "connections": [],

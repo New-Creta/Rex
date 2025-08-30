@@ -1,5 +1,5 @@
 {
-    "type_name": "Blockset",
-    "tileset":"Pokemon/tilesets/plateau.png",
-    "blockset":"Pokemon/blocksets/plateau.bst"
+  "type_name": "Blockset",
+  "tileset": "Pokemon/tilesets/plateau.json",
+  "blockset": "Pokemon/blocksets/plateau.bst"
 }

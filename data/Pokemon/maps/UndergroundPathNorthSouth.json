@@ -2,7 +2,7 @@
   "name": "UndergroundPathNorthSouth",
   "width": 4,
   "height": 24,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\UNDERGROUND.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\UNDERGROUND.json",
   "map_blocks": "Pokemon\\map_blocks\\UndergroundPathNorthSouth.blk",
   "border_block_idx": 1,
   "connections": [],

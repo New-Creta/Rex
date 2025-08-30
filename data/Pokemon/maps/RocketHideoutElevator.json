@@ -2,7 +2,7 @@
   "name": "RocketHideoutElevator",
   "width": 3,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\LOBBY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\LOBBY.json",
   "map_blocks": "Pokemon\\map_blocks\\RocketHideoutElevator.blk",
   "border_block_idx": 15,
   "connections": [],

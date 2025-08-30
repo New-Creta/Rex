@@ -2,7 +2,7 @@
   "name": "Route18Gate1F",
   "width": 4,
   "height": 5,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GATE.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\Route18Gate1F.blk",
   "border_block_idx": 10,
   "connections": [],

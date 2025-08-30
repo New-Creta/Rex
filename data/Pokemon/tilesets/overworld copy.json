@@ -1,0 +1,8 @@
+{
+  "type_name": "TilesetAsset",
+  "tileset": "Pokemon/tilesets/overworld.png",
+  "tile_size": {
+    "x": 8,
+    "y": 8
+  }
+}

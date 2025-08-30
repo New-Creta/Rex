@@ -3,7 +3,7 @@
   "name": "ViridianForestSouthGate",
   "width": 5,
   "height": 4,
-  "blockset": "Pokemon\\tilesets\\FOREST_GATE.json",
+  "blockset": "Pokemon\\blocksets\\FOREST_GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\ViridianForestSouthGate.blk",
   "border_block_idx": 10,
   "connections": [],

@@ -2,7 +2,7 @@
   "name": "MtMoonB1F",
   "width": 14,
   "height": 14,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\CAVERN.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\CAVERN.json",
   "map_blocks": "Pokemon\\map_blocks\\MtMoonB1F.blk",
   "border_block_idx": 3,
   "connections": [],

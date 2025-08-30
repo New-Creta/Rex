@@ -1,0 +1,8 @@
+{
+  "type_name": "TilesetAsset",
+  "tileset": "Pokemon/tilesets/forest.png",
+  "tile_size": {
+    "x": 8,
+    "y": 8
+  }
+}

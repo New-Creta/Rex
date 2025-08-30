@@ -3,7 +3,7 @@
   "name": "ViridianGym",
   "width": 10,
   "height": 9,
-  "blockset": "Pokemon\\tilesets\\GYM.json",
+  "blockset": "Pokemon\\blocksets\\GYM.json",
   "map_blocks": "Pokemon\\map_blocks\\ViridianGym.blk",
   "border_block_idx": 3,
   "connections": [],

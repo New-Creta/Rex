@@ -2,7 +2,7 @@
   "name": "UndergroundPathRoute6",
   "width": 4,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GATE.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\UndergroundPathRoute6.blk",
   "border_block_idx": 10,
   "connections": [],

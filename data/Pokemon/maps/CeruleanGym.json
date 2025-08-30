@@ -2,7 +2,7 @@
   "name": "CeruleanGym",
   "width": 5,
   "height": 7,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GYM.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GYM.json",
   "map_blocks": "Pokemon\\map_blocks\\CeruleanGym.blk",
   "border_block_idx": 3,
   "connections": [],

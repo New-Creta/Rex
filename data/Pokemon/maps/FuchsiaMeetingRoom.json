@@ -2,7 +2,7 @@
   "name": "FuchsiaMeetingRoom",
   "width": 7,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\LAB.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\LAB.json",
   "map_blocks": "Pokemon\\map_blocks\\FuchsiaMeetingRoom.blk",
   "border_block_idx": 23,
   "connections": [],

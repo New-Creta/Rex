@@ -2,7 +2,7 @@
   "name": "SSAnneB1F",
   "width": 15,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\SHIP.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\SHIP.json",
   "map_blocks": "Pokemon\\map_blocks\\SSAnneB1F.blk",
   "border_block_idx": 12,
   "connections": [],
