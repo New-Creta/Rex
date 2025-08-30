@@ -41,6 +41,7 @@ namespace regina
 
 		void set_tilemap(const rex::Tilemap* tilemap);
 		void set_tileset(const rex::TilesetAsset* tileset);
+		void set_camera_pos(rsl::pointi32 pos);
 
 	protected:
 		bool on_update() override;

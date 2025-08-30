@@ -18,17 +18,35 @@ namespace regina
 		: m_fullpath(path)
 		, m_dir_name(rex::path::filename(m_fullpath))
 		, m_is_open(false)
+		, m_selected_last_frame(false)
 	{
 		m_id = ImGui::GetID(m_fullpath.c_str());
 
 		rsl::vector<rsl::string> sub_dirs = rex::directory::list_dirs(path);
 		for (rsl::string_view dir : sub_dirs)
 		{
-			m_sub_items.emplace_back(rsl::make_unique<ContentBrowserHiearchyItem>(rex::path::join(m_fullpath, dir)));
+			rsl::unique_ptr<ContentBrowserHiearchyItem>& hiearchy_item = m_sub_items.emplace_back(rsl::make_unique<ContentBrowserHiearchyItem>(rex::path::join(m_fullpath, dir)));
+			hiearchy_item->on_selected([this](rsl::string_view fullpath)
+				{
+					m_on_selected_callback(fullpath);
+				});
 		}
 	}
 
-	rsl::string_view ContentBrowserHiearchyItem::draw(rsl::string_view selectedDirectory)
+	void ContentBrowserHiearchyItem::update()
+	{
+		if (m_selected_last_frame)
+		{
+			m_on_selected_callback(m_fullpath);
+			m_selected_last_frame = false;
+		}
+
+		for (auto& sub_item : m_sub_items)
+		{
+			sub_item->update();
+		}
+	}
+	void ContentBrowserHiearchyItem::draw(rsl::string_view selectedDirectory)
 	{
 		// Pushing an ID as it's possible directories exist with the same name
 		// We do not want these to clash with each other
@@ -41,7 +59,6 @@ namespace regina
 		window->DC.CurrLineTextBaseOffset = 3.0f;
 
 		if (rex::path::is_same(m_fullpath, selectedDirectory))
-		//if (m_fullpath == selectedDirectory)
 		{
 			draw_background_as_selected(window);
 		}
@@ -51,34 +68,25 @@ namespace regina
 
 		// If we weren't open last frame, but we are now, that means the user has toggled the node
 		// This means we have to return the path of the current node
-		const bool just_opened = !m_is_open && open;
-
-		// boilerplate processing, to make sure we return our fullpath
-		// if we selected this node in this frame
+		m_selected_last_frame = !m_is_open && open;
 		m_is_open = open;
-		rsl::string_view just_opened_path = just_opened
-			? m_fullpath
-			: rsl::string_view("");
 
-		if (open)
+		if (m_is_open)
 		{
 			for (auto& sub_item : m_sub_items)
 			{
-				// If any of the sub items were opened this frame
-				// We need to propagate that back to the top so we can handle it
-				rsl::string_view just_opened_sub_path = sub_item->draw(selectedDirectory);
-				if (!just_opened_sub_path.empty())
-				{
-					just_opened_path = just_opened_sub_path;
-				}
+				sub_item->draw(selectedDirectory);
 			}
 
 			ImGui::TreePop();
 		}
 
 		ImGui::PopID();
+	}
 
-		return just_opened_path;
+	void ContentBrowserHiearchyItem::on_selected(const on_selected_delegate& callback)
+	{
+		m_on_selected_callback = callback;
 	}
 
 	void ContentBrowserHiearchyItem::draw_background_as_selected(ImGuiWindow* window)

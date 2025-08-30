@@ -63,6 +63,10 @@ namespace regina
 		m_tileset = tileset;
 		m_tile_render_pass->set_tileset(tileset);
 	}
+	void Viewport::set_camera_pos(rsl::pointi32 pos)
+	{
+		m_camera_pos = pos;
+	}
 
 	rsl::pointi32 Viewport::top_left_from_camera_pos(rsl::pointi32 cameraPos)
 	{

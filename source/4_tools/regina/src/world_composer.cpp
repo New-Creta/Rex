@@ -19,7 +19,13 @@ namespace regina
 	}
 	rsl::pointi32 WorldComposer::map_pos(const rex::Map* map) const
 	{
-		return m_map_to_metadata.at(map).aabb.min;
+		const rex::MinMax& aabb = m_map_to_metadata.at(map).aabb;
+
+		rsl::pointi32 pos = aabb.min;
+		pos.x += aabb.width() / 2;
+		pos.y += aabb.height() / 2;
+
+		return pos;
 	}
 	const rex::Tilemap* WorldComposer::tilemap() const
 	{

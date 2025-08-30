@@ -29,6 +29,7 @@ namespace regina
 
 	private:
 		// Initializing
+		void init_widget_creators();
 		void add_default_widgets();
 
 		// Updating
@@ -42,12 +43,19 @@ namespace regina
 
 		// Events
 		void on_new_active_map();
-		void move_camera_to_pos(rsl::pointi32 pos);
+
+		template <typename T>
+		void create_widget()
+		{
+			create_widget(rsl::type_id<T>());
+		}
+		void create_widget(rsl::type_id_t typeId);
 
 	private:
 		// UI
 		ImGuiWindow* m_docking_backpanel;
 		rsl::vector<rsl::unique_ptr<Widget>> m_widgets;
+		rsl::unordered_map<rsl::type_id_t, rsl::function<void()>> m_widget_create_funcs;
 
 		// Scene/World 
 		rex::Map* m_active_map;

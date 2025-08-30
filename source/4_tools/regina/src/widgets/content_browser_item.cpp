@@ -8,6 +8,8 @@
 
 namespace regina
 {
+	DEFINE_LOG_CATEGORY(LogContentBrowserItem);
+
 	ContentBrowserItem::ContentBrowserItem(rsl::string_view name, const Thumbnail* thumbnail)
 		: m_path(name)
 	{
@@ -17,7 +19,7 @@ namespace regina
 		m_thumbnail = thumbnail;
 	}
 
-	void ContentBrowserItem::draw()
+	bool ContentBrowserItem::draw()
 	{
 		//REX_PROFILE_SCOPE(rsl::format("Rendering {}", item));
 
@@ -101,8 +103,10 @@ namespace regina
 		ImGui::EndGroup();
 
 		 //UI actions
+		bool is_selected = false;
 		if (ImGui::IsItemClicked())
 		{
+			is_selected = true;
 			//REX_PROFILE_SCOPE(rsl::format("UI Actions infopanel {}", item));
 
 			//if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -149,5 +153,12 @@ namespace regina
 		// refresh
 
 		ImGui::PopID();
+
+		return is_selected;
+	}
+
+	rsl::string_view ContentBrowserItem::path() const
+	{
+		return m_path;
 	}
 }

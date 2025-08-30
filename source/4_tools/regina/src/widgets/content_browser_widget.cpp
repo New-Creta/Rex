@@ -79,8 +79,21 @@ namespace regina
 		m_hiearchy_items.reserve(m_directories_in_current_directory.size());
 		for (rsl::string_view dir : m_directories_in_current_directory)
 		{
-			m_hiearchy_items.emplace_back(dir);
+			ContentBrowserHiearchyItem& hiearchy_item = m_hiearchy_items.emplace_back(dir);
+
+			hiearchy_item.on_selected([this](rsl::string_view fullpath)
+				{
+					if (!rex::path::is_same(fullpath, m_current_directory))
+					{
+						change_directory(fullpath);
+					}
+				});
 		}
+	}
+
+	void ContentBrowserWidget::on_open_in_editor(const open_in_editor_delegate& openInEditor)
+	{
+		m_open_in_editor_callback = openInEditor;
 	}
 
 	// We want a list of directories on the left hand side, similar to windows explorer
@@ -90,6 +103,12 @@ namespace regina
 	{
 		REX_PROFILE_FUNCTION();
 
+
+		return false;
+	}
+
+	void ContentBrowserWidget::on_draw()
+	{
 		if (auto widget = rex::imgui::ScopedWidget("Content Browser", nullptr, ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 		{
 			rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
@@ -112,222 +131,219 @@ namespace regina
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 
-				// Directory hiearchy
-				ImGui::BeginChild("##hiearchy");
-				{
-					rex::imgui::ScopedStyle spacing2(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-					rex::imgui::ScopedColourStack item_bg(
-						ImGuiCol_Header, IM_COL32_DISABLE,
-						ImGuiCol_HeaderActive, IM_COL32_DISABLE
-					);
-
-					rsl::string_view opened_path = "";
-					for (ContentBrowserHiearchyItem& item : m_hiearchy_items)
-					{
-						rsl::string_view opened_sub_path = item.draw(m_current_directory);
-						if (!opened_sub_path.empty())
-						{
-							opened_path = opened_sub_path;
-						}
-					}
-
-					if (!opened_path.empty() && !rex::path::is_same(opened_path, m_current_directory))
-					{
-						change_directory(opened_path);
-					}
-				}
-				ImGui::EndChild();
-
+				draw_content_hiearchy();
 				ImGui::TableSetColumnIndex(1);
-
-				// Directory content
-				static f32 top_bar_height = 26.0f;
-				static f32 bottom_bar_height = 32.0f;
-				ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - top_bar_height - bottom_bar_height));
-				{
-					// Top bar
-					{
-						rex::imgui::ScopedStyle frame_border_size(ImGuiStyleVar_FrameBorderSize, 0.0f);
-						render_top_bar(top_bar_height);
-					}
-
-					ImGui::Separator();
-
-					// Content
-
-					ImGui::BeginChild("Scrolling");
-					{
-						rex::imgui::ScopedColor button_color(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-						rex::imgui::ScopedColor hovered_button_color(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.35f));
-
-						render_content_structure_context_menu();
-
-						const f32 paddingForOutline = 2.0f;
-						const f32 scrollBarrOffset = 20.0f + ImGui::GetStyle().ScrollbarSize;
-						f32 panelWidth = ImGui::GetContentRegionAvail().x - scrollBarrOffset;
-						f32 cellSize = 100.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
-						s32 columnCount = rsl::clamp_min((s32)(panelWidth / cellSize), 1);
-						
-						const f32 rowSpacing = 12.0f;
-						rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(paddingForOutline, rowSpacing));
-						ImGui::Columns(columnCount, 0, false);
-
-						rex::imgui::ScopedStyle border(ImGuiStyleVar_FrameBorderSize, 0.0f);
-						rex::imgui::ScopedStyle padding(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-						render_items();
-
-						//if (ImGui::IsWindowFocused() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-						//{
-							// UpdateInput();
-						//}
-
-						//RenderDeleteDialogue();
-						//RenderNewScriptDialogue();
-					}
-					ImGui::EndChild();
-
-					// Bottom bar
-					render_bottom_bar(bottom_bar_height);
-				}
-				ImGui::EndChild();
-
+				draw_directory_content();
+				
 				ImGui::EndTable();
 			}
 		}
-
-		return false;
 	}
 
-	void ContentBrowserWidget::render_content_structure_context_menu()
+	void ContentBrowserWidget::draw_content_hiearchy()
 	{
-		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight))
+		ImGui::BeginChild("##hiearchy");
 		{
-			rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(4.0f, 4.0f));
+			rex::imgui::ScopedStyle spacing2(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+			rex::imgui::ScopedColourStack item_bg(
+				ImGuiCol_Header, IM_COL32_DISABLE,
+				ImGuiCol_HeaderActive, IM_COL32_DISABLE
+			);
 
-			if (ImGui::BeginMenu("New"))
+			for (ContentBrowserHiearchyItem& item : m_hiearchy_items)
 			{
-				if (ImGui::MenuItem("Folder"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new folder");
-
-					//std::filesystem::path filepath = FileSystem::GetUniqueFileName(Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath / "New Folder");
-
-					//// NOTE(Peter): For some reason creating new directories through code doesn't trigger a file system change?
-					//bool created = FileSystem::CreateDirectory(filepath);
-
-					//if (created)
-					//{
-					//	Refresh();
-					//	const auto& directoryInfo = GetDirectory(m_CurrentDirectory->FilePath / filepath.filename());
-					//	size_t index = m_CurrentItems.FindItem(directoryInfo->Handle);
-					//	if (index != ContentBrowserItemList::InvalidItem)
-					//	{
-					//		SelectionManager::DeselectAll(SelectionContext::ContentBrowser);
-					//		SelectionManager::Select(SelectionContext::ContentBrowser, directoryInfo->Handle);
-					//		m_CurrentItems[index]->StartRenaming();
-					//	}
-					//}
-				}
-
-				if (ImGui::MenuItem("Scene"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new scene");
-					//CreateAsset<Scene>("New Scene.hscene");
-				}
-				if (ImGui::BeginMenu("Physics"))
-				{
-					if (ImGui::MenuItem("Mesh Collider"))
-					{
-						REX_INFO(LogContentBrowserWidget, "Creating a mesh collider");
-						//CreateAsset<MeshColliderAsset>("New Mesh Collider.hmc");
-					}
-					ImGui::EndMenu();
-				}
-
-				if (ImGui::MenuItem("Animation Graph"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new animation graph");
-					//auto extension = Project::GetEditorAssetManager()->GetDefaultExtensionForAssetType(AssetType::AnimationGraph);
-					//auto animationGraphAsset = CreateAsset<AnimationGraphAsset>("New Animation Graph" + extension);
-					//HZ_CORE_VERIFY(AnimationGraphAssetSerializer::TryLoadData("Resources/Animation/EmptyAnimationGraph" + extension, animationGraphAsset));
-					//AssetImporter::Serialize(animationGraphAsset);
-				}
-
-				if (ImGui::MenuItem("Material"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new material");
-					//CreateAsset<MaterialAsset>("New Material.hmaterial");
-				}
-				if (ImGui::BeginMenu("Audio"))
-				{
-					if (ImGui::MenuItem("Sound Config"))
-					{
-						REX_INFO(LogContentBrowserWidget, "Creating a new sound config");
-						//CreateAsset<SoundConfig>("New Sound Config.hsoundc");
-					}
-					if (ImGui::MenuItem("SoundGraph Sound"))
-					{
-						REX_INFO(LogContentBrowserWidget, "Creating a new sound graph");
-						//CreateAsset<SoundGraphAsset>("New SoundGraph Sound.sound_graph");
-					}
-					ImGui::EndMenu();
-				}
-
-				if (ImGui::MenuItem("Script"))
-				{
-					REX_INFO(LogContentBrowserWidget, "Creating a new script");
-					//s_OpenNewScriptPopup = true;
-				}
-				ImGui::EndMenu();
+				item.update();
 			}
 
-			if (ImGui::MenuItem("Import"))
+			for (ContentBrowserHiearchyItem& item : m_hiearchy_items)
 			{
-				REX_INFO(LogContentBrowserWidget, "Importing a file");
-
-				//std::filesystem::path filepath = FileSystem::OpenFileDialog();
-				//if (!filepath.empty())
-				//{
-				//	FileSystem::CopyFile(filepath, Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath);
-				//	Refresh();
-				//}
+				item.draw(m_current_directory);
 			}
-
-			if (ImGui::MenuItem("Refresh"))
+		}
+		ImGui::EndChild();
+	}
+	void ContentBrowserWidget::draw_directory_content()
+	{
+		static f32 top_bar_height = 26.0f;
+		static f32 bottom_bar_height = 32.0f;
+		ImGui::BeginChild("##directory_content", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - top_bar_height - bottom_bar_height));
+		{
+			// Top bar
 			{
-				REX_INFO(LogContentBrowserWidget, "Refreshing");
-				//Refresh();
-			}
-			if (ImGui::MenuItem("Copy", "Ctrl+C", nullptr, true /* = isEnabled*/))
-			{
-				REX_INFO(LogContentBrowserWidget, "Copying an item");
-				//m_CopiedAssets.CopyFrom(SelectionManager::GetSelections(SelectionContext::ContentBrowser));
-			}
-			if (ImGui::MenuItem("Paste", "Ctrl+V", nullptr, true /* = isEnabled*/))
-			{
-				REX_INFO(LogContentBrowserWidget, "Pasting an item");
-				//PasteCopiedAssets();
-			}
-			if (ImGui::MenuItem("Duplicate", "Ctrl+D", nullptr, true /* = isEnabled*/))
-			{
-				REX_INFO(LogContentBrowserWidget, "Duplicating an item");
-				//m_CopiedAssets.CopyFrom(SelectionManager::GetSelections(SelectionContext::ContentBrowser));
-				//PasteCopiedAssets();
+				rex::imgui::ScopedStyle frame_border_size(ImGuiStyleVar_FrameBorderSize, 0.0f);
+				draw_top_bar(top_bar_height);
 			}
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem("Show in Explorer"))
-			{
-				REX_INFO(LogContentBrowserWidget, "Showing in explorer");
-				//FileSystem::OpenDirectoryInExplorer(Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath);
-			}
-			ImGui::EndPopup();
-		}
+			// Content
 
+			ImGui::BeginChild("Scrolling");
+			{
+				rex::imgui::ScopedColor button_color(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				rex::imgui::ScopedColor hovered_button_color(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.35f));
+
+				if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight))
+				{
+					draw_content_structure_context_menu();
+					ImGui::EndPopup();
+				}
+
+				const f32 paddingForOutline = 2.0f;
+				const f32 scrollBarrOffset = 20.0f + ImGui::GetStyle().ScrollbarSize;
+				f32 panelWidth = ImGui::GetContentRegionAvail().x - scrollBarrOffset;
+				f32 cellSize = 100.0f; // EditorApplicationSettings::Get().ContentBrowserThumbnailSize + s_Padding + paddingForOutline;
+				s32 columnCount = rsl::clamp_min((s32)(panelWidth / cellSize), 1);
+
+				const f32 rowSpacing = 12.0f;
+				rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(paddingForOutline, rowSpacing));
+				ImGui::Columns(columnCount, 0, false);
+
+				rex::imgui::ScopedStyle border(ImGuiStyleVar_FrameBorderSize, 0.0f);
+				rex::imgui::ScopedStyle padding(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+				draw_items();
+
+				//if (ImGui::IsWindowFocused() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+				//{
+					// UpdateInput();
+				//}
+
+				//RenderDeleteDialogue();
+				//RenderNewScriptDialogue();
+			}
+			ImGui::EndChild();
+
+			// Bottom bar
+			draw_bottom_bar(bottom_bar_height);
+		}
+		ImGui::EndChild();
 	}
 
-	void ContentBrowserWidget::render_top_bar(f32 height)
+	void ContentBrowserWidget::draw_content_structure_context_menu()
+	{
+		rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(4.0f, 4.0f));
+
+		if (ImGui::BeginMenu("New"))
+		{
+			if (ImGui::MenuItem("Folder"))
+			{
+				REX_INFO(LogContentBrowserWidget, "Creating a new folder");
+
+				//std::filesystem::path filepath = FileSystem::GetUniqueFileName(Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath / "New Folder");
+
+				//// NOTE(Peter): For some reason creating new directories through code doesn't trigger a file system change?
+				//bool created = FileSystem::CreateDirectory(filepath);
+
+				//if (created)
+				//{
+				//	Refresh();
+				//	const auto& directoryInfo = GetDirectory(m_CurrentDirectory->FilePath / filepath.filename());
+				//	size_t index = m_CurrentItems.FindItem(directoryInfo->Handle);
+				//	if (index != ContentBrowserItemList::InvalidItem)
+				//	{
+				//		SelectionManager::DeselectAll(SelectionContext::ContentBrowser);
+				//		SelectionManager::Select(SelectionContext::ContentBrowser, directoryInfo->Handle);
+				//		m_CurrentItems[index]->StartRenaming();
+				//	}
+				//}
+			}
+
+			if (ImGui::MenuItem("Scene"))
+			{
+				REX_INFO(LogContentBrowserWidget, "Creating a new scene");
+				//CreateAsset<Scene>("New Scene.hscene");
+			}
+			if (ImGui::BeginMenu("Physics"))
+			{
+				if (ImGui::MenuItem("Mesh Collider"))
+				{
+					REX_INFO(LogContentBrowserWidget, "Creating a mesh collider");
+					//CreateAsset<MeshColliderAsset>("New Mesh Collider.hmc");
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::MenuItem("Animation Graph"))
+			{
+				REX_INFO(LogContentBrowserWidget, "Creating a new animation graph");
+				//auto extension = Project::GetEditorAssetManager()->GetDefaultExtensionForAssetType(AssetType::AnimationGraph);
+				//auto animationGraphAsset = CreateAsset<AnimationGraphAsset>("New Animation Graph" + extension);
+				//HZ_CORE_VERIFY(AnimationGraphAssetSerializer::TryLoadData("Resources/Animation/EmptyAnimationGraph" + extension, animationGraphAsset));
+				//AssetImporter::Serialize(animationGraphAsset);
+			}
+
+			if (ImGui::MenuItem("Material"))
+			{
+				REX_INFO(LogContentBrowserWidget, "Creating a new material");
+				//CreateAsset<MaterialAsset>("New Material.hmaterial");
+			}
+			if (ImGui::BeginMenu("Audio"))
+			{
+				if (ImGui::MenuItem("Sound Config"))
+				{
+					REX_INFO(LogContentBrowserWidget, "Creating a new sound config");
+					//CreateAsset<SoundConfig>("New Sound Config.hsoundc");
+				}
+				if (ImGui::MenuItem("SoundGraph Sound"))
+				{
+					REX_INFO(LogContentBrowserWidget, "Creating a new sound graph");
+					//CreateAsset<SoundGraphAsset>("New SoundGraph Sound.sound_graph");
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::MenuItem("Script"))
+			{
+				REX_INFO(LogContentBrowserWidget, "Creating a new script");
+				//s_OpenNewScriptPopup = true;
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::MenuItem("Import"))
+		{
+			REX_INFO(LogContentBrowserWidget, "Importing a file");
+
+			//std::filesystem::path filepath = FileSystem::OpenFileDialog();
+			//if (!filepath.empty())
+			//{
+			//	FileSystem::CopyFile(filepath, Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath);
+			//	Refresh();
+			//}
+		}
+
+		if (ImGui::MenuItem("Refresh"))
+		{
+			REX_INFO(LogContentBrowserWidget, "Refreshing");
+			//Refresh();
+		}
+		if (ImGui::MenuItem("Copy", "Ctrl+C", nullptr, true /* = isEnabled*/))
+		{
+			REX_INFO(LogContentBrowserWidget, "Copying an item");
+			//m_CopiedAssets.CopyFrom(SelectionManager::GetSelections(SelectionContext::ContentBrowser));
+		}
+		if (ImGui::MenuItem("Paste", "Ctrl+V", nullptr, true /* = isEnabled*/))
+		{
+			REX_INFO(LogContentBrowserWidget, "Pasting an item");
+			//PasteCopiedAssets();
+		}
+		if (ImGui::MenuItem("Duplicate", "Ctrl+D", nullptr, true /* = isEnabled*/))
+		{
+			REX_INFO(LogContentBrowserWidget, "Duplicating an item");
+			//m_CopiedAssets.CopyFrom(SelectionManager::GetSelections(SelectionContext::ContentBrowser));
+			//PasteCopiedAssets();
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::MenuItem("Show in Explorer"))
+		{
+			REX_INFO(LogContentBrowserWidget, "Showing in explorer");
+			//FileSystem::OpenDirectoryInExplorer(Project::GetActiveAssetDirectory() / m_CurrentDirectory->FilePath);
+		}
+	}
+
+	void ContentBrowserWidget::draw_top_bar(f32 height)
 	{
 		ImGui::BeginChild("##top_bar", ImVec2(0, height));
 		ImGui::BeginHorizontal("##top_bar", ImGui::GetWindowSize());
@@ -356,6 +372,8 @@ namespace regina
 
 				//		return clicked;
 				//	};
+
+				ImGui::Text("Navigation buttons go here");
 
 				//if (contenBrowserButton("##back", EditorResources::BackIcon))
 				//{
@@ -487,11 +505,11 @@ namespace regina
 			ImGui::EndChild();
 		}
 	}
-	void ContentBrowserWidget::render_bottom_bar(f32 height)
+	void ContentBrowserWidget::draw_bottom_bar(f32 height)
 	{
 		// Display the full filepath of the current selected item as well as its size and other metadata
 	}
-	void ContentBrowserWidget::render_items()
+	void ContentBrowserWidget::draw_items()
 	{
 		//m_IsAnyItemHovered = false;
 
@@ -507,6 +525,7 @@ namespace regina
 
 		// TODO(Peter): This method of handling actions isn't great... It's starting to become spaghetti...
 		rex::temp_string fullpath;
+		const ContentBrowserItem* selected_item = nullptr;
 		for (ContentBrowserItem& item : m_current_items)
 		{
 			// Each item should look something like this
@@ -522,149 +541,17 @@ namespace regina
 			// |           FILENAME           |                   
 			// +------------------------------+
 
-			item.draw();
+			if (item.draw())
+			{
+				selected_item = &item;
+			}
 			ImGui::NextColumn();
-
-		//	item = rex::path::filename(item);
-
-		//	//REX_PROFILE_SCOPE(rsl::format("Rendering {}", item));
-
-		//	ImGui::PushID(item.data());
-		//	ImGui::BeginGroup();
-
-		//	rex::imgui::ScopedStyle spacing(ImGuiStyleVar_ItemSpacing, ImVec2(itemSpacing, 0.0f));
-
-		//	// Draw background
-		//	const ImVec2 topLeft = ImGui::GetCursorScreenPos();
-		//	const ImVec2 thumbBottomRight = { topLeft.x + thumbBhWidth, topLeft.y + thumbBhHeight };
-		//	const ImVec2 infoTopLeft = { topLeft.x,				 thumbBottomRight.y };
-		//	const ImVec2 bottomRight = { topLeft.x + infoPanelWidth, infoTopLeft.y  + infoPanelHeight };
-		//	auto* drawList = ImGui::GetWindowDrawList();
-
-		//	{
-		//		//REX_PROFILE_SCOPE(rsl::format("Rendering background {}", item));
-		//		//if (m_content_selection.is_selected(ImGui::GetID(item.data())))
-		//		//{
-		//		//	drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::highlight);
-		//		//}
-		//		//else
-		//		//{
-		//		//	drawList->AddRectFilled(topLeft, thumbBottomRight, rex::imgui::backgroundDark);
-		//		//}
-		//		drawList->AddRectFilled(infoTopLeft, bottomRight, rex::imgui::groupHeader, 6.0f, ImDrawFlags_RoundCornersBottom);
-		//	}
-
-		//	// Shift the offset so we leave some space between the thumbnail and the corner
-		//	rex::imgui::shift_cursor(edgeOffset, edgeOffset);
-
-		//	// render the thumbnail
-		//	{
-		//		//REX_PROFILE_SCOPE(rsl::format("Rendering thumbnail {}", item));
-
-		//		//fullpath = rex::path::join(m_current_directory, item);
-		//		//const Thumbnail* thumbnail = thumbnail_for_path(fullpath);
-		//		//ImVec2 imageSize{ 100.0f, 100.0f };
-		//		//ImGui::Image((ImTextureID)thumbnail->texture(), imageSize);
-		//	}
-		//	// Render Info Panel
-		//	ImGui::BeginVertical((rsl::string("InfoPanel") + item).c_str(), ImVec2(thumbnailSize - edgeOffset * 2.0f, infoPanelHeight - edgeOffset));
-		//	{
-		//		//REX_PROFILE_SCOPE(rsl::format("Rendering infopanel {}", item));
-
-		//		// Centre align directory name
-		//		ImGui::BeginHorizontal(item.data(), ImVec2(thumbnailSize - 2.0f, 0.0f));
-		//		ImGui::Spring();
-		//		{
-		//			ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + (thumbBhWidth - edgeOffset));
-		//			const f32 textWidth = std::min(ImGui::CalcTextSize(item.data()).x, thumbnailSize);
-		//			//if (m_IsRenaming)
-		//			//{
-		//			//	ImGui::SetNextItemWidth(thumbnailSize - edgeOffset * 3.0f);
-		//			//	renamingWidget();
-		//			//}
-		//			//else
-		//			//{
-		//				ImGui::SetNextItemWidth(textWidth);
-		//				ImGui::Text(item.data());
-		//			//}
-		//			ImGui::PopTextWrapPos();
-		//		}
-		//		ImGui::Spring();
-		//		ImGui::EndHorizontal();
-
-		//		ImGui::Spring();
-		//	}
-		//	ImGui::EndVertical();
-
-		//	// Put the cursor back where it came from
-		//	rex::imgui::shift_cursor(-edgeOffset, -edgeOffset);
-		//	ImGui::EndGroup();
-
-		//	// UI actions
-		//	//if (ImGui::IsItemClicked())
-		//	//{
-		//	//	//REX_PROFILE_SCOPE(rsl::format("UI Actions infopanel {}", item));
-
-		//	//	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-		//	//	{
-		//	//		if (rex::directory::exists(fullpath))
-		//	//		{
-		//	//			change_directory(fullpath);
-		//	//		}
-		//	//		else
-		//	//		{
-		//	//			rex::open_file(fullpath);
-		//	//		}
-		//	//	}
-		//	//	else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftCtrl))
-		//	//	{
-		//	//		m_content_selection.toggle(ImGui::GetID(item.data()));
-		//	//	}
-		//	//	//else if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_LeftShift))
-		//	//	//{
-		//	//	//	
-		//	//	//}
-		//	//	else
-		//	//	{
-		//	//		m_content_selection.clear();
-		//	//		m_content_selection.add(ImGui::GetID(item.data()));
-		//	//	}
-		//	//}
-		//	//else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-		//	//{
-		//	//	m_content_selection.clear();
-		//	//}
-
-		//	// Based on the action of the user, update the UI
-		//	// the following actions are supported
-		//	// Selection cleared - done
-		//	// item selected - done
-		//	// item deselected - done
-		//	// ctrl + selection
-		//	// rename
-		//	// open in explorer
-		//	// hovered
-		//	// duplicated
-		//	// renamed
-		//	// refresh
-
-		//	ImGui::PopID();
-		//	ImGui::NextColumn();
-
-		//// This is a workaround an issue with ImGui: https://github.com/ocornut/imgui/issues/331
-		////if (s_OpenDeletePopup)
-		////{
-		////	ImGui::OpenPopup("Delete");
-		////	s_OpenDeletePopup = false;
-		////}
-
-		////if (s_OpenNewScriptPopup)
-		////{
-		////	ImGui::OpenPopup("New Script");
-		////	s_OpenNewScriptPopup = false;
-		////}
 		}
 
+		if (selected_item)
+		{
+			m_open_in_editor_callback(rex::path::join(m_current_directory, selected_item->path()));
+		}
 	}
 
 	const Thumbnail* ContentBrowserWidget::thumbnail_for_path(rsl::string_view path) const
