@@ -27,20 +27,20 @@ namespace rex
     }
 
     // Create a render target view and return a handle pointing to it
-    DxResourceView DxViewHeap::create_rtv(ID3D12Resource* resource)
+    DxResourceView DxViewHeap::create_rtv(ID3D12Resource* resource, DXGI_FORMAT format)
     {
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a view heap that's not configured to create render target views");
       DxResourceView rtv_handle = new_free_handle();
 
-      return retarget_rtv(resource, rtv_handle);
+      return retarget_rtv(resource, format, rtv_handle);
     }
     // Retarget an existing rtv to a new resource
-    DxResourceView& DxViewHeap::retarget_rtv(ID3D12Resource* resource, DxResourceView& rtv)
+    DxResourceView& DxViewHeap::retarget_rtv(ID3D12Resource* resource, DXGI_FORMAT format, DxResourceView& rtv)
     {
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a view heap that's not configured to create render target views");
 
       D3D12_RENDER_TARGET_VIEW_DESC rtv_desc{};
-      rtv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      rtv_desc.Format = format;
       rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
       m_device->CreateRenderTargetView(resource, &rtv_desc, rtv);

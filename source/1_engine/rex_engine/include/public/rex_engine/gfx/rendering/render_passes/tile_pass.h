@@ -27,6 +27,7 @@ namespace rex
 		public:
 			TileRenderPass(rex::gfx::RenderTarget* rt, const rex::Tilemap* tilemap, const rex::TilesetAsset* tileset);
 
+			void set_render_target(RenderTarget* render_target);
 			void set_tilemap(const rex::Tilemap* tilemap);
 			void set_tileset(const rex::TilesetAsset* tileset);
 			void set_tile_zoom(f32 zoom);

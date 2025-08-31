@@ -23,6 +23,11 @@ namespace rex
 			init();
 		}
 
+		void TileRenderPass::set_render_target(RenderTarget* render_target)
+		{
+			m_render_target = render_target;
+			init();
+		}
 		void TileRenderPass::set_tilemap(const rex::Tilemap* tilemap)
 		{
 			m_tilemap = tilemap;

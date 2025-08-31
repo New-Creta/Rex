@@ -35,9 +35,9 @@ namespace rex
       DxViewHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& viewHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible);
 
       // Create a render target view and return a handle pointing to it
-      DxResourceView create_rtv(ID3D12Resource* resource);
+      DxResourceView create_rtv(ID3D12Resource* resource, DXGI_FORMAT format);
       // Retarget an existing rtv to a new resource
-      DxResourceView& retarget_rtv(ID3D12Resource* resource, DxResourceView& rtv);
+      DxResourceView& retarget_rtv(ID3D12Resource* resource, DXGI_FORMAT format, DxResourceView& rtv);
 
       // Create a depth stencil view and return a handle pointing to it
       DxResourceView create_dsv(ID3D12Resource* resource);

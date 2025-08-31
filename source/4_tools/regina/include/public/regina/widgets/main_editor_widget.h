@@ -1,7 +1,7 @@
 #pragma once
 
 #include "regina/widgets/widget.h"
-#include "regina/widgets/viewport.h"
+#include "regina/widgets/viewport_widget.h"
 
 #include "regina/scene_manager.h"
 #include "regina/world_composer.h"

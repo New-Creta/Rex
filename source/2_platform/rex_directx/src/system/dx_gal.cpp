@@ -300,8 +300,12 @@ namespace rex
 
 		rsl::unique_ptr<RenderTarget>         DirectXInterface::create_render_target(s32 width, s32 height, TextureFormat format)
 		{
-			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_render_target(width, height, format);
-			return create_render_target(d3d_texture);
+			ClearStateDesc clear_state{};
+			clear_state.rgba = m_rtv_clear_color;
+			clear_state.flags.add_state(ClearBits::ClearColorBuffer);
+
+			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_render_target(width, height, format, clear_state);
+			return create_render_target(d3d_texture, d3d::to_dx12(format));
 		}
 		rsl::unique_ptr<PipelineState>        DirectXInterface::create_pso(const PipelineStateDesc& desc)
 		{
@@ -509,14 +513,14 @@ namespace rex
 
 		// API Specific functions
 		// -------------------------------------------
-		rsl::unique_ptr<RenderTarget> DirectXInterface::create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
+		rsl::unique_ptr<RenderTarget> DirectXInterface::create_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format)
 		{
-			DxResourceView rtv = create_rtv(resource.Get());
+			DxResourceView rtv = create_rtv(resource.Get(), format);
 			return rsl::make_unique<DxRenderTarget>(resource, rtv, m_rtv_clear_color);
 		}
-		rsl::unique_ptr<RenderTarget> DirectXInterface::retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view)
+		rsl::unique_ptr<RenderTarget> DirectXInterface::retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format, DxResourceView view)
 		{
-			d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->retarget_rtv(resource.Get(), view);
+			d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->retarget_rtv(resource.Get(), format, view);
 			return rsl::make_unique<DxRenderTarget>(resource, view, m_rtv_clear_color);
 		}
 
@@ -632,10 +636,10 @@ namespace rex
 			DXGI_FORMAT d3d_format = d3d::to_dx12(format);
 			return m_heap->create_texture2d(d3d_format, width, height);
 		}
-		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_render_target(s32 width, s32 height, TextureFormat format)
+		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_render_target(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearColor)
 		{
 			DXGI_FORMAT d3d_format = d3d::to_dx12(format);
-			return m_heap->create_texture2d(d3d_format, width, height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+			return m_heap->create_render_target(d3d_format, width, height, clearColor);
 		}
 
 		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_depth_stencil(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
@@ -645,9 +649,9 @@ namespace rex
 		}
 
 		// Create a render target view for a given resource
-		DxResourceView DirectXInterface::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
+		DxResourceView DirectXInterface::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture, DXGI_FORMAT format)
 		{
-			return d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->create_rtv(texture.Get());
+			return d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->create_rtv(texture.Get(), format);
 		}
 		// Create a shader resource view pointing to a 2D texture
 		DxResourceView DirectXInterface::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)

@@ -102,7 +102,7 @@ namespace regina
 			});
 		m_widget_create_funcs.emplace(rsl::type_id<Viewport>(), [this]()
 			{
-				auto viewport = rsl::make_unique<Viewport>("test viewport", rsl::pointi32{ 640, 576/2 }, m_world_composer.tilemap(), nullptr);
+				auto viewport = rsl::make_unique<Viewport>(m_world_composer.tilemap(), nullptr);
 				m_viewport = viewport.get();
 				m_widgets.emplace_back(rsl::move(viewport));
 			});

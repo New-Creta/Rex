@@ -129,7 +129,7 @@ namespace rex
       REX_ASSERT_X(renderTarget, "Trying to clear a nullptr rendertarget");
 
 			DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
-			m_cmd_list->ClearRenderTargetView(dx_render_target->dx_view(), renderTarget->clear_color().data(), 0, nullptr);
+			m_cmd_list->ClearRenderTargetView(dx_render_target->dx_view(), dx_render_target->clear_color().data(), 0, nullptr);
 
       if (depthRenderTarget)
       {
