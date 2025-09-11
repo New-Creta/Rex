@@ -132,7 +132,7 @@ namespace regina
 			m_render_target = rex::gfx::gal::instance()->create_render_target(resolution.x, resolution.y, rex::gfx::TextureFormat::Unorm4Srgb);
 			m_render_target->debug_set_name("viewport render target");
 			m_render_target_srv = rex::gfx::gal::instance()->create_srv(m_render_target.get());
-			m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(m_render_target.get(), m_screen_tilemap.get(), m_tileset);
+			m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(m_render_target.get(), m_tileset);
 		}
 	}
 
@@ -162,26 +162,12 @@ namespace regina
 
 	void Viewport::update_screen_tilemap(rsl::pointi32 topLeftStart)
 	{
-		rsl::pointi32 screen_resolution = screen_tile_resolution();
-
-		if (m_screen_tilemap == nullptr || m_screen_tilemap->width_in_tiles() != screen_resolution.x || m_screen_tilemap->height_in_tiles() != screen_resolution.y)
-		{
-			m_screen_tilemap = rsl::make_unique<rex::Tilemap>(screen_resolution.x, screen_resolution.y);
-			m_tile_render_pass->set_tilemap(m_screen_tilemap.get());
-		}
-
-		s32 num_tiles_until_end_of_row = m_world_tilemap->width_in_tiles() - topLeftStart.x;
-		s32 num_to_copy = rsl::min(screen_resolution.x, num_tiles_until_end_of_row);
-
-		s32 start_idx = topLeftStart.y * m_world_tilemap->width_in_tiles() + topLeftStart.x;
-		const u8* src = m_world_tilemap->tiles() + start_idx;
-		s32 offset = 0;
-		for (s32 row = 0; row < screen_resolution.y; ++row)
-		{
-			m_screen_tilemap->set(src, num_to_copy, offset);
-			offset += screen_resolution.x;
-			src += m_world_tilemap->width_in_tiles();
-		}
+		rex::gfx::TileRenderPassParams params{};
+		params.screen_resolution = screen_tile_resolution();
+		params.tiles_source = m_world_tilemap->tiles();
+		params.top_left_start = topLeftStart;
+		params.world_width_in_tiles = m_world_tilemap->width_in_tiles();
+		m_tile_render_pass->update_tilemap(params);
 	}
 
 	rsl::pointi32 Viewport::screen_tile_resolution() const

@@ -6,7 +6,6 @@ namespace pokemon
 {
 	namespace constants
 	{
-		constexpr u8 g_map_padding_blocks = 3;
 
 		constexpr u8 g_num_tiles_per_square_row = 2;
 		constexpr u8 g_num_tiles_per_square_column = 2;
@@ -15,6 +14,9 @@ namespace pokemon
 		constexpr u8 g_num_tiles_per_block_row = 4;
 		constexpr u8 g_num_tiles_per_block_column = 4;
 		constexpr u8 g_num_tiles_per_block = g_num_tiles_per_block_row * g_num_tiles_per_block_column;
+
+		constexpr u8 g_map_padding_blocks = 3;
+		constexpr u8 g_map_padding_tiles = g_map_padding_blocks * g_num_tiles_per_block_row;
 
 		constexpr u8 g_tile_width_px = 8;
 		constexpr u8 g_tile_height_px = 8;

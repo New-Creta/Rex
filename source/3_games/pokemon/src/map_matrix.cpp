@@ -189,7 +189,7 @@ namespace pokemon
           s16 index = (y * m_total_width) + x;
           m_block_indices[index] = block_idx;
         }
-      }
+      } 
     }
   }
   void MapMatrix::fill_inner_map(const MapData* mapObject)

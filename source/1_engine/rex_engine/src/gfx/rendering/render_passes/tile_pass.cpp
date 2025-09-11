@@ -14,9 +14,8 @@ namespace rex
 			rsl::point<f32> uv;
 		};
 
-		TileRenderPass::TileRenderPass(rex::gfx::RenderTarget* rt, const rex::Tilemap* tilemap, const rex::TilesetAsset* tileset)
+		TileRenderPass::TileRenderPass(rex::gfx::RenderTarget* rt, const rex::TilesetAsset* tileset)
 			: m_render_target(rt)
-			, m_tilemap(tilemap)
 			, m_tileset(tileset)
 			, m_tile_zoom(1.0f)
 		{
@@ -26,11 +25,6 @@ namespace rex
 		void TileRenderPass::set_render_target(RenderTarget* render_target)
 		{
 			m_render_target = render_target;
-			init();
-		}
-		void TileRenderPass::set_tilemap(const rex::Tilemap* tilemap)
-		{
-			m_tilemap = tilemap;
 			init();
 		}
 
@@ -64,8 +58,8 @@ namespace rex
 			renderCtx->set_render_target(m_render_target);
 			renderCtx->clear_render_target(m_render_target);
 
-			s32 render_target_width = m_render_target->width();  //m_tilemap->width_in_px();// m_render_target->width();
-			s32 render_target_height = m_render_target->height();  //m_tilemap->height_in_px();// m_render_target->height();
+			s32 render_target_width = m_render_target->width();
+			s32 render_target_height = m_render_target->height();
 
 			f32 viewport_width = static_cast<f32>(render_target_width);
 			f32 viewport_height = static_cast<f32>(render_target_height);
@@ -249,6 +243,27 @@ namespace rex
 			m_render_pass->set("RenderingMetaData", m_tile_render_info.get());
 			m_render_pass->set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());
 
+		}
+
+		void TileRenderPass::update_tilemap(const TileRenderPassParams& params)
+		{
+			if (m_tilemap == nullptr || m_tilemap->width_in_tiles() != params.screen_resolution.x || m_tilemap->height_in_tiles() != params.screen_resolution.y)
+			{
+				m_tilemap = rsl::make_unique<rex::Tilemap>(params.screen_resolution.x, params.screen_resolution.y);
+			}
+
+			s32 num_tiles_until_end_of_row = params.world_width_in_tiles - params.top_left_start.x;
+			s32 num_to_copy = rsl::min(params.screen_resolution.x, num_tiles_until_end_of_row);
+
+			s32 start_idx = params.top_left_start.y * params.world_width_in_tiles + params.top_left_start.x;
+			const u8* src = params.tiles_source + start_idx;
+			s32 offset = 0;
+			for (s32 row = 0; row < params.screen_resolution.y; ++row)
+			{
+				m_tilemap->set(src, num_to_copy, offset);
+				offset += params.screen_resolution.x;
+				src += params.world_width_in_tiles;
+			}
 		}
 
 	}

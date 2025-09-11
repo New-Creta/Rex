@@ -22,15 +22,33 @@ namespace rex
 {
 	namespace gfx
 	{
+		struct TileRenderPassParams
+		{
+			// pointer to the tile source data. This data represents all the tiles in the current world
+			const u8* tiles_source;       
+
+			// the position (in tiles) from the world tiles from where we should start drawing
+			rsl::pointi32 top_left_start; 
+
+			// The tilemap's resolution. If this resolution is different from the current tilemap, we create a new one
+			// this is useful to have in case we want to zoom in or out
+			rsl::pointi32 screen_resolution; 
+
+			// the width of the world, in tiles
+			s32 world_width_in_tiles;     
+		};
+
 		class TileRenderPass
 		{
 		public:
-			TileRenderPass(rex::gfx::RenderTarget* rt, const rex::Tilemap* tilemap, const rex::TilesetAsset* tileset);
+			TileRenderPass(rex::gfx::RenderTarget* rt, const rex::TilesetAsset* tileset);
 
 			void set_render_target(RenderTarget* render_target);
-			void set_tilemap(const rex::Tilemap* tilemap);
 			void set_tileset(const rex::TilesetAsset* tileset);
 			void set_tile_zoom(f32 zoom);
+
+			// Update the tilemap's indices that we need to draw to the screen
+			void update_tilemap(const TileRenderPassParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -48,11 +66,11 @@ namespace rex
 			rsl::unique_ptr<rex::gfx::ConstantBuffer> m_tile_render_info;
 			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tiles_indices_buffer;
 			rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;
+			rsl::unique_ptr<rex::Tilemap> m_tilemap;
 
 			rex::gfx::RenderPassDesc m_render_pass_desc{};
 
 			rex::gfx::RenderTarget* m_render_target;
-			const rex::Tilemap* m_tilemap;
 			const rex::TilesetAsset* m_tileset;
 
 			f32 m_tile_zoom;

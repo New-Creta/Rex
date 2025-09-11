@@ -194,6 +194,9 @@ namespace rex
 		const MapDesc& desc() const;
 		const u8* tiles(s32 offset = 0) const;
 
+		s32 width_in_tiles() const;
+		s32 height_in_tiles() const;
+
 	private:
 		void load_tiles();
 

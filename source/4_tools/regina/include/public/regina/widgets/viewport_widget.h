@@ -72,9 +72,6 @@ namespace regina
 		// the tilemap of the entire world, only a subset of this is rendered at a time
 		const rex::Tilemap* m_world_tilemap;
 
-		// The tilemap off the render target itself, which is a subset of the tilemap of the entire world
-		rsl::unique_ptr<rex::Tilemap> m_screen_tilemap;
-
 		// The current camera position in the world, offsetted from the top left of the world
 		rsl::pointi32 m_camera_pos;
 

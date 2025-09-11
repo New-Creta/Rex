@@ -9,6 +9,11 @@ namespace rex
 	{
 	public:
 		Tilemap(s32 width, s32 height);
+		Tilemap(const Tilemap&) = delete;
+		Tilemap(Tilemap&&) = default;
+
+		Tilemap& operator=(const Tilemap&) = delete;
+		Tilemap& operator=(Tilemap&&) = default;
 
 		void set(const u8* data, s32 len, s32 offset);
 

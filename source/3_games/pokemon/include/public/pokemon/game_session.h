@@ -10,6 +10,11 @@
 #include "pokemon/poke_structs.h"
 #include "pokemon/tile_renderer.h"
 #include "pokemon/map_coordinates.h"
+#include "pokemon/game_tilemap.h"
+
+#include "rex_engine/assets/map.h"
+
+#include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
 
 #include "rex_engine/gfx/rendering/camera.h"
 #include "rex_engine/gfx/rendering/scene_renderer.h"
@@ -32,13 +37,16 @@ namespace pokemon
   private:
     SaveFile load_startup_savefile() const;
 
+    void init_tilemap();
+
     rsl::unique_ptr<Map> init_map(const SaveFile& startupSaveFile);
     TileRenderer* init_tile_renderer(const MapRenderData& mapRenderData);
     void init_input();
 
   private:
-    rsl::unique_ptr<Map> m_active_map;
-    TileRenderer* m_tile_renderer;
+    rex::Map* m_active_map;
+    rsl::unique_ptr<GameTilemap> m_tilemap;
+    //TileRenderer* m_tile_renderer;
     TileCoord m_player_position; // player position in tiles
   };
 }

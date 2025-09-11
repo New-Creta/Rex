@@ -36,8 +36,13 @@
 
 #include "rex_engine/profiling/timer.h"
 
+#include "rex_engine/assets/map.h"
+#include "rex_engine/engine/asset_db.h"
+
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/events/input/key_down.h"
+
+#include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
 
 namespace pokemon
 {
@@ -83,14 +88,24 @@ namespace pokemon
 		// It's a bit of a chicken and egg problem. To just get it over with, we have a startup save file
 		// This acts like any other save file and holds all the data to initialize the game on first startup
 		// Any other save file gets loaded on top of this save file, overwriting data where needed
-
 		SaveFile startup_save_file = load_startup_savefile();
 
-		m_active_map = init_map(startup_save_file);
-		m_tile_renderer = init_tile_renderer(m_active_map->render_data());
+		m_active_map = rex::asset_db::instance()->load<rex::Map>(startup_save_file.current_map_filepath);
 		m_player_position = startup_save_file.position;
 
+		s32 total_tilemap_width = m_active_map->width_in_tiles() + (2 * constants::g_map_padding_tiles);
+		s32 total_tilemap_height = m_active_map->height_in_tiles() + (2 * constants::g_map_padding_tiles);
+		m_tilemap = rsl::make_unique<GameTilemap>(total_tilemap_width, total_tilemap_height);
+
+		//m_active_map = init_map(startup_save_file);
+		//m_tile_renderer = init_tile_renderer(m_active_map->render_data());
+
 		init_input();
+	}
+
+	void GameSession::init_tilemap()
+	{
+
 	}
 
 	void GameSession::update()
@@ -109,7 +124,21 @@ namespace pokemon
 	rsl::unique_ptr<Map> GameSession::init_map(const SaveFile& startupSaveFile)
 	{
 		// Load the map first, good to check if it exists
-		MapData* map_data = asset_db::find_map(startupSaveFile.current_map_filepath);
+		m_active_map = rex::asset_db::instance()->load<rex::Map>(startupSaveFile.current_map_filepath);
+
+		//rex::gfx::TileRenderPass render_pass(nullptr, nullptr);
+		//rex::gfx::TileRenderPassParams params{};
+
+		//params.screen_resolution = { constants::g_screen_width / 8, constants::g_screen_height / 8 };
+		//params.tiles_source = active_map->tiles();
+		//params.top_left_start = {}; // camera pos - player offset
+		//params.world_width_in_tiles = active_map->width_in_tiles();
+
+		//render_pass.update_tilemap(params);
+
+		//MapData* map_data = asset_db::find_map(startupSaveFile.current_map_filepath);
+
+
 
 		// We have a new goal here now to reduce memory usage during runtime
 		// Create an vertex buffer holding the vertices for each tile
@@ -130,10 +159,10 @@ namespace pokemon
 
 		// Create the map matrix, which is a matrix of the map, with the padding
 		// The map matrix only changes when the player transitions between maps
-		MapMatrix map_matrix(map_data);
+		//MapMatrix map_matrix(map_data);
 
 		// Load the map render data, which is the tileset and blockset into memory
-		MapRenderData map_render_data = load_map_render_data(map_data->map_header.map_render_data_filepath);
+		//MapRenderData map_render_data = load_map_render_data(map_data->map_header.map_render_data_filepath);
 
 		// Load all the warp and bg objects
 

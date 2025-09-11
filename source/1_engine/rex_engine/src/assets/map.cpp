@@ -23,6 +23,17 @@ namespace rex
 		return m_tiles.get() + offset;
 	}
 
+	s32 Map::width_in_tiles() const
+	{
+		const s32 num_tiles_per_block_row = 4;
+		m_desc.map_header.width_in_blocks* num_tiles_per_block_row;
+	}
+	s32 Map::height_in_tiles() const
+	{
+		const s32 num_tiles_per_block_row = 4;
+		return m_desc.map_header.height_in_blocks * num_tiles_per_block_row;
+	}
+
 	void Map::load_tiles()
 	{
 		const s32 num_tiles_per_block = 16;
