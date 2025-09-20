@@ -18,6 +18,8 @@ namespace rex
       // Return the wrapped DirectX object
       ID3D12RootSignature* dx_object();
 
+      void* api_object() override;
+
     private:
       wrl::ComPtr<ID3D12RootSignature> m_root_signature;
     };

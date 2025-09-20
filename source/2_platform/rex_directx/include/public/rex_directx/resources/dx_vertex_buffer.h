@@ -14,6 +14,8 @@ namespace rex
     public:
       DxVertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numVertices, rsl::memory_size vertexSize);
 
+      void* api_object() override;
+
     };
   } // namespace gfx
 } // namespace rex

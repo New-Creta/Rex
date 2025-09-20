@@ -16,6 +16,8 @@ namespace rex
 			const ResourceView* view() const override;
 			const rsl::Color4f& clear_color() const override;
 
+			void* api_object() override;
+
 		protected:
 			Swapchain* swapchain();
 

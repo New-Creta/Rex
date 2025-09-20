@@ -15,5 +15,10 @@ namespace rex
 			return &m_resource_view;
 		}
 
+		void* DxUnorderedAccessBuffer::api_object()
+		{
+			return dx_object();
+		}
+
 	}
 }

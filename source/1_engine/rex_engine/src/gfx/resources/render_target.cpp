@@ -10,7 +10,10 @@ namespace rex
       , m_clear_color(clearColor)
     {}
 
-
+    const rsl::Color4f& RenderTarget::clear_color() const
+    {
+      return m_clear_color;
+    }
 
     const ResourceView* RenderTarget::view() const
     {

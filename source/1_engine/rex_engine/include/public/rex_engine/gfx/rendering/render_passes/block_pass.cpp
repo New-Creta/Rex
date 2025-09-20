@@ -14,7 +14,7 @@ namespace rex
 			rsl::point<f32> uv;
 		};
 
-		BlockRenderPass::BlockRenderPass(rex::gfx::RenderTarget* rt, const rex::TilesetAsset* tileset)
+		BlockRenderPass::BlockRenderPass(rex::gfx::RenderTargetBase* rt, const rex::TilesetAsset* tileset)
 			: m_render_target(rt)
 			, m_tileset(tileset)
 			, m_tile_zoom(1.0f)
@@ -22,7 +22,7 @@ namespace rex
 			init();
 		}
 
-		void BlockRenderPass::set_render_target(RenderTarget* render_target)
+		void BlockRenderPass::set_render_target(RenderTargetBase* render_target)
 		{
 			m_render_target = render_target;
 			init();

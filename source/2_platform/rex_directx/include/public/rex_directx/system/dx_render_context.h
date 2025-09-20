@@ -42,7 +42,7 @@ namespace rex
       // Transition a texture's resource state
       void transition_buffer(Texture2D* resource, ResourceState state)                            override;
       // Transition a render target's resource state
-      void transition_buffer(RenderTargetBase* resource, ResourceState state)                         override;
+      void transition_buffer(RenderTargetBase* resource, ResourceState state)                     override;
       void transition_buffer(DepthStencilBuffer* resource, ResourceState state)                   override;
 
       // Set the render target of the context
@@ -114,9 +114,10 @@ namespace rex
       void end_profile_event() override;
 
     private:
-      // Transition a buffer into a new resource state
-      void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       void update_buffer(ID3D12Resource* resource, const void* data, rsl::memory_size size, s32 offset);
+
+      // Transition a buffer into a new resource state
+      void transition_buffer(Resource* resource, ID3D12Resource* d3dResource, ResourceState state);
 
       class DxRenderEngine* api_engine();
 

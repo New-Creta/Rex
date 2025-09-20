@@ -15,6 +15,7 @@
 #include "rex_engine/assets/map.h"
 
 #include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 
 #include "rex_engine/gfx/rendering/camera.h"
 #include "rex_engine/gfx/rendering/scene_renderer.h"
@@ -49,7 +50,8 @@ namespace pokemon
     //TileRenderer* m_tile_renderer;
     TileCoord m_player_position; // player position in tiles
 
-    rsl::unique_ptr<rex::gfx::TileRenderPass> m_tile_render_pass;
+    //rsl::unique_ptr<rex::gfx::TileRenderPass> m_tile_render_pass;
+    rsl::unique_ptr<rex::gfx::BlockRenderPass> m_block_render_pass;
 
   };
 }

@@ -16,6 +16,8 @@ namespace rex
       // Return the compiled byte code of the shader
       D3D12_SHADER_BYTECODE dx_bytecode() const;
 
+      void* api_object() override;
+
     private:
       wrl::ComPtr<ID3DBlob> m_shader_bytecode;
     };

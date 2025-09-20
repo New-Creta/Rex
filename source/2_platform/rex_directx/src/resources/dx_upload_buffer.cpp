@@ -64,6 +64,9 @@ namespace rex
       return inc_texture_offsset(total_size, alignment);
     }
 
-
+    void* DxUploadBuffer::api_object()
+    {
+      return dx_object();
+    }
   } // namespace gfx
 } // namespace rex

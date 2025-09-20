@@ -12,14 +12,15 @@ namespace rex
       , m_view(view)
     {}
 
-    void DxRenderTarget::debug_set_name(rsl::string_view name)
-    {
-      d3d::set_debug_name_for(m_resource.Get(), name);
-    }
-
     const DxResourceView& DxRenderTarget::dx_view() const
     {
       return m_view;
     }
+
+    void* DxRenderTarget::api_object()
+    {
+      return dx_object();
+    }
+
   }
 }

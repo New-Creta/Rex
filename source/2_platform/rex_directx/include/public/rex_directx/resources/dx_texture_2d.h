@@ -19,6 +19,8 @@ namespace rex
       // Return a view to the object on the gpu
       DxResourceView* view();
 
+      void* api_object() override;
+
     private:
       DxResourceView m_view;         // A handle to the cpu and gpu descriptor
     };

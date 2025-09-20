@@ -2,6 +2,8 @@
 
 #include "rex_std/optional.h"
 
+#include "rex_engine/gfx/resources/resource.h"
+
 #include "rex_engine/gfx/resources/raster_state.h"
 #include "rex_engine/gfx/resources/blend_state.h"
 #include "rex_engine/gfx/resources/depth_stencil_state.h"
@@ -47,7 +49,7 @@ namespace rex
     };
 
     // Base class for the pipeline state, just acts as an interface
-    class PipelineState
+    class PipelineState : public Resource
     {
     public:
       PipelineState(RootSignature* rootSignatre)

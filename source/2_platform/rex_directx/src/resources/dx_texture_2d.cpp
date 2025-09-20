@@ -16,5 +16,9 @@ namespace rex
       return &m_view;
     }
 
+    void* DxTexture2D::api_object()
+    {
+      return dx_object();
+    }
   }
 }

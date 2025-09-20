@@ -200,6 +200,7 @@ namespace rex
 		s32 height_in_tiles() const;
 
 	private:
+		void load_blocks();
 		void load_tiles();
 
 		//s32 width_in_blocks() const;

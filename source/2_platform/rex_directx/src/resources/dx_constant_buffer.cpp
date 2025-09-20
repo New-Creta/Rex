@@ -15,5 +15,10 @@ namespace rex
       return &m_view;
     }
 
+    void* DxConstantBuffer::api_object()
+    {
+      return dx_object();
+    }
+
   }
 }

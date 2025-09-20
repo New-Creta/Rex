@@ -15,13 +15,12 @@ namespace rex
     public:
       DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, const rsl::Color4f& clearColor);
 
-      void debug_set_name(rsl::string_view name) override;
-
       // Return a view to the object
       const DxResourceView& dx_view() const;
 
+      void* api_object() override;
+
     private:
-      wrl::ComPtr<ID3D12Resource> m_resource; // The resource itself
       DxResourceView m_view;
     };
   }

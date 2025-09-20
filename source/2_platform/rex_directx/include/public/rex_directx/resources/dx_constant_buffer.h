@@ -18,6 +18,8 @@ namespace rex
       // Return the view to the wrapped dx object      
       DxResourceView* view();
 
+      void* api_object() override;
+
     private:
       DxResourceView m_view; // A handle for both the cpu and gpu descriptor
     };

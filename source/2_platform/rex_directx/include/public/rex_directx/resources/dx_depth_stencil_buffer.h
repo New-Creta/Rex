@@ -18,6 +18,8 @@ namespace rex
 			// Returns the resource view
 			DxResourceView* view();
 
+			void* api_object() override;
+
 		private:
 			DxResourceView m_view;
 		};

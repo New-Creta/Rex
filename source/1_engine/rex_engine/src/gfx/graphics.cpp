@@ -288,7 +288,7 @@ namespace rex
 		void GALBase::init_swapchain()
 		{
 			m_swapchain = gfx::gal::instance()->create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
-			m_backbuffer_render_target = rsl::make_unique<BackBufferRenderTarget>(m_swapchain);
+			m_backbuffer_render_target = rsl::make_unique<BackBufferRenderTarget>(m_swapchain.get());
 		}
 		// Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
 		void GALBase::init_sub_engines()

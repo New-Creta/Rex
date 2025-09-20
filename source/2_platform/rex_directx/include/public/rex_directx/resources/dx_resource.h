@@ -13,6 +13,11 @@ namespace rex
 				: m_resource(resource)
 			{}
 
+			void debug_set_name(rsl::string_view name)
+			{
+				d3d::set_debug_name_for(m_resource.Get(), name);
+			}
+
 			// This is made virtual so derived classes can be made
 			// that wrap resources and don't store them directly
 			ID3D12Resource* dx_object() override

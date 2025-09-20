@@ -2,13 +2,14 @@
 
 #include "rex_engine/memory/blob.h"
 #include "rex_engine/gfx/system/shader_type.h"
+#include "rex_engine/gfx/resources/resource.h"
 
 namespace rex
 {
   namespace gfx
   {
     // Base class for a shader
-    class Shader
+    class Shader : public Resource
     {
     public:
       Shader(ShaderType type)

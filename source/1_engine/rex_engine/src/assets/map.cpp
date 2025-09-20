@@ -8,6 +8,8 @@ namespace rex
 	Map::Map(MapDesc&& desc, LoadFlags loadFlags)
 		: m_desc(rsl::move(desc))
 	{
+		load_blocks();
+
 		if (!rsl::has_flag(loadFlags, LoadFlags::PartialLoad))
 		{
 			load_tiles();
@@ -44,13 +46,21 @@ namespace rex
 		return m_desc.map_header.height_in_blocks * num_tiles_per_block_row;
 	}
 
+	void Map::load_blocks()
+	{
+		m_blockset = asset_db::instance()->load<Blockset>(m_desc.blockset);
+
+		m_blocks = rsl::make_unique<u8[]>(m_desc.map_header.width_in_blocks * m_desc.map_header.height_in_blocks);
+		memory::Blob blockmap = vfs::instance()->read_file(m_desc.blockmap);
+		rsl::memcpy(m_blocks.get(), blockmap.data(), blockmap.size());
+	}
+
 	void Map::load_tiles()
 	{
 		const s32 num_tiles_per_block = 16;
 		const s32 num_tiles_per_block_row = 4;
 		m_tiles = rsl::make_unique<u8[]>(m_desc.map_header.width_in_blocks * num_tiles_per_block_row * m_desc.map_header.height_in_blocks * num_tiles_per_block_row);
 
-		m_blockset = asset_db::instance()->load<Blockset>(m_desc.blockset);
 		memory::Blob blockmap = vfs::instance()->read_file(m_desc.blockmap);
 
 		memory::BlobReader reader(blockmap);

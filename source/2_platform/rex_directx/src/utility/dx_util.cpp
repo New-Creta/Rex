@@ -765,10 +765,6 @@ namespace rex
       {
         return static_cast<DxRenderTarget*>(renderTarget);
       }
-      DxBackBufferRenderTarget* to_dx12(BackBufferRenderTarget* renderTarget)
-      {
-        return static_cast<DxBackBufferRenderTarget*>(renderTarget);
-      }
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer)
       {
         return static_cast<DxDepthStencilBuffer*>(depthStencilBuffer);
@@ -854,6 +850,10 @@ namespace rex
       ID3D12Resource* dx12_resource(Texture2D* texture)
       {
         return static_cast<DxTexture2D*>(texture)->dx_object();
+      }
+      ID3D12Resource* dx12_resource(Resource* resource)
+      {
+        return static_cast<ID3D12Resource*>(resource->api_object());
       }
       ID3D12PipelineState* dx12_pso(PipelineState* pso)
       {

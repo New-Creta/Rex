@@ -25,6 +25,8 @@ namespace rex
 
       ID3D12PipelineState* dx_object();
 
+      void* api_object() override;
+
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;
     };

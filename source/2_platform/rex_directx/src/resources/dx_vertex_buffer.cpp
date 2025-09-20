@@ -10,5 +10,10 @@ namespace rex
     {
     }
 
+    void* DxVertexBuffer::api_object()
+    {
+      return dx_object();
+    }
+
   }
 }

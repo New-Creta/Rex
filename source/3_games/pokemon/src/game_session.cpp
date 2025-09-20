@@ -43,6 +43,7 @@
 #include "rex_engine/event_system/events/input/key_down.h"
 
 #include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 
 namespace pokemon
 {
@@ -102,7 +103,8 @@ namespace pokemon
 
 		init_input();
 
-		m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(rex::gfx::gal::instance()->backbuffer_rt(), m_active_map->blockset()->tileset());
+		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(rex::gfx::gal::instance()->backbuffer_rendertarget(), m_active_map->blockset()->tileset());
+		//m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(rex::gfx::gal::instance()->backbuffer_rt(), m_active_map->blockset()->tileset());
 	}
 
 	void GameSession::init_tilemap()
@@ -116,12 +118,15 @@ namespace pokemon
 		top_left.x = m_player_position.x;
 		top_left.y = m_player_position.y;
 
-		rex::gfx::TileRenderPassParams params{};
+		rex::gfx::BlockRenderPassParams params{};
 		params.screen_resolution = { constants::g_block_width_px / constants::g_tile_width_px, constants::g_block_height_px / constants::g_tile_height_px};
 		params.tiles_source = m_blockmap->tiles();
 		params.top_left_start = top_left;
 		params.world_width_in_tiles = m_blockmap->width_in_tiles();
-		m_tile_render_pass->update_tilemap(params);
+		m_block_render_pass->update_tilemap(params);
+
+		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
+		m_block_render_pass->render(render_ctx.get());
 
 		//m_tile_renderer->update_tile_data(m_active_map->map_matrix(), m_player_position);
 	}
@@ -226,8 +231,8 @@ namespace pokemon
 				m_player_position.x = rsl::clamp_min(m_player_position.x, min_player_pos.x);
 				m_player_position.y = rsl::clamp_min(m_player_position.y, min_player_pos.y);
 
-				m_player_position.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->map_matrix().width_in_tiles() - max_player_pos.x));
-				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->map_matrix().height_in_tiles() - max_player_pos.y));
+				m_player_position.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->width_in_tiles() - max_player_pos.x));
+				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->height_in_tiles() - max_player_pos.y));
 
 			});
 	}

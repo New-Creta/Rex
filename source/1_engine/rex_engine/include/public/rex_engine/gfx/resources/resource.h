@@ -10,7 +10,9 @@ namespace rex
     public:
       virtual ~Resource() = default;
 
-      virtual void debug_set_name(rsl::string_view name) {}
+      // Returns the api specific object that the resource is wrapping
+      // for example, for texture on DirectX 12, this would return the ID3D12Resource*
+      virtual void* api_object() = 0;
 
     private:
 

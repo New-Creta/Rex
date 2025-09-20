@@ -11,7 +11,6 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/resources/dx_unordered_access_buffer.h"
-#include "rex_directx/resources/dx_backbuffer_render_target.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
@@ -65,50 +64,42 @@ namespace rex
     // Transition a constant buffer's resource state
     void DxRenderContext::transition_buffer(ConstantBuffer* resource, ResourceState state)
     {
-      DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_constant_buffer->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition a vertex buffer's resource state
     void DxRenderContext::transition_buffer(VertexBuffer* resource, ResourceState state)
     {
-      DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_vertex_buffer->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition an index buffer's resource state
     void DxRenderContext::transition_buffer(IndexBuffer* resource, ResourceState state)
     {
-      DxIndexBuffer* dx_index_buffer = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_index_buffer->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition an index buffer's resource state
     void DxRenderContext::transition_buffer(UnorderedAccessBuffer* resource, ResourceState state)
     {
-      DxUnorderedAccessBuffer* dx_unordered_access_buffer = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_unordered_access_buffer->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition a upload buffer's resource state
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
     {
-      DxUploadBuffer* dx_upload_buffer = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_upload_buffer->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition a texture's resource state
     void DxRenderContext::transition_buffer(Texture2D* resource, ResourceState state)
     {
-      DxTexture2D* dx_texture = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_texture->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
     // Transition a render target's resource state
     void DxRenderContext::transition_buffer(RenderTargetBase* resource, ResourceState state)
     {
-      DxResource* dx_resource = d3d::to_dx12_resource(resource);
-      transition_buffer(resource, dx_resource->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
-    // Transition a render target's resource state
-    void DxRenderContext::transition_buffer(RenderTargetBase* resource, ResourceState state)
+    // Transition a depth stencil's resource state
+    void DxRenderContext::transition_buffer(DepthStencilBuffer* resource, ResourceState state)
     {
-      DxResource* dx_resource = d3d::to_dx12_resource(resource);
-      transition_buffer(resource, dx_resource->dx_object(), state);
+      transition_buffer(resource, d3d::dx12_resource(resource),  state);
     }
 
     // Set the render target of the context
@@ -122,7 +113,7 @@ namespace rex
         dx_depth_render_target_view = &dx_depth_render_target->cpu_handle();
       }
 
-      transition_buffer(d3d::to_dx12_resource(colorRenderTarget), ResourceState::RenderTarget);
+      transition_buffer(colorRenderTarget, ResourceState::RenderTarget);
       m_cmd_list->OMSetRenderTargets(1, &dx_color_rtv->cpu_handle(), true, dx_depth_render_target_view);
     }
     // Clear the render target of the context
@@ -130,8 +121,7 @@ namespace rex
     {
       REX_ASSERT_X(renderTarget, "Trying to clear a nullptr rendertarget");
 
-			DxResource* dx_resource = d3d::to_dx12_resource(renderTarget);
-			m_cmd_list->ClearRenderTargetView(d3d::to_dx12(renderTarget->view())->cpu_handle(), dx_render_target->clear_color().data(), 0, nullptr);
+			m_cmd_list->ClearRenderTargetView(d3d::to_dx12(renderTarget->view())->cpu_handle(), renderTarget->clear_color().data(), 0, nullptr);
 
       if (depthRenderTarget)
       {
@@ -371,14 +361,14 @@ namespace rex
     }
 
     // Transition a buffer into a new resource state
-    void DxRenderContext::transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state)
+    void DxRenderContext::transition_buffer(Resource* resource, ID3D12Resource* d3dResource, ResourceState state)
     {
       ResourceStateTransition transition = track_resource_transition(resource, state);
       if (transition.before != transition.after)
       {
         D3D12_RESOURCE_STATES before_state = d3d::to_dx12(transition.before);
         D3D12_RESOURCE_STATES after_state = d3d::to_dx12(transition.after);
-        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d_resource, before_state, after_state);
+        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3dResource, before_state, after_state);
         m_cmd_list->ResourceBarrier(1, &barrier);
       }
     }

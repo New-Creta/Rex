@@ -16,5 +16,10 @@ namespace rex
       return m_pso.Get();
     }
 
+    void* DxPipelineState::api_object()
+    {
+      return dx_object();
+    }
+
   }
 }

@@ -45,9 +45,9 @@ namespace rex
 		class BlockRenderPass
 		{
 		public:
-			BlockRenderPass(rex::gfx::RenderTarget* rt, const rex::TilesetAsset* tileset);
+			BlockRenderPass(rex::gfx::RenderTargetBase* rt, const rex::TilesetAsset* tileset);
 
-			void set_render_target(RenderTarget* render_target);
+			void set_render_target(RenderTargetBase* render_target);
 			void set_tileset(const rex::TilesetAsset* tileset);
 			void set_tile_zoom(f32 zoom);
 
@@ -75,7 +75,7 @@ namespace rex
 
 			rex::gfx::RenderPassDesc m_render_pass_desc{};
 
-			rex::gfx::RenderTarget* m_render_target;
+			rex::gfx::RenderTargetBase* m_render_target;
 			const rex::TilesetAsset* m_tileset;
 
 			f32 m_tile_zoom;

@@ -16,5 +16,11 @@ namespace rex
 		{
 			return &m_view;
 		}
+
+		void* DxDepthStencilBuffer::api_object()
+		{
+			return dx_object();
+		}
+
 	}
 }

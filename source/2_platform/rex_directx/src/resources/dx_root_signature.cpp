@@ -13,5 +13,11 @@ namespace rex
     {
       return m_root_signature.Get();
     }
+
+    void* DxRootSignature::api_object()
+    {
+      return dx_object();
+    }
+
   }
 }

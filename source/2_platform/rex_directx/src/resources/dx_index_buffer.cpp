@@ -9,6 +9,10 @@ namespace rex
       , DxResource(resource)
     {}
 
+    void* DxIndexBuffer::api_object()
+    {
+      return dx_object();
+    }
 
   }
 }

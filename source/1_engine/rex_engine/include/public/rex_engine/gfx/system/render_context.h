@@ -80,6 +80,7 @@ namespace rex
 			virtual void set_viewport(const Viewport& vp) = 0;
 			// Set the scissor rect of the context
 			virtual void set_scissor_rect(const ScissorRect& rect) = 0;
+
 			// Transition a constant buffer's resource state
 			virtual void transition_buffer(ConstantBuffer* resource, ResourceState state) = 0;
 			// Transition a vertex buffer's resource state

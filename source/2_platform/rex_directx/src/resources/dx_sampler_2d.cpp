@@ -14,5 +14,12 @@ namespace rex
 		{
 			return &m_resource_view;
 		}
+
+		void* DxSampler2D::api_object()
+		{
+			// DirectX doesn't have a resource object for samplers
+			// It's all done through resource views
+			return nullptr;
+		}
 	}
 }
