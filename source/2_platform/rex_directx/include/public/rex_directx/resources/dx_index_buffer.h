@@ -4,20 +4,17 @@
 
 #include "rex_engine/gfx/resources/index_buffer.h"
 #include "rex_directx/utility/dx_util.h"
+#include "rex_directx/resources/dx_resource.h"
 
 namespace rex
 {
   namespace gfx
   {
-    class DxIndexBuffer : public IndexBuffer
+    class DxIndexBuffer : public IndexBuffer, public DxResource
     {
     public:
       DxIndexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numIndices, IndexBufferFormat format);
 
-      ID3D12Resource* dx_object();
-
-    private:
-      wrl::ComPtr<ID3D12Resource> m_resource;
     };
 
   } // namespace gfx

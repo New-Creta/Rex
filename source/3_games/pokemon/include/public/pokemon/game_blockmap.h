@@ -5,19 +5,20 @@
 
 namespace pokemon
 {
-	class GameTilemap : public rex::Tilemap
+	class GameBlockMap : public rex::Tilemap
 	{
 	public:
-		GameTilemap(const rex::Map* map);
+		GameBlockMap(const rex::Map* map);
 
 	private:
 		void init_border_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
 		void init_connection_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
 		void init_inner_map_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
 
-		void convert_blocks_to_tiles(u8* blocks, s32 numBlocks);
+		void convert_blocks_to_tiles(u8* blocks, s32 numBlocks, const rex::Map* map);
 
 	private:
 		rsl::unique_array<u8> m_tiles;
+		rsl::unique_array<u8> m_blocks;
 	};
 }

@@ -22,6 +22,10 @@ namespace rex
 
 		s32 width_in_tiles() const;
 		s32 height_in_tiles() const;
+
+		s32 width_in_blocks() const;
+		s32 height_in_blocks() const;
+
 		s32 tile_width_px() const;
 		s32 tile_height_px() const;
 
@@ -33,6 +37,10 @@ namespace rex
 		s32 m_height;
 		s32 m_tile_width_px;
 		s32 m_tile_height_px;
+
+		s32 m_block_width_in_tiles;
+		s32 m_block_height_in_tiles;
+
 		rsl::unique_array<u8> m_tiles;
 	};
 }

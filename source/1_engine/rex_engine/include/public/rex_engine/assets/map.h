@@ -192,7 +192,9 @@ namespace rex
 		Map(MapDesc&& desc, LoadFlags loadFlags);
 
 		const MapDesc& desc() const;
+		const u8* blocks(s32 offset = 0) const;
 		const u8* tiles(s32 offset = 0) const;
+		const Blockset* blockset() const;
 
 		s32 width_in_tiles() const;
 		s32 height_in_tiles() const;
@@ -209,6 +211,8 @@ namespace rex
 
 	private:
 		MapDesc m_desc;
+		Blockset* m_blockset;
 		rsl::unique_array<u8> m_tiles;
+		rsl::unique_array<u8> m_blocks;
 	};
 }

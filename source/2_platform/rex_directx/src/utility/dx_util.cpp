@@ -765,6 +765,10 @@ namespace rex
       {
         return static_cast<DxRenderTarget*>(renderTarget);
       }
+      DxBackBufferRenderTarget* to_dx12(BackBufferRenderTarget* renderTarget)
+      {
+        return static_cast<DxBackBufferRenderTarget*>(renderTarget);
+      }
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer)
       {
         return static_cast<DxDepthStencilBuffer*>(depthStencilBuffer);

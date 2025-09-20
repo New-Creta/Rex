@@ -62,9 +62,9 @@ namespace rex
 			// ---------------------------
 
 			// Calls the graphics API set_render_target function with a null depth stencil buffer
-			void set_render_target(RenderTarget* colorRenderTarget);
+			void set_render_target(RenderTargetBase* colorRenderTarget);
 			// Calls the graphics API clear_render_target function with a null depth stencil buffer
-			void clear_render_target(RenderTarget* renderTarget);
+			void clear_render_target(RenderTargetBase* renderTarget);
 			// Set the vertex buffer of the context, always assigned to input slot 0
 			void set_vertex_buffer(VertexBuffer* vb);
 			// Set the input assembler
@@ -91,15 +91,15 @@ namespace rex
 			// Transition a texture's resource state
 			virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
 			// Transition a render target's resource state
-			virtual void transition_buffer(RenderTarget* resource, ResourceState state) = 0;
+			virtual void transition_buffer(RenderTargetBase* resource, ResourceState state) = 0;
 			// Transition an unordered access buffer's resource state
 			virtual void transition_buffer(UnorderedAccessBuffer* resource, ResourceState state) = 0;
 			// Transition a depth stencil buffer's resource state
 			virtual void transition_buffer(DepthStencilBuffer* resource, ResourceState state) = 0;
 			// Set the render target of the context
-			virtual void set_render_target(RenderTarget* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) = 0;
+			virtual void set_render_target(RenderTargetBase* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) = 0;
 			// Clear the render target of the context
-			virtual void clear_render_target(RenderTarget* renderTarget, DepthStencilBuffer* depthRenderTarget) = 0;
+			virtual void clear_render_target(RenderTargetBase* renderTarget, DepthStencilBuffer* depthRenderTarget) = 0;
 			// Clears the depth stencil target of the context
 			virtual void clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget) = 0;
 			// Set the vertex buffer of the context

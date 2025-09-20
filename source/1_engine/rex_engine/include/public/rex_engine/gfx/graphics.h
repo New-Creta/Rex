@@ -45,6 +45,7 @@
 #include "rex_engine/gfx/system/debug_interface.h"
 #include "rex_engine/gfx/system/swapchain.h"
 #include "rex_engine/gfx/rendering/renderer.h"
+#include "rex_engine/gfx/resources/backbuffer_render_target.h"
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"
 #include "rex_engine/gfx/resources/root_signature.h"
@@ -208,7 +209,7 @@ namespace rex
 			// Return the height of the render target of the swapchain
 			s32 back_buffer_height() const;
       // Return the current render target of the swapchain
-      RenderTarget* current_backbuffer_rt();
+      BackBufferRenderTarget* backbuffer_rendertarget();
       // Construct a new renderer and add it to the list of renderers we should call
       template <typename T, typename ... Args>
       T* add_renderer(Args&& ... args)
@@ -301,6 +302,7 @@ namespace rex
       ViewHeapPool m_cpu_descriptor_heap_pool;            // Pool of descriptor heaps per type
       ViewHeapPool m_shader_visible_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker;      // The global tracker of resource states
+      rsl::unique_ptr<BackBufferRenderTarget> m_backbuffer_render_target;
 
       rsl::unordered_map<u64, rsl::unique_ptr<ResourceView>> m_resources_on_gpu;                                    // Holds a map of all resources already present on the GPU and their views
       rsl::vector<rsl::unique_ptr<LegacyRenderer>> m_renderers;                                                           // Holds all the renderers

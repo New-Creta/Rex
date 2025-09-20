@@ -4,20 +4,19 @@
 #include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_engine/gfx/resources/render_target.h"
+#include "rex_directx/resources/dx_resource.h"
 
 namespace rex
 {
   namespace gfx
   {
-    class DxRenderTarget : public RenderTarget
+    class DxRenderTarget : public RenderTarget, public DxResource
     {
     public:
       DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, const rsl::Color4f& clearColor);
 
       void debug_set_name(rsl::string_view name) override;
 
-      // Return the wrapped DirectX object
-      ID3D12Resource* dx_object();
       // Return a view to the object
       const DxResourceView& dx_view() const;
 

@@ -95,12 +95,14 @@ namespace pokemon
 
 		s32 total_tilemap_width = m_active_map->width_in_tiles() + (2 * constants::g_map_padding_tiles);
 		s32 total_tilemap_height = m_active_map->height_in_tiles() + (2 * constants::g_map_padding_tiles);
-		m_tilemap = rsl::make_unique<GameTilemap>(total_tilemap_width, total_tilemap_height);
+		m_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
 
 		//m_active_map = init_map(startup_save_file);
 		//m_tile_renderer = init_tile_renderer(m_active_map->render_data());
 
 		init_input();
+
+		m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(rex::gfx::gal::instance()->backbuffer_rt(), m_active_map->blockset()->tileset());
 	}
 
 	void GameSession::init_tilemap()
@@ -110,7 +112,18 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		m_tile_renderer->update_tile_data(m_active_map->map_matrix(), m_player_position);
+		rsl::pointi32 top_left{};
+		top_left.x = m_player_position.x;
+		top_left.y = m_player_position.y;
+
+		rex::gfx::TileRenderPassParams params{};
+		params.screen_resolution = { constants::g_block_width_px / constants::g_tile_width_px, constants::g_block_height_px / constants::g_tile_height_px};
+		params.tiles_source = m_blockmap->tiles();
+		params.top_left_start = top_left;
+		params.world_width_in_tiles = m_blockmap->width_in_tiles();
+		m_tile_render_pass->update_tilemap(params);
+
+		//m_tile_renderer->update_tile_data(m_active_map->map_matrix(), m_player_position);
 	}
 
 	SaveFile GameSession::load_startup_savefile() const
@@ -121,55 +134,55 @@ namespace pokemon
 		return SaveFile(startup_save_filepath);
 	}
 
-	rsl::unique_ptr<Map> GameSession::init_map(const SaveFile& startupSaveFile)
-	{
-		// Load the map first, good to check if it exists
-		m_active_map = rex::asset_db::instance()->load<rex::Map>(startupSaveFile.current_map_filepath);
+	//rsl::unique_ptr<Map> GameSession::init_map(const SaveFile& startupSaveFile)
+	//{
+	//	// Load the map first, good to check if it exists
+	//	m_active_map = rex::asset_db::instance()->load<rex::Map>(startupSaveFile.current_map_filepath);
 
-		//rex::gfx::TileRenderPass render_pass(nullptr, nullptr);
-		//rex::gfx::TileRenderPassParams params{};
+	//	//rex::gfx::TileRenderPass render_pass(nullptr, nullptr);
+	//	//rex::gfx::TileRenderPassParams params{};
 
-		//params.screen_resolution = { constants::g_screen_width / 8, constants::g_screen_height / 8 };
-		//params.tiles_source = active_map->tiles();
-		//params.top_left_start = {}; // camera pos - player offset
-		//params.world_width_in_tiles = active_map->width_in_tiles();
+	//	//params.screen_resolution = { constants::g_screen_width / 8, constants::g_screen_height / 8 };
+	//	//params.tiles_source = active_map->tiles();
+	//	//params.top_left_start = {}; // camera pos - player offset
+	//	//params.world_width_in_tiles = active_map->width_in_tiles();
 
-		//render_pass.update_tilemap(params);
+	//	//render_pass.update_tilemap(params);
 
-		//MapData* map_data = asset_db::find_map(startupSaveFile.current_map_filepath);
+	//	//MapData* map_data = asset_db::find_map(startupSaveFile.current_map_filepath);
 
 
 
-		// We have a new goal here now to reduce memory usage during runtime
-		// Create an vertex buffer holding the vertices for each tile
-		// A vertex for a single tile consist of the following
-		// X, Y -> 8 bytes
-		// U, V -> 8 bytes
-		// total: 16 bytes
-		// The WVP matrix for each tile will be sent in a buffer of its own so we have 1 WVP for each tile instead of 1 per vertex
-		// This will use per instance data.
-		// The original game boy screen width is 160 x 144 pixels, meaning we're drawing 20 x 18 tiles
-		// This results in a total of 360 tiles
-		// Each tile has 4 vertices, each vertex is 16 bytes
-		// 4 * 16 * 360 = 23040 bytes, this is the size of the vertex buffer
-		// we also need to upload 1 world view projection per tile
-		// each world view projection matrix is a 4 x 4 matrix, each matrix being 16 bytes
-		// 360 x 16 = 5760
-		// This means we can render the viewport using only 28 800 bytes, at least for the map itself, excluding the player sprite and NPCs
+	//	// We have a new goal here now to reduce memory usage during runtime
+	//	// Create an vertex buffer holding the vertices for each tile
+	//	// A vertex for a single tile consist of the following
+	//	// X, Y -> 8 bytes
+	//	// U, V -> 8 bytes
+	//	// total: 16 bytes
+	//	// The WVP matrix for each tile will be sent in a buffer of its own so we have 1 WVP for each tile instead of 1 per vertex
+	//	// This will use per instance data.
+	//	// The original game boy screen width is 160 x 144 pixels, meaning we're drawing 20 x 18 tiles
+	//	// This results in a total of 360 tiles
+	//	// Each tile has 4 vertices, each vertex is 16 bytes
+	//	// 4 * 16 * 360 = 23040 bytes, this is the size of the vertex buffer
+	//	// we also need to upload 1 world view projection per tile
+	//	// each world view projection matrix is a 4 x 4 matrix, each matrix being 16 bytes
+	//	// 360 x 16 = 5760
+	//	// This means we can render the viewport using only 28 800 bytes, at least for the map itself, excluding the player sprite and NPCs
 
-		// Create the map matrix, which is a matrix of the map, with the padding
-		// The map matrix only changes when the player transitions between maps
-		//MapMatrix map_matrix(map_data);
+	//	// Create the map matrix, which is a matrix of the map, with the padding
+	//	// The map matrix only changes when the player transitions between maps
+	//	//MapMatrix map_matrix(map_data);
 
-		// Load the map render data, which is the tileset and blockset into memory
-		//MapRenderData map_render_data = load_map_render_data(map_data->map_header.map_render_data_filepath);
+	//	// Load the map render data, which is the tileset and blockset into memory
+	//	//MapRenderData map_render_data = load_map_render_data(map_data->map_header.map_render_data_filepath);
 
-		// Load all the warp and bg objects
+	//	// Load all the warp and bg objects
 
-		// Load all the NPC information
+	//	// Load all the NPC information
 
-		return rsl::make_unique<Map>(rsl::move(map_matrix), rsl::move(map_render_data));
-	}
+	//	return rsl::make_unique<Map>(rsl::move(map_matrix), rsl::move(map_render_data));
+	//}
 
 	TileRenderer* GameSession::init_tile_renderer(const MapRenderData& mapRenderData)
 	{

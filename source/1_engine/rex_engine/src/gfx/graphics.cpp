@@ -157,15 +157,15 @@ namespace rex
 			m_compute_engine->new_frame();
 
 			auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
-			render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
-			render_ctx->clear_render_target(current_backbuffer_rt());
+			render_ctx->transition_buffer(backbuffer_rendertarget(), ResourceState::RenderTarget);
+			render_ctx->clear_render_target(backbuffer_rendertarget());
 			render_ctx->execute_on_gpu();
 		}
 		// Present the new frame to the main window
 		void GALBase::present()
 		{
 			auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "End Frame");
-			render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
+			render_ctx->transition_buffer(backbuffer_rendertarget(), ResourceState::Present);
 			render_ctx->execute_on_gpu();
 
 			m_swapchain->present();
@@ -199,9 +199,9 @@ namespace rex
 			return m_swapchain->height();
 		}
 		// Return the current render target of the swapchain
-		RenderTarget* GALBase::current_backbuffer_rt()
+		BackBufferRenderTarget* GALBase::backbuffer_rendertarget()
 		{
-			return m_swapchain->current_buffer();
+			return m_backbuffer_render_target.get();
 		}
 
 		// Create a new context which is used for rendering to render targets
@@ -288,6 +288,7 @@ namespace rex
 		void GALBase::init_swapchain()
 		{
 			m_swapchain = gfx::gal::instance()->create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
+			m_backbuffer_render_target = rsl::make_unique<BackBufferRenderTarget>(m_swapchain);
 		}
 		// Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
 		void GALBase::init_sub_engines()

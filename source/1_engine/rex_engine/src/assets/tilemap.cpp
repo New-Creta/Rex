@@ -10,6 +10,9 @@ namespace rex
 		, m_tile_width_px(8)
 		, m_tile_height_px(8)
 	{
+		m_block_width_in_tiles = 4;
+		m_block_height_in_tiles = 4;
+
 		m_tiles = rsl::make_unique<u8[]>(m_width * m_height);
 		rsl::memset(m_tiles.get(), 0, m_width * m_height);
 	}
@@ -38,6 +41,16 @@ namespace rex
 	{
 		return m_height;
 	}
+
+	s32 Tilemap::width_in_blocks() const
+	{
+		return m_width * m_tile_width_px * m_block_width_in_tiles;
+	}
+	s32 Tilemap::height_in_blocks() const
+	{
+		return m_height * m_tile_height_px * m_block_height_in_tiles;
+	}
+
 	s32 Tilemap::tile_width_px() const
 	{
 		return m_tile_width_px;

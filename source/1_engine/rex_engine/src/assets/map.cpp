@@ -18,15 +18,25 @@ namespace rex
 	{
 		return m_desc;
 	}
+	const u8* Map::blocks(s32 offset) const
+	{
+		return m_blocks.get() + offset;
+	}
+
 	const u8* Map::tiles(s32 offset) const
 	{
 		return m_tiles.get() + offset;
 	}
 
+	const Blockset* Map::blockset() const
+	{
+		return m_blockset;
+	}
+
 	s32 Map::width_in_tiles() const
 	{
 		const s32 num_tiles_per_block_row = 4;
-		m_desc.map_header.width_in_blocks* num_tiles_per_block_row;
+		return m_desc.map_header.width_in_blocks * num_tiles_per_block_row;
 	}
 	s32 Map::height_in_tiles() const
 	{
@@ -40,7 +50,7 @@ namespace rex
 		const s32 num_tiles_per_block_row = 4;
 		m_tiles = rsl::make_unique<u8[]>(m_desc.map_header.width_in_blocks * num_tiles_per_block_row * m_desc.map_header.height_in_blocks * num_tiles_per_block_row);
 
-		Blockset* blockset = asset_db::instance()->load<Blockset>(m_desc.blockset);
+		m_blockset = asset_db::instance()->load<Blockset>(m_desc.blockset);
 		memory::Blob blockmap = vfs::instance()->read_file(m_desc.blockmap);
 
 		memory::BlobReader reader(blockmap);
@@ -54,7 +64,7 @@ namespace rex
 			s32 tile_row_size = m_desc.map_header.width_in_blocks * num_tiles_per_block_row;
 			s32 block_idx_in_row = num_blocks_read % m_desc.map_header.width_in_blocks;
 			u8 block_idx = reader.read<u8>();
-			const Block& block = blockset->block(block_idx);
+			const Block& block = m_blockset->block(block_idx);
 
 			rsl::array<u8, num_tiles_per_block_row> block_tiles_in_row;
 			for (s32 tile_row = 0; tile_row < num_tiles_per_block_row; ++tile_row)

@@ -6,14 +6,9 @@ namespace rex
 	{
 		DxUnorderedAccessBuffer::DxUnorderedAccessBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView resourceView, rsl::memory_size size)
 			: UnorderedAccessBuffer(resource->GetGPUVirtualAddress(), &m_resource_view, size)
-			, m_resource(resource)
+			, DxResource(resource)
 			, m_resource_view(resourceView)
 		{}
-
-		ID3D12Resource* DxUnorderedAccessBuffer::dx_object()
-		{
-			return m_resource.Get();
-		}
 
 		DxResourceView* DxUnorderedAccessBuffer::view()
 		{

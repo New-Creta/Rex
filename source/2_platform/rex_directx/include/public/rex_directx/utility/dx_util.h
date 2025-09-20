@@ -74,6 +74,7 @@ namespace rex
     class RenderTarget;
     class ShaderPipelineParameters;
     class DepthStencilBuffer;
+    class BackBufferRenderTarget;
     class UnorderedAccessBuffer;
     struct SamplerDesc;
 
@@ -93,6 +94,7 @@ namespace rex
     class DxIndexBuffer;
     class DxUploadBuffer;
     class DxRenderTarget;
+    class DxBackBufferRenderTarget;
     class DxDepthStencilBuffer;
     class DxUnorderedAccessBuffer;
     class DxPipelineState;
@@ -193,6 +195,12 @@ namespace rex
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
       // ------------------------------------
+      template <typename T>
+      DxResource* to_dx12_resource(T* resource)
+      {
+        return static_cast<DxResource*>(resource);
+      }
+
       DxCommandQueue* to_dx12(CommandQueue* cmdQueue);
       DxCommandAllocator* to_dx12(CommandAllocator* cmdAlloc);
       DxRootSignature* to_dx12(RootSignature* rootSig);
@@ -209,6 +217,7 @@ namespace rex
       DxIndexBuffer* to_dx12(IndexBuffer* indexBuffer);
       DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
+      DxBackBufferRenderTarget* to_dx12(BackBufferRenderTarget* renderTarget);
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer);
       DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* depthStencilBuffer);
       DxPipelineState* to_dx12(PipelineState* pso);

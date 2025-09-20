@@ -11,6 +11,7 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/resources/dx_unordered_access_buffer.h"
+#include "rex_directx/resources/dx_backbuffer_render_target.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
@@ -98,21 +99,22 @@ namespace rex
       transition_buffer(resource, dx_texture->dx_object(), state);
     }
     // Transition a render target's resource state
-    void DxRenderContext::transition_buffer(RenderTarget* resource, ResourceState state)
+    void DxRenderContext::transition_buffer(RenderTargetBase* resource, ResourceState state)
     {
-      DxRenderTarget* dx_rt = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_rt->dx_object(), state);
+      DxResource* dx_resource = d3d::to_dx12_resource(resource);
+      transition_buffer(resource, dx_resource->dx_object(), state);
     }
-    void DxRenderContext::transition_buffer(DepthStencilBuffer* resource, ResourceState state)
+    // Transition a render target's resource state
+    void DxRenderContext::transition_buffer(RenderTargetBase* resource, ResourceState state)
     {
-      DxDepthStencilBuffer* dx_ds = d3d::to_dx12(resource);
-      transition_buffer(resource, dx_ds->dx_object(), state);
+      DxResource* dx_resource = d3d::to_dx12_resource(resource);
+      transition_buffer(resource, dx_resource->dx_object(), state);
     }
 
     // Set the render target of the context
-    void DxRenderContext::set_render_target(RenderTarget* colorRenderTarget, DepthStencilBuffer* depthRenderTarget)
+    void DxRenderContext::set_render_target(RenderTargetBase* colorRenderTarget, DepthStencilBuffer* depthRenderTarget)
     {
-      DxRenderTarget* dx_color_render_target = d3d::to_dx12(colorRenderTarget);
+      const DxResourceView* dx_color_rtv = d3d::to_dx12(colorRenderTarget->view());
       const CD3DX12_CPU_DESCRIPTOR_HANDLE* dx_depth_render_target_view = nullptr;
       if (depthRenderTarget)
       {
@@ -120,16 +122,16 @@ namespace rex
         dx_depth_render_target_view = &dx_depth_render_target->cpu_handle();
       }
 
-      transition_buffer(colorRenderTarget, ResourceState::RenderTarget);
-      m_cmd_list->OMSetRenderTargets(1, &dx_color_render_target->dx_view().cpu_handle(), true, dx_depth_render_target_view);
+      transition_buffer(d3d::to_dx12_resource(colorRenderTarget), ResourceState::RenderTarget);
+      m_cmd_list->OMSetRenderTargets(1, &dx_color_rtv->cpu_handle(), true, dx_depth_render_target_view);
     }
     // Clear the render target of the context
-    void DxRenderContext::clear_render_target(RenderTarget* renderTarget, DepthStencilBuffer* depthRenderTarget)
+    void DxRenderContext::clear_render_target(RenderTargetBase* renderTarget, DepthStencilBuffer* depthRenderTarget)
     {
       REX_ASSERT_X(renderTarget, "Trying to clear a nullptr rendertarget");
 
-			DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
-			m_cmd_list->ClearRenderTargetView(dx_render_target->dx_view(), dx_render_target->clear_color().data(), 0, nullptr);
+			DxResource* dx_resource = d3d::to_dx12_resource(renderTarget);
+			m_cmd_list->ClearRenderTargetView(d3d::to_dx12(renderTarget->view())->cpu_handle(), dx_render_target->clear_color().data(), 0, nullptr);
 
       if (depthRenderTarget)
       {

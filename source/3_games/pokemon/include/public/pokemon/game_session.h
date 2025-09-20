@@ -10,7 +10,7 @@
 #include "pokemon/poke_structs.h"
 #include "pokemon/tile_renderer.h"
 #include "pokemon/map_coordinates.h"
-#include "pokemon/game_tilemap.h"
+#include "pokemon/game_blockmap.h"
 
 #include "rex_engine/assets/map.h"
 
@@ -45,8 +45,11 @@ namespace pokemon
 
   private:
     rex::Map* m_active_map;
-    rsl::unique_ptr<GameTilemap> m_tilemap;
+    rsl::unique_ptr<GameBlockMap> m_blockmap;
     //TileRenderer* m_tile_renderer;
     TileCoord m_player_position; // player position in tiles
+
+    rsl::unique_ptr<rex::gfx::TileRenderPass> m_tile_render_pass;
+
   };
 }

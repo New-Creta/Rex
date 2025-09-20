@@ -6,13 +6,9 @@ namespace rex
   {
     DxIndexBuffer::DxIndexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numIndices, IndexBufferFormat format)
       : IndexBuffer(numIndices, format)
-      , m_resource(resource)
+      , DxResource(resource)
     {}
 
-    ID3D12Resource* DxIndexBuffer::dx_object()
-    {
-      return m_resource.Get();
-    }
 
   }
 }

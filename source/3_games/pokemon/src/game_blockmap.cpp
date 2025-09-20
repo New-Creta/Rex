@@ -1,10 +1,13 @@
-#include "pokemon/game_tilemap.h"
+#include "pokemon/game_blockmap.h"
 
 #include "pokemon/render_constants.h"
+#include "pokemon/map_coordinates.h"
 
 #include "rex_engine/assets/blockset.h"
 
 #include "rex_engine/shapes/rect.h"
+
+#include "rex_engine/gfx/resources/texture_2d.h"
 
 namespace pokemon
 {
@@ -117,27 +120,26 @@ namespace pokemon
 		rex::Map* connections[4];
 	};
 
-	GameTilemap::GameTilemap(const rex::Map* map)
+	GameBlockMap::GameBlockMap(const rex::Map* map)
 		: rex::Tilemap(
 			map->width_in_tiles() + (2 * constants::g_map_padding_blocks),
 			map->height_in_tiles() + (2 * constants::g_map_padding_blocks))
 	{
 		m_tiles = rsl::make_unique<u8[]>(width_in_tiles() * height_in_tiles());
+    m_blocks = rsl::make_unique<u8[]>(width_in_blocks() * height_in_blocks());
 		
-		rsl::unique_array<u8> block_indices;
+		init_border_blocks(m_blocks.get(), m_blocks.count(), map);
+		init_connection_blocks(m_blocks.get(), m_blocks.count(), map);
+		init_inner_map_blocks(m_blocks.get(), m_blocks.count(), map);
 
-		init_border_blocks(block_indices.get(), block_indices.count());
-		init_connection_blocks(block_indices.get(), block_indices.count());
-		init_inner_map_blocks(block_indices.get(), block_indices.count());
-
-		convert_blocks_to_tiles(block_indices.get(), block_indices.count());
+		convert_blocks_to_tiles(m_blocks.get(), m_blocks.count(), map);
 	}
 
-	void GameTilemap::init_border_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
+	void GameBlockMap::init_border_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
 	{
 		rsl::fill_n(blocks, numBlocks, map->desc().map_header.border_block_idx);
 	}
-	void GameTilemap::init_connection_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
+	void GameBlockMap::init_connection_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
 	{
 		for (const rex::MapConnection & conn : map->desc().connections)
 		{
@@ -149,7 +151,7 @@ namespace pokemon
 			rsl::pointi8 top_left_conn = project_point_to_conn(map, conn, rect.top_left);
 
 			// Load the map blocks of the connection so we can assign the right block index to the map matrix
-			const rsl::unique_array<u8>& conn_map_blocks = asset_db::find_map_blocks(conn.map->desc().map_header);
+      const u8* conn_map_blocks = conn.map->blocks();
 
 			// Go over the blocks of the connection and assign the block index to the map matrix
 			for (s8 y = rect.top_left.y, conn_y = top_left_conn.y; y < rect.bottom_right.y; ++y, ++conn_y)
@@ -167,12 +169,12 @@ namespace pokemon
 			}
 		}
 	}
-	void GameTilemap::init_inner_map_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
+	void GameBlockMap::init_inner_map_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
 	{
     s32 height = map->desc().map_header.height_in_blocks;
     s32 width = map->desc().map_header.width_in_blocks;
 
-    const rsl::unique_array<u8>& map_blocks = asset_db::find_map_blocks(map->desc().map_header);
+    const u8* map_blocks = map->blocks();
     for (s8 y = 0; y < height; ++y)
     {
       for (s8 x = 0; x < width; ++x)
@@ -183,4 +185,43 @@ namespace pokemon
       }
     }
 	}
+
+  void GameBlockMap::convert_blocks_to_tiles(u8* blocks, s32 numBlocks, const rex::Map* map)
+  {
+    s32 tiles_per_row = map->blockset()->tileset()->tileset_texture()->texture_resource()->width() / constants::g_tile_width_px;
+
+    // Calculate the first block from which we should start drawing
+    //TileCoord top_left = coords::player_pos_to_screen_top_left(playerPos);
+
+    // Start the loop from this block, going left to right, top to down
+    // Restricting to only the tiles that'll be rendered
+    s32 current_tile_in_cache_idx = 0;
+    for (s32 y = 0; y < height_in_blocks(); ++y)
+    {
+      for (s32 x = 0; x < width_in_blocks(); ++x)
+      {
+        // Get the tile coord of the tile we're currently processing
+        TileCoord coord{};
+        coord.x += static_cast<s8>(x);
+        coord.y += static_cast<s8>(y);
+
+        // Get the block the tile belongs to
+        s32 block_idx = coords::coord_to_index(coord, width_in_blocks());
+        const rex::Block& block = map->blockset()->block(block_idx);
+
+        // Get the tile coordinate of the the first tile in the block (which is top left)
+        TileCoord block_top_left = coords::block_top_left_coord(coord);
+
+        // Get the relative vector from this first tile to the current tile
+        // Based on that, calculate which tile in the block we're currently processing
+        rsl::pointi8 coord_rel_to_block = coord - block_top_left;
+        u8 tile_idx = block.index_at(coord_rel_to_block);
+
+        // Store the tile index in the cache
+        m_tiles[current_tile_in_cache_idx] = tile_idx;
+        rsl::pointi8 tile_coord = coords::index_to_coord(tile_idx, tiles_per_row);
+        current_tile_in_cache_idx++;
+      }
+    }
+  }
 }
