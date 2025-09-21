@@ -14,6 +14,8 @@ namespace rex
 		MapDesc map_desc{};
 
 		init_map_header(jsonContent, map_desc);
+		map_desc.blockmap = jsonContent["map_blocks"];
+		
 		if (!rsl::has_flag(loadFlags, LoadFlags::PartialLoad))
 		{
 			hydrate_desc(jsonContent, map_desc);
@@ -62,7 +64,6 @@ namespace rex
 		init_scripts(jsonContent, desc);
 
 		desc.blockset = jsonContent["blockset"];
-		desc.blockmap = jsonContent["map_blocks"];
 	}
 
 	void MapSerializer::init_map_header(const json::json& jsonContent, MapDesc& desc)

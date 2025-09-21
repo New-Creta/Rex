@@ -18,7 +18,6 @@ namespace pokemon
 		void convert_blocks_to_tiles(u8* blocks, s32 numBlocks, const rex::Map* map);
 
 	private:
-		rsl::unique_array<u8> m_tiles;
 		rsl::unique_array<u8> m_blocks;
 	};
 }

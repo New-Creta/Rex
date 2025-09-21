@@ -197,7 +197,7 @@ namespace rex
 			render_metadata.inv_texture_width = uv_width;
 			render_metadata.inv_texture_height = uv_height;
 
-			render_metadata.screen_width_in_tiles = m_tilemap->width_in_tiles();
+			render_metadata.screen_width_in_tiles = 90;// m_tilemap->width_in_tiles();
 			render_metadata.inv_tile_screen_width = inv_tile_width;
 			render_metadata.inv_tile_screen_height = inv_tile_height;
 
@@ -247,10 +247,12 @@ namespace rex
 
 		void BlockRenderPass::update_tilemap(const BlockRenderPassParams& params)
 		{
-			if (m_tilemap == nullptr || m_tilemap->width_in_tiles() != params.screen_resolution.x || m_tilemap->height_in_tiles() != params.screen_resolution.y)
+			if (m_tilemap == nullptr || m_tilemap->width_in_blocks() != params.screen_resolution.x || m_tilemap->height_in_blocks() != params.screen_resolution.y)
 			{
-				m_tilemap = rsl::make_unique<rex::Tilemap>(params.screen_resolution.x, params.screen_resolution.y);
+				m_tilemap = rsl::make_unique<rex::Tilemap>(params.screen_resolution.x / 4, params.screen_resolution.y / 4);
 			}
+
+			init();
 
 			s32 num_tiles_until_end_of_row = params.world_width_in_tiles - params.top_left_start.x;
 			s32 num_to_copy = rsl::min(params.screen_resolution.x, num_tiles_until_end_of_row);
@@ -258,7 +260,7 @@ namespace rex
 			s32 start_idx = params.top_left_start.y * params.world_width_in_tiles + params.top_left_start.x;
 			const u8* src = params.tiles_source + start_idx;
 			s32 offset = 0;
-			for (s32 row = 0; row < params.screen_resolution.y; ++row)
+			for (s32 row = 0; row < params.screen_resolution.y / 4; ++row)
 			{
 				m_tilemap->set(src, num_to_copy, offset);
 				offset += params.screen_resolution.x;

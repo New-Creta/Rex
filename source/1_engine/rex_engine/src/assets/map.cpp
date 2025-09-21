@@ -48,7 +48,7 @@ namespace rex
 
 	void Map::load_blocks()
 	{
-		m_blockset = asset_db::instance()->load<Blockset>(m_desc.blockset);
+		m_blockset = m_desc.map_header.blockset;
 
 		m_blocks = rsl::make_unique<u8[]>(m_desc.map_header.width_in_blocks * m_desc.map_header.height_in_blocks);
 		memory::Blob blockmap = vfs::instance()->read_file(m_desc.blockmap);

@@ -98,8 +98,8 @@ namespace pokemon
 		s32 total_tilemap_height = m_active_map->height_in_tiles() + (2 * constants::g_map_padding_tiles);
 		m_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
 
-		//m_active_map = init_map(startup_save_file);
-		//m_tile_renderer = init_tile_renderer(m_active_map->render_data());
+		////m_active_map = init_map(startup_save_file);
+		////m_tile_renderer = init_tile_renderer(m_active_map->render_data());
 
 		init_input();
 
@@ -119,7 +119,7 @@ namespace pokemon
 		top_left.y = m_player_position.y;
 
 		rex::gfx::BlockRenderPassParams params{};
-		params.screen_resolution = { constants::g_block_width_px / constants::g_tile_width_px, constants::g_block_height_px / constants::g_tile_height_px};
+		params.screen_resolution = { 724 / constants::g_tile_width_px, 724 / constants::g_tile_height_px};
 		params.tiles_source = m_blockmap->tiles();
 		params.top_left_start = top_left;
 		params.world_width_in_tiles = m_blockmap->width_in_tiles();
@@ -191,15 +191,17 @@ namespace pokemon
 
 	TileRenderer* GameSession::init_tile_renderer(const MapRenderData& mapRenderData)
 	{
-		REX_ASSERT_X(mapRenderData.tileset != nullptr, "No tileset texture provided to the renderer");
+		//REX_ASSERT_X(mapRenderData.tileset != nullptr, "No tileset texture provided to the renderer");
 
-		TileRendererDesc tile_renderer_desc{};
-		tile_renderer_desc.width_in_tiles = constants::g_screen_width_in_tiles;
-		tile_renderer_desc.height_in_tiles = constants::g_screen_height_in_tiles;
-		tile_renderer_desc.tileset_texture = mapRenderData.tileset.get();
-		tile_renderer_desc.blockset = mapRenderData.blockset.get();
+		//TileRendererDesc tile_renderer_desc{};
+		//tile_renderer_desc.width_in_tiles = constants::g_screen_width_in_tiles;
+		//tile_renderer_desc.height_in_tiles = constants::g_screen_height_in_tiles;
+		//tile_renderer_desc.tileset_texture = mapRenderData.tileset.get();
+		//tile_renderer_desc.blockset = mapRenderData.blockset.get();
 
-		return rex::gfx::gal::instance()->add_renderer<TileRenderer>(tile_renderer_desc);
+		//return rex::gfx::gal::instance()->add_renderer<TileRenderer>(tile_renderer_desc);
+
+		return nullptr;
 	}
 
 	void GameSession::init_input()

@@ -122,10 +122,9 @@ namespace pokemon
 
 	GameBlockMap::GameBlockMap(const rex::Map* map)
 		: rex::Tilemap(
-			map->width_in_tiles() + (2 * constants::g_map_padding_blocks),
-			map->height_in_tiles() + (2 * constants::g_map_padding_blocks))
+			map->width_in_tiles() / constants::g_num_tiles_per_block_row + (2 * constants::g_map_padding_blocks),
+			map->height_in_tiles() / constants::g_num_tiles_per_block_column + (2 * constants::g_map_padding_blocks))
 	{
-		m_tiles = rsl::make_unique<u8[]>(width_in_tiles() * height_in_tiles());
     m_blocks = rsl::make_unique<u8[]>(width_in_blocks() * height_in_blocks());
 		
 		init_border_blocks(m_blocks.get(), m_blocks.count(), map);
@@ -195,19 +194,26 @@ namespace pokemon
 
     // Start the loop from this block, going left to right, top to down
     // Restricting to only the tiles that'll be rendered
+    rsl::unique_array<u8> tiles = rsl::make_unique<u8[]>(width_in_tiles()* height_in_tiles());
+
+
     s32 current_tile_in_cache_idx = 0;
-    for (s32 y = 0; y < height_in_blocks(); ++y)
+    for (s32 y = 0; y < height_in_tiles(); ++y)
     {
-      for (s32 x = 0; x < width_in_blocks(); ++x)
+      for (s32 x = 0; x < width_in_tiles(); ++x)
       {
         // Get the tile coord of the tile we're currently processing
         TileCoord coord{};
+        TileCoord block_coord{};
         coord.x += static_cast<s8>(x);
         coord.y += static_cast<s8>(y);
+        block_coord.x = coord.x / 4;
+        block_coord.y = coord.y / 4;
 
         // Get the block the tile belongs to
-        s32 block_idx = coords::coord_to_index(coord, width_in_blocks());
-        const rex::Block& block = map->blockset()->block(block_idx);
+        s32 block_idx = coords::coord_to_index(block_coord, width_in_blocks());
+        s32 block_idx_idx = m_blocks[block_idx];
+        const rex::Block& block = map->blockset()->block(block_idx_idx);
 
         // Get the tile coordinate of the the first tile in the block (which is top left)
         TileCoord block_top_left = coords::block_top_left_coord(coord);
@@ -218,10 +224,12 @@ namespace pokemon
         u8 tile_idx = block.index_at(coord_rel_to_block);
 
         // Store the tile index in the cache
-        m_tiles[current_tile_in_cache_idx] = tile_idx;
+        tiles[current_tile_in_cache_idx] = tile_idx;
         rsl::pointi8 tile_coord = coords::index_to_coord(tile_idx, tiles_per_row);
         current_tile_in_cache_idx++;
       }
     }
+
+    init_tiles(rsl::move(tiles));
   }
 }

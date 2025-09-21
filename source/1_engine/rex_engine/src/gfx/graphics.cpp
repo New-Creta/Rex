@@ -158,7 +158,7 @@ namespace rex
 
 			auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
 			render_ctx->transition_buffer(backbuffer_rendertarget(), ResourceState::RenderTarget);
-			render_ctx->clear_render_target(backbuffer_rendertarget());
+			//render_ctx->clear_render_target(backbuffer_rendertarget());
 			render_ctx->execute_on_gpu();
 		}
 		// Present the new frame to the main window

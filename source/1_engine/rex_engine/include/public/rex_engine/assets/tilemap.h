@@ -32,6 +32,9 @@ namespace rex
 		s32 num_tiles() const;
 		const u8* tiles() const;
 
+	protected:
+		void init_tiles(rsl::unique_array<u8>&& tiles);
+
 	private:
 		s32 m_width;
 		s32 m_height;
