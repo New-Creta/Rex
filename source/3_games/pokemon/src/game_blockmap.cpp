@@ -189,13 +189,9 @@ namespace pokemon
   {
     s32 tiles_per_row = map->blockset()->tileset()->tileset_texture()->texture_resource()->width() / constants::g_tile_width_px;
 
-    // Calculate the first block from which we should start drawing
-    //TileCoord top_left = coords::player_pos_to_screen_top_left(playerPos);
-
     // Start the loop from this block, going left to right, top to down
     // Restricting to only the tiles that'll be rendered
     rsl::unique_array<u8> tiles = rsl::make_unique<u8[]>(width_in_tiles()* height_in_tiles());
-
 
     s32 current_tile_in_cache_idx = 0;
     for (s32 y = 0; y < height_in_tiles(); ++y)

@@ -184,11 +184,11 @@ namespace rex
 			};
 
 			TilemapRenderingMetaData render_metadata{};
-			render_metadata.texture_tiles_per_row = m_tileset->tile_size_per_row();
+			render_metadata.texture_tiles_per_row = m_tileset->num_tiles_per_row();
 			render_metadata.inv_texture_width = uvSize.x;
 			render_metadata.inv_texture_height = uvSize.y;
 
-			render_metadata.screen_width_in_tiles = 90;// m_tilemap->width_in_tiles();
+			render_metadata.screen_width_in_tiles = 64;// m_tilemap->width_in_tiles();
 			render_metadata.inv_tile_screen_width = invTileSize.x;
 			render_metadata.inv_tile_screen_height = invTileSize.y;
 
@@ -234,7 +234,6 @@ namespace rex
 			m_render_pass->set("default_sampler", default_sampler);
 			m_render_pass->set("RenderingMetaData", m_tile_render_info.get());
 			m_render_pass->set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());
-
 		}
 
 		void BlockRenderPass::update_tilemap(const BlockRenderPassParams& params)

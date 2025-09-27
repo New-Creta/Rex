@@ -22,7 +22,7 @@ namespace rex
 
 		rsl::pointi8 tile_size() const;
 
-		u32 tile_size_per_row() const;
+		u32 num_tiles_per_row() const;
 
 	private:
 		const Tileset* m_tileset_texture;

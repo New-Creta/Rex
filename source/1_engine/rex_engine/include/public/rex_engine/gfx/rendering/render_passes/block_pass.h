@@ -68,13 +68,28 @@ namespace rex
 			void init_render_pass();
 
 		private:
+			// The vertex buffer for a single tile
+			// As we use instanced rendering, we only store 4 vertices
 			rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_vb_gpu;
+			// The index buffer for a single tile
+			// It's just 6 indices, allowing us to make a single quad
 			rsl::unique_ptr<rex::gfx::IndexBuffer> m_tiles_ib_gpu;
+
+			// The render info the shader needs for rendering
+			// It's to store how big a single tile is, both on the tilemap 
+			// as well as in the texture
 			rsl::unique_ptr<rex::gfx::ConstantBuffer> m_tile_render_info;
+
+			// The UAV holding the indices of all the tiles to render
+			// starting from the top left, going to the bottom right
 			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tiles_indices_buffer;
+
+			// Legacy data, this should be merged into a base class of this class
 			rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;
+
+			// The tilemap to render on screen.
+			// This is the source information that gets copied to the UAV buffer
 			rsl::unique_ptr<rex::Tilemap> m_tilemap;
-			rsl::unique_ptr<rex::Blockmap> m_blockmap;
 
 			rex::gfx::RenderPassDesc m_render_pass_desc{};
 

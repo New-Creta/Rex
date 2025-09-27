@@ -58,10 +58,8 @@ namespace pokemon
 		// Any other save file gets loaded on top of this save file, overwriting data where needed
 		SaveFile startup_save_file = load_startup_savefile();
 
-		m_active_map = rex::asset_db::instance()->load<rex::Map>(startup_save_file.current_map_filepath);
-		m_player_position = startup_save_file.position;
-		m_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
-
+		init_map(startup_save_file);
+		init_player(startup_save_file);
 		init_input();
 
 		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(rex::gfx::gal::instance()->backbuffer_rendertarget(), m_active_map->blockset()->tileset());
@@ -69,19 +67,7 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		rsl::pointi32 top_left{};
-		top_left.x = m_player_position.x;
-		top_left.y = m_player_position.y;
-
-		rex::gfx::BlockRenderPassParams params{};
-		params.screen_resolution = { 724 / constants::g_tile_width_px, 724 / constants::g_tile_height_px};
-		params.tiles_source = m_blockmap->tiles();
-		params.top_left_start = top_left;
-		params.world_width_in_tiles = m_blockmap->width_in_tiles();
-		m_block_render_pass->update_tilemap(params);
-
-		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		m_block_render_pass->render(render_ctx.get());
+		draw();
 	}
 
 	SaveFile GameSession::load_startup_savefile() const
@@ -90,6 +76,18 @@ namespace pokemon
 		rsl::string startup_save_filepath(rex::cmdline::instance()->get_argument("StartupSaveFile").value_or(rex::path::join(rex::engine::instance()->project_root(), "startup_save_file.json")));
 		REX_ASSERT_X(rex::file::exists(startup_save_filepath), "startup save filepath does not exist.");
 		return SaveFile(startup_save_filepath);
+	}
+
+	void GameSession::init_map(const SaveFile& saveFile)
+	{
+		m_active_map = rex::asset_db::instance()->load<rex::Map>(saveFile.current_map_filepath);
+		m_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
+	}
+
+	void GameSession::init_player(const SaveFile& saveFile)
+	{
+		m_player_position = saveFile.position;
+
 	}
 
 	void GameSession::init_input()
@@ -125,5 +123,22 @@ namespace pokemon
 				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->height_in_tiles() - max_player_pos.y));
 
 			});
+	}
+
+	void GameSession::draw()
+	{
+		rsl::pointi32 top_left{};
+		top_left.x = m_player_position.x;
+		top_left.y = m_player_position.y;
+
+		rex::gfx::BlockRenderPassParams params{};
+		params.screen_resolution = { 64, 128/* 724 / constants::g_tile_width_px / 2, 724 / constants::g_tile_height_px / 2*/ };
+		params.tiles_source = m_blockmap->tiles();
+		params.top_left_start = top_left;
+		params.world_width_in_tiles = m_blockmap->width_in_tiles();
+		m_block_render_pass->update_tilemap(params);
+
+		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
+		m_block_render_pass->render(render_ctx.get());
 	}
 }

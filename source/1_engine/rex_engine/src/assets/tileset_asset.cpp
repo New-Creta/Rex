@@ -26,7 +26,7 @@ namespace rex
 		return m_tile_size;
 	}
 
-	u32 TilesetAsset::tile_size_per_row() const
+	u32 TilesetAsset::num_tiles_per_row() const
 	{
 		s32 tileset_width = tileset_texture()->texture_resource()->width();
 		return tileset_width / tile_size().x;

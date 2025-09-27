@@ -38,7 +38,11 @@ namespace pokemon
   private:
     SaveFile load_startup_savefile() const;
 
+    void init_map(const SaveFile& saveFile);
+    void init_player(const SaveFile& saveFile);
     void init_input();
+
+    void draw();
 
   private:
     rex::Map* m_active_map;
