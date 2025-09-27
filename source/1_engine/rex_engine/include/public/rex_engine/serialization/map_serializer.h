@@ -31,6 +31,9 @@ namespace rex
 		void init_text_events(const json::json& jsonContent, MapDesc& desc);
 		void init_scripts(const json::json& jsonContent, MapDesc& desc);
 
+		void init_blocks(const json::json& jsonContent, MapDesc& desc);
+		void init_blockset(const json::json& jsonContent, MapDesc& desc);
+
 		MapHeader load_map_header_from_json(const json::json& jsonContent);
 		rsl::unique_ptr<ObjectEvent> init_object_event_from_json(const json::json& jsonContent);
 		ObjectEventType object_event_type_from_json(const json::json& jsonContent);

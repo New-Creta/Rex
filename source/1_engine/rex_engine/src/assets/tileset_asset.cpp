@@ -1,5 +1,8 @@
 #include "rex_engine/assets/tileset_asset.h"
 
+#include "rex_engine/assets/tileset.h"
+#include "rex_engine/gfx/resources/texture_2d.h"
+
 namespace rex
 {
 	TilesetAsset::TilesetAsset(rsl::pointi8 tileSize, const Tileset* texture)
@@ -21,5 +24,11 @@ namespace rex
 	rsl::pointi8 TilesetAsset::tile_size() const
 	{
 		return m_tile_size;
+	}
+
+	u32 TilesetAsset::tile_size_per_row() const
+	{
+		s32 tileset_width = tileset_texture()->texture_resource()->width();
+		return tileset_width / tile_size().x;
 	}
 }

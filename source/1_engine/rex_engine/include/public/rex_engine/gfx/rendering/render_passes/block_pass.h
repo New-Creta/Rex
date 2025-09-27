@@ -34,7 +34,7 @@ namespace rex
 			// the position (in tiles) from the world tiles from where we should start drawing
 			rsl::pointi32 top_left_start;
 
-			// The tilemap's resolution. If this resolution is different from the current tilemap, we create a new one
+			// The screen's tilemap resolution. If this resolution is different from the current tilemap, we create a new one
 			// this is useful to have in case we want to zoom in or out
 			rsl::pointi32 screen_resolution;
 
@@ -58,9 +58,12 @@ namespace rex
 
 		private:
 			void init();
-			void init_vb(rex::gfx::RenderContext* renderCtx);
+
+			void init_tile_info(rex::gfx::RenderContext* renderCtx);
+
+			void init_vb(rex::gfx::RenderContext* renderCtx, rsl::vec2 inTileSize, rsl::vec2 uvSize);
+			void init_render_info(rex::gfx::RenderContext* renderCtx, rsl::vec2 inTileSize, rsl::vec2 uvSize);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
-			void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
 			void init_render_pass();
 

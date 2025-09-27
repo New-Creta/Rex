@@ -14,14 +14,15 @@ namespace rex
 		MapDesc map_desc{};
 
 		init_map_header(jsonContent, map_desc);
-		map_desc.blockmap = jsonContent["map_blocks"];
-		
+		init_blocks(jsonContent, map_desc);
+		init_blockset(jsonContent, map_desc);
+
 		if (!rsl::has_flag(loadFlags, LoadFlags::PartialLoad))
 		{
 			hydrate_desc(jsonContent, map_desc);
 		}
 
-		return rsl::make_unique<Map>(rsl::move(map_desc), loadFlags);
+		return rsl::make_unique<Map>(rsl::move(map_desc));
 	}
 	rsl::unique_ptr<Asset> MapSerializer::serialize_from_binary(memory::BlobView content)
 	{
@@ -40,7 +41,7 @@ namespace rex
 		hydrate_desc(jsonContent, map_desc);
 
 		// Construct a new map object at the old asset's location
-		rsl::construct_at(map, rsl::move(map_desc), LoadFlags::None);
+		rsl::construct_at(map, rsl::move(map_desc));
 	}
 	void MapSerializer::hydrate_asset(Asset* asset, memory::BlobView content)
 	{}
@@ -62,8 +63,6 @@ namespace rex
 		init_warps(jsonContent, desc);
 		init_text_events(jsonContent, desc);
 		init_scripts(jsonContent, desc);
-
-		desc.blockset = jsonContent["blockset"];
 	}
 
 	void MapSerializer::init_map_header(const json::json& jsonContent, MapDesc& desc)
@@ -80,7 +79,6 @@ namespace rex
 			connection.direction = rsl::enum_refl::enum_cast<Direction>(conn["direction"].get<rsl::string_view>()).value();
 			connection.offset = conn["offset"]; // is in squares (2x2 tiles)
 			connection.map = asset_db::instance()->load<Map>(conn["map"], LoadFlags::PartialLoad);
-			//connection.map = load_map_header_from_json(json::read_from_file(conn["map"]));
 			++idx;
 		}
 	}
@@ -141,6 +139,16 @@ namespace rex
 			++idx;
 		}
 	}
+	void MapSerializer::init_blocks(const json::json& jsonContent, MapDesc& desc)
+	{
+		memory::Blob blockmap = vfs::instance()->read_file(jsonContent["map_blocks"]);
+		desc.blocks = rsl::make_unique<u8[]>(desc.map_header.width_in_blocks * desc.map_header.height_in_blocks);
+		rsl::memcpy(desc.blocks.get(), blockmap.data(), blockmap.size());
+	}
+	void MapSerializer::init_blockset(const json::json& jsonContent, MapDesc& desc)
+	{
+		desc.blockset = asset_db::instance()->load<Blockset>(jsonContent["blockset"]);
+	}
 
 	MapHeader MapSerializer::load_map_header_from_json(const json::json& jsonContent)
 	{
@@ -149,7 +157,6 @@ namespace rex
 		header.name = jsonContent["name"];
 		header.width_in_blocks = jsonContent["width"];
 		header.height_in_blocks = jsonContent["height"];
-		header.blockset = asset_db::instance()->load<Blockset>(jsonContent["blockset"]);
 		header.border_block_idx = jsonContent["border_block_idx"];
 
 		return header;

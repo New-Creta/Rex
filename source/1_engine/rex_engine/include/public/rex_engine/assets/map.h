@@ -22,7 +22,6 @@ namespace rex
 	struct MapHeader
 	{
 		rsl::string name;											// name of the map
-		Blockset* blockset;										// the blockset to be used by the map
 		s8 width_in_blocks;										// represented in block count
 		s8 height_in_blocks;									// represented in block count
 		s8 border_block_idx;									// Index of the block used for the border if no connection blocks are present
@@ -182,38 +181,22 @@ namespace rex
 		// The block indices of the map. This is required for rendering
 		rsl::unique_array<u8> blocks;
 
-		rsl::string blockset; // path to blockset
-		rsl::string blockmap; // path to block map
+		Blockset* blockset;
 	};
 
 	class Map : public Asset
 	{
 	public:
-		Map(MapDesc&& desc, LoadFlags loadFlags);
+		Map(MapDesc&& desc);
 
 		const MapDesc& desc() const;
 		const u8* blocks(s32 offset = 0) const;
-		const u8* tiles(s32 offset = 0) const;
 		const Blockset* blockset() const;
 
 		s32 width_in_tiles() const;
 		s32 height_in_tiles() const;
 
 	private:
-		void load_blocks();
-		void load_tiles();
-
-		//s32 width_in_blocks() const;
-		//s32 height_in_blocks() const;
-		//s32 border_block_idx() const;
-
-		//const rsl::unique_array<MapConnection>& connections() const;
-		//const rsl::unique_array<u8>& blocks() const;
-
-	private:
 		MapDesc m_desc;
-		Blockset* m_blockset;
-		rsl::unique_array<u8> m_tiles;
-		rsl::unique_array<u8> m_blocks;
 	};
 }
