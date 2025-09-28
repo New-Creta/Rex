@@ -36,7 +36,7 @@ namespace rex
 
 			// The screen's tilemap resolution. If this resolution is different from the current tilemap, we create a new one
 			// this is useful to have in case we want to zoom in or out
-			rsl::pointi32 screen_resolution;
+			rsl::point<TileCount> screen_resolution;
 
 			// the width of the world, in tiles
 			s32 world_width_in_tiles;

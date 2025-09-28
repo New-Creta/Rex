@@ -62,6 +62,14 @@ namespace pokemon
 		init_player(startup_save_file);
 		init_input();
 
+		// the block/tile pass needs the following information
+		// - how many tiles will we render on screen
+		// - where will we render to
+		// - what tileset will we use for rendering
+		// All other information can be infered from the above
+		// if we render 20x18 tiles, 1 tile's width is 1/20th of the render target's width
+		// and it's 1/18th of the render target's height
+
 		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(rex::gfx::gal::instance()->backbuffer_rendertarget(), m_active_map->blockset()->tileset());
 	}
 

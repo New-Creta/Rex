@@ -4,7 +4,7 @@
 
 namespace rex
 {
-	Tilemap::Tilemap(s32 width, s32 height)
+	Tilemap::Tilemap(BlockCount width, BlockCount height)
 		: m_width(width)
 		, m_height(height)
 		, m_tile_width_px(8)
@@ -35,20 +35,20 @@ namespace rex
 
 	s32 Tilemap::width_in_tiles() const
 	{
-		return m_width * 4;
+		return m_width.get() * 4;
 	}
 	s32 Tilemap::height_in_tiles() const
 	{
-		return m_height * 4;
+		return m_height.get() * 4;
 	}
 
 	s32 Tilemap::width_in_blocks() const
 	{
-		return m_width;
+		return m_width.get();
 	}
 	s32 Tilemap::height_in_blocks() const
 	{
-		return m_height;
+		return m_height.get();
 	}
 
 	s32 Tilemap::tile_width_px() const
