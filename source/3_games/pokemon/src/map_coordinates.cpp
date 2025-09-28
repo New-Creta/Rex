@@ -71,5 +71,16 @@ namespace pokemon
 
 			return res;
 		}
+
+		s32 blocks_to_tiles_width(s32 numBlocks)
+		{
+			return numBlocks * constants::g_num_tiles_per_block_row;
+		}
+		s32 blocks_to_tiles_height(s32 numBlocks)
+		{
+			return numBlocks * constants::g_num_tiles_per_block_column;
+		}
+
 	}
+
 }

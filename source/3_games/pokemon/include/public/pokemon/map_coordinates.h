@@ -24,5 +24,7 @@ namespace pokemon
 		rsl::pointi8 map_to_abs(rsl::pointi8 coord);
 		rsl::pointi8 abs_to_map(rsl::pointi8 coord);
 
+		s32 blocks_to_tiles_width(s32 numBlocks);
+		s32 blocks_to_tiles_height(s32 numBlocks);
 	}
 }

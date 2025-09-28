@@ -4,16 +4,10 @@
 
 namespace rex
 {
-	Tilemap::Tilemap(BlockCount width, BlockCount height)
-		: m_width(width)
-		, m_height(height)
-		, m_tile_width_px(8)
-		, m_tile_height_px(8)
+	Tilemap::Tilemap(rsl::point<TileCount> size)
+		: m_size(size)
 	{
-		m_block_width_in_tiles = 4;
-		m_block_height_in_tiles = 4;
-
-		m_tiles = rsl::make_unique<u8[]>(width_in_tiles() * height_in_tiles());
+		m_tiles = rsl::make_unique<u8[]>(width().get() * height().get());
 		rsl::memset(m_tiles.get(), 0, m_tiles.count());
 	}
 
@@ -24,41 +18,15 @@ namespace rex
 		rsl::memcpy(m_tiles.get() + offset, data, len);
 	}
 
-	s32 Tilemap::width_in_px() const
+	TileCount Tilemap::width() const
 	{
-		return width_in_tiles() * m_tile_width_px;
+		return m_size.x;
 	}
-	s32 Tilemap::height_in_px() const
+	TileCount Tilemap::height() const
 	{
-		return height_in_tiles() * m_tile_height_px;
-	}
-
-	s32 Tilemap::width_in_tiles() const
-	{
-		return m_width.get() * 4;
-	}
-	s32 Tilemap::height_in_tiles() const
-	{
-		return m_height.get() * 4;
+		return m_size.y;
 	}
 
-	s32 Tilemap::width_in_blocks() const
-	{
-		return m_width.get();
-	}
-	s32 Tilemap::height_in_blocks() const
-	{
-		return m_height.get();
-	}
-
-	s32 Tilemap::tile_width_px() const
-	{
-		return m_tile_width_px;
-	}
-	s32 Tilemap::tile_height_px() const
-	{
-		return m_tile_height_px;
-	}
 	s32 Tilemap::num_tiles() const
 	{
 		return m_tiles.count();

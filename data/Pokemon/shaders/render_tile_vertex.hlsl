@@ -21,6 +21,11 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
   float inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
 };
 
+// Vertices expected for this shader are meant to spawn the entire screen
+// as in, without any transforms, it will cover { 0, 0 } until { 1, 1 } of the window
+// This shader transforms the vertex positions and UVs to only spawn the size a single
+// tile takes up in the render target and in the tileset texture
+
 struct VertexIn
 {
   float2 PosL : POSITION;       // The position of the vertex in local space
@@ -56,16 +61,18 @@ float4 calculate_vertex_position(VertexIn vin)
   uint2 screen_tile_coord_idx = index_to_coord(vin.instanceId, screen_tiles_per_row);
 
   // Calculate the position of this cell, starting from top left
-  float2 pos = { -1, 1 };
-  pos.x += screen_tile_coord_idx.x * inv_tile_screen_width;
-  pos.y -= screen_tile_coord_idx.y * inv_tile_screen_height;
+  float2 pos = { -1, 1 }; // start from the top left
+  pos.x += vin.PosL.x * inv_tile_screen_width; // scale down to position to its size relative to the render target
+  pos.x += (screen_tile_coord_idx.x * inv_tile_screen_width); // offset the vertex based on the current instance we're rendering
+  pos.y += vin.PosL.y * inv_tile_screen_height;
+  pos.y -= (screen_tile_coord_idx.y * inv_tile_screen_height);
 
   // If we ever want to render the tilemap at an offset from the top left, this is how that'd be done
   // pos.x += screen_start_offset.x;
   // pos.x += screen_start_offset.y;
   
   // Offset the position to this position
-  return float4(vin.PosL + pos, 0.0, 1.0f);
+  return float4(pos, 0.0, 1.0f);
 }
 
 float2 calculate_vertex_uv(VertexIn vin)
@@ -120,7 +127,13 @@ float2 calculate_vertex_uv(VertexIn vin)
   tile_uv_start.y = tex_tile_coord_idx.y * inv_tile_texture_height;
 
   // Add the offset to the original uv offset
-  return vin.Uv + tile_uv_start;
+  float2 uv = { 0.0, 0.0 };
+  uv.x += vin.Uv.x * inv_tile_texture_width;
+  uv.x += tile_uv_start.x;
+  uv.y += vin.Uv.y * inv_tile_texture_height;
+  uv.y += tile_uv_start.y;
+  
+  return uv;
 }
 
 VertexOut main(VertexIn vin)

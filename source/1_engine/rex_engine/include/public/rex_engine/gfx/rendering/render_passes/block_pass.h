@@ -26,17 +26,25 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct BlockRenderPassParams
+		struct BlockRenderPassDynamicInputs
+		{
+			RenderTargetBase* render_target;
+			const TilesetAsset* tileset;
+			rsl::point<TileCount> screen_resolution;
+
+		};
+
+		struct BlockRenderPassUpdateParams
 		{
 			// pointer to the tile source data. This data represents all the tiles in the current world
 			const u8* tiles_source;
 
 			// the position (in tiles) from the world tiles from where we should start drawing
-			rsl::pointi32 top_left_start;
+			rsl::point<TileCount> top_left_start;
 
 			// The screen's tilemap resolution. If this resolution is different from the current tilemap, we create a new one
 			// this is useful to have in case we want to zoom in or out
-			rsl::point<TileCount> screen_resolution;
+			//rsl::point<TileCount> screen_resolution;
 
 			// the width of the world, in tiles
 			s32 world_width_in_tiles;
@@ -45,27 +53,24 @@ namespace rex
 		class BlockRenderPass
 		{
 		public:
-			BlockRenderPass(rex::gfx::RenderTargetBase* rt, const rex::TilesetAsset* tileset);
+			BlockRenderPass(const BlockRenderPassDynamicInputs& inputs);
 
-			void set_render_target(RenderTargetBase* render_target);
-			void set_tileset(const rex::TilesetAsset* tileset);
-			void set_tile_zoom(f32 zoom);
+			void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
 
 			// Update the tilemap's indices that we need to draw to the screen
-			void update_tilemap(const BlockRenderPassParams& params);
+			void update_tilemap(const BlockRenderPassUpdateParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
 			void init();
 
-			void init_tile_info(rex::gfx::RenderContext* renderCtx);
-
-			void init_vb(rex::gfx::RenderContext* renderCtx, rsl::vec2 inTileSize, rsl::vec2 uvSize);
-			void init_render_info(rex::gfx::RenderContext* renderCtx, rsl::vec2 inTileSize, rsl::vec2 uvSize);
+			void init_vb(rex::gfx::RenderContext* renderCtx);
+			void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
 			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
 			void init_render_pass();
+			void init_tilemap();
 
 		private:
 			// The vertex buffer for a single tile
@@ -95,8 +100,7 @@ namespace rex
 
 			rex::gfx::RenderTargetBase* m_render_target;
 			const rex::TilesetAsset* m_tileset;
-
-			f32 m_tile_zoom;
+			rsl::point<TileCount> m_screen_resolution;
 		};
 	}
 }

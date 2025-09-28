@@ -121,9 +121,10 @@ namespace pokemon
 	};
 
 	GameBlockMap::GameBlockMap(const rex::Map* map)
-		: rex::Tilemap(
-			map->width_in_tiles() / constants::g_num_tiles_per_block_row + (2 * constants::g_map_padding_blocks),
-			map->height_in_tiles() / constants::g_num_tiles_per_block_column + (2 * constants::g_map_padding_blocks))
+    : rex::Tilemap({
+        rex::TileCount(map->width_in_tiles() + coords::blocks_to_tiles_width(2 * constants::g_map_padding_blocks)),
+        rex::TileCount(map->height_in_tiles() + coords::blocks_to_tiles_height(2 * constants::g_map_padding_blocks)),
+      })
 	{
     m_blocks = rsl::make_unique<u8[]>(width_in_blocks() * height_in_blocks());
 		
@@ -191,12 +192,12 @@ namespace pokemon
 
     // Start the loop from this block, going left to right, top to down
     // Restricting to only the tiles that'll be rendered
-    rsl::unique_array<u8> tiles = rsl::make_unique<u8[]>(width_in_tiles()* height_in_tiles());
+    rsl::unique_array<u8> tiles = rsl::make_unique<u8[]>(width().get() * height().get());
 
     s32 current_tile_in_cache_idx = 0;
-    for (s32 y = 0; y < height_in_tiles(); ++y)
+    for (s32 y = 0; y < height().get(); ++y)
     {
-      for (s32 x = 0; x < width_in_tiles(); ++x)
+      for (s32 x = 0; x < width().get(); ++x)
       {
         // Get the tile coord of the tile we're currently processing
         TileCoord coord{};
@@ -227,5 +228,14 @@ namespace pokemon
     }
 
     init_tiles(rsl::move(tiles));
+  }
+
+  s32 GameBlockMap::width_in_blocks() const
+  {
+    return width().get() / constants::g_num_tiles_per_block_row;
+  }
+	s32 GameBlockMap::height_in_blocks() const
+	{
+    return height().get() / constants::g_num_tiles_per_block_row;
   }
 }

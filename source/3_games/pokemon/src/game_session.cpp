@@ -61,16 +61,7 @@ namespace pokemon
 		init_map(startup_save_file);
 		init_player(startup_save_file);
 		init_input();
-
-		// the block/tile pass needs the following information
-		// - how many tiles will we render on screen
-		// - where will we render to
-		// - what tileset will we use for rendering
-		// All other information can be infered from the above
-		// if we render 20x18 tiles, 1 tile's width is 1/20th of the render target's width
-		// and it's 1/18th of the render target's height
-
-		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(rex::gfx::gal::instance()->backbuffer_rendertarget(), m_active_map->blockset()->tileset());
+		init_render_pass();
 	}
 
 	void GameSession::update()
@@ -133,17 +124,35 @@ namespace pokemon
 			});
 	}
 
+	void GameSession::init_render_pass()
+	{
+		// the block/tile pass needs the following information
+		// - how many tiles will we render on screen
+		// - where will we render to
+		// - what tileset will we use for rendering
+		// All other information can be infered from the above
+		// if we render 20x18 tiles, 1 tile's width is 1/20th of the render target's width
+		// and it's 1/18th of the render target's height
+
+		rex::gfx::BlockRenderPassDynamicInputs inputs{};
+		inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+		inputs.tileset = m_active_map->blockset()->tileset();
+		inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
+
+		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(inputs);
+	}
+
 	void GameSession::draw()
 	{
-		rsl::pointi32 top_left{};
-		top_left.x = m_player_position.x;
-		top_left.y = m_player_position.y;
+		rsl::point<rex::TileCount> top_left{};
+		top_left.x = rex::TileCount(m_player_position.x);
+		top_left.y = rex::TileCount(m_player_position.y);
 
-		rex::gfx::BlockRenderPassParams params{};
-		params.screen_resolution = { 64, 128/* 724 / constants::g_tile_width_px / 2, 724 / constants::g_tile_height_px / 2*/ };
+		rex::gfx::BlockRenderPassUpdateParams params{};
+		//params.screen_resolution = { 64, 128/* 724 / constants::g_tile_width_px / 2, 724 / constants::g_tile_height_px / 2*/ };
 		params.tiles_source = m_blockmap->tiles();
 		params.top_left_start = top_left;
-		params.world_width_in_tiles = m_blockmap->width_in_tiles();
+		params.world_width_in_tiles = m_blockmap->width().get();
 		m_block_render_pass->update_tilemap(params);
 
 		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
