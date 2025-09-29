@@ -25,6 +25,10 @@ namespace rex
 			if (inputs.tileset != nullptr)
 			{
 				m_tileset = inputs.tileset;
+				if (m_render_pass)
+				{
+					m_render_pass->set("tile_texture", m_tileset->tileset_texture()->texture_resource());
+				}
 			}
 			if (inputs.render_target != nullptr)
 			{

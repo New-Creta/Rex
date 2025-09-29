@@ -193,6 +193,9 @@ namespace rex
 		const u8* blocks(s32 offset = 0) const;
 		const Blockset* blockset() const;
 
+		BlockCount width() const;
+		BlockCount height() const;
+
 		s32 width_in_tiles() const;
 		s32 height_in_tiles() const;
 

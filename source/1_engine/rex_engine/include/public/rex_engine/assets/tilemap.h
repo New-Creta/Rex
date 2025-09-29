@@ -5,10 +5,6 @@
 
 namespace rex
 {
-	RSL_CREATE_STRONG_TYPE(BlockCount, s32);
-	RSL_CREATE_STRONG_TYPE(SquareCount, s32);
-	RSL_CREATE_STRONG_TYPE(TileCount, s32);
-
 	class Tilemap
 	{
 	public:
@@ -20,6 +16,7 @@ namespace rex
 		Tilemap& operator=(Tilemap&&) = default;
 
 		void set(const u8* data, s32 len, s32 offset);
+		void set(s32 offset, u8 value);
 
 		TileCount width() const;
 		TileCount height() const;

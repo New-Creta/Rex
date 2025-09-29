@@ -8,6 +8,31 @@ namespace regina
 {
 	DEFINE_LOG_CATEGORY(LogWorldComposer);
 
+	namespace
+	{
+		rsl::pointi32 block_to_tile_coord(rsl::pointi32 coord)
+		{
+			rsl::pointi32 tile_coord{};
+			tile_coord.x = coord.x * 4;
+			tile_coord.y = coord.y * 4;
+
+			return tile_coord;
+		}
+		rsl::pointi32 tile_to_block_coord(rsl::pointi32 coord)
+		{
+			rsl::pointi32 block_coord{};
+			block_coord.x = coord.x / 4;
+			block_coord.y = coord.y / 4;
+
+			return block_coord;
+		}
+		rsl::pointi32 block_top_left_coord(rsl::pointi32 coord)
+		{
+			rsl::pointi32 block_coord = tile_to_block_coord(coord);
+			return block_to_tile_coord(block_coord);
+		}
+	}
+
 	bool WorldComposer::is_map_in_tilemap(const rex::Map* map) const
 	{
 		if (!map)
@@ -227,32 +252,76 @@ namespace regina
 		}
 
 		// Create the tilemap and fill in the tile values of each map
-		m_tilemap = rsl::make_unique<rex::Tilemap>(width, height);
+		s32 tiles_per_block = 1;
+		m_tilemap = rsl::make_unique<rex::Tilemap>(rsl::point<rex::TileCount>{ rex::TileCount(width * tiles_per_block), rex::TileCount(height * tiles_per_block) });
 
 		for (const auto& [map, metadata] : m_map_to_metadata)
 		{
-			s32 map_width = metadata.aabb.width();
-			s32 map_height = metadata.aabb.height();
+			s32 map_width = metadata.aabb.width() / 4;
+			s32 map_height = metadata.aabb.height() / 4;
 
-			rsl::pointi32 pos = metadata.aabb.min;
-			for (s32 row_idx = 0; row_idx < map_height; ++row_idx)
+			rsl::pointi32 top_left = metadata.aabb.min; // top left position of map, in block coordinate
+			//rsl::pointi32 top_left_tiles = top_left;
+			//top_left_tiles.x *= tiles_per_block;
+			//top_left_tiles.y *= tiles_per_block;
+
+			tiles_per_block = 4;
+			s32 map_width_in_tiles = map_width * tiles_per_block;
+			s32 map_height_in_tiles = map_height * tiles_per_block;
+
+			s32 top_left_tile_start_idx = top_left.y * width + top_left.x;
+			for (s32 y = 0; y < map_height_in_tiles; ++y)
 			{
-				const u8* row_tiles = map->tiles(row_idx * map_width);
-				s32 dst_offset = 
-					(pos.y * width) +  // position to the top row of the map within the tilemap
-					pos.x +            // position to the left column of the map within the tilemap
-					(row_idx * width); // position to the current row of the map we're processing
+				s32 current_tile_idx = top_left_tile_start_idx + y * width;
+				for (s32 x = 0; x < map_width_in_tiles; ++x)
+				{
+					// Get the tile coord of the tile we're currently processing
+					rsl::pointi32 coord{};
+					rsl::pointi32 block_coord{};
+					coord.x += static_cast<s8>(x);
+					coord.y += static_cast<s8>(y);
+					block_coord.x = coord.x / 4;
+					block_coord.y = coord.y / 4;
 
-				m_tilemap->set(row_tiles, map_width, dst_offset);
+					// Get the block the tile belongs to
+					s32 block_idx = block_coord.y * map_width + block_coord.x;
+					s32 block_idx_idx = *map->blocks(block_idx);
+					const rex::Block& block = map->blockset()->block(block_idx_idx);
+
+					// Get the tile coordinate of the the first tile in the block (which is top left)
+					rsl::pointi32 block_top_left = block_top_left_coord(coord);
+
+					// Get the relative vector from this first tile to the current tile
+					// Based on that, calculate which tile in the block we're currently processing
+					rsl::pointi32 coord_rel_to_block = coord - block_top_left;
+					u8 tile_idx = block.index_at(rsl::pointi8{ (s8)coord_rel_to_block.x, (s8)coord_rel_to_block.y });
+
+					// Store the tile index in the cache
+					m_tilemap->set(current_tile_idx + x, tile_idx);
+				}
 			}
+
+
+
+
+
+			//rsl::pointi32 pos = metadata.aabb.min;
+			//for (s32 row_idx = 0; row_idx < map_height; ++row_idx)
+			//{
+			//	const u8* row_blocks = map->blocks(row_idx * map_width);
+			//	s32 dst_offset = 
+			//		(pos.y * width) +  // position to the top row of the map within the tilemap
+			//		pos.x +            // position to the left column of the map within the tilemap
+			//		(row_idx * width); // position to the current row of the map we're processing
+
+			//	m_tilemap->set(row_blocks, map_width, dst_offset);
+			//}
 		}
 	}
 	rex::MinMax WorldComposer::calc_map_aabb(const rex::MapHeader& mapHeader, rsl::pointi32 startPos)
 	{
-		const s32 tiles_per_block = 4;
-
-		s32 half_width_in_tiles = (mapHeader.width_in_blocks * tiles_per_block / 2);
-		s32 half_height_in_tiles = (mapHeader.height_in_blocks * tiles_per_block / 2);
+		s32 half_width_in_tiles = (mapHeader.width_in_blocks * 4/ 2);
+		s32 half_height_in_tiles = (mapHeader.height_in_blocks * 4 / 2);
 
 		rex::MinMax res{};
 		res.min.x = -half_width_in_tiles + startPos.x;

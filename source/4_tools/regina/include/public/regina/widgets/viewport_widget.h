@@ -9,7 +9,7 @@
 
 #include "rex_engine/gfx/rendering/renderer.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
-#include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_engine/assets/tileset_asset.h"
@@ -58,11 +58,11 @@ namespace regina
 	private:
 		void init_render_pass();
 
-		rsl::pointi32 top_left_from_camera_pos(rsl::pointi32 cameraPos);
-		void update_screen_tilemap(rsl::pointi32 topLeftStart);
+		rsl::point<rex::TileCount> top_left_from_camera_pos(rsl::pointi32 cameraPos);
+		void update_screen_tilemap(rsl::point<rex::TileCount> topLeftStart);
 
 		// The screen resolution but in tiles instead of pixels
-		rsl::pointi32 screen_tile_resolution() const;
+		//rsl::pointi32 screen_tile_resolution() const;
 
 	private:
 		// The tileset to use for the viewport
@@ -81,13 +81,14 @@ namespace regina
 		rsl::unique_ptr<rex::gfx::ResourceView> m_render_target_srv;
 
 		// The actual render pass used for rendering
-		rsl::unique_ptr<rex::gfx::TileRenderPass> m_tile_render_pass;
+		rsl::unique_ptr<rex::gfx::BlockRenderPass> m_block_render_pass;
 
 		// Config settings that affect how much we display and how the user can interact with the viewport
 		// ------------------------------------
 
 		// The zoom of a tile, higher values show less tiles, smaller values show more tiles
-		f32 m_tile_zoom;
+		//f32 m_tile_zoom;
+		rsl::point<rex::TileCount> m_screen_resolution;
 
 		// the mouse position of the last frame
 		// this is needed to support mouse dragging and moving the camera

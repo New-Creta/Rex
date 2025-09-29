@@ -229,7 +229,7 @@ namespace regina
 		}
 
 		m_viewport->set_tilemap(m_world_composer.tilemap());
-		m_viewport->set_tileset(m_active_map->desc().map_header.blockset->tileset());
+		m_viewport->set_tileset(m_active_map->desc().blockset->tileset());
 
 		// 3. Move the camera to the active map
 		rsl::pointi32 pos_in_tilemap = m_world_composer.map_pos(m_active_map);

@@ -64,4 +64,8 @@ namespace rex
       return max.y - min.y;
     }
   };
+
+  RSL_CREATE_STRONG_TYPE(BlockCount, s32);
+  RSL_CREATE_STRONG_TYPE(SquareCount, s32);
+  RSL_CREATE_STRONG_TYPE(TileCount, s32);
 }

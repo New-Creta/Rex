@@ -24,6 +24,15 @@ namespace rex
 		return m_desc.blockset;
 	}
 
+	BlockCount Map::width() const
+	{
+		return BlockCount(m_desc.map_header.width_in_blocks);
+	}
+	BlockCount Map::height() const
+	{
+		return BlockCount(m_desc.map_header.height_in_blocks);
+	}
+
 	s32 Map::width_in_tiles() const
 	{
 		const s32 num_tiles_per_block_row = 4;

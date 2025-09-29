@@ -38,6 +38,9 @@ namespace rex
 		// Initialize the map
 		MapDesc map_desc{};
 		init_map_header(jsonContent, map_desc);
+		init_blocks(jsonContent, map_desc);
+		init_blockset(jsonContent, map_desc);
+
 		hydrate_desc(jsonContent, map_desc);
 
 		// Construct a new map object at the old asset's location

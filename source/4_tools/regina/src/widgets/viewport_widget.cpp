@@ -17,19 +17,19 @@ namespace regina
 	Viewport::Viewport(const rex::Tilemap* tilemap, rex::TilesetAsset* tileset)
 		: m_world_tilemap(tilemap)
 		, m_tileset(tileset)
-		, m_tile_zoom(1.0f)
+		//, m_tile_zoom(1.0f)
 		, m_camera_move_speed(1.0f)
 	{
-		init_render_pass();
+		//init_render_pass();
 	}
 
 	bool Viewport::on_update()
 	{
 		// based on the camera position, create a tilemap, the same size as the viewport's resolution
 		// the camera has a zoom. more tiles are drawn depending on zoom
-		m_tile_render_pass->set_tile_zoom(m_tile_zoom);
+		//m_block_render_pass->set_tile_zoom(m_tile_zoom);
 ;
-		rsl::pointi32 top_left = top_left_from_camera_pos(m_camera_pos);
+		rsl::point<rex::TileCount> top_left = top_left_from_camera_pos(m_camera_pos);
 		update_screen_tilemap(top_left);
 		return false;
 	}
@@ -37,7 +37,7 @@ namespace regina
 	void Viewport::on_draw()
 	{
 		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		m_tile_render_pass->render(render_ctx.get());
+		m_block_render_pass->render(render_ctx.get());
 
 		if (auto widget = rex::imgui::ScopedWidget("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 		{
@@ -57,11 +57,11 @@ namespace regina
 				m_camera_pos.x += x_delta;
 				m_camera_pos.y += y_delta;
 
-				rsl::pointi32 resolution = screen_tile_resolution();
-				s32 half_res_width = resolution.x / 2;
-				s32 half_res_height = resolution.y / 2;
-				m_camera_pos.x = rsl::clamp(m_camera_pos.x, half_res_width, m_world_tilemap->width_in_tiles() - half_res_width);
-				m_camera_pos.y = rsl::clamp(m_camera_pos.y, half_res_height, m_world_tilemap->height_in_tiles() - half_res_height);
+				//rsl::pointi32 resolution = screen_tile_resolution();
+				s32 half_res_width = m_screen_resolution.x.get() / 2;
+				s32 half_res_height = m_screen_resolution.y.get() / 2;
+				//m_camera_pos.x = rsl::clamp(m_camera_pos.x, half_res_width, m_world_tilemap->width().get() - half_res_width);
+				//m_camera_pos.y = rsl::clamp(m_camera_pos.y, half_res_height, m_world_tilemap->height().get() - half_res_height);
 			}
 
 			if (ImGui::IsWindowHovered())
@@ -72,17 +72,19 @@ namespace regina
 				}
 				else
 				{
-					m_tile_zoom += zoom_step * ImGui::GetIO().MouseWheel;
+					m_screen_resolution.x.get() += 1;
+					m_screen_resolution.y.get() += 1;
+					//m_tile_zoom += zoom_step * ImGui::GetIO().MouseWheel;
 				}
 			}
 
 			m_last_frame_mouse_pos = current_mouse_pos;
-			m_tile_zoom = rsl::clamp(m_tile_zoom, zoom_min, zoom_max);
+			//m_tile_zoom = rsl::clamp(m_tile_zoom, zoom_min, zoom_max);
 			m_camera_move_speed = rsl::clamp(m_camera_move_speed, cam_speed_min, cam_speed_max);
 
 			ImGui::GetCurrentWindow()->WindowClass.DockNodeFlagsOverrideSet |= ImGuiDockNodeFlags_HiddenTabBar;
 			ImGui::Text("camera pos: (x: %d, y: %d)", m_camera_pos.x, m_camera_pos.y);
-			ImGui::DragFloat("zoom: ", &m_tile_zoom, zoom_step, zoom_min, zoom_max, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+			//ImGui::DragFloat("zoom: ", &m_tile_zoom, zoom_step, zoom_min, zoom_max, "%.3f", ImGuiSliderFlags_AlwaysClamp);
 			ImGui::DragFloat("camera speed: ", &m_camera_move_speed, cam_speed_step, cam_speed_min, cam_speed_max, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 
 			ImVec2 imageSize{ (f32)m_render_target->width(), (f32)m_render_target->height() };
@@ -93,12 +95,18 @@ namespace regina
 	void Viewport::set_tilemap(const rex::Tilemap* tilemap)
 	{
 		m_world_tilemap = tilemap;
-		init_render_pass();
+		//init_render_pass();
 	}
 	void Viewport::set_tileset(const rex::TilesetAsset* tileset)
 	{
 		m_tileset = tileset;
-		m_tile_render_pass->set_tileset(tileset);
+		init_render_pass();
+
+		rex::gfx::BlockRenderPassDynamicInputs inputs{};
+		inputs.tileset = tileset;
+
+		m_block_render_pass->update_dynamic_inputs(inputs);
+		//m_block_render_pass->set_tileset(tileset);
 	}
 	void Viewport::set_camera_pos(rsl::pointi32 pos)
 	{
@@ -123,20 +131,27 @@ namespace regina
 
 		rsl::pointi32 resolution =
 		{
-			rsl::clamp_max(m_world_tilemap->width_in_tiles(), max_tiles_in_width) * tile_size.x,
-			rsl::clamp_max(m_world_tilemap->height_in_tiles(), max_tiles_in_height) * tile_size.y
+			rsl::clamp_max(m_world_tilemap->width().get(), max_tiles_in_width)* tile_size.x,
+			rsl::clamp_max(m_world_tilemap->height().get(), max_tiles_in_height)* tile_size.y
 		};
 
 		if (!m_render_target || m_render_target->width() < resolution.x || m_render_target->height() < resolution.y)
 		{
 			m_render_target = rex::gfx::gal::instance()->create_render_target(resolution.x, resolution.y, rex::gfx::TextureFormat::Unorm4Srgb);
-			m_render_target->debug_set_name("viewport render target");
+			m_screen_resolution.x.get() = m_render_target->width() / 8;
+			m_screen_resolution.y.get() = m_render_target->height() / 8;
+			//m_render_target->debug_set_name("viewport render target");
 			m_render_target_srv = rex::gfx::gal::instance()->create_srv(m_render_target.get());
-			m_tile_render_pass = rsl::make_unique<rex::gfx::TileRenderPass>(m_render_target.get(), m_tileset);
+
+			rex::gfx::BlockRenderPassDynamicInputs inputs{};
+			inputs.render_target = m_render_target.get();
+			inputs.tileset = m_tileset;
+			inputs.screen_resolution = m_screen_resolution;
+			m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(inputs);
 		}
 	}
 
-	rsl::pointi32 Viewport::top_left_from_camera_pos(rsl::pointi32 cameraPos)
+	rsl::point<rex::TileCount> Viewport::top_left_from_camera_pos(rsl::pointi32 cameraPos)
 	{
 		// The camera position is in tile coordinates, which will always point to the middle of the screen
 		// The goal of this function is to return the tile coordinate in the top left of the screen
@@ -147,39 +162,26 @@ namespace regina
 
 		// put the camera pos to this to make the top left of the viewport the top left of pallet town
 		rsl::pointi32 top_left = cameraPos;
-		rsl::pointi32 screen_resolution = screen_tile_resolution();
-		top_left.x -= screen_resolution.x / 2;
-		top_left.y -= screen_resolution.y / 2;
+		//rsl::pointi32 screen_resolution = screen_tile_resolution();
+		//top_left.x -= m_screen_resolution.x.get() / 2;
+		//top_left.y -= m_screen_resolution.y.get() / 2;
 
-		top_left.x = rsl::max(top_left.x, 0);
-		top_left.y = rsl::max(top_left.y, 0);
+		//top_left.x = rsl::max(top_left.x, 0);
+		//top_left.y = rsl::max(top_left.y, 0);
 
-		top_left.x = rsl::min(top_left.x, m_world_tilemap->width_in_tiles() - screen_resolution.x);
-		top_left.y = rsl::min(top_left.y, m_world_tilemap->height_in_tiles() - screen_resolution.y);
+		//top_left.x = rsl::min(top_left.x, m_world_tilemap->width().get() - m_screen_resolution.x.get());
+		//top_left.y = rsl::min(top_left.y, m_world_tilemap->height().get() - m_screen_resolution.y.get());
 
-		return top_left;
+		return rsl::point<rex::TileCount>{ rex::TileCount(top_left.x), rex::TileCount(top_left.y) };
 	}
 
-	void Viewport::update_screen_tilemap(rsl::pointi32 topLeftStart)
+	void Viewport::update_screen_tilemap(rsl::point<rex::TileCount> topLeftStart)
 	{
-		rex::gfx::TileRenderPassParams params{};
-		params.screen_resolution = screen_tile_resolution();
+		rex::gfx::BlockRenderPassUpdateParams params{};
+		//params.screen_resolution = screen_tile_resolution();
 		params.tiles_source = m_world_tilemap->tiles();
 		params.top_left_start = topLeftStart;
-		params.world_width_in_tiles = m_world_tilemap->width_in_tiles();
-		m_tile_render_pass->update_tilemap(params);
-	}
-
-	rsl::pointi32 Viewport::screen_tile_resolution() const
-	{
-		rsl::pointi32 tile_resolution{};
-
-		tile_resolution.x = m_render_target->width() / 8 / m_tile_zoom;
-		tile_resolution.y = m_render_target->height() / 8 / m_tile_zoom;
-
-		tile_resolution.x = rsl::clamp_max(tile_resolution.x, m_world_tilemap->width_in_tiles());
-		tile_resolution.y = rsl::clamp_max(tile_resolution.y, m_world_tilemap->height_in_tiles());
-
-		return tile_resolution;
+		params.world_width_in_tiles = m_world_tilemap->width().get();
+		m_block_render_pass->update_tilemap(params);
 	}
 }

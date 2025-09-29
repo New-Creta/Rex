@@ -18,6 +18,11 @@ namespace rex
 		rsl::memcpy(m_tiles.get() + offset, data, len);
 	}
 
+	void Tilemap::set(s32 offset, u8 value)
+	{
+		m_tiles[offset] = value;
+	}
+
 	TileCount Tilemap::width() const
 	{
 		return m_size.x;
