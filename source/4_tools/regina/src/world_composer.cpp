@@ -261,9 +261,6 @@ namespace regina
 			s32 map_height = metadata.aabb.height() / 4;
 
 			rsl::pointi32 top_left = metadata.aabb.min; // top left position of map, in block coordinate
-			//rsl::pointi32 top_left_tiles = top_left;
-			//top_left_tiles.x *= tiles_per_block;
-			//top_left_tiles.y *= tiles_per_block;
 
 			tiles_per_block = 4;
 			s32 map_width_in_tiles = map_width * tiles_per_block;
@@ -300,22 +297,6 @@ namespace regina
 					m_tilemap->set(current_tile_idx + x, tile_idx);
 				}
 			}
-
-
-
-
-
-			//rsl::pointi32 pos = metadata.aabb.min;
-			//for (s32 row_idx = 0; row_idx < map_height; ++row_idx)
-			//{
-			//	const u8* row_blocks = map->blocks(row_idx * map_width);
-			//	s32 dst_offset = 
-			//		(pos.y * width) +  // position to the top row of the map within the tilemap
-			//		pos.x +            // position to the left column of the map within the tilemap
-			//		(row_idx * width); // position to the current row of the map we're processing
-
-			//	m_tilemap->set(row_blocks, map_width, dst_offset);
-			//}
 		}
 	}
 	rex::MinMax WorldComposer::calc_map_aabb(const rex::MapHeader& mapHeader, rsl::pointi32 startPos)
