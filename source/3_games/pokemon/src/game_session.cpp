@@ -12,12 +12,9 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/file.h"
 
-#include "pokemon/assets/database.h"
-
 #include "rex_engine/shapes/rect.h"
 
 #include "pokemon/poke_structs.h"
-#include "pokemon/map_matrix.h"
 #include "pokemon/render_constants.h"
 
 #include "rex_std/bonus/math.h"
@@ -27,11 +24,6 @@
 
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"
-
-#include "pokemon/block.h"
-#include "pokemon/blockset.h"
-#include "pokemon/tileset.h"
-#include "pokemon/poke_map.h"
 
 #include "rex_engine/profiling/timer.h"
 
@@ -85,8 +77,9 @@ namespace pokemon
 
 	void GameSession::init_player(const SaveFile& saveFile)
 	{
-		m_player_position = saveFile.position;
+		m_player_character = rsl::make_unique<PlayerCharacter>();
 
+		m_player_position = saveFile.position;
 	}
 
 	void GameSession::init_input()
