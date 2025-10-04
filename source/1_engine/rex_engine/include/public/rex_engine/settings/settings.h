@@ -39,7 +39,7 @@ namespace rex
     // Load a settings file or directory and adds all settings files found to the settings
     void load(rsl::string_view path);
 
-    // Load a directory containing settings file and add all of them to the settings
+    // Load a directory containing settings files and add all of them to the settings
     void load_directory(rsl::string_view path);
 
     // Load a settings file and adds it settings to the settings

@@ -5,6 +5,7 @@
 
 namespace rex
 {
+	// This event gets raised when user scrolls the scroll wheel on their mouse
 	class MouseScroll : public Event<MouseScroll>
 	{
 	public:

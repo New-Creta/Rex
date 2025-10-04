@@ -24,15 +24,13 @@
 #include "rex_engine/threading/thread_pool.h"
 
 #include "rex_engine/assets/map.h"
-#include "rex_engine/assets/tileset.h"
 #include "rex_engine/assets/blockset.h"
 #include "rex_engine/assets/texture_asset.h"
 
-#include "rex_engine/serialization/map_serializer.h"
-#include "rex_engine/serialization/tileset_serializer.h"
-#include "rex_engine/serialization/tileset_asset_serializer.h"
-#include "rex_engine/serialization/blockset_serializer.h"
-#include "rex_engine/serialization/texture_serializer.h"
+#include "rex_engine/serialization/text_loaders/map_loader_json.h"
+#include "rex_engine/serialization/text_loaders/tileset_loader_json.h"
+#include "rex_engine/serialization/text_loaders/blockset_loader_json.h"
+#include "rex_engine/serialization/binary_loaders/texture_loader.h"
 
 #include "rex_std/internal/exception/exit.h"
 
@@ -43,7 +41,7 @@ namespace rex
   DEFINE_LOG_CATEGORY(LogCoreApp);
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams)
+  CoreApplication::CoreApplication(const EngineInitParams& engineParams)
 		: m_app_state(ApplicationState::Created)
     , m_app_name(engineParams.app_name)
     , m_exit_code(0)
@@ -71,7 +69,7 @@ namespace rex
 
     // this calls our internal init code, to initialize the gui application
     // afterwards it calls into client code and initializes the code there
-    // calling the initialize function provided earlier in the EngineParams
+    // calling the initialize function provided earlier in the EngineInitParams
     if(initialize() == false) // NOLINT(readability-simplify-boolean-expr)
     {
       REX_ERROR(LogEngine, "Application initialization failed");
@@ -84,7 +82,7 @@ namespace rex
     debug_log_mem_usage();
 
     // calls into gui application update code
-    // then calls into the client update code provided by the EngineParams before
+    // then calls into the client update code provided by the EngineInitParams before
     m_exit_code = EXIT_SUCCESS;
     loop();
 
@@ -183,8 +181,6 @@ namespace rex
   void CoreApplication::shutdown()
   {
     REX_INFO(LogCoreApp, "Shutting down application..");
-
-    asset_db::instance()->unload_all();
 
     platform_shutdown();
 
@@ -326,11 +322,10 @@ namespace rex
   {
     asset_db::init(globals::make_unique<AssetDb>());
 
-    asset_db::instance()->add_serializer<Map>(rsl::make_unique<MapSerializer>());
-    asset_db::instance()->add_serializer<Blockset>(rsl::make_unique<BlocksetSerializer>());
-    asset_db::instance()->add_serializer<Tileset>(rsl::make_unique<TilesetSerializer>());
-    asset_db::instance()->add_serializer<TilesetAsset>(rsl::make_unique<TilesetAssetSerializer>());
-    asset_db::instance()->add_serializer<TextureAsset>(rsl::make_unique<TextureSerializer>());
+    asset_db::instance()->add_loader<Map>(rsl::make_unique<MapLoaderJson>());
+    asset_db::instance()->add_loader<Blockset>(rsl::make_unique<BlocksetLoaderJson>());
+    asset_db::instance()->add_loader<TilesetAsset>(rsl::make_unique<TilesetLoaderJson>());
+    asset_db::instance()->add_loader<TextureAsset>(rsl::make_unique<TextureLoader>());
   }
 
   //--------------------------------------------------------------------------------------------

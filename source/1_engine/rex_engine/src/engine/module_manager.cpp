@@ -11,6 +11,7 @@ namespace rex
 	DEFINE_LOG_CATEGORY(LogModuleManager);
 
 	ModuleManager::ModuleManager()
+		: m_current_module(nullptr)
 	{
 		scratch_string module_dir = path::find_in_parent("module.json", path::parent_path(current_process::path()));
 		if (module_dir.empty())
@@ -45,6 +46,7 @@ namespace rex
 		// }
 		//
 
+		// If the modules was already loaded, use that one instead
 		rex::json::json json_content = rex::json::read_from_file(modulePath);
 		rsl::string_view name = json_content["name"];
 		auto it = rsl::find_if(m_all_modules.begin(), m_all_modules.end(),

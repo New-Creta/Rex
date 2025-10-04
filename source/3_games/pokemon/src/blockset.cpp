@@ -8,20 +8,10 @@
 #include "rex_engine/memory/blob_reader.h"
 
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/engine/object_pool.h"
 
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogBlockSet);
-
-  //Block::Block(const tile_indices& tileIndices)
-  //  : m_tile_indices(rsl::move(tileIndices))
-  //{}
-
-  //const Block::tile_indices& Block::indices() const
-  //{
-  //  return m_tile_indices;
-  //}
 
   BlockSet::BlockSet(rsl::unique_array<Block> blocks)
     : m_blocks(rsl::move(blocks))
@@ -55,6 +45,5 @@ namespace pokemon
     }
 
     return rsl::make_unique<BlockSet>(rsl::move(blocks));
-    //return rex::load_object<BlockSet>(rsl::move(blocks));
 	}
 }

@@ -3,7 +3,6 @@
 #include "rex_engine/engine/globals.h"
 
 #include "rex_engine/assets/tilemap.h"
-#include "rex_engine/assets/tileset.h"
 #include "rex_engine/assets/tileset_asset.h"
 
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"

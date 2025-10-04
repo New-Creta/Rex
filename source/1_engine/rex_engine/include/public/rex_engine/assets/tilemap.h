@@ -1,11 +1,13 @@
 #pragma once
 
+#include "rex_engine/assets/asset.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/engine/types_2d.h"
 #include "rex_std/memory.h"
 
 namespace rex
 {
-	class Tilemap
+	class Tilemap : public Asset
 	{
 	public:
 		Tilemap(rsl::point<TileCount> size);

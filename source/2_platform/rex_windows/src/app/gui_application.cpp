@@ -298,7 +298,7 @@ namespace rex
 
         WindowInfo window_info;
         window_info.title = create_window_title();
-        window_info.viewport = {0, 0, m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height};
+				window_info.viewport = { { 0, 0}, {m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height} };
 
         if(wnd->create(m_app_creation_params.platform_params->instance, m_app_creation_params.platform_params->show_cmd, window_info))
         {

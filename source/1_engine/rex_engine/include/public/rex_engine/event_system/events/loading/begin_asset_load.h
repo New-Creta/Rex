@@ -6,6 +6,7 @@
 
 namespace rex
 {
+	// This event gets raised when an asset is about to be loaded
 	class BeginAssetLoad : public Event<BeginAssetLoad>
 	{
 	public:

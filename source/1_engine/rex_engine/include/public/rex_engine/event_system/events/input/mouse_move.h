@@ -5,6 +5,7 @@
 
 namespace rex
 {
+	// This event gets raised every time the user moves their mouse
 	class MouseMove : public Event<MouseMove>
 	{
 	public:

@@ -18,11 +18,11 @@ namespace regina
 		m_unknown_thumbnail = rsl::make_unique<Thumbnail>(rex::asset_db::instance()->load<rex::TextureAsset>(rex::path::join("regina", "icons", "unknown.png")));
 	}
 
-	bool ThumbnailManager::has_thumbnail(rsl::string_view path) const
+	bool ThumbnailManager::has_thumbnail(rsl::string_view /*path*/) const
 	{
 		return false;
 	}
-	const Thumbnail* ThumbnailManager::thumbnail_for_path(rsl::string_view path) const
+	const Thumbnail* ThumbnailManager::thumbnail_for_path(rsl::string_view /*path*/) const
 	{
 		return nullptr;
 	}

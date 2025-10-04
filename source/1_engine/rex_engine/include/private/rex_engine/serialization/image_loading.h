@@ -14,5 +14,7 @@ namespace rex
 		rsl::unique_array<u8> data;
 	};
 
+	// Parse a blob of binary data into an image
+	// reading the image's dimensions and decompressing it
 	ImageLoadResult load_image(memory::BlobView content);
 }

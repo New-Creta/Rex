@@ -1,8 +1,6 @@
 #include "pokemon/tileset.h"
 
 
-#include "rex_engine/engine/object_pool.h"
-
 namespace pokemon
 {
 	TileSet::TileSet(const u8* tilesetData)

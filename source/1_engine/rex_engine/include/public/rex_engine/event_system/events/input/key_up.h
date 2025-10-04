@@ -5,6 +5,7 @@
 
 namespace rex
 {
+	// This event gets raised when user releases a key on their keyboard
 	class KeyUp : public Event<KeyUp>
 	{
 	public:

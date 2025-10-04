@@ -4,8 +4,10 @@
 #include "pokemon/map_coordinates.h"
 
 #include "rex_engine/assets/blockset.h"
+#include "rex_engine/engine/casting.h"
 
 #include "rex_engine/shapes/rect.h"
+#include "rex_engine/math/coords.h"
 
 #include "rex_engine/gfx/resources/texture_2d.h"
 
@@ -110,6 +112,20 @@ namespace pokemon
     return res;
   }
 
+  rsl::point<rex::TileCount> calc_blockmap_size(const rex::Map* map)
+  {
+    rsl::point<rex::TileCount> size{};
+
+    // size in blocks
+    size.x.get() = map->width().get() + 2 * constants::g_map_padding_blocks;
+    size.y.get() = map->height().get() + 2 * constants::g_map_padding_blocks;
+    
+    // size in tiles
+    size.x.get() *= rex::Block::num_tiles_per_column();
+    size.y.get() *= rex::Block::num_tiles_per_row();
+
+    return size;
+  }
 
 	struct GameTilemapParams
 	{
@@ -121,18 +137,15 @@ namespace pokemon
 	};
 
 	GameBlockMap::GameBlockMap(const rex::Map* map)
-    : rex::Tilemap({
-        rex::TileCount(map->width_in_tiles() + coords::blocks_to_tiles_width(2 * constants::g_map_padding_blocks)),
-        rex::TileCount(map->height_in_tiles() + coords::blocks_to_tiles_height(2 * constants::g_map_padding_blocks)),
-      })
+    : rex::Tilemap(calc_blockmap_size(map))
 	{
     m_blocks = rsl::make_unique<u8[]>(width_in_blocks() * height_in_blocks());
 		
-		init_border_blocks(m_blocks.get(), m_blocks.count(), map);
-		init_connection_blocks(m_blocks.get(), m_blocks.count(), map);
-		init_inner_map_blocks(m_blocks.get(), m_blocks.count(), map);
+		init_border_blocks(m_blocks.get(), rex::narrow_cast<s32>(m_blocks.count()), map);
+		init_connection_blocks(m_blocks.get(), rex::narrow_cast<s32>(m_blocks.count()), map);
+		init_inner_map_blocks(m_blocks.get(), rex::narrow_cast<s32>(m_blocks.count()), map);
 
-		convert_blocks_to_tiles(m_blocks.get(), m_blocks.count(), map);
+		convert_blocks_to_tiles(m_blocks.get(), rex::narrow_cast<s32>(m_blocks.count()), map);
 	}
 
 	void GameBlockMap::init_border_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
@@ -188,7 +201,7 @@ namespace pokemon
 
   void GameBlockMap::convert_blocks_to_tiles(u8* blocks, s32 numBlocks, const rex::Map* map)
   {
-    s32 tiles_per_row = map->blockset()->tileset()->tileset_texture()->texture_resource()->width() / constants::g_tile_width_px;
+    s32 tiles_per_row = map->blockset()->tileset()->tileset_texture()->width() / constants::g_tile_width_px;
 
     // Start the loop from this block, going left to right, top to down
     // Restricting to only the tiles that'll be rendered

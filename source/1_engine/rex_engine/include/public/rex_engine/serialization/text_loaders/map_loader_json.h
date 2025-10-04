@@ -1,25 +1,22 @@
 #pragma once
 
-#include "rex_engine/serialization/serializer_base.h"
+#include "rex_engine/serialization/asset_loader.h"
+#include "rex_engine/text_processing/json.h"
 
 namespace rex
 {
 	struct MapDesc;
 	struct MapHeader;
-	struct ObjectEvent;
-	enum class ObjectEventType;
+	struct MapObject;
+	enum class MapObjectType;
 
-	class MapSerializer : public Serializer
+	class MapLoaderJson : public AssetLoader
 	{
 	public:
-		rsl::unique_ptr<Asset> serialize_from_json(const rex::json::json& jsonContent, LoadFlags loadFlags) override;
-		rsl::unique_ptr<Asset> serialize_from_binary(memory::BlobView content) override;
+		MapLoaderJson();
 
-		void hydrate_asset(Asset* asset, const rex::json::json& jsonContent) override;
-		void hydrate_asset(Asset* asset, memory::BlobView content) override;
-
-		rex::json::json serialize_to_json(Asset* asset) override;
-		rex::memory::Blob serialize_to_binary(Asset* asset) override;
+		rsl::unique_ptr<Asset> load(rsl::string_view assetPath, LoadFlags loadFlags) override;
+		void hydrate_asset(Asset* asset, rsl::string_view assetPath) override;
 
 	private:
 		void hydrate_desc(const json::json& jsonContent, MapDesc& desc);
@@ -35,8 +32,8 @@ namespace rex
 		void init_blockset(const json::json& jsonContent, MapDesc& desc);
 
 		MapHeader load_map_header_from_json(const json::json& jsonContent);
-		rsl::unique_ptr<ObjectEvent> init_object_event_from_json(const json::json& jsonContent);
-		ObjectEventType object_event_type_from_json(const json::json& jsonContent);
+		rsl::unique_ptr<MapObject> init_object_event_from_json(const json::json& jsonContent);
+		MapObjectType object_event_type_from_json(const json::json& jsonContent);
 
 	};
 }

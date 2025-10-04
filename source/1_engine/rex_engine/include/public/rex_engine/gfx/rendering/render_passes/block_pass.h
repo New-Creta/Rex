@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_engine/assets/tilemap.h"
-#include "rex_engine/assets/blockmap.h"
 #include "rex_engine/assets/tileset_asset.h"
 
 #include "rex_engine/engine/types.h"

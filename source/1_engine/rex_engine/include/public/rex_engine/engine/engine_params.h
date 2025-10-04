@@ -8,7 +8,7 @@
 namespace rex
 {
   struct ApplicationCreationParams;
-  struct EngineParams
+  struct EngineInitParams
   {
     using init_func     = rsl::function<bool(const ApplicationCreationParams& appCreationParams)>;
     using update_func   = rsl::function<void()>;
@@ -47,7 +47,7 @@ namespace rex
     }
 
   public:
-    EngineParams engine_params;
+    EngineInitParams engine_params;
     PlatformCreationParams* platform_params;
     GuiParams gui_params;
     bool is_gui_app;

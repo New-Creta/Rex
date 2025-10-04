@@ -268,7 +268,7 @@ namespace regina
 				REX_INFO(LogContentBrowserWidget, "Creating a new animation graph");
 				//auto extension = Project::GetEditorAssetManager()->GetDefaultExtensionForAssetType(AssetType::AnimationGraph);
 				//auto animationGraphAsset = CreateAsset<AnimationGraphAsset>("New Animation Graph" + extension);
-				//HZ_CORE_VERIFY(AnimationGraphAssetSerializer::TryLoadData("Resources/Animation/EmptyAnimationGraph" + extension, animationGraphAsset));
+				//HZ_CORE_VERIFY(AnimationGraphAssetLoader::TryLoadData("Resources/Animation/EmptyAnimationGraph" + extension, animationGraphAsset));
 				//AssetImporter::Serialize(animationGraphAsset);
 			}
 
@@ -495,7 +495,7 @@ namespace regina
 				//	rex::imgui::set_tooltip("Thumnail Size");
 
 				//	if (saveSettings)
-				//		EditorApplicationSettingsSerializer::SaveSettings();
+				//		EditorApplicationSettingsLoader::SaveSettings();
 
 				//	rex::imgui::EndPopup();
 				//}

@@ -1,64 +1,67 @@
-#include "rex_engine/serialization/map_serializer.h"
+#include "rex_engine/serialization/text_loaders/map_loader_json.h"
 
 #include "rex_engine/assets/map.h"
 
 #include "rex_engine/engine/asset_db.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/text_processing/json.h"
+
+#include "rex_engine/assets/map_objects/map_pickup.h"
+#include "rex_engine/assets/map_objects/map_pokemon.h"
+#include "rex_engine/assets/map_objects/map_textboard.h"
+#include "rex_engine/assets/map_objects/map_trainer.h"
+#include "rex_engine/assets/map_objects/map_warp.h"
 
 #include "rex_engine/string/stringid.h"
 
 namespace rex
 {
-	rsl::unique_ptr<Asset> MapSerializer::serialize_from_json(const rex::json::json& jsonContent, LoadFlags loadFlags)
+	MapLoaderJson::MapLoaderJson()
+		: AssetLoader(
+			{
+				rsl::version(0, 0, 1),
+				{ ".json" }
+			})
+	{}
+
+	rsl::unique_ptr<Asset> MapLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
+		rex::json::json json_content = rex::json::read_from_file(assetPath);
+
 		MapDesc map_desc{};
 
-		init_map_header(jsonContent, map_desc);
-		init_blocks(jsonContent, map_desc);
-		init_blockset(jsonContent, map_desc);
+		init_map_header(json_content, map_desc);
+		init_blocks(json_content, map_desc);
+		init_blockset(json_content, map_desc);
 
 		if (!rsl::has_flag(loadFlags, LoadFlags::PartialLoad))
 		{
-			hydrate_desc(jsonContent, map_desc);
+			hydrate_desc(json_content, map_desc);
 		}
 
 		return rsl::make_unique<Map>(rsl::move(map_desc));
 	}
-	rsl::unique_ptr<Asset> MapSerializer::serialize_from_binary(memory::BlobView content)
+	void MapLoaderJson::hydrate_asset(Asset* asset, rsl::string_view assetPath)
 	{
-		return nullptr;
-	}
+		rex::json::json json_content = rex::json::read_from_file(assetPath);
 
-	void MapSerializer::hydrate_asset(Asset* asset, const rex::json::json& jsonContent)
-	{
 		// Destroy the map at the location provided
 		Map* map = static_cast<Map*>(asset);
 		rsl::destroy_at(map);
 
 		// Initialize the map
 		MapDesc map_desc{};
-		init_map_header(jsonContent, map_desc);
-		init_blocks(jsonContent, map_desc);
-		init_blockset(jsonContent, map_desc);
+		init_map_header(json_content, map_desc);
+		init_blocks(json_content, map_desc);
+		init_blockset(json_content, map_desc);
 
-		hydrate_desc(jsonContent, map_desc);
+		hydrate_desc(json_content, map_desc);
 
 		// Construct a new map object at the old asset's location
 		rsl::construct_at(map, rsl::move(map_desc));
 	}
-	void MapSerializer::hydrate_asset(Asset* asset, memory::BlobView content)
-	{}
 
-	rex::json::json MapSerializer::serialize_to_json(Asset* asset)
-	{
-		return rex::json::json{};
-	}
-	rex::memory::Blob MapSerializer::serialize_to_binary(Asset* asset)
-	{
-		return rex::memory::Blob{ };
-	}
-
-	void MapSerializer::hydrate_desc(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::hydrate_desc(const json::json& jsonContent, MapDesc& desc)
 	{
 		init_connections(jsonContent, desc);
 		init_objects(jsonContent, desc);
@@ -68,11 +71,11 @@ namespace rex
 		init_scripts(jsonContent, desc);
 	}
 
-	void MapSerializer::init_map_header(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_map_header(const json::json& jsonContent, MapDesc& desc)
 	{
 		desc.map_header = load_map_header_from_json(jsonContent);
 	}
-	void MapSerializer::init_connections(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_connections(const json::json& jsonContent, MapDesc& desc)
 	{
 		desc.connections = rsl::make_unique<MapConnection[]>(jsonContent["connections"].size());
 		s32 idx = 0;
@@ -85,8 +88,11 @@ namespace rex
 			++idx;
 		}
 	}
-	void MapSerializer::init_objects(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_objects(const json::json& jsonContent, MapDesc& desc)
 	{
+		REX_UNUSED_PARAM(jsonContent);
+		REX_UNUSED_PARAM(desc);
+
 		//s32 idx = 0;
 		//desc.objects = rsl::make_unique<MapObject[]>(jsonContent["objects"].size());
 		//for (const json::json& obj : jsonContent["objects"])
@@ -95,18 +101,21 @@ namespace rex
 		//	++idx;
 		//}
 	}
-	void MapSerializer::init_object_events(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_object_events(const json::json& jsonContent, MapDesc& desc)
 	{
-		s32 idx = 0;
-		desc.object_events = rsl::make_unique<rsl::unique_ptr<ObjectEvent>[]>(jsonContent["object_events"].size());
-		for (const json::json& evt : jsonContent["object_events"])
-		{
-			desc.object_events[idx] = init_object_event_from_json(evt);
-			++idx;
-		}
+		REX_UNUSED_PARAM(jsonContent);
+		REX_UNUSED_PARAM(desc);
+
+		//s32 idx = 0;
+		//desc.object_events = rsl::make_unique<rsl::unique_ptr<ObjectEvent>[]>(jsonContent["object_events"].size());
+		//for (const json::json& evt : jsonContent["object_events"])
+		//{
+		//	desc.object_events[idx] = init_object_event_from_json(evt);
+		//	++idx;
+		//}
 
 	}
-	void MapSerializer::init_warps(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_warps(const json::json& jsonContent, MapDesc& desc)
 	{
 		s32 idx = 0;
 		desc.warps = rsl::make_unique<WarpEvent[]>(jsonContent["warps"].size());
@@ -119,7 +128,7 @@ namespace rex
 			++idx;
 		}
 	}
-	void MapSerializer::init_text_events(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_text_events(const json::json& jsonContent, MapDesc& desc)
 	{
 		s32 idx = 0;
 		desc.text_events = rsl::make_unique<TextEvent[]>(jsonContent["bg_events"].size());
@@ -132,7 +141,7 @@ namespace rex
 			++idx;
 		}
 	}
-	void MapSerializer::init_scripts(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_scripts(const json::json& jsonContent, MapDesc& desc)
 	{
 		s32 idx = 0;
 		desc.scripts = rsl::make_unique<rsl::string[]>(jsonContent["scripts"].size());
@@ -142,18 +151,18 @@ namespace rex
 			++idx;
 		}
 	}
-	void MapSerializer::init_blocks(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_blocks(const json::json& jsonContent, MapDesc& desc)
 	{
 		memory::Blob blockmap = vfs::instance()->read_file(jsonContent["map_blocks"]);
 		desc.blocks = rsl::make_unique<u8[]>(desc.map_header.width_in_blocks * desc.map_header.height_in_blocks);
 		rsl::memcpy(desc.blocks.get(), blockmap.data(), blockmap.size());
 	}
-	void MapSerializer::init_blockset(const json::json& jsonContent, MapDesc& desc)
+	void MapLoaderJson::init_blockset(const json::json& jsonContent, MapDesc& desc)
 	{
 		desc.blockset = asset_db::instance()->load<Blockset>(jsonContent["blockset"]);
 	}
 
-	MapHeader MapSerializer::load_map_header_from_json(const json::json& jsonContent)
+	MapHeader MapLoaderJson::load_map_header_from_json(const json::json& jsonContent)
 	{
 		MapHeader header{};
 
@@ -164,67 +173,67 @@ namespace rex
 
 		return header;
 	}
-	rsl::unique_ptr<ObjectEvent> MapSerializer::init_object_event_from_json(const json::json& jsonContent)
+	rsl::unique_ptr<MapObject> MapLoaderJson::init_object_event_from_json(const json::json& jsonContent)
 	{
-		rsl::unique_ptr<ObjectEvent> res;
-		ObjectEventType obj_evt_type = object_event_type_from_json(jsonContent);
+		rsl::unique_ptr<MapObject> res;
+		MapObjectType obj_evt_type = object_event_type_from_json(jsonContent);
 		switch (obj_evt_type)
 		{
-		case ObjectEventType::Item:
+		case MapObjectType::Item:
 		{
-			rsl::unique_ptr<ItemObjectEvent> item_evt = rsl::make_unique<ItemObjectEvent>();
+			rsl::unique_ptr<MapPickup> item_evt = rsl::make_unique<MapPickup>();
 			item_evt->item = jsonContent["item"];
 			res = rsl::move(item_evt);
 			break;
 		}
-		case ObjectEventType::Trainer:
+		case MapObjectType::Trainer:
 		{
-			rsl::unique_ptr<TrainerObjectEvent> trainer_evt = rsl::make_unique<TrainerObjectEvent>();
+			rsl::unique_ptr<MapTrainer> trainer_evt = rsl::make_unique<MapTrainer>();
 			trainer_evt->trainer_class = jsonContent["trainer_class"];
 			trainer_evt->trainer_number = jsonContent["trainer_number"];
 			res = rsl::move(trainer_evt);
 			break;
 		}
-		case ObjectEventType::Pokemon:
+		case MapObjectType::Pokemon:
 		{
-			rsl::unique_ptr<PokemonObjectEvent> pokemon_evt = rsl::make_unique<PokemonObjectEvent>();
+			rsl::unique_ptr<MapPokemon> pokemon_evt = rsl::make_unique<MapPokemon>();
 			pokemon_evt->pokemon_id = jsonContent["pokemon_id"];
 			pokemon_evt->pokemon_level = jsonContent["pokemon_level"];
 			res = rsl::move(pokemon_evt);
 			break;
 		}
-		case ObjectEventType::Character:
-			rsl::unique_ptr<CharacterObjectEvent> char_evt = rsl::make_unique<CharacterObjectEvent>();
+		case MapObjectType::Character:
+			rsl::unique_ptr<MapCharacter> char_evt = rsl::make_unique<MapCharacter>();
+			char_evt->movement = jsonContent["movement"];
+			char_evt->direction = jsonContent["direction"];
 			res = rsl::move(char_evt);
 		}
 
 		res->pos.x = jsonContent["x"];
 		res->pos.y = jsonContent["y"];
 		res->sprite_id = jsonContent["sprite"];
-		res->movement = jsonContent["movement"];
-		res->direction = jsonContent["direction"];
 		res->text_id = jsonContent["text"];
 
 		return res;
 	}
-	ObjectEventType MapSerializer::object_event_type_from_json(const json::json& jsonContent)
+	MapObjectType MapLoaderJson::object_event_type_from_json(const json::json& jsonContent)
 	{
 		if (jsonContent.contains("item"))
 		{
-			return ObjectEventType::Item;
+			return MapObjectType::Item;
 		}
 
 		if (jsonContent.contains("trainer_class"))
 		{
-			return ObjectEventType::Trainer;
+			return MapObjectType::Trainer;
 		}
 
 		if (jsonContent.contains("pokemon_id"))
 		{
-			return ObjectEventType::Pokemon;
+			return MapObjectType::Pokemon;
 		}
 
-		return ObjectEventType::Character;
+		return MapObjectType::Character;
 	}
 
 }

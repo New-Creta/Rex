@@ -21,6 +21,8 @@ namespace rex
     return static_cast<NarrowType>(value);
   }
 
+  // Disable warning that we're casting to smaller type
+  // as that's exactly what we want to allow here
 #pragma warning(push)
 #pragma warning(disable : 4389)
 

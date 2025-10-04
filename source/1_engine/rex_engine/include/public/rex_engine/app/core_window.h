@@ -17,17 +17,15 @@ namespace rex
 
   struct WindowViewport
   {
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
+    rsl::pointi32 pos;
+    rsl::pointi32 size;
   };
 
   struct WindowInfo
   {
     WindowInfo()
         : title("rex")
-        , viewport({0, 0, 1280, 720})
+			  , viewport({ {0, 0}, {1280, 720 } })
         , min_width(200)
         , min_height(200)
     {

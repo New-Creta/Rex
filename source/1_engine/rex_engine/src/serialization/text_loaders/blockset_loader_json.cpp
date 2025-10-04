@@ -1,8 +1,8 @@
-#include "rex_engine/serialization/blockset_serializer.h"
+#include "rex_engine/serialization/text_loaders/blockset_loader_json.h"
 
 #include "rex_engine/memory/blob_reader.h"
 
-#include "rex_engine/assets/block.h"
+#include "rex_engine/text_processing/json.h"
 #include "rex_engine/assets/blockset.h"
 
 #include "rex_engine/engine/asset_db.h"
@@ -14,36 +14,32 @@
 
 namespace rex
 {
-	rsl::unique_ptr<Asset> BlocksetSerializer::serialize_from_json(const rex::json::json& jsonContent, LoadFlags loadFlags)
+	BlocksetLoaderJson::BlocksetLoaderJson()
+		: AssetLoader(
+			{
+				rsl::version(0, 0, 1),
+				{ ".json" }
+			})
+	{}
+
+	rsl::unique_ptr<Asset> BlocksetLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
-		rsl::string_view tileset_path = jsonContent["tileset"];
-		rsl::string_view blockset_path = jsonContent["blockset"];
+		rex::json::json json_content = rex::json::read_from_file(assetPath);
+
+		rsl::string_view tileset_path = json_content["tileset"];
+		rsl::string_view blockset_path = json_content["blockset"];
 
 		TilesetAsset* tileset = asset_db::instance()->load<TilesetAsset>(tileset_path);
 		rsl::unique_array<Block> blocks = load_block_indices(blockset_path);
 
 		return rsl::make_unique<Blockset>(tileset, rsl::move(blocks));
 	}
-	rsl::unique_ptr<Asset> BlocksetSerializer::serialize_from_binary(memory::BlobView content)
+	void BlocksetLoaderJson::hydrate_asset(Asset* asset, rsl::string_view assetPath)
 	{
-		return nullptr;
+		// Nothing to implement
 	}
 
-	void BlocksetSerializer::hydrate_asset(Asset* asset, const rex::json::json& jsonContent)
-	{}
-	void BlocksetSerializer::hydrate_asset(Asset* asset, memory::BlobView content) 
-	{}
-
-	rex::json::json BlocksetSerializer::serialize_to_json(Asset* asset)
-	{
-		return json::json{};
-	}
-	rex::memory::Blob BlocksetSerializer::serialize_to_binary(Asset* asset)
-	{
-		return memory::Blob{};
-	}
-
-	rsl::unique_array<Block> BlocksetSerializer::load_block_indices(rsl::string_view blockIndicesPath)
+	rsl::unique_array<Block> BlocksetLoaderJson::load_block_indices(rsl::string_view blockIndicesPath)
 	{
 		memory::Blob content = vfs::instance()->read_file(blockIndicesPath);
 

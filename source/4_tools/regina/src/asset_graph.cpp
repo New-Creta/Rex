@@ -17,7 +17,7 @@ namespace regina
 	{
 		m_asset_dependency_stack.push_back(assetPath);
 	}
-	void AssetGraph::on_end_asset_load(rsl::string_view assetPath, const rex::Asset* asset)
+	void AssetGraph::on_end_asset_load(rsl::string_view assetPath, const rex::Asset* /*asset*/)
 	{
 		m_asset_dependency_stack.pop_back();
 

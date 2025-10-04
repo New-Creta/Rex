@@ -5,6 +5,7 @@
 namespace rex
 {
 	// Doesn't hold any members, only used to indicate that the window will be closed
+	// this event gets raised when the window gets closed
 	class WindowClose : public Event<WindowClose>
 	{
 	};

@@ -64,21 +64,21 @@ namespace rex
 
       WindowViewport viewport = info.viewport;
 
-      const s32 x      = viewport.x;
-      const s32 y      = viewport.y;
-      const s32 width  = viewport.width;
-      const s32 height = viewport.height;
+      const s32 x      = viewport.pos.x;
+      const s32 y      = viewport.pos.y;
+      const s32 width  = viewport.size.x;
+      const s32 height = viewport.size.y;
 
       REX_ASSERT_X(width < (1 << 16), "Window width exceeded the maximum resolution");
       REX_ASSERT_X(height < (1 << 16), "Window height exceeded the maximum resolution");
 
       if(width < m_min_width)
       {
-        viewport.width = m_min_width;
+        viewport.size.x = m_min_width;
       }
       if(height < m_min_height)
       {
-        viewport.height = m_min_height;
+        viewport.size.y = m_min_height;
       }
 
       RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};

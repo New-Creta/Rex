@@ -5,6 +5,7 @@
 namespace rex
 {
 	// Doesn't hold any members, just used to indicate the window will start resizing
+	// this event gets raised at the start of the resize of the window
 	class WindowStartResize : public Event<WindowStartResize>
 	{
 	};

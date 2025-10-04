@@ -25,7 +25,6 @@
 
 #include "rex_std/unordered_map.h"
 
-
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"
 
@@ -37,6 +36,7 @@
 #include "rex_engine/profiling/timer.h"
 
 #include "rex_engine/assets/map.h"
+#include "rex_engine/math/coords.h"
 #include "rex_engine/engine/asset_db.h"
 
 #include "rex_engine/event_system/event_system.h"
@@ -118,8 +118,10 @@ namespace pokemon
 				m_player_position.x = rsl::clamp_min(m_player_position.x, min_player_pos.x);
 				m_player_position.y = rsl::clamp_min(m_player_position.y, min_player_pos.y);
 
-				m_player_position.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->width_in_tiles() - max_player_pos.x));
-				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->height_in_tiles() - max_player_pos.y));
+				rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
+
+				m_player_position.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.x), size.x.get() - max_player_pos.x));
+				m_player_position.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(m_player_position.y), size.y.get() - max_player_pos.y));
 
 			});
 	}

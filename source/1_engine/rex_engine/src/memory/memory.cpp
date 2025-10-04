@@ -48,7 +48,7 @@ namespace rex
 	// allocations that only last a single frame
 	void* temp_alloc(u64 size)
 	{
-		return GlobalSingleFrameAllocator().allocate(size);
+		return GlobalSingleFrameAllocator().allocate(narrow_cast<s32>(size));
 	}
 	void* temp_realloc(void* p, u64 size)
 	{
@@ -56,7 +56,7 @@ namespace rex
 	}
 	void temp_dealloc(void* p, u64 size)
 	{
-		return GlobalSingleFrameAllocator().deallocate(p, size);
+		return GlobalSingleFrameAllocator().deallocate(p, narrow_cast<s32>(size));
 	}
 
 }

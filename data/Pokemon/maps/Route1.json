@@ -2,7 +2,8 @@
   "name": "ROUTE 1",
   "width": 10,
   "height": 18,
-    "type_name": "Map", "blockset": "Pokemon\\blocksets\\OVERWORLD.json",
+  "type_name": "Map", 
+  "blockset": "Pokemon\\blocksets\\OVERWORLD.json",
   "map_blocks": "Pokemon\\map_blocks\\Route1.blk",
   "border_block_idx": 11,
   "connections": [

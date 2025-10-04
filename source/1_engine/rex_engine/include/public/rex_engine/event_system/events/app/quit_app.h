@@ -4,6 +4,9 @@
 
 namespace rex
 {
+  // pretty self explanatory what this event is for
+  // a reason can be provided and an exit code
+  // which will be used to exit the app with
   class QuitApp : public Event<QuitApp>
   {
   public:

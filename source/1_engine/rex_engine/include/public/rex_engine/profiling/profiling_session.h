@@ -40,6 +40,8 @@ namespace rex
 		rsl::string m_filepath;
 	};
 
+	// A profiling timer will track time from its construction until its destruction
+	// and report the result to the profiling session
 	class ProfilingTimer
 	{
 	public:

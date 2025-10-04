@@ -54,8 +54,8 @@ namespace regina
 				f32 x_delta = (m_last_frame_mouse_pos.x - current_mouse_pos.x) * m_camera_move_speed;
 				f32 y_delta = (m_last_frame_mouse_pos.y - current_mouse_pos.y) * m_camera_move_speed;
 
-				m_camera_pos.x += x_delta;
-				m_camera_pos.y += y_delta;
+				m_camera_pos.x += static_cast<s32>(x_delta);
+				m_camera_pos.y += static_cast<s32>(y_delta);
 
 				//rsl::pointi32 resolution = screen_tile_resolution();
 				s32 half_res_width = m_screen_resolution.x.get() / 2;

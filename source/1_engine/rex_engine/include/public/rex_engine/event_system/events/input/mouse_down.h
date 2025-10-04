@@ -10,6 +10,7 @@ namespace rex
 {
 	DEFINE_YES_NO_ENUM(IsDoubleClick);
 
+	// This event gets raised when user pressed a key on their mouse
 	class MouseDown : public Event<MouseDown>
 	{
 	public:

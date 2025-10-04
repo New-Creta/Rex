@@ -1,6 +1,7 @@
 #include "rex_engine/assets/tilemap.h"
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
@@ -34,7 +35,7 @@ namespace rex
 
 	s32 Tilemap::num_tiles() const
 	{
-		return m_tiles.count();
+		return narrow_cast<s32>(m_tiles.count());
 	}
 	const u8* Tilemap::tiles() const
 	{

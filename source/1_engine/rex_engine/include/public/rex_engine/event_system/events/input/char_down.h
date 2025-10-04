@@ -4,6 +4,10 @@
 
 namespace rex
 {
+	// An event that gets raised when a character is down
+	// this is different than key down as a key is virtualized
+	// an can be mapped to different characters
+	// this event will hold the actual characters that's pressed
 	class CharDown : public Event<CharDown>
 	{
 	public:

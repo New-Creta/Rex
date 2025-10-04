@@ -15,10 +15,18 @@ namespace rex
     // --------------------------------
     // CREATING
     // --------------------------------
+    // Create a new directory
+    Error create(rsl::string_view path);
+    // Create a directory recursively, creating all sub directories until the leaf dir
+    Error create_recursive(rsl::string_view path);
 
     // --------------------------------
     // DELETING
     // --------------------------------
+    // Delete a directory, it's expected to be empty
+    Error del(rsl::string_view path);
+    // Delete a directory recursively, including all files and sub folders
+    Error del_recursive(rsl::string_view path);
 
     // --------------------------------
     // READING
@@ -27,6 +35,10 @@ namespace rex
     // --------------------------------
     // WRITING
     // --------------------------------
+    // Copy a directory and its content
+    Error copy(rsl::string_view src, rsl::string_view dst);
+    // Move/Rename a directory
+    Error move(rsl::string_view src, rsl::string_view dst);
 
     // --------------------------------
     // CONVERTING
@@ -35,22 +47,8 @@ namespace rex
     // --------------------------------
     // QUERYING
     // --------------------------------
-
-    // Create a new directory
-    Error create(rsl::string_view path);
-    // Create a directory recursively, creating all sub directories until the leaf dir
-    Error create_recursive(rsl::string_view path);
-    // Delete a directory, it's expected to be empty
-    Error del(rsl::string_view path);
-    // Delete a directory recursively, including all files and sub folders
-    Error del_recursive(rsl::string_view path);
     // Return if a directory exists
     bool exists(rsl::string_view path);
-    // Copy a directory and its content
-    Error copy(rsl::string_view src, rsl::string_view dst);
-    // Move/Rename a directory
-    Error move(rsl::string_view src, rsl::string_view dst);
-
     // Returns true if the directory is empty, 
     // as in, it has no files or directories
     bool is_empty(rsl::string_view path);

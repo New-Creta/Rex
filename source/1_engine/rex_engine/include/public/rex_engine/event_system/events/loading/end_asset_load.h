@@ -7,6 +7,7 @@
 
 namespace rex
 {
+	// this event is raised when an asset is successfully loaded
 	class EndAssetLoad : public Event<EndAssetLoad>
 	{
 	public:

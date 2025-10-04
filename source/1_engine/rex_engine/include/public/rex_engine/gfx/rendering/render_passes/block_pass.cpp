@@ -27,7 +27,7 @@ namespace rex
 				m_tileset = inputs.tileset;
 				if (m_render_pass)
 				{
-					m_render_pass->set("tile_texture", m_tileset->tileset_texture()->texture_resource());
+					m_render_pass->set("tile_texture", m_tileset->tileset_texture());
 				}
 			}
 			if (inputs.render_target != nullptr)
@@ -163,8 +163,8 @@ namespace rex
 			f32 inv_tile_width = 2.0f / m_screen_resolution.x.get();
 			f32 inv_tile_height = 2.0f / m_screen_resolution.y.get();
 
-			s32 tileset_width = m_tileset->tileset_texture()->texture_resource()->width();
-			s32 tileset_height = m_tileset->tileset_texture()->texture_resource()->height();
+			s32 tileset_width = m_tileset->tileset_texture()->width();
+			s32 tileset_height = m_tileset->tileset_texture()->height();
 
 			rsl::vec2 uv_size{};
 			rsl::pointi8 tile_size = m_tileset->tile_size();
@@ -232,7 +232,7 @@ namespace rex
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
 			m_render_pass = rsl::make_unique<rex::gfx::RenderPass>(m_render_pass_desc);
-			m_render_pass->set("tile_texture", m_tileset->tileset_texture()->texture_resource());
+			m_render_pass->set("tile_texture", m_tileset->tileset_texture());
 			m_render_pass->set("default_sampler", default_sampler);
 			m_render_pass->set("RenderingMetaData", m_tile_render_info.get());
 			m_render_pass->set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());
