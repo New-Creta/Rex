@@ -13,7 +13,6 @@
 
 #include "rex_engine/assets/map.h"
 
-#include "rex_engine/gfx/rendering/render_passes/tile_pass.h"
 #include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 
 #include "rex_engine/gfx/rendering/camera.h"

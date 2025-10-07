@@ -84,7 +84,7 @@ namespace rex
 
 			f32 viewport_width = static_cast<f32>(render_target_width);
 			f32 viewport_height = static_cast<f32>(render_target_height);
-			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), viewport_width, viewport_height, 0.0f, 1.0f };
+			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
 			renderCtx->set_viewport(viewport);
 
 			rex::gfx::ScissorRect rect = { 0, 0, viewport_width, viewport_height };

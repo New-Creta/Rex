@@ -12,25 +12,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		Renderer::Renderer()
-		{
-		}
-
-		namespace renderer
-		{
-			globals::GlobalUniquePtr<Renderer> g_renderer;
-			void init(globals::GlobalUniquePtr<Renderer> renderer)
-			{
-				g_renderer = rsl::move(renderer);
-			}
-			Renderer* instance()
-			{
-				return g_renderer.get();
-			}
-			void shutdown()
-			{
-				g_renderer.reset();
-			}
-		}
+		
 	}
 }

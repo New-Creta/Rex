@@ -42,8 +42,8 @@ namespace rex
       D3D12_VIEWPORT d3d_viewport;
       d3d_viewport.TopLeftX = vp.top_left.x;
       d3d_viewport.TopLeftY = vp.top_left.y;
-      d3d_viewport.Width = vp.width;
-      d3d_viewport.Height = vp.height;
+      d3d_viewport.Width = vp.size.x;
+      d3d_viewport.Height = vp.size.y;
       d3d_viewport.MinDepth = vp.min_depth;
       d3d_viewport.MaxDepth = vp.max_depth;
 

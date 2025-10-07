@@ -141,7 +141,6 @@ namespace rex
         m_on_shutdown();
 
         gfx::shader_lib::shutdown();
-        gfx::renderer::shutdown();
         gfx::gal::shutdown();
         win::com_lib::shutdown();
       }
@@ -349,7 +348,6 @@ namespace rex
 
 #ifdef REX_USING_DIRECTX
         gfx::gal::init(globals::make_unique<gfx::DirectXInterface>(user_data));
-        gfx::renderer::init(globals::make_unique<gfx::Renderer>());
 #else
 #error "No Graphics API defined"
 #endif

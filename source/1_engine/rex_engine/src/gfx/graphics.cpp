@@ -148,8 +148,8 @@ namespace rex
 			backbuffer_info.render_target = m_swapchain->current_buffer();
 			backbuffer_info.viewport.top_left.x = 0.0f;
 			backbuffer_info.viewport.top_left.y = 0.0f;
-			backbuffer_info.viewport.width = static_cast<f32>(m_swapchain->width());
-			backbuffer_info.viewport.height = static_cast<f32>(m_swapchain->height());
+			backbuffer_info.viewport.size.x = static_cast<f32>(m_swapchain->width());
+			backbuffer_info.viewport.size.y = static_cast<f32>(m_swapchain->height());
 			backbuffer_info.scissor_rect.right = static_cast<f32>(m_swapchain->width());
 			backbuffer_info.scissor_rect.bottom = static_cast<f32>(m_swapchain->height());
 
