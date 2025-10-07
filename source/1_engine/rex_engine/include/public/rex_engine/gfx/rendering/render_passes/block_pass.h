@@ -44,7 +44,7 @@ namespace rex
 			s32 world_width_in_tiles;
 		};
 
-		class BlockRenderPass
+		class BlockRenderPass : public RenderPass
 		{
 		public:
 			BlockRenderPass(const BlockRenderPassDynamicInputs& inputs);
@@ -57,14 +57,16 @@ namespace rex
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
+			RenderPassDesc create_desc() const;
+
 			void init();
 
 			void init_vb(rex::gfx::RenderContext* renderCtx);
 			void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
 			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
-			void init_render_pass();
 			void init_tilemap();
+			void init_shader_params();
 
 		private:
 			// The vertex buffer for a single tile
@@ -83,14 +85,9 @@ namespace rex
 			// starting from the top left, going to the bottom right
 			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tiles_indices_buffer;
 
-			// Legacy data, this should be merged into a base class of this class
-			rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;
-
 			// The tilemap to render on screen.
 			// This is the source information that gets copied to the UAV buffer
 			rsl::unique_ptr<rex::Tilemap> m_tilemap;
-
-			rex::gfx::RenderPassDesc m_render_pass_desc{};
 
 			rex::gfx::RenderTargetBase* m_render_target;
 			const rex::TilesetAsset* m_tileset;

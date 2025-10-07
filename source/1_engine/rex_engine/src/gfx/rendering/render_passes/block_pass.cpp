@@ -15,6 +15,7 @@ namespace rex
 		};
 
 		BlockRenderPass::BlockRenderPass(const BlockRenderPassDynamicInputs& inputs)
+			: RenderPass(create_desc())
 		{
 			update_dynamic_inputs(inputs);
 			init();
@@ -25,10 +26,7 @@ namespace rex
 			if (inputs.tileset != nullptr)
 			{
 				m_tileset = inputs.tileset;
-				if (m_render_pass)
-				{
-					m_render_pass->set("tile_texture", m_tileset->tileset_texture());
-				}
+				set("tile_texture", m_tileset->tileset_texture());
 			}
 			if (inputs.render_target != nullptr)
 			{
@@ -71,7 +69,7 @@ namespace rex
 			renderCtx->update_buffer(m_tiles_indices_buffer.get(), m_tilemap->tiles(), m_tilemap->num_tiles() * tile_byte_size);
 			renderCtx->transition_buffer(m_tiles_indices_buffer.get(), rex::gfx::ResourceState::NonPixelShaderResource);
 
-			m_render_pass->bind_to(renderCtx);
+			bind_to(renderCtx);
 
 			// Bind all the resources to the gfx pipeline
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
@@ -108,7 +106,7 @@ namespace rex
 			init_render_info(render_ctx.get());
 			init_tilemap();
 			init_tile_indices_uab(render_ctx.get());
-			init_render_pass();
+			init_shader_params();
 		}
 
 		void BlockRenderPass::init_vb(rex::gfx::RenderContext* renderCtx)
@@ -208,34 +206,38 @@ namespace rex
 				m_tiles_indices_buffer = rex::gfx::gal::instance()->create_unordered_access_buffer(m_tilemap->num_tiles());
 			}
 		}
-		void BlockRenderPass::init_render_pass()
+		RenderPassDesc BlockRenderPass::create_desc() const
 		{
-			m_render_pass_desc.name = "Tile Renderer";
+			RenderPassDesc desc{};
+			desc.name = "Tile Renderer";
 
-			m_render_pass_desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
+			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
 			// We're rendering directly to the back buffer
-			m_render_pass_desc.framebuffer_desc.clear();
-			m_render_pass_desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
+			desc.framebuffer_desc.clear();
+			desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
 
 			// Assign the shaders used for the tile renderer
-			m_render_pass_desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-			m_render_pass_desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
 
-			m_render_pass_desc.pso_desc.input_layout =
+			desc.pso_desc.input_layout =
 			{
 				// Per vertex data
 				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float2 },
 				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::TexCoord, rex::gfx::ShaderArithmeticType::Float2 },
 			};
 
+			return desc;
+		}
+		void BlockRenderPass::init_shader_params()
+		{
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
-			m_render_pass = rsl::make_unique<rex::gfx::RenderPass>(m_render_pass_desc);
-			m_render_pass->set("tile_texture", m_tileset->tileset_texture());
-			m_render_pass->set("default_sampler", default_sampler);
-			m_render_pass->set("RenderingMetaData", m_tile_render_info.get());
-			m_render_pass->set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());
+			set("tile_texture", m_tileset->tileset_texture());
+			set("default_sampler", default_sampler);
+			set("RenderingMetaData", m_tile_render_info.get());
+			set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());
 		}
 		void BlockRenderPass::init_tilemap()
 		{
