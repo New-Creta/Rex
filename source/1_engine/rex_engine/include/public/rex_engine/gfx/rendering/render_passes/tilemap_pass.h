@@ -1,38 +1,19 @@
 #pragma once
 
-#include "rex_engine/assets/tilemap.h"
-#include "rex_engine/assets/tileset_asset.h"
-
-#include "rex_engine/engine/types.h"
-
-#include "rex_engine/gfx/resources/render_target.h"
-#include "rex_engine/gfx/resources/vertex_buffer.h"
-#include "rex_engine/gfx/resources/index_buffer.h"
-#include "rex_engine/gfx/resources/constant_buffer.h"
-#include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
-
-#include "rex_engine/gfx/system/render_context.h"
-
-#include "rex_std/bonus/math.h"
-
-#include "rex_std/memory.h"
-
-// A block render pass takes in a number of block indices
-// converts these into a tilemap and then sents the tilemap to the gpu
 
 namespace rex
 {
 	namespace gfx
 	{
-		struct BlockRenderPassDynamicInputs
+		struct TilemapPassDynamicInputs
 		{
 			RenderTargetBase* render_target;
 			const TilesetAsset* tileset;
 			rsl::point<TileCount> screen_resolution;
 		};
 
-		struct BlockRenderPassUpdateParams
+		struct TilemapPassUpdateParams
 		{
 			// pointer to the tile source data. This data represents all the tiles in the current world
 			const u8* tiles_source;
@@ -44,19 +25,21 @@ namespace rex
 			s32 world_width_in_tiles;
 		};
 
-		class BlockRenderPass
+		class TilemapPass : public RenderPass
 		{
 		public:
-			BlockRenderPass(const BlockRenderPassDynamicInputs& inputs);
+			TilemapPass(const TilemapPassDynamicInputs& inputs);
 
-			void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
+			void update_dynamic_inputs(const TilemapPassDynamicInputs& inputs);
 
 			// Update the tilemap's indices that we need to draw to the screen
-			void update_tilemap(const BlockRenderPassUpdateParams& params);
+			void update_tilemap(const TilemapPassUpdateParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
+			RenderPassDesc create_desc() const;
+
 			void init();
 
 			void init_vb(rex::gfx::RenderContext* renderCtx);
@@ -83,14 +66,9 @@ namespace rex
 			// starting from the top left, going to the bottom right
 			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tiles_indices_buffer;
 
-			// Legacy data, this should be merged into a base class of this class
-			rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;
-
 			// The tilemap to render on screen.
 			// This is the source information that gets copied to the UAV buffer
 			rsl::unique_ptr<rex::Tilemap> m_tilemap;
-
-			rex::gfx::RenderPassDesc m_render_pass_desc{};
 
 			rex::gfx::RenderTargetBase* m_render_target;
 			const rex::TilesetAsset* m_tileset;

@@ -7,6 +7,7 @@
 
 namespace rex
 {
+
 	class Flipbook : public Asset
 	{
 	public:
