@@ -1,6 +1,7 @@
 #include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 
 #include "rex_engine/gfx/system/shader_library.h"
+#include "rex_engine/gfx/rendering/tile_vertex.h"
 
 #include "rex_engine/filesystem/path.h"
 
@@ -8,12 +9,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct TileVertex
-		{
-			rsl::point<f32> pos;
-			rsl::point<f32> uv;
-		};
-
 		BlockRenderPass::BlockRenderPass(const BlockRenderPassDynamicInputs& inputs)
 			: RenderPass(create_desc())
 		{

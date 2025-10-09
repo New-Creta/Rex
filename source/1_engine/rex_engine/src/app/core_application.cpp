@@ -26,10 +26,14 @@
 #include "rex_engine/assets/map.h"
 #include "rex_engine/assets/blockset.h"
 #include "rex_engine/assets/texture_asset.h"
+#include "rex_engine/assets/flipbook.h"
+#include "rex_engine/assets/input_mapping.h"
 
 #include "rex_engine/serialization/text_loaders/map_loader_json.h"
 #include "rex_engine/serialization/text_loaders/tileset_loader_json.h"
 #include "rex_engine/serialization/text_loaders/blockset_loader_json.h"
+#include "rex_engine/serialization/text_loaders/flipbook_loader_json.h"
+#include "rex_engine/serialization/text_loaders/input_mapping_loader_json.h"
 #include "rex_engine/serialization/binary_loaders/texture_loader.h"
 
 #include "rex_std/internal/exception/exit.h"
@@ -326,6 +330,8 @@ namespace rex
     asset_db::instance()->add_loader<Blockset>(rsl::make_unique<BlocksetLoaderJson>());
     asset_db::instance()->add_loader<TilesetAsset>(rsl::make_unique<TilesetLoaderJson>());
     asset_db::instance()->add_loader<TextureAsset>(rsl::make_unique<TextureLoader>());
+    asset_db::instance()->add_loader<Flipbook>(rsl::make_unique<FlipbookLoaderJson>());
+    asset_db::instance()->add_loader<InputMapping>(rsl::make_unique<InputMappingLoaderJson>());
   }
 
   //--------------------------------------------------------------------------------------------

@@ -8,6 +8,14 @@
 
 namespace rex
 {
+	FlipbookLoaderJson::FlipbookLoaderJson()
+		: AssetLoader(
+			{
+				rsl::version(0, 0, 1),
+				{ ".json" }
+			})
+	{}
+
 	rsl::unique_ptr<Asset> FlipbookLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
 		rex::json::json json_blob = rex::json::read_from_file(assetPath);
@@ -18,6 +26,8 @@ namespace rex
 
 		TextureAsset* texture = asset_db::instance()->load<TextureAsset>(json_blob["texture"]);
 
-		return rsl::make_unique<Flipbook>(sprite_size, texture);
+		rsl::vector<FlipbookAnimation> animations;
+
+		return rsl::make_unique<Flipbook>(sprite_size, texture, rsl::move(animations));
 	}
 }

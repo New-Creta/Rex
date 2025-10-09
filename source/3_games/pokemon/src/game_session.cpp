@@ -31,6 +31,8 @@
 #include "rex_engine/math/coords.h"
 #include "rex_engine/engine/asset_db.h"
 
+#include "rex_engine/assets/flipbook.h"
+
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/events/input/key_down.h"
 
@@ -77,7 +79,6 @@ namespace pokemon
 	void GameSession::init_player(const SaveFile& saveFile)
 	{
 		m_player_character = rsl::make_unique<PlayerCharacter>();
-
 		m_player_position = saveFile.position;
 	}
 
@@ -86,6 +87,12 @@ namespace pokemon
 		rex::event_system::instance()->subscribe<rex::KeyDown>(
 			[this](const rex::KeyDown& ev)
 			{
+				// we should increase the input 2 pixels per key stroke
+				// this is because in the old pokemon games a single animation takes 4 ticks
+				// given that a tile is 8x8 pixels, to get through a single tile, 
+				// the game has to translate the camera 2 pixels per tick
+				// the player does have to play 2 tiles at a time (which is the width of a single square)
+
 				switch (ev.key())
 				{
 				case rex::KeyCode::W:

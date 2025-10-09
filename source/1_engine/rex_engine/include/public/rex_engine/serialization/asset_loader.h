@@ -2,6 +2,7 @@
 
 #include "rex_engine/assets/asset.h"
 #include "rex_engine/engine/defines.h"
+#include "rex_engine/diagnostics/log.h"
 
 #include "rex_std/string.h"
 #include "rex_std/vector.h"
@@ -21,6 +22,8 @@ namespace rex
 		None,
 		PartialLoad = BIT(0)
 	};
+
+	DEFINE_LOG_CATEGORY(LogAssetLoader);
 
 	class AssetLoader
 	{

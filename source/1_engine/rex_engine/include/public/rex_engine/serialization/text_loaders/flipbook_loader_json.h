@@ -7,6 +7,8 @@ namespace rex
 	class FlipbookLoaderJson : public AssetLoader
 	{
 	public:
+		FlipbookLoaderJson();
+
 		rsl::unique_ptr<Asset> load(rsl::string_view assetPath, LoadFlags loadFlags);
 
 	private:
