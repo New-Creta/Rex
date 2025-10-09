@@ -1,0 +1,18 @@
+[
+    {
+        "name": "up",
+        "key": "W"
+    },
+    {
+        "name": "down",
+        "key": "S"
+    },
+    {
+        "name": "left",
+        "key": "A"
+    },
+    {
+        "name": "right",
+        "key": "D"
+    }
+]
