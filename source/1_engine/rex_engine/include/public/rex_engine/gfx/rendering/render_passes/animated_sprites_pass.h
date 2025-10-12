@@ -18,7 +18,7 @@ namespace rex
 			rsl::pointi8 sprite_size;   // size of a single tile, in pixels
 		};
 
-		struct PerInstanceData
+		struct PerSpriteInstanceData
 		{
 			// Information needed to draw the sprite at the correct position on screen
 			s32 tile_index_on_screen;   
@@ -66,6 +66,8 @@ namespace rex
 		public:
 			AnimatedSpritesPass(const AnimatedSpritesPassDynamicInputs& inputs);
 
+			void add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
+
 			void push_sprite(const AnimatedSpriteDrawList& drawlist);
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -102,6 +104,8 @@ namespace rex
 			rsl::point<TileCount> m_screen_resolution;
 
 			rsl::vector<AnimatedSpriteDrawList> m_draw_list;
+
+			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
 		};
 	}
 }

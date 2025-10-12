@@ -27,6 +27,11 @@ namespace rex
 			m_screen_resolution = inputs.screen_resolution;
 		}
 
+		void AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
+		{
+			m_sprites.emplace_back(rsl::move(sprite));
+		}
+
 		void AnimatedSpritesPass::push_sprite(const AnimatedSpriteDrawList& drawlist)
 		{
 			s32 max_num_drawlists = 16; // the maximum number of animated characters on screen in pokemon
@@ -71,6 +76,17 @@ namespace rex
 				bool flip_x;
 				bool flip_y;
 			};
+
+			for (const rsl::unique_ptr<AnimatedSprite>& sprite : m_sprites)
+			{
+				// this loop should essentially be the bottom loop
+				// when the user creates an animated sprite texture
+				// they can add that to the renderer
+				
+				// the renderer will then add it to correct pass (eg this one)
+				// which will then draw it to the screen
+			}
+
 			for (const AnimatedSpriteDrawList& drawlist : m_draw_list)
 			{
 				rsl::vec2 uv_size{};
@@ -189,7 +205,7 @@ namespace rex
 		void AnimatedSpritesPass::init_tile_indices_uab()
 		{
 			s32 num_allowed_animated_characters = 16;
-			m_per_instance_info = rex::gfx::gal::instance()->create_unordered_access_buffer(sizeof(PerInstanceData) * num_allowed_animated_characters);
+			m_per_instance_info = rex::gfx::gal::instance()->create_unordered_access_buffer(sizeof(PerSpriteInstanceData) * num_allowed_animated_characters);
 		}
 		void AnimatedSpritesPass::init_shader_params()
 		{

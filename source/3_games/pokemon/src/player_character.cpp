@@ -2,9 +2,15 @@
 
 #include "rex_engine/engine/asset_db.h"
 
+#include "rex_engine/gfx/graphics.h"
+
 namespace pokemon
 {
+	DEFINE_LOG_CATEGORY(LogPlayerCharacter);
+
 	PlayerCharacter::PlayerCharacter()
+		: m_facing_direction(rex::Direction::South)
+		, m_walking_counter(0)
 	{
 		init_animations();
 		init_input();
@@ -12,7 +18,11 @@ namespace pokemon
 
 	void PlayerCharacter::tick(f32 dt)
 	{
-		//m_player_sprite_proxy->update_render_data(data);
+		if (m_walking_counter > 0)
+		{
+			m_animated_sprite->tick(dt);
+			continue_movement();
+		}
 	}
 	void PlayerCharacter::handle_input(const rex::InputInfo& inputInfo)
 	{
@@ -32,54 +42,118 @@ namespace pokemon
 		m_input_mappings->bind_action("left", [this](const rex::InputInfo& info) { move_left(info); });
 		m_input_mappings->bind_action("right", [this](const rex::InputInfo& info) { move_right(info); });
 	}
+	void PlayerCharacter::init_gfx_proxy()
+	{
+		m_animated_sprite = rex::gfx::gal::instance()->create_animated_sprite();
+		face_down();
+	}
 
 	void PlayerCharacter::move_up(const rex::InputInfo& info)
 	{
-		if (m_facing_direction == rex::Direction::North)
+		if (m_facing_direction != rex::Direction::North)
 		{
-			m_active_animation = m_animations->find_animation("up_walk");
+			face_up();
+			m_facing_direction = rex::Direction::North;
 		}
 		else
 		{
-			m_active_animation = m_animations->find_animation("up_idle");
+			walk_up();
 		}
 	}
 	void PlayerCharacter::move_down(const rex::InputInfo& info)
 	{
-		if (m_facing_direction == rex::Direction::North)
+		if (m_facing_direction != rex::Direction::South)
 		{
-			m_active_animation = m_animations->find_animation("down_walk");
+			face_down();
+			m_facing_direction = rex::Direction::South;
 		}
 		else
 		{
-			m_active_animation = m_animations->find_animation("down_idle");
+			walk_down();
 		}
 	}
 	void PlayerCharacter::move_left(const rex::InputInfo& info)
 	{
-		if (m_facing_direction == rex::Direction::North)
+		if (m_facing_direction != rex::Direction::West)
 		{
-			m_active_animation = m_animations->find_animation("left_walk");
+			face_left();
+			m_facing_direction = rex::Direction::West;
 		}
 		else
 		{
-			m_active_animation = m_animations->find_animation("left_idle");
+			walk_left();
 		}
 	}
 	void PlayerCharacter::move_right(const rex::InputInfo& info)
 	{
-		if (m_facing_direction == rex::Direction::North)
+		if (m_facing_direction != rex::Direction::East)
 		{
-			m_active_animation = m_animations->find_animation("right_walk");
+			face_right();
+			m_facing_direction = rex::Direction::East;
 		}
 		else
 		{
-			m_active_animation = m_animations->find_animation("right_idle");
+			walk_right();
 		}
+	}
+
+	void PlayerCharacter::face_up()
+	{
+		m_animated_sprite->set_animation(m_animations->find_animation("up_idle"));
+	}
+	void PlayerCharacter::face_down()
+	{
+		m_animated_sprite->set_animation(m_animations->find_animation("down_idle"));
+	}
+	void PlayerCharacter::face_left()
+	{
+		m_animated_sprite->set_animation(m_animations->find_animation("left_idle"));
+	}
+	void PlayerCharacter::face_right()
+	{
+		m_animated_sprite->set_animation(m_animations->find_animation("right_idle"));
+	}
+
+	void PlayerCharacter::walk_up()
+	{
+		m_walking_counter = 4;
+		m_animated_sprite->set_animation(m_animations->find_animation("up_walk"));
+	}
+	void PlayerCharacter::walk_down()
+	{
+		m_walking_counter = 4;
+		m_animated_sprite->set_animation(m_animations->find_animation("down_walk"));
+	}
+	void PlayerCharacter::walk_left()
+	{
+		m_walking_counter = 4;
+		m_animated_sprite->set_animation(m_animations->find_animation("left_walk"));
+	}
+	void PlayerCharacter::walk_right()
+	{
+		m_walking_counter = 4;
+		m_animated_sprite->set_animation(m_animations->find_animation("right_walk"));
+	}
+
+	void PlayerCharacter::continue_movement()
+	{
+		switch (m_facing_direction)
+		{
+		case rex::Direction::North: m_pos.y -= 1;	break;
+		case rex::Direction::East:  m_pos.x += 1;	break;
+		case rex::Direction::South: m_pos.y += 1;	break;
+		case rex::Direction::West:  m_pos.x -= 1; break;
+		}
+
+		m_walking_counter--;
 	}
 
 	TileCoord PlayerCharacter::pos() const
 	{
 		return m_pos;
+	}
+	void PlayerCharacter::set_pos(TileCoord pos)
+	{
+		m_pos = pos;
 	}
 }

@@ -56,6 +56,7 @@
 #include "rex_engine/gfx/resources/upload_buffer.h"
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
+#include "rex_engine/gfx/resources/animated_sprite.h"
 #include "rex_engine/gfx/materials/material.h"
 #include "rex_engine/gfx/system/shader_pipeline.h"
 #include "rex_engine/gfx/shader_reflection/shader_signature.h"
@@ -186,6 +187,8 @@ namespace rex
       virtual rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc) = 0;
       virtual rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc) = 0;
       virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
+      
+      virtual AnimatedSprite* create_animated_sprite() = 0;
       
       // --------------------------------
       // View creation

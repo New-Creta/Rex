@@ -9,12 +9,11 @@
 
 namespace rex
 {
-	class FlipbookSprite
+	struct FlipbookSprite
 	{
-	private:
-		s32 m_idx;
-		s32 m_num_frames;
-		bool m_flip_x;
+		s32 sprite_idx;
+		s32 num_frames;
+		bool flip_x;
 	};
 
 	class FlipbookAnimation
@@ -22,6 +21,10 @@ namespace rex
 	public:
 		FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookSprite>&& sprites);
 
+		bool has_finished_animation(s32 spriteIdx, s32 frameIdx) const;
+		s32 next_sprite_idx(s32 currentSpriteIdx) const;
+
+		const FlipbookSprite& sprite(s32 idx) const;
 		rsl::string_view name() const;
 
 	private:

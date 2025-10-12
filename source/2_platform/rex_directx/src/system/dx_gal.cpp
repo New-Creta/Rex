@@ -502,6 +502,12 @@ namespace rex
 			return uab;
 		}
 		
+		AnimatedSprite* DirectXInterface::create_animated_sprite()
+		{
+			rsl::unique_ptr<AnimatedSprite> animated_sprite = rsl::make_unique<AnimatedSprite>();
+			return renderer::instance()->add_animated_sprite(rsl::move(animated_sprite));
+		}
+
 		// View creation
 		// -------------------------------------------
 		rsl::unique_ptr<ResourceView> DirectXInterface::create_srv(RenderTarget* rt)

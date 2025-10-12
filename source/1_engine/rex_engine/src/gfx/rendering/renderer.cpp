@@ -12,6 +12,26 @@ namespace rex
 {
 	namespace gfx
 	{
-		
+		AnimatedSprite* Renderer::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
+		{
+			return m_animated_sprites_pass->add_sprite(rsl::move(sprite));
+		}
+
+		namespace renderer
+		{
+			globals::GlobalUniquePtr<Renderer> g_renderer;
+			Error init(globals::GlobalUniquePtr<Renderer> renderer)
+			{
+				g_renderer = rsl::move(renderer);
+			}
+			Renderer* instance()
+			{
+				return g_renderer.get();
+			}
+			void shutdown()
+			{
+				g_renderer.reset();
+			}
+		}
 	}
 }
