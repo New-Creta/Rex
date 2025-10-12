@@ -12,6 +12,9 @@
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/resources/animated_sprite.h"
 
+#include "rex_std/vector.h"
+#include "rex_std/memory.h"
+
 namespace rex
 {
 	namespace gfx
@@ -21,7 +24,6 @@ namespace rex
 		class Material;
 		class ConstantBuffer;
 		class RenderTarget;
-		class AnimatedSpritesPass;
 
 		// A drawlist holds data needed to draw a single element to the screen
 		struct DrawList
@@ -51,18 +53,18 @@ namespace rex
 			Renderer();
 			~Renderer();
 
+			void render();
+
 			template <typename Pass, typename ... Args>
-			void add_new_pass(Args&& ... args)
+			Pass* add_render_pass(Args&& ... args)
 			{
 				m_passes.emplace_back(rsl::make_unique<Pass>(rsl::forward<Args>(args)...));
 
 				return m_passes.back().get();
 			}
 
-			AnimatedSprite* add_animated_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
-
 		private:
-			rsl::unique_ptr<AnimatedSpritesPass> m_animated_sprites_pass;
+			rsl::vector<rsl::unique_ptr<RenderPass>> m_passes;
 		};
 
 		namespace renderer

@@ -20,7 +20,7 @@ namespace regina
 		//, m_tile_zoom(1.0f)
 		, m_camera_move_speed(1.0f)
 	{
-		//init_render_pass();
+		//init_render_graph();
 	}
 
 	bool Viewport::on_update()
@@ -95,12 +95,12 @@ namespace regina
 	void Viewport::set_tilemap(const rex::Tilemap* tilemap)
 	{
 		m_world_tilemap = tilemap;
-		//init_render_pass();
+		//init_render_graph();
 	}
 	void Viewport::set_tileset(const rex::TilesetAsset* tileset)
 	{
 		m_tileset = tileset;
-		init_render_pass();
+		init_render_graph();
 
 		rex::gfx::BlockRenderPassDynamicInputs inputs{};
 		inputs.tileset = tileset;
@@ -113,7 +113,7 @@ namespace regina
 		m_camera_pos = pos;
 	}
 
-	void Viewport::init_render_pass()
+	void Viewport::init_render_graph()
 	{
 		if (!m_world_tilemap)
 		{

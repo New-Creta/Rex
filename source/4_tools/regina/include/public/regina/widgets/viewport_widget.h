@@ -56,7 +56,7 @@ namespace regina
 		void on_draw();
 
 	private:
-		void init_render_pass();
+		void init_render_graph();
 
 		rsl::point<rex::TileCount> top_left_from_camera_pos(rsl::pointi32 cameraPos);
 		void update_screen_tilemap(rsl::point<rex::TileCount> topLeftStart);

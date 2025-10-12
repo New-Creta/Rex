@@ -54,27 +54,18 @@ namespace pokemon
 		init_map(startup_save_file);
 		init_player(startup_save_file);
 		init_input();
-		init_render_pass();
+
+		// In the future this render graph should be provided by the engine
+		// the game provides the engine information what kind of render graph is needed for the game
+		// the engine will then pick one of the prebuild render graphs
+		init_render_graph();
 	}
 
 	void GameSession::update()
 	{
-		m_player_character->tick(0.1f);
-
-		TileCoord player_pos = m_player_character->pos();
-
-		rsl::pointi8 min_player_pos{}; //constants::player_render_position_top_left;
-		rsl::pointi8 max_player_pos{}; //constants::player_render_position_bottom_right;
-
-		player_pos.x = rsl::clamp_min(player_pos.x, min_player_pos.x);
-		player_pos.y = rsl::clamp_min(player_pos.y, min_player_pos.y);
-
-		rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
-
-		player_pos.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.x), size.x.get() - max_player_pos.x));
-		player_pos.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.y), size.y.get() - max_player_pos.y));
-
-		m_player_character->set_pos(player_pos);
+		f32 dt = 0.1f;
+		m_player_character->tick(dt);
+		clamp_player_pos();
 
 		draw();
 	}
@@ -152,22 +143,33 @@ namespace pokemon
 			});
 	}
 
-	void GameSession::init_render_pass()
+	void GameSession::init_render_graph()
 	{
-		// the block/tile pass needs the following information
-		// - how many tiles will we render on screen
-		// - where will we render to
-		// - what tileset will we use for rendering
-		// All other information can be infered from the above
-		// if we render 20x18 tiles, 1 tile's width is 1/20th of the render target's width
-		// and it's 1/18th of the render target's height
+		// draw pass to render the static tiles that don't change
+		// this is essentially just the background
+		rex::gfx::BlockRenderPassDynamicInputs block_pass_inputs{};
+		block_pass_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+		block_pass_inputs.tileset = m_active_map->blockset()->tileset();
+		block_pass_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
 
-		rex::gfx::BlockRenderPassDynamicInputs inputs{};
-		inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-		inputs.tileset = m_active_map->blockset()->tileset();
-		inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
+		m_block_render_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::BlockRenderPass>(block_pass_inputs);
 
-		m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(inputs);
+		// draw the animated tiles
+		// the player, NPCs, flowers, ...
+		// sprite movement in old games is found in movement.asm
+		rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
+		animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+		animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
+		m_animted_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
+
+		// draw the water
+		// water is animated by bit shifting its pixels
+		//m_water_pass = rex::gfx::renderer::instance()->add_pass(rsl::make_unique<rex::gfx::BlockRenderPass>(inputs));
+
+		// draw the UI
+		//m_ui_pass = rex::gfx::renderer::instance()->add_render_pass(rsl::make_unique<UiPass>());
+
+		//m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(inputs);
 	}
 
 	void GameSession::draw()
@@ -185,5 +187,23 @@ namespace pokemon
 
 		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 		m_block_render_pass->render(render_ctx.get());
+	}
+
+	void GameSession::clamp_player_pos()
+	{
+		TileCoord player_pos = m_player_character->pos();
+
+		rsl::pointi8 min_player_pos{}; //constants::player_render_position_top_left;
+		rsl::pointi8 max_player_pos{}; //constants::player_render_position_bottom_right;
+
+		player_pos.x = rsl::clamp_min(player_pos.x, min_player_pos.x);
+		player_pos.y = rsl::clamp_min(player_pos.y, min_player_pos.y);
+
+		rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
+
+		player_pos.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.x), size.x.get() - max_player_pos.x));
+		player_pos.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.y), size.y.get() - max_player_pos.y));
+
+		m_player_character->set_pos(player_pos);
 	}
 }

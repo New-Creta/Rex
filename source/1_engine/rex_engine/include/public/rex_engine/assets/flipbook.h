@@ -14,6 +14,7 @@ namespace rex
 		s32 sprite_idx;
 		s32 num_frames;
 		bool flip_x;
+		bool flip_y;
 	};
 
 	class FlipbookAnimation

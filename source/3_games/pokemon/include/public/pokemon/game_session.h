@@ -14,6 +14,7 @@
 #include "rex_engine/assets/map.h"
 
 #include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
 
 #include "rex_engine/gfx/rendering/camera.h"
 #include "rex_engine/gfx/rendering/scene_renderer.h"
@@ -39,9 +40,11 @@ namespace pokemon
     void init_map(const SaveFile& saveFile);
     void init_player(const SaveFile& saveFile);
     void init_input();
-    void init_render_pass();
+    void init_render_graph();
 
     void draw();
+
+    void clamp_player_pos();
 
   private:
     rex::Map* m_active_map;
@@ -49,7 +52,8 @@ namespace pokemon
     //TileCoord m_player_position; // player position in tiles
     rsl::unique_ptr<PlayerCharacter> m_player_character;
 
-    rsl::unique_ptr<rex::gfx::BlockRenderPass> m_block_render_pass;
-
+    rex::gfx::BlockRenderPass* m_block_render_pass;
+    rex::gfx::AnimatedSpritesPass* m_animted_sprites_pass;
+    
   };
 }

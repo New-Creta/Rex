@@ -27,6 +27,23 @@ namespace rex
 		TextureAsset* texture = asset_db::instance()->load<TextureAsset>(json_blob["texture"]);
 
 		rsl::vector<FlipbookAnimation> animations;
+		rsl::vector<FlipbookSprite> sprites;
+		for (const json::json& anim : json_blob["animations"])
+		{
+			rsl::string_view name = anim["name"];
+			sprites.clear();
+			for (const json::json& sprite_json : anim["sprites"])
+			{
+				FlipbookSprite sprite{};
+				sprite.sprite_idx = sprite_json["idx"];
+				sprite.num_frames = sprite_json.value("num_frames", 1);
+				sprite.flip_x = sprite_json.value("flip_x", false);
+				sprite.flip_y = sprite_json.value("flip_y", false);
+				sprites.emplace_back(sprite);
+			}
+
+			animations.emplace_back(name, rsl::move(sprites));
+		}
 
 		return rsl::make_unique<Flipbook>(sprite_size, texture, rsl::move(animations));
 	}

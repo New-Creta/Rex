@@ -17,18 +17,21 @@ namespace rex
 	{
 		Renderer::Renderer()
 		{
-			AnimatedSpritesPassDynamicInputs inputs{};
-			inputs.render_target = gal::instance()->backbuffer_rendertarget();
-			inputs.screen_resolution.x.get() = 20;
-			inputs.screen_resolution.y.get() = 18;
-			m_animated_sprites_pass = rsl::make_unique<AnimatedSpritesPass>(inputs);
+			
 		}
 
 		Renderer::~Renderer() = default;
 
-		AnimatedSprite* Renderer::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
+		void Renderer::render()
 		{
-			return m_animated_sprites_pass->add_sprite(rsl::move(sprite));
+			auto render_ctx = gal::instance()->new_render_ctx();
+
+			for (rsl::unique_ptr<RenderPass>& pass : m_passes)
+			{
+				pass->pre_pass();
+				pass->run_pass(render_ctx.get());
+				pass->post_pass();
+			}
 		}
 
 		namespace renderer

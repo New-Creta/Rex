@@ -51,7 +51,7 @@ namespace rex
 			// Initialize the gpu resources required by the renderer
 			void init_gpu_resources();
 			// Initialize the render passes of the renderer
-			void init_render_passes();
+			void init_render_graphes();
 
 			// Initialize the geometry render pass
 			void init_geometry_render_pass();

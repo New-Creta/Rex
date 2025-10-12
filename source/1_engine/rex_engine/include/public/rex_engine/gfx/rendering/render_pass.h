@@ -74,7 +74,7 @@ namespace rex
 			// Setup the render pass
 			virtual void pre_pass() {};
 			// Go through the render pass
-			virtual void run_pass() {};
+			virtual void run_pass(RenderContext* ctx) {};
 			// Finish off the render pass
 			virtual void post_pass() {};
 
