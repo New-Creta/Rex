@@ -353,6 +353,7 @@ namespace rex
 #endif
 
         gfx::shader_lib::init(globals::make_unique<gfx::ShaderLibrary>());
+        gfx::renderer::init(globals::make_unique<gfx::Renderer>());
 
         // Add the imgui renderer, which is our main UI renderer for the moment
         gfx::ImGuiRendererCreationInfo imgui_creation_info{};

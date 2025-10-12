@@ -14,6 +14,7 @@ namespace pokemon
 	{
 		init_animations();
 		init_input();
+		init_gfx_proxy();
 	}
 
 	void PlayerCharacter::tick(f32 dt)

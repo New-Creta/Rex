@@ -4,6 +4,9 @@
 #include "rex_engine/gfx/rendering/render_pass.h"
 #include "rex_engine/gfx/system/shader_library.h"
 
+#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
+
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_std/bonus/math.h"
@@ -12,6 +15,13 @@ namespace rex
 {
 	namespace gfx
 	{
+		Renderer::Renderer()
+		{
+
+		}
+
+		Renderer::~Renderer() = default;
+
 		AnimatedSprite* Renderer::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
 		{
 			return m_animated_sprites_pass->add_sprite(rsl::move(sprite));
@@ -20,7 +30,7 @@ namespace rex
 		namespace renderer
 		{
 			globals::GlobalUniquePtr<Renderer> g_renderer;
-			Error init(globals::GlobalUniquePtr<Renderer> renderer)
+			void init(globals::GlobalUniquePtr<Renderer> renderer)
 			{
 				g_renderer = rsl::move(renderer);
 			}

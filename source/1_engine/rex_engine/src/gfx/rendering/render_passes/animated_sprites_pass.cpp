@@ -27,9 +27,10 @@ namespace rex
 			m_screen_resolution = inputs.screen_resolution;
 		}
 
-		void AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
+		AnimatedSprite* AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
 		{
 			m_sprites.emplace_back(rsl::move(sprite));
+			return m_sprites.back().get();
 		}
 
 		void AnimatedSpritesPass::push_sprite(const AnimatedSpriteDrawList& drawlist)

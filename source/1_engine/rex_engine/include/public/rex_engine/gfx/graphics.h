@@ -88,6 +88,7 @@ namespace rex
   {
     class GALBase;
     class PipelineState;
+    class LegacyRenderer;
 
     namespace gal
     {

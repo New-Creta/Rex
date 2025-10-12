@@ -66,7 +66,7 @@ namespace rex
 		public:
 			AnimatedSpritesPass(const AnimatedSpritesPassDynamicInputs& inputs);
 
-			void add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
+			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
 
 			void push_sprite(const AnimatedSpriteDrawList& drawlist);
 			void render(rex::gfx::RenderContext* renderCtx);

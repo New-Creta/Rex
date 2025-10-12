@@ -14,7 +14,7 @@
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/gfx/graphics.h"
-
+#include "rex_engine/gfx/rendering/renderer.h"
 
 namespace rex
 {

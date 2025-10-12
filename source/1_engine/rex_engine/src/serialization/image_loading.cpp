@@ -2,6 +2,7 @@
 #include "rex_engine/serialization/stb_image.h"
 
 #include "rex_engine/engine/defines.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
@@ -11,7 +12,7 @@ namespace rex
 		const unsigned char* data_as_char = reinterpret_cast<const stbi_uc*>(content_data);
 
 		ImageLoadResult res{};
-		u8* data_raw = stbi_load_from_memory(data_as_char, content.size(), &res.width, &res.height, &res.num_channels, 0);
+		u8* data_raw = stbi_load_from_memory(data_as_char, narrow_cast<s32>(content.size().size_in_bytes()), &res.width, &res.height, &res.num_channels, 0);
 
 		s64 image_size = res.width * res.height * res.num_channels;
 		res.data = rsl::unique_array<u8>(data_raw, image_size);
