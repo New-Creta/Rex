@@ -32,7 +32,7 @@ namespace pokemon
 
 	void PlayerCharacter::init_animations()
 	{
-		m_animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/sprites/player_anim.json");
+		m_animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/anims/player_anim.json");
 	}
 	void PlayerCharacter::init_input()
 	{

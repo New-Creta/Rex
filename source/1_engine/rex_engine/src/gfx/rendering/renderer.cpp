@@ -17,7 +17,11 @@ namespace rex
 	{
 		Renderer::Renderer()
 		{
-
+			AnimatedSpritesPassDynamicInputs inputs{};
+			inputs.render_target = gal::instance()->backbuffer_rendertarget();
+			inputs.screen_resolution.x.get() = 20;
+			inputs.screen_resolution.y.get() = 18;
+			m_animated_sprites_pass = rsl::make_unique<AnimatedSpritesPass>(inputs);
 		}
 
 		Renderer::~Renderer() = default;

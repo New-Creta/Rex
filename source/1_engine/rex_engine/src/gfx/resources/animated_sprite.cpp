@@ -1,5 +1,7 @@
 #include "rex_engine/gfx/resources/animated_sprite.h"
 
+#include "rex_engine/diagnostics/assert.h"
+
 namespace rex
 {
 	namespace gfx
@@ -17,6 +19,7 @@ namespace rex
 
 		void AnimatedSprite::set_animation(const rex::FlipbookAnimation* newActiveAnimation)
 		{
+			REX_ASSERT_X(newActiveAnimation, "New animation is nullptr, this is not allowed");
 			m_active_animation = newActiveAnimation;
 		}
 	}
