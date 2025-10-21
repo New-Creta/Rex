@@ -81,7 +81,7 @@ namespace pokemon
 	void GameSession::init_map(const SaveFile& saveFile)
 	{
 		m_active_map = rex::asset_db::instance()->load<rex::Map>(saveFile.current_map_filepath);
-		m_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
+		m_scene_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
 	}
 
 	void GameSession::init_player(const SaveFile& saveFile)
@@ -168,8 +168,6 @@ namespace pokemon
 
 		// draw the UI
 		//m_ui_pass = rex::gfx::renderer::instance()->add_render_pass(rsl::make_unique<UiPass>());
-
-		//m_block_render_pass = rsl::make_unique<rex::gfx::BlockRenderPass>(inputs);
 	}
 
 	void GameSession::draw()
@@ -179,16 +177,16 @@ namespace pokemon
 		top_left.y = rex::TileCount(m_player_character->pos().y);
 
 		rex::gfx::BlockRenderPassUpdateParams params{};
-		//params.screen_resolution = { 64, 128/* 724 / constants::g_tile_width_px / 2, 724 / constants::g_tile_height_px / 2*/ };
-		params.tiles_source = m_blockmap->tiles();
+		params.tiles_source = m_scene_blockmap->tiles();
 		params.top_left_start = top_left;
-		params.world_width_in_tiles = m_blockmap->width().get();
+		params.world_width_in_tiles = m_scene_blockmap->width().get();
 		m_block_render_pass->update_tilemap(params);
 
 		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 		m_block_render_pass->render(render_ctx.get());
 	}
 
+	// temporary function, this should be handled with collision detection in the future
 	void GameSession::clamp_player_pos()
 	{
 		TileCoord player_pos = m_player_character->pos();

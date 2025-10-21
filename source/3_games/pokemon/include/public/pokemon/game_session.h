@@ -48,8 +48,9 @@ namespace pokemon
 
   private:
     rex::Map* m_active_map;
-    rsl::unique_ptr<GameBlockMap> m_blockmap;
-    //TileCoord m_player_position; // player position in tiles
+
+    // The blockmap, representing the current map and surroundings
+    rsl::unique_ptr<GameBlockMap> m_scene_blockmap;
     rsl::unique_ptr<PlayerCharacter> m_player_character;
 
     rex::gfx::BlockRenderPass* m_block_render_pass;

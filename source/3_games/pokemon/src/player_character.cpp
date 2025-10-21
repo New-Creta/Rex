@@ -43,7 +43,7 @@ namespace pokemon
 		m_input_mappings->bind_action("left", [this](const rex::InputInfo& info) { move_left(info); });
 		m_input_mappings->bind_action("right", [this](const rex::InputInfo& info) { move_right(info); });
 	}
-	void PlayerCharacter::init_gfx_proxy()f
+	void PlayerCharacter::init_gfx_proxy()
 	{
 		m_animated_sprite = rex::gfx::gal::instance()->create_animated_sprite();
 		face_down();
