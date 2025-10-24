@@ -15,6 +15,9 @@
 
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/gfx/rendering/renderer.h"
+#include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+#include "rex_engine/gfx/rendering/debug_renderer.h"
+#include "rex_engine/gfx/rendering/ui_renderer.h"
 
 namespace rex
 {
@@ -97,6 +100,8 @@ namespace rex
 			// Performing all required gpu operations needed on resources those renderers need
 			// The resources are owned by the renderers, they're responsible for creating and destroying them
 			// However in the backend, the gpu manager controls when these resources actually get deallocated
+			scene_renderer::instance()->render();
+
 			for (auto& renderer : m_renderers)
 			{
 				renderer->render();
@@ -202,6 +207,15 @@ namespace rex
 		BackBufferRenderTarget* GALBase::backbuffer_rendertarget()
 		{
 			return m_backbuffer_render_target.get();
+		}
+
+		AnimatedSprite* GALBase::create_animated_sprite()
+		{
+			rsl::unique_ptr<AnimatedSprite> animated_sprite = rsl::make_unique<AnimatedSprite>();
+			AnimatedSprite* raw_animated_sprite = animated_sprite.get();
+			scene_renderer::instance()->add_animated_sprite(rsl::move(animated_sprite));
+
+			return raw_animated_sprite;
 		}
 
 		// Create a new context which is used for rendering to render targets

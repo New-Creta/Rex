@@ -37,6 +37,8 @@
 
 #include "rex_engine/gfx/imgui/imgui_renderer.h"
 
+#include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/allocators/tracked_allocator.h"
@@ -353,7 +355,8 @@ namespace rex
 #endif
 
         gfx::shader_lib::init(globals::make_unique<gfx::ShaderLibrary>());
-        gfx::renderer::init(globals::make_unique<gfx::Renderer>());
+        //gfx::renderer::init(globals::make_unique<gfx::Renderer>());
+        gfx::scene_renderer::init(globals::make_unique<gfx::SceneRenderer2D>());
 
         // Add the imgui renderer, which is our main UI renderer for the moment
         gfx::ImGuiRendererCreationInfo imgui_creation_info{};

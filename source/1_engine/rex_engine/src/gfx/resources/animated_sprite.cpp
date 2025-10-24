@@ -8,6 +8,11 @@ namespace rex
 	{
 		void AnimatedSprite::tick(f32 dt)
 		{
+			if (!m_active_animation)
+			{
+				return;
+			}
+
 			if (m_active_animation->has_finished_animation(m_current_sprite_idx, m_current_sprite_frame_counter))
 			{
 				m_current_sprite_idx = m_active_animation->next_sprite_idx(m_current_sprite_idx);

@@ -25,6 +25,7 @@
 namespace pokemon
 {
 	class MapMatrix;
+  class PokemonRenderer;
   struct MapRenderData;
 
   class GameSession
@@ -40,11 +41,13 @@ namespace pokemon
     void init_map(const SaveFile& saveFile);
     void init_player(const SaveFile& saveFile);
     void init_input();
-    void init_render_graph();
+    void init_renderer();
 
     void draw();
 
     void clamp_player_pos();
+
+    void on_map_change();
 
   private:
     rex::Map* m_active_map;
@@ -56,5 +59,6 @@ namespace pokemon
     rex::gfx::BlockRenderPass* m_block_render_pass;
     rex::gfx::AnimatedSpritesPass* m_animted_sprites_pass;
     
+    PokemonRenderer* m_renderer;
   };
 }

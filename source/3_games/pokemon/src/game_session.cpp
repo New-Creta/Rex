@@ -16,6 +16,7 @@
 
 #include "pokemon/poke_structs.h"
 #include "pokemon/render_constants.h"
+#include "pokemon/poke_renderer.h"
 
 #include "rex_std/bonus/math.h"
 #include "rex_std/bonus/math/point.h"
@@ -58,7 +59,7 @@ namespace pokemon
 		// In the future this render graph should be provided by the engine
 		// the game provides the engine information what kind of render graph is needed for the game
 		// the engine will then pick one of the prebuild render graphs
-		init_render_graph();
+		init_renderer();
 	}
 
 	void GameSession::update()
@@ -143,24 +144,24 @@ namespace pokemon
 			});
 	}
 
-	void GameSession::init_render_graph()
+	void GameSession::init_renderer()
 	{
 		// draw pass to render the static tiles that don't change
 		// this is essentially just the background
-		rex::gfx::BlockRenderPassDynamicInputs block_pass_inputs{};
-		block_pass_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-		block_pass_inputs.tileset = m_active_map->blockset()->tileset();
-		block_pass_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
+		//rex::gfx::BlockRenderPassDynamicInputs block_pass_inputs{};
+		//block_pass_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+		//block_pass_inputs.tileset = m_active_map->blockset()->tileset();
+		//block_pass_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
 
-		m_block_render_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::BlockRenderPass>(block_pass_inputs);
+		//m_block_render_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::BlockRenderPass>(block_pass_inputs);
 
 		// draw the animated tiles
 		// the player, NPCs, flowers, ...
 		// sprite movement in old games is found in movement.asm
-		rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
-		animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-		animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
-		m_animted_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
+		//rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
+		//animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+		//animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
+		//m_animted_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
 
 		// draw the water
 		// water is animated by bit shifting its pixels
@@ -176,14 +177,16 @@ namespace pokemon
 		top_left.x = rex::TileCount(m_player_character->pos().x);
 		top_left.y = rex::TileCount(m_player_character->pos().y);
 
-		rex::gfx::BlockRenderPassUpdateParams params{};
-		params.tiles_source = m_scene_blockmap->tiles();
-		params.top_left_start = top_left;
-		params.world_width_in_tiles = m_scene_blockmap->width().get();
-		m_block_render_pass->update_tilemap(params);
+		PokemonRendererParams params{};
+		params.blockpass_params.tiles_source = m_scene_blockmap->tiles();
+		params.blockpass_params.top_left_start = top_left;
+		params.blockpass_params.world_width_in_tiles = m_scene_blockmap->width().get();
 
-		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		m_block_render_pass->render(render_ctx.get());
+		m_renderer->update_params(params);
+
+		//m_block_render_pass->update_tilemap(params);
+		//auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
+		//m_block_render_pass->render(render_ctx.get());
 	}
 
 	// temporary function, this should be handled with collision detection in the future
@@ -203,5 +206,10 @@ namespace pokemon
 		player_pos.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.y), size.y.get() - max_player_pos.y));
 
 		m_player_character->set_pos(player_pos);
+	}
+
+	void GameSession::on_map_change()
+	{
+		rex::gfx::scene_renderer::instance()->notify_new_tileset();
 	}
 }

@@ -53,18 +53,7 @@ namespace rex
 			Renderer();
 			~Renderer();
 
-			void render();
-
-			template <typename Pass, typename ... Args>
-			Pass* add_render_pass(Args&& ... args)
-			{
-				m_passes.emplace_back(rsl::make_unique<Pass>(rsl::forward<Args>(args)...));
-
-				return m_passes.back().get();
-			}
-
-		private:
-			rsl::vector<rsl::unique_ptr<RenderPass>> m_passes;
+			virtual void render() = 0;
 		};
 
 		namespace renderer
