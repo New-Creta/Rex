@@ -177,8 +177,8 @@ namespace rex
 			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * inv_zoom_level.x);
 			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * inv_zoom_level.y);
 
-			f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
-			f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
+			f32 inv_tile_width = 2.0f / tile_size.x; // num_tiles_on_screen.x;
+			f32 inv_tile_height = 2.0f / tile_size.y; // num_tiles_on_screen.y;
 
 			s32 tileset_width = m_scene_params.tileset->tileset_texture()->width();
 			s32 tileset_height = m_scene_params.tileset->tileset_texture()->height();

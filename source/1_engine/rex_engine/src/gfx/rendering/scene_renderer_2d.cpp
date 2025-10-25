@@ -57,8 +57,8 @@ namespace rex
 			rsl::point<f32> inv_zoom_level{};
 			inv_zoom_level.x = 1.0f / m_zoom_level.x;
 			inv_zoom_level.y = 1.0f / m_zoom_level.y;
-			f32 viewport_width = static_cast<f32>(render_target_width) / inv_zoom_level.x;
-			f32 viewport_height = static_cast<f32>(render_target_height) / inv_zoom_level.y;
+			f32 viewport_width = static_cast<f32>(render_target_width) * m_zoom_level.x;
+			f32 viewport_height = static_cast<f32>(render_target_height) * m_zoom_level.y;
 			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
 			render_ctx->set_viewport(viewport);
 
