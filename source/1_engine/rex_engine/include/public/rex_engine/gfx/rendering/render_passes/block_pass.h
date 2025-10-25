@@ -25,14 +25,27 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct BlockRenderPassDynamicInputs
+		//struct BlockRenderPassDynamicInputs
+		//{
+		//	RenderTargetBase* render_target;
+		//	const TilesetAsset* tileset;
+		//	rsl::point<TileCount> screen_resolution;
+		//};
+
+		struct BlockRenderPassCreationInfo
 		{
 			RenderTargetBase* render_target;
+		};
+		struct BlockRenderPassSceneParams
+		{
 			const TilesetAsset* tileset;
-			rsl::point<TileCount> screen_resolution;
+		};
+		struct BlockRenderPassCameraParams
+		{
+			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
 		};
 
-		struct BlockRenderPassUpdateParams
+		struct BlockRenderPassTilemapParams
 		{
 			// pointer to the tile source data. This data represents all the tiles in the current world
 			const u8* tiles_source;
@@ -47,12 +60,15 @@ namespace rex
 		class BlockRenderPass : public RenderPass
 		{
 		public:
-			BlockRenderPass(const BlockRenderPassDynamicInputs& inputs);
+			BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo);
 
-			void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
+			void update_scene_params(const BlockRenderPassSceneParams& params);
+			void update_camera_params(const BlockRenderPassCameraParams& params);
+
+			//void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
 
 			// Update the tilemap's indices that we need to draw to the screen
-			void update_tilemap(const BlockRenderPassUpdateParams& params);
+			void update_tilemap(const BlockRenderPassTilemapParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -67,6 +83,8 @@ namespace rex
 			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
 			void init_tilemap();
 			void init_shader_params();
+
+			rsl::point<TileCount> calc_screen_resolution() const;
 
 		private:
 			// The vertex buffer for a single tile
@@ -90,8 +108,12 @@ namespace rex
 			rsl::unique_ptr<rex::Tilemap> m_tilemap;
 
 			rex::gfx::RenderTargetBase* m_render_target;
-			const rex::TilesetAsset* m_tileset;
-			rsl::point<TileCount> m_screen_resolution;
+
+			//const rex::TilesetAsset* m_tileset;
+			//rsl::point<TileCount> m_screen_resolution;
+
+			BlockRenderPassSceneParams m_scene_params;
+			BlockRenderPassCameraParams m_camera_params;
 		};
 	}
 }

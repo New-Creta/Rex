@@ -26,14 +26,14 @@ namespace rex
 		class SceneRenderer2D : public Renderer
 		{
 		public:
-			SceneRenderer2D(f32 zoomLevel = 1.0f);
+			SceneRenderer2D();
 
 			void render() override;
 
 			void add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite);
 
 			void update_params(const SceneRenderParams& params);
-			void update_zoom(f32 zoomLevel);
+			void update_zoom(rsl::point<f32> zoomLevel);
 			void notify_new_tileset(const TilesetAsset* tileset);
 
 		private:
@@ -50,7 +50,7 @@ namespace rex
 			rsl::unique_ptr<BlockRenderPass> m_block_render_pass;
 			rsl::unique_ptr<AnimatedSpritesPass> m_animted_sprites_pass;
 
-			f32 m_zoom_level;
+			rsl::point<f32> m_zoom_level;
 			SceneRenderParams m_params;
 		};
 

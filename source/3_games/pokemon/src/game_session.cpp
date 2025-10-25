@@ -85,6 +85,7 @@ namespace pokemon
 	{
 		m_active_map = rex::asset_db::instance()->load<rex::Map>(saveFile.current_map_filepath);
 		m_scene_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
+		on_map_change();
 	}
 
 	void GameSession::init_player(const SaveFile& saveFile)
@@ -220,7 +221,7 @@ namespace pokemon
 	void GameSession::on_map_change()
 	{
 		rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
-
+		rex::gfx::scene_renderer::instance()->update_zoom({4.5f, 5.0f});
 
 	}
 }

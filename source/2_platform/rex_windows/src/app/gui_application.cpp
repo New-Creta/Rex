@@ -142,6 +142,7 @@ namespace rex
 
         m_on_shutdown();
 
+        gfx::scene_renderer::shutdown();
         gfx::shader_lib::shutdown();
         gfx::gal::shutdown();
         win::com_lib::shutdown();
