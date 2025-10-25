@@ -24,31 +24,31 @@ namespace rex
 
 		void Renderer::render()
 		{
-			auto render_ctx = gal::instance()->new_render_ctx();
+			//auto render_ctx = gal::instance()->new_render_ctx();
 
-			for (rsl::unique_ptr<RenderPass>& pass : m_passes)
-			{
-				pass->pre_pass();
-				pass->run_pass(render_ctx.get());
-				pass->post_pass();
-			}
+			//for (rsl::unique_ptr<RenderPass>& pass : m_passes)
+			//{
+			//	pass->pre_pass();
+			//	pass->run_pass(render_ctx.get());
+			//	pass->post_pass();
+			//}
 		}
 
 		namespace renderer
 		{
-			globals::GlobalUniquePtr<Renderer> g_renderer;
-			void init(globals::GlobalUniquePtr<Renderer> renderer)
-			{
-				g_renderer = rsl::move(renderer);
-			}
-			Renderer* instance()
-			{
-				return g_renderer.get();
-			}
-			void shutdown()
-			{
-				g_renderer.reset();
-			}
+			//globals::GlobalUniquePtr<Renderer> g_renderer;
+			//void init(globals::GlobalUniquePtr<Renderer> renderer)
+			//{
+			//	g_renderer = rsl::move(renderer);
+			//}
+			//Renderer* instance()
+			//{
+			//	return g_renderer.get();
+			//}
+			//void shutdown()
+			//{
+			//	g_renderer.reset();
+			//}
 		}
 	}
 }

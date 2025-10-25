@@ -69,19 +69,6 @@ namespace rex
 			// Bind all the resources to the gfx pipeline
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
-			renderCtx->set_render_target(m_render_target);
-			renderCtx->clear_render_target(m_render_target);
-
-			s32 render_target_width = m_render_target->width();
-			s32 render_target_height = m_render_target->height();
-
-			f32 viewport_width = static_cast<f32>(render_target_width);
-			f32 viewport_height = static_cast<f32>(render_target_height);
-			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
-			renderCtx->set_viewport(viewport);
-
-			rex::gfx::ScissorRect rect = { 0, 0, viewport_width, viewport_height };
-			renderCtx->set_scissor_rect(rect);
 
 			// Send the draw command
 			const s32 index_count_per_instance = 6;
@@ -92,7 +79,7 @@ namespace rex
 		void BlockRenderPass::init()
 		{
 			REX_ASSERT_X(m_render_target != nullptr, "No render target provided for render pass");
-			REX_ASSERT_X(m_tileset != nullptr, "No tileset provided for render pass");
+			//REX_ASSERT_X(m_tileset != nullptr, "No tileset provided for render pass");
 
 			auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 
@@ -151,16 +138,22 @@ namespace rex
 		}
 		void BlockRenderPass::init_render_info(rex::gfx::RenderContext* renderCtx)
 		{
+			if (!m_tileset)
+			{
+				return;
+			}
+
+			rsl::pointi8 tile_size = m_tileset->tile_size();
+
 			// inverse tile width comes from diving from 2
 			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
-			f32 inv_tile_width = 2.0f / m_screen_resolution.x.get();
-			f32 inv_tile_height = 2.0f / m_screen_resolution.y.get();
+			f32 inv_tile_width = 2.0f * tile_size.x / m_screen_resolution.x.get();
+			f32 inv_tile_height = 2.0f * tile_size.y / m_screen_resolution.y.get();
 
 			s32 tileset_width = m_tileset->tileset_texture()->width();
 			s32 tileset_height = m_tileset->tileset_texture()->height();
 
 			rsl::vec2 uv_size{};
-			rsl::pointi8 tile_size = m_tileset->tile_size();
 			uv_size.x = tile_size.x / (f32)tileset_width;
 			uv_size.y = tile_size.y / (f32)tileset_height;
 
@@ -229,7 +222,10 @@ namespace rex
 		{
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
-			set("tile_texture", m_tileset->tileset_texture());
+			if (m_tileset)
+			{
+				set("tile_texture", m_tileset->tileset_texture());
+			}
 			set("default_sampler", default_sampler);
 			set("RenderingMetaData", m_tile_render_info.get());
 			set("TileIndexIntoTextureBuffer", m_tiles_indices_buffer.get());

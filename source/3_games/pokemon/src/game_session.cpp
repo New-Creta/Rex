@@ -26,6 +26,8 @@
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"
 
+#include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+
 #include "rex_engine/profiling/timer.h"
 
 #include "rex_engine/assets/map.h"
@@ -177,12 +179,19 @@ namespace pokemon
 		top_left.x = rex::TileCount(m_player_character->pos().x);
 		top_left.y = rex::TileCount(m_player_character->pos().y);
 
-		PokemonRendererParams params{};
-		params.blockpass_params.tiles_source = m_scene_blockmap->tiles();
-		params.blockpass_params.top_left_start = top_left;
-		params.blockpass_params.world_width_in_tiles = m_scene_blockmap->width().get();
+		rex::gfx::SceneRenderParams params{};
+		params.tiles_source = m_scene_blockmap->tiles();
+		params.top_left = top_left;
+		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
 
-		m_renderer->update_params(params);
+		rex::gfx::scene_renderer::instance()->update_params(params);
+
+		//PokemonRendererParams params{};
+		//params.blockpass_params.tiles_source = m_scene_blockmap->tiles();
+		//params.blockpass_params.top_left_start = top_left;
+		//params.blockpass_params.world_width_in_tiles = m_scene_blockmap->width().get();
+
+		//m_renderer->update_params(params);
 
 		//m_block_render_pass->update_tilemap(params);
 		//auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
@@ -210,6 +219,8 @@ namespace pokemon
 
 	void GameSession::on_map_change()
 	{
-		rex::gfx::scene_renderer::instance()->notify_new_tileset();
+		rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
+
+
 	}
 }

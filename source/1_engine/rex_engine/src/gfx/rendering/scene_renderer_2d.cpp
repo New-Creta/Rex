@@ -1,19 +1,25 @@
 #include "rex_engine/gfx/rendering/scene_renderer_2d.h"
 
-#include "rex_engine/gfx/rendering/"
-
 namespace rex
 {
 	namespace gfx
 	{
-		SceneRenderer2D::SceneRenderer2D()
+		SceneRenderer2D::SceneRenderer2D(f32 zoomLevel)
+			: m_zoom_level(zoomLevel)
 		{
+			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+
+			rsl::point<TileCount> screen_resolution{};
+			screen_resolution.x.get() = render_target->width() / zoomLevel;
+			screen_resolution.y.get() = render_target->height() / zoomLevel;
+
 			// draw pass to render the static tiles that don't change
 			// this is essentially just the background
 			rex::gfx::BlockRenderPassDynamicInputs block_pass_inputs{};
-			block_pass_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+			block_pass_inputs.render_target = render_target;
+			block_pass_inputs.screen_resolution = screen_resolution;
 			//block_pass_inputs.tileset = tileset;
-			block_pass_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
+			//block_pass_inputs.screen_resolutions = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
 
 			m_block_render_pass = rsl::make_unique<BlockRenderPass>(block_pass_inputs);
 
@@ -21,9 +27,9 @@ namespace rex
 			// the player, NPCs, flowers, ...
 			// sprite movement in old games is found in movement.asm
 			rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
-			animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-			animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
-			m_animted_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
+			animated_sprites_inputs.render_target = render_target;
+			//animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
+			m_animted_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
 
 			// draw the water
 			// water is animated by bit shifting its pixels
@@ -36,14 +42,43 @@ namespace rex
 
 		void SceneRenderer2D::render()
 		{
-			render_tilemap();
-			render_flipbook_animations();
-			render_dynamic_animations();
+			auto render_ctx = gal::instance()->new_render_ctx();
+
+			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+
+			render_ctx->set_render_target(render_target);
+			render_ctx->clear_render_target(render_target);
+
+			s32 render_target_width = render_target->width();
+			s32 render_target_height = render_target->height();
+
+			f32 inv_zoom_level = 1.0f / m_zoom_level;
+			f32 viewport_width = static_cast<f32>(render_target_width) / inv_zoom_level;
+			f32 viewport_height = static_cast<f32>(render_target_height) / inv_zoom_level;
+			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
+			render_ctx->set_viewport(viewport);
+
+			rex::gfx::ScissorRect rect = { 0, 0, viewport_width, viewport_height };
+			render_ctx->set_scissor_rect(rect);
+
+			render_tilemap(render_ctx.get());
+			render_flipbook_animations(render_ctx.get());
+			render_dynamic_animations(render_ctx.get());
 		}
 
 		void SceneRenderer2D::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite)
 		{
 			m_animated_sprites.emplace_back(rsl::move(animatedSprite));
+		}
+
+		void SceneRenderer2D::update_params(const SceneRenderParams& params)
+		{
+			m_params = params;
+		}
+
+		void SceneRenderer2D::update_zoom(f32 zoomLevel)
+		{
+			m_zoom_level = zoomLevel;
 		}
 
 		void SceneRenderer2D::notify_new_tileset(const TilesetAsset* tileset)
@@ -54,24 +89,23 @@ namespace rex
 			m_block_render_pass->update_dynamic_inputs(inputs);
 		}
 
-		void SceneRenderer2D::render_tilemap()
+		void SceneRenderer2D::render_tilemap(RenderContext* renderCtx)
 		{
 			BlockRenderPassUpdateParams params{};
-			params.tiles_source = m_scene_tilemap->tiles();
-			params.top_left_start = m_top_left;
-			params.world_width_in_tiles = m_scene_tilemap->width().get();
+			params.tiles_source = m_params.tiles_source;//  m_scene_tilemap->tiles();
+			params.top_left_start = m_params.top_left;// m_top_left;
+			params.world_width_in_tiles = m_params.world_width_in_tiles.get();// m_scene_tilemap->width().get();
 
 			m_block_render_pass->update_tilemap(params);
-			auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-			m_block_render_pass->render(render_ctx.get());
+			m_block_render_pass->render(renderCtx);
 		}
 
-		void SceneRenderer2D::render_flipbook_animations()
+		void SceneRenderer2D::render_flipbook_animations(RenderContext* renderCtx)
 		{
 
 		}
 
-		void SceneRenderer2D::render_dynamic_animations()
+		void SceneRenderer2D::render_dynamic_animations(RenderContext* renderCtx)
 		{
 
 		}
