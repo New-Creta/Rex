@@ -213,8 +213,8 @@ namespace pokemon
       for (s32 x = 0; x < width().get(); ++x)
       {
         // Get the tile coord of the tile we're currently processing
-        TileCoord coord{};
-        TileCoord block_coord{};
+        rex::TileCoord coord{};
+        rex::TileCoord block_coord{};
         coord.x += static_cast<s8>(x);
         coord.y += static_cast<s8>(y);
         block_coord.x = coord.x / 4;
@@ -226,7 +226,7 @@ namespace pokemon
         const rex::Block& block = map->blockset()->block(block_idx_idx);
 
         // Get the tile coordinate of the the first tile in the block (which is top left)
-        TileCoord block_top_left = coords::block_top_left_coord(coord);
+        rex::TileCoord block_top_left = coords::block_top_left_coord(coord);
 
         // Get the relative vector from this first tile to the current tile
         // Based on that, calculate which tile in the block we're currently processing

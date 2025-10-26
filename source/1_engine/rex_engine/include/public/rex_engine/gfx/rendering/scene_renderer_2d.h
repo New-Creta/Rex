@@ -4,6 +4,7 @@
 #include "rex_std/vector.h"
 
 #include "rex_engine/engine/globals.h"
+#include "rex_engine/math/coords.h"
 
 #include "rex_engine/gfx/rendering/renderer.h"
 
@@ -19,7 +20,8 @@ namespace rex
 		struct SceneRenderParams
 		{
 			const u8* tiles_source;
-			rsl::point<TileCount> top_left;
+			PixelCoord top_left;
+			WorldCoordConverter coord_converter;
 			TileCount world_width_in_tiles;
 		};
 

@@ -32,4 +32,15 @@ namespace rex
 	{
 		return BlockCount(m_desc.map_header.height_in_blocks);
 	}
+
+	WorldCoordConverter Map::create_world_coord_converter()
+	{
+		WorldCoordConverter converter{};
+		converter.num_pixels_per_tile = m_desc.blockset->tileset()->tile_size().x;
+		converter.num_tiles_per_square = 2;
+		converter.num_tiles_per_block = Block::num_tiles_per_row();
+
+		return converter;
+	}
+
 }

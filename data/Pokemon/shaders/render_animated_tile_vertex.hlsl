@@ -60,7 +60,7 @@ float4 calculate_vertex_position(VertexIn vin)
   int2 top_left_tile_pos = { -1, 1 };
 
   // Calculate the position of this cell, starting from top left
-  float2 pos = { -1, 1 }; // start from the top left
+  float2 pos = { 0, 0.05625 }; // start from the top left
   pos.x += vin.PosL.x * inv_sprite_screen_width; // scale down to position to its size relative to the render target
   pos.x += (top_left_tile_pos.x * inv_tile_screen_width); // offset the vertex based on the current instance we're rendering
   pos.y += vin.PosL.y * inv_sprite_screen_height;
@@ -140,7 +140,8 @@ VertexOut main(VertexIn vin)
   VertexOut vout;
   
   vout.PosH = calculate_vertex_position(vin);
-  vout.Uv = vin.Uv;// calculate_vertex_uv(vin);
+  vout.Uv.x = vin.Uv.x * inv_tile_texture_width; // calculate_vertex_uv(vin);
+  vout.Uv.y = vin.Uv.y * inv_tile_texture_height; // calculate_vertex_uv(vin);
 
   return vout;
 }

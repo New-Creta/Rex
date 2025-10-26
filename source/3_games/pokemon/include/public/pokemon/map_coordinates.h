@@ -4,19 +4,22 @@
 
 #include "rex_engine/engine/types.h"
 
+#include "rex_engine/math/coords.h"
+
 namespace pokemon
 {
-	struct BlockCoord : rsl::pointi8 {};  // strong type
-	struct SquareCoord : rsl::pointi8 {}; // strong type
-	struct TileCoord : rsl::pointi8 {};   // strong type
+	//struct BlockCoord : rsl::pointi8 {};  // strong type
+	//struct SquareCoord : rsl::pointi8 {}; // strong type
+	//struct TileCoord : rsl::pointi8 {};   // strong type
+	//struct PixelCoord : rsl::pointi8 {};   // strong type
 
 	namespace coords
 	{
-		TileCoord player_pos_to_screen_top_left(TileCoord coord);
+		rex::TileCoord player_pos_to_screen_top_left(rex::TileCoord coord);
 
-		TileCoord block_to_tile_coord(BlockCoord coord);
-		BlockCoord tile_to_block_coord(TileCoord coord);
-		TileCoord block_top_left_coord(TileCoord coord);
+		rex::TileCoord block_to_tile_coord(rex::BlockCoord coord);
+		rex::BlockCoord tile_to_block_coord(rex::TileCoord coord);
+		rex::TileCoord block_top_left_coord(rex::TileCoord coord);
 
 		s32 coord_to_index(rsl::pointi8 coord, s32 width);
 		rsl::pointi8 index_to_coord(s32 idx, s32 width);

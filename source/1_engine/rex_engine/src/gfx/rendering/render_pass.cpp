@@ -35,8 +35,8 @@ namespace rex
 			ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
 			ctx->set_blend_factor(m_blend_factor);
 
+			bind_my_params_to_pipeline(ctx);
 			m_framebuffer->bind_to(ctx);
-			bind_params_to_pipeline(m_parameters_store.get(), ctx);
 		}
 
 		void RenderPass::bind_material(RenderContext* ctx, Material* material)
@@ -113,6 +113,12 @@ namespace rex
 		const RenderTarget* RenderPass::render_target(s32 idx) const
 		{
 			return m_framebuffer->render_target(idx);
+		}
+
+		void RenderPass::bind_my_params_to_pipeline(RenderContext* ctx)
+		{
+			bind_params_to_pipeline(m_parameters_store.get(), ctx);
+
 		}
 
 		void RenderPass::bind_params_to_pipeline(ShaderParametersStore* paramsStore, RenderContext* ctx)

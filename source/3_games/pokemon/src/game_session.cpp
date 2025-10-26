@@ -90,8 +90,10 @@ namespace pokemon
 
 	void GameSession::init_player(const SaveFile& saveFile)
 	{
+		rex::WorldCoordConverter world_coord_converter = m_active_map->create_world_coord_converter();
+		
 		m_player_character = rsl::make_unique<PlayerCharacter>();
-		m_player_character->set_pos(saveFile.position);
+		m_player_character->set_pos(world_coord_converter.to_pixel_coord(saveFile.position));
 	}
 
 	void GameSession::init_input()
@@ -176,13 +178,14 @@ namespace pokemon
 
 	void GameSession::draw()
 	{
-		rsl::point<rex::TileCount> top_left{};
-		top_left.x = rex::TileCount(m_player_character->pos().x);
-		top_left.y = rex::TileCount(m_player_character->pos().y);
+		//rsl::point<rex::TileCount> top_left{};
+		//top_left.x = rex::TileCount(m_player_character->pos().x);
+		//top_left.y = rex::TileCount(m_player_character->pos().y);
 
 		rex::gfx::SceneRenderParams params{};
 		params.tiles_source = m_scene_blockmap->tiles();
-		params.top_left = top_left;
+		params.top_left = m_player_character->pos();
+		params.coord_converter = m_active_map->create_world_coord_converter();
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
@@ -202,20 +205,28 @@ namespace pokemon
 	// temporary function, this should be handled with collision detection in the future
 	void GameSession::clamp_player_pos()
 	{
-		TileCoord player_pos = m_player_character->pos();
+		rex::WorldCoordConverter map_coord_converter = m_active_map->create_world_coord_converter();
+
+		rex::PixelCoord player_pos = m_player_character->pos();
+		rex::TileCoord player_pos_in_tiles = map_coord_converter.to_tile_coord(player_pos);
 
 		rsl::pointi8 min_player_pos{}; //constants::player_render_position_top_left;
 		rsl::pointi8 max_player_pos{}; //constants::player_render_position_bottom_right;
-
-		player_pos.x = rsl::clamp_min(player_pos.x, min_player_pos.x);
-		player_pos.y = rsl::clamp_min(player_pos.y, min_player_pos.y);
-
 		rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
 
-		player_pos.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.x), size.x.get() - max_player_pos.x));
-		player_pos.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.y), size.y.get() - max_player_pos.y));
+		if (player_pos_in_tiles.x < 0 || player_pos_in_tiles.x > size.x.get() ||
+			player_pos_in_tiles.y < 0 || player_pos_in_tiles.y > size.y.get())
+		{
+			player_pos_in_tiles.x = rsl::clamp_min(player_pos_in_tiles.x, player_pos_in_tiles.x);
+			player_pos_in_tiles.y = rsl::clamp_min(player_pos_in_tiles.y, player_pos_in_tiles.y);
 
-		m_player_character->set_pos(player_pos);
+
+			player_pos_in_tiles.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos_in_tiles.x), size.x.get() - player_pos_in_tiles.x));
+			player_pos_in_tiles.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos_in_tiles.y), size.y.get() - player_pos_in_tiles.y));
+
+			m_player_character->set_pos(map_coord_converter.to_pixel_coord(player_pos_in_tiles));
+		}
+
 	}
 
 	void GameSession::on_map_change()

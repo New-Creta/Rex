@@ -5,6 +5,8 @@
 
 #include "rex_std/bonus/math/point.h"
 
+#include "rex_engine/math/coords.h"
+
 #include "pokemon/map_coordinates.h"
 
 namespace pokemon
@@ -16,6 +18,6 @@ namespace pokemon
 
   public:
     rsl::string current_map_filepath;
-    TileCoord position;
+    rex::TileCoord position;
   };
 }

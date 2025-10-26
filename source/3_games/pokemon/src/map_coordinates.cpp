@@ -6,36 +6,36 @@ namespace pokemon
 {
 	namespace coords
 	{
-		TileCoord player_pos_to_screen_top_left(TileCoord coord)
+		rex::TileCoord player_pos_to_screen_top_left(rex::TileCoord coord)
 		{
 			// The player is always in tile coord {8, 8};
 
-			TileCoord screen_top_left = coord;
+			rex::TileCoord screen_top_left = coord;
 			screen_top_left.x -= constants::player_render_position_top_left.x;
 			screen_top_left.y -= constants::player_render_position_top_left.y;
 
 			return screen_top_left;
 		}
 
-		TileCoord block_to_tile_coord(BlockCoord coord)
+		rex::TileCoord block_to_tile_coord(rex::BlockCoord coord)
 		{
-			TileCoord tile_coord{};
+			rex::TileCoord tile_coord{};
 			tile_coord.x = coord.x * constants::g_num_tiles_per_block_row;
 			tile_coord.y = coord.y * constants::g_num_tiles_per_block_column;
 
 			return tile_coord;
 		}
-		BlockCoord tile_to_block_coord(TileCoord coord)
+		rex::BlockCoord tile_to_block_coord(rex::TileCoord coord)
 		{
-			BlockCoord block_coord{};
+			rex::BlockCoord block_coord{};
 			block_coord.x = coord.x / constants::g_num_tiles_per_block_row;
 			block_coord.y = coord.y / constants::g_num_tiles_per_block_column;
 
 			return block_coord;
 		}
-		TileCoord block_top_left_coord(TileCoord coord)
+		rex::TileCoord block_top_left_coord(rex::TileCoord coord)
 		{
-			BlockCoord block_coord = tile_to_block_coord(coord);
+			rex::BlockCoord block_coord = tile_to_block_coord(coord);
 			return block_to_tile_coord(block_coord);
 		}
 

@@ -91,6 +91,8 @@ namespace rex
 		protected:
 			const RenderTarget* render_target(s32 idx) const;
 
+			void bind_my_params_to_pipeline(RenderContext* ctx);
+
 		private:
 			// Bind parameters of a store to the render pipeline
 			void bind_params_to_pipeline(ShaderParametersStore* paramStore, RenderContext* ctx);

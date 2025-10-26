@@ -112,6 +112,7 @@ namespace rex
 			BlockRenderPassTilemapParams params{};
 			params.tiles_source = m_params.tiles_source;//  m_scene_tilemap->tiles();
 			params.top_left_start = m_params.top_left;// m_top_left;
+			params.coord_converter = m_params.coord_converter;
 			params.world_width_in_tiles = m_params.world_width_in_tiles.get();// m_scene_tilemap->width().get();
 
 			m_block_render_pass->update_tilemap(params);

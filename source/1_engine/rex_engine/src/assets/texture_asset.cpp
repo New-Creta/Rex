@@ -11,6 +11,11 @@ namespace rex
 	{
 		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, gfx::TextureFormat::Unorm4, data.get());
 	}
+	TextureAsset::TextureAsset(rsl::Rgba* data, s32 width, s32 height, s32 numChannels)
+	{
+		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, gfx::TextureFormat::Unorm4, data);
+	}
+
 	TextureAsset::~TextureAsset() = default;
 
 	const gfx::Texture2D* TextureAsset::texture_resource() const

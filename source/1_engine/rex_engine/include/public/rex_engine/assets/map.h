@@ -12,6 +12,8 @@
 
 #include "rex_engine/serialization/asset_loader.h"
 
+#include "rex_engine/math/coords.h"
+
 #include "rex_engine/engine/types.h"
 #include "rex_std/string.h"
 #include "rex_std/memory.h"
@@ -86,6 +88,8 @@ namespace rex
 
 		BlockCount width() const;
 		BlockCount height() const;
+
+		WorldCoordConverter create_world_coord_converter();
 
 	private:
 		MapDesc m_desc;

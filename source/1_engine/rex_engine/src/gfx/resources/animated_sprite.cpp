@@ -8,6 +8,7 @@ namespace rex
 	{
 		AnimatedSprite::AnimatedSprite(Flipbook* animations)
 			: m_animations(animations)
+			, m_current_sprite_idx(0)
 		{}
 
 		void AnimatedSprite::tick(f32 dt)

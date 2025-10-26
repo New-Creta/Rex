@@ -14,6 +14,7 @@ namespace rex
 			, m_render_target(creationInfo.render_target)
 			, m_scene_params()
 			, m_camera_params()
+			, m_render_metadata()
 		{
 			// The following member variables are allowed to be null by the endo of construction
 			// tileset: The tileset is set at runtime as it depends on which map is currently loaded
@@ -74,11 +75,19 @@ namespace rex
 				return;
 			}
 
+			TileCoord tile_coords = params.coord_converter.to_tile_coord(params.top_left_start);
+
+			m_render_metadata.screen_pixel_offset_x = -params.top_left_start.x % params.coord_converter.num_pixels_per_tile;
+			m_render_metadata.screen_pixel_offset_y = params.top_left_start.y % params.coord_converter.num_pixels_per_tile;
+
+			auto render_ctx = gal::instance()->new_render_ctx();
+			render_ctx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
+
 			rsl::point<TileCount> screen_resolution = calc_screen_resolution();
-			s32 num_tiles_until_end_of_row = params.world_width_in_tiles - params.top_left_start.x.get();
+			s32 num_tiles_until_end_of_row = params.world_width_in_tiles - tile_coords.x;
 			s32 num_to_copy = rsl::min(screen_resolution.x.get(), num_tiles_until_end_of_row);
 
-			s32 start_idx = params.top_left_start.y.get() * params.world_width_in_tiles + params.top_left_start.x.get();
+			s32 start_idx = tile_coords.y * params.world_width_in_tiles + tile_coords.x;
 			const u8* src = params.tiles_source + start_idx;
 			s32 offset = 0;
 			for (s32 row = 0; row < screen_resolution.y.get(); ++row)
@@ -202,27 +211,18 @@ namespace rex
 			uv_size.y = tile_size.y / (f32)tileset_height;
 
 			// Init the constant buffer
-			struct TilemapRenderingMetaData
-			{
-				// Tile texture data
-				u32 texture_tiles_per_row;   // the number of tiles per row in the tileset texture
-				f32 inv_texture_width;       // the inverse width of the tileset texture, in pixels
-				f32 inv_texture_height;      // the inverse height of the tileset texture, in pixels
 
-				// Render target data
-				u32 screen_width_in_tiles;   // the number of tiles we render on a single row
-				f32 inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
-				f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
-			};
+			m_render_metadata.texture_tiles_per_row = m_scene_params.tileset->num_tiles_per_row();
+			m_render_metadata.inv_texture_width = uv_size.x;
+			m_render_metadata.inv_texture_height = uv_size.y;
 
-			TilemapRenderingMetaData render_metadata{};
-			render_metadata.texture_tiles_per_row = m_scene_params.tileset->num_tiles_per_row();
-			render_metadata.inv_texture_width = uv_size.x;
-			render_metadata.inv_texture_height = uv_size.y;
+			m_render_metadata.screen_width_in_tiles = m_tilemap->width().get();
+			m_render_metadata.inv_tile_screen_width = inv_tile_width;
+			m_render_metadata.inv_tile_screen_height = inv_tile_height;
 
-			render_metadata.screen_width_in_tiles = m_tilemap->width().get();
-			render_metadata.inv_tile_screen_width = inv_tile_width;
-			render_metadata.inv_tile_screen_height = inv_tile_height;
+			m_render_metadata.screen_pixel_offset_x = 0;
+			m_render_metadata.screen_pixel_offset_y = 0;
+			m_render_metadata.inv_pixel_screen_width = 1.0f / (2.0f * tile_size.x * m_camera_params.zoom_level.x);
 
 			if (m_tile_render_info == nullptr)
 			{
@@ -230,7 +230,7 @@ namespace rex
 				set("RenderingMetaData", m_tile_render_info.get());
 			}
 
-			renderCtx->update_buffer(m_tile_render_info.get(), &render_metadata, sizeof(render_metadata));
+			renderCtx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
 		}
 		void BlockRenderPass::init_tile_indices_uab(rex::gfx::RenderContext* renderCtx)
 		{

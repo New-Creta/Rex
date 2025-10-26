@@ -39,5 +39,9 @@
 #define REX_EXECUTE_ONCE(expression) static auto RSL_MERGE(execute_once_var_,__LINE__) = [&]() {expression; return 1;}();
 
 //-------------------------------------------------------------------------
+// Strong types
+#define REX_STRONG_TYPE(name, underlying) struct name : public underlying {};
+
+//-------------------------------------------------------------------------
 // TODO
 #define REX_STATIC_TODO RSL_STATIC_TODO

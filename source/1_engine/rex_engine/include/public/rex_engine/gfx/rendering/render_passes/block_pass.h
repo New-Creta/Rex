@@ -4,6 +4,7 @@
 #include "rex_engine/assets/tileset_asset.h"
 
 #include "rex_engine/engine/types.h"
+#include "rex_engine/math/coords.h"
 
 #include "rex_engine/gfx/resources/render_target.h"
 #include "rex_engine/gfx/resources/vertex_buffer.h"
@@ -51,10 +52,29 @@ namespace rex
 			const u8* tiles_source;
 
 			// the position (in tiles) from the world tiles from where we should start drawing
-			rsl::point<TileCount> top_left_start;
+			PixelCoord top_left_start;
+
+			WorldCoordConverter coord_converter;
 
 			// the width of the world, in tiles
 			s32 world_width_in_tiles;
+		};
+
+		struct TilemapRenderingMetaData
+		{
+			// Tile texture data
+			u32 texture_tiles_per_row;   // the number of tiles per row in the tileset texture
+			f32 inv_texture_width;       // the inverse width of the tileset texture, in pixels
+			f32 inv_texture_height;      // the inverse height of the tileset texture, in pixels
+
+			// Render target data
+			u32 screen_width_in_tiles;   // the number of tiles we render on a single row
+			f32 inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
+			f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
+
+			int screen_pixel_offset_x;
+			int screen_pixel_offset_y;
+			float inv_pixel_screen_width;
 		};
 
 		class BlockRenderPass : public RenderPass
@@ -114,6 +134,8 @@ namespace rex
 
 			SceneParams m_scene_params;
 			CameraParams m_camera_params;
+			TilemapRenderingMetaData m_render_metadata;
+
 		};
 	}
 }

@@ -21,8 +21,8 @@ namespace pokemon
 		void tick(f32 dt);
 		void handle_input(const rex::InputInfo& inputInfo);
 
-		TileCoord pos() const;
-		void set_pos(TileCoord pos);
+		rex::PixelCoord pos() const;
+		void set_pos(rex::PixelCoord pos);
 
 	private:
 		//void init_animations();
@@ -48,7 +48,7 @@ namespace pokemon
 		void continue_movement();
 
 	private:
-		TileCoord m_pos;
+		rex::PixelCoord m_pos;
 		rex::InputMapping* m_input_mappings;
 		//rex::Flipbook* m_animations;
 		rex::Direction m_facing_direction;

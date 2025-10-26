@@ -118,22 +118,22 @@ namespace pokemon
 
 	void PlayerCharacter::walk_up()
 	{
-		m_walking_counter = 4;
+		m_walking_counter = 8;
 		m_animated_sprite->set_animation("up_walk");
 	}
 	void PlayerCharacter::walk_down()
 	{
-		m_walking_counter = 4;
+		m_walking_counter = 8;
 		m_animated_sprite->set_animation("down_walk");
 	}
 	void PlayerCharacter::walk_left()
 	{
-		m_walking_counter = 4;
+		m_walking_counter = 8;
 		m_animated_sprite->set_animation("left_walk");
 	}
 	void PlayerCharacter::walk_right()
 	{
-		m_walking_counter = 4;
+		m_walking_counter = 8;
 		m_animated_sprite->set_animation("right_walk");
 	}
 
@@ -141,20 +141,20 @@ namespace pokemon
 	{
 		switch (m_facing_direction)
 		{
-		case rex::Direction::North: m_pos.y -= 1;	break;
-		case rex::Direction::East:  m_pos.x += 1;	break;
-		case rex::Direction::South: m_pos.y += 1;	break;
-		case rex::Direction::West:  m_pos.x -= 1; break;
+		case rex::Direction::North: m_pos.y -= 2;	break;
+		case rex::Direction::East:  m_pos.x += 2;	break;
+		case rex::Direction::South: m_pos.y += 2;	break;
+		case rex::Direction::West:  m_pos.x -= 2; break;
 		}
 
 		m_walking_counter--;
 	}
 
-	TileCoord PlayerCharacter::pos() const
+	rex::PixelCoord PlayerCharacter::pos() const
 	{
 		return m_pos;
 	}
-	void PlayerCharacter::set_pos(TileCoord pos)
+	void PlayerCharacter::set_pos(rex::PixelCoord pos)
 	{
 		m_pos = pos;
 	}

@@ -106,13 +106,21 @@ namespace rex
 				bool flip_y;
 			};
 
+			// sprites should be draw 0.5f tiles up from where they're positioned
+			// character movements works per pixel
+			// 4 pixels are moved per frame for the player
+			// starting with the current active animation
+			// this mean the camera needs to move in pixels, not tiles
+
+
+
 			s32 index_count = m_tiles_ib_gpu->count();
 			for (const rsl::unique_ptr<AnimatedSprite>& sprite : m_sprites)
 			{
 				SceneRenderInfo scene_render_info{};
 
-				scene_render_info.inv_sprite_texture_width = 1.0f / sprite->sprites_texture()->width();
-				scene_render_info.inv_sprite_texture_height = 1.0f / sprite->sprites_texture()->height();
+				scene_render_info.inv_sprite_texture_width = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
+				scene_render_info.inv_sprite_texture_height = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
 				rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
@@ -144,6 +152,7 @@ namespace rex
 				renderCtx->update_buffer(m_tile_render_info.get(), &scene_render_info, sizeof(scene_render_info));
 
 				set("sprite_texture", sprite->sprites_texture());
+				bind_my_params_to_pipeline(renderCtx);
 
 				renderCtx->draw_indexed(index_count, 0, 0, 0);
 
