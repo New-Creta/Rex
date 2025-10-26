@@ -56,5 +56,6 @@ namespace pokemon
 		rex::gfx::AnimatedSprite* m_animated_sprite;
 
 		s32 m_walking_counter;
+		bool m_was_moving;
 	};
 }

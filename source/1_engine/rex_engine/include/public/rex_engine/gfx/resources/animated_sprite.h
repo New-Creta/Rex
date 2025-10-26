@@ -21,10 +21,13 @@ namespace rex
 			const Texture2D* sprites_texture() const;
 			rsl::pointi8 sprite_size() const;
 
+			rsl::point<f32> current_sprite_uv() const;
+			const FlipbookSprite& current_sprite() const;
+
 		private:
 			Flipbook* m_animations;
 			const rex::FlipbookAnimation* m_active_animation;
-			s32 m_current_sprite_idx;
+			s32 m_current_anim_sprite_idx;
 			s32 m_current_sprite_frame_counter;
 		};
 	}

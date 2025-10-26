@@ -68,7 +68,7 @@ namespace pokemon
 	{
 		f32 dt = 0.1f;
 		m_player_character->tick(dt);
-		clamp_player_pos();
+		//clamp_player_pos();
 
 		draw();
 	}
@@ -178,13 +178,16 @@ namespace pokemon
 
 	void GameSession::draw()
 	{
+		rex::PixelCoord top_left = m_player_character->pos();
+		top_left.x -= 64; // 8 tiles
+		top_left.y -= 64; // 8 tiles
 		//rsl::point<rex::TileCount> top_left{};
 		//top_left.x = rex::TileCount(m_player_character->pos().x);
 		//top_left.y = rex::TileCount(m_player_character->pos().y);
 
 		rex::gfx::SceneRenderParams params{};
 		params.tiles_source = m_scene_blockmap->tiles();
-		params.top_left = m_player_character->pos();
+		params.top_left = top_left;
 		params.coord_converter = m_active_map->create_world_coord_converter();
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
 

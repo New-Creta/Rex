@@ -19,8 +19,14 @@ namespace pokemon
 
 	void PlayerCharacter::tick(f32 dt)
 	{
+		if (m_was_moving)
+		{
+			m_was_moving = false;
+		}
+
 		if (m_walking_counter > 0)
 		{
+			m_was_moving = true;
 			m_animated_sprite->tick(dt);
 			continue_movement();
 		}
@@ -52,6 +58,11 @@ namespace pokemon
 
 	void PlayerCharacter::move_up(const rex::InputInfo& info)
 	{
+		if (m_was_moving && m_facing_direction != rex::Direction::North)
+		{
+			return;
+		}
+
 		if (m_facing_direction != rex::Direction::North)
 		{
 			face_up();
@@ -64,6 +75,11 @@ namespace pokemon
 	}
 	void PlayerCharacter::move_down(const rex::InputInfo& info)
 	{
+		if (m_was_moving && m_facing_direction != rex::Direction::South)
+		{
+			return;
+		}
+
 		if (m_facing_direction != rex::Direction::South)
 		{
 			face_down();
@@ -76,6 +92,11 @@ namespace pokemon
 	}
 	void PlayerCharacter::move_left(const rex::InputInfo& info)
 	{
+		if (m_was_moving && m_facing_direction != rex::Direction::West)
+		{
+			return;
+		}
+
 		if (m_facing_direction != rex::Direction::West)
 		{
 			face_left();
@@ -88,6 +109,11 @@ namespace pokemon
 	}
 	void PlayerCharacter::move_right(const rex::InputInfo& info)
 	{
+		if (m_was_moving && m_facing_direction != rex::Direction::East)
+		{
+			return;
+		}
+
 		if (m_facing_direction != rex::Direction::East)
 		{
 			face_right();
@@ -119,22 +145,34 @@ namespace pokemon
 	void PlayerCharacter::walk_up()
 	{
 		m_walking_counter = 8;
-		m_animated_sprite->set_animation("up_walk");
+		if (!m_was_moving/* && m_facing_direction != rex::Direction::North*/)
+		{
+			m_animated_sprite->set_animation("up_walk");
+		}
 	}
 	void PlayerCharacter::walk_down()
 	{
 		m_walking_counter = 8;
-		m_animated_sprite->set_animation("down_walk");
+		if (!m_was_moving/* && m_facing_direction != rex::Direction::South*/)
+		{
+			m_animated_sprite->set_animation("down_walk");
+		}
 	}
 	void PlayerCharacter::walk_left()
 	{
 		m_walking_counter = 8;
-		m_animated_sprite->set_animation("left_walk");
+		if (!m_was_moving/* && m_facing_direction != rex::Direction::West*/)
+		{
+			m_animated_sprite->set_animation("left_walk");
+		}
 	}
 	void PlayerCharacter::walk_right()
 	{
 		m_walking_counter = 8;
-		m_animated_sprite->set_animation("right_walk");
+		if (!m_was_moving/* && m_facing_direction != rex::Direction::East*/)
+		{
+			m_animated_sprite->set_animation("right_walk");
+		}
 	}
 
 	void PlayerCharacter::continue_movement()

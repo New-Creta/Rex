@@ -20,6 +20,12 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
   // Tile texture data
   float inv_tile_texture_width; // the inverse of the width of a single tile in the texture
   float inv_tile_texture_height; // the inverse of the height of a single tile in the texture
+
+  float uv_start_x;
+  float uv_start_y;
+  
+  bool flip_x;
+  bool flip_y;
 };
 
 // Vertices expected for this shader are meant to spawn the entire screen
@@ -54,18 +60,14 @@ float4 calculate_vertex_position(VertexIn vin)
 {
   VertexOut vout;
 
-  // Calculate where on the screen the tile needs to go
-  // The result holds 2D coordinate as indices
-  // eg (x: 1, y: 3) -> tile on the 4th row, at 2nd column
-  int2 top_left_tile_pos = { -1, 1 };
-
   // Calculate the position of this cell, starting from top left
-  float2 pos = { 0, 0.05625 }; // start from the top left
+  float2 pos = { -1.0f, 1.0f }; // start from the top left
   pos.x += vin.PosL.x * inv_sprite_screen_width; // scale down to position to its size relative to the render target
-  pos.x += (top_left_tile_pos.x * inv_tile_screen_width); // offset the vertex based on the current instance we're rendering
+  pos.x += (8 * inv_tile_screen_width); // offset the vertex based on the current instance we're rendering
   pos.y += vin.PosL.y * inv_sprite_screen_height;
-  pos.y -= (top_left_tile_pos.y * inv_tile_screen_height);
-
+  pos.y -= (8 * inv_tile_screen_height);
+  pos.y += 4 * (inv_tile_screen_height / 8);
+  
   // If we ever want to render the tilemap at an offset from the top left, this is how that'd be done
   // pos.x += screen_start_offset.x;
   // pos.x += screen_start_offset.y;
@@ -74,74 +76,34 @@ float4 calculate_vertex_position(VertexIn vin)
   return float4(pos, 0.0, 1.0f);
 }
 
-//float2 calculate_vertex_uv(VertexIn vin)
-//{
-//  // For example:
-//  // Let's say you have the following TileIndexIntoTextureBuffer
-//  // +-------+-------+-------+-------+-------+-------+-------+-------+
-//  // |   10  |   10  |  11   |   11  |   5   |   5   |   5   |   5   |
-//  // +-------+-------+-------+-------+-------+-------+-------+-------+
-//  // and you're currently processing a tile instance of idx 1
-//  // That'd mean you're expecting a final result of tile idx == 10
-//  // As you're processing a tile which is the 10th tile in the texture
-
-//  // The offset value from which we load needs to be 4 byte aligned.
-//  // see: https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-resources#byte-address-buffer
-//  // That's why we load 4 bytes from the lower aligned value based on the instance ID
-//  // Then we shift it so we get correct byte out and that's what we use as index
-//  uint tile_idx_offset = vin.instanceId & ~3; // mask away the lower bits, so we're always aligning down to a multiple of 4
-//  uint result = TileIndexIntoTextureBuffer.Load(tile_idx_offset); // This always loads 4 bytes, not 1 byte
+float2 calculate_vertex_uv(VertexIn vin)
+{
+  // Add the offset to the original uv offset
   
-//  // Using the above example, we'd expect to have the following
-//  // tile_idx_offset == 0 (as 1 & ~3 == 0)
-//  // result == { 10, 10, 11, 11 } == 0x0A0A0B0B <-- array of 4 bytes, 1 index per byte
-
-//  uint byte_offset = vin.instanceId & 3; // limit to the value { 0, 1, 2, 3 }
-//  uint bit_offset = byte_offset * 8;
-
-//  // Using the above example, we'd expect to have the following
-//  // byte_offset == 1 (as 1 & 3 == 1)
-//  // bit_offset == 1 * 8 == 8
-
-//  // Now shift the byte we care about to the front and mask it off
-//  uint tile_idx = result >> bit_offset;
-//  tile_idx &= 0x000000FF;
-
-//  // Using the above example, we'd expect the following
-//  // tile_idx == 0x0A0B0B (after shift)
-//  // tile_idx == 0x0A == 10 (after mask)
+  if (flip_x)
+  {
+    vin.Uv.x = 1.0f - vin.Uv.x;
+  }
+  if (flip_y)
+  {
+    vin.Uv.y = 1.0f - vin.Uv.y;
+  }
   
-//  // We know that the tile instance we're currently processing maps to the 10th tile in the texture
-//  // which is exactly what we're expecting
-//  // We now have to move our UV coordinate to the correct location so that also maps to the UV location of the 10th tile
-
-//  // Calculate the 2D coordinate of the tile in the texture
-//  // The result holds 2D coordinate as indices
-//  // eg (x: 1, y: 3) -> tile on the 4th row, at 2nd column
-//  uint2 tex_tile_coord_idx = index_to_coord(tile_idx, texture_tiles_per_row);
+  float2 uv = { 0.0, 0.0 };
+  uv.x += vin.Uv.x * inv_tile_texture_width;
+  uv.x += uv_start_x;
+  uv.y += vin.Uv.y * inv_tile_texture_height;
+  uv.y += uv_start_y;
   
-//  // Calculate the the top left uv coordinate of the tile we want
-//  float2 tile_uv_start;
-//  tile_uv_start.x = tex_tile_coord_idx.x * inv_tile_texture_width;
-//  tile_uv_start.y = tex_tile_coord_idx.y * inv_tile_texture_height;
-
-//  // Add the offset to the original uv offset
-//  float2 uv = { 0.0, 0.0 };
-//  uv.x += vin.Uv.x * inv_tile_texture_width;
-//  uv.x += tile_uv_start.x;
-//  uv.y += vin.Uv.y * inv_tile_texture_height;
-//  uv.y += tile_uv_start.y;
-  
-//  return uv;
-//}
+  return uv;
+}
 
 VertexOut main(VertexIn vin)
 {
   VertexOut vout;
   
   vout.PosH = calculate_vertex_position(vin);
-  vout.Uv.x = vin.Uv.x * inv_tile_texture_width; // calculate_vertex_uv(vin);
-  vout.Uv.y = vin.Uv.y * inv_tile_texture_height; // calculate_vertex_uv(vin);
+  vout.Uv = calculate_vertex_uv(vin);
 
   return vout;
 }

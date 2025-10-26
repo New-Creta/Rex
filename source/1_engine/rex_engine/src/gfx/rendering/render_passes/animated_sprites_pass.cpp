@@ -34,6 +34,12 @@ namespace rex
 
 			f32 inv_sprite_texture_width;
 			f32 inv_sprite_texture_height;
+
+			f32 uv_start_x;
+			f32 uv_start_y;
+
+			bool flip_x;
+			bool flip_y;
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -148,6 +154,13 @@ namespace rex
 
 				scene_render_info.inv_tile_screen_width = inv_tile_width;
 				scene_render_info.inv_tile_screen_height = inv_tile_height;
+
+				rsl::point<f32> uv_start = sprite->current_sprite_uv();
+				scene_render_info.uv_start_x = uv_start.x;
+				scene_render_info.uv_start_y = uv_start.y;
+
+				scene_render_info.flip_x = sprite->current_sprite().flip_x;
+				scene_render_info.flip_y = sprite->current_sprite().flip_y;
 
 				renderCtx->update_buffer(m_tile_render_info.get(), &scene_render_info, sizeof(scene_render_info));
 
