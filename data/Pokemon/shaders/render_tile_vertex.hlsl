@@ -23,6 +23,7 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
   int screen_pixel_offset_x;
   int screen_pixel_offset_y;
   float inv_pixel_screen_width;
+  float inv_pixel_screen_height;
 };
 
 // Vertices expected for this shader are meant to spawn the entire screen
@@ -72,7 +73,7 @@ float4 calculate_vertex_position(VertexIn vin)
   pos.y -= (screen_tile_coord_idx.y * inv_tile_screen_height);
 
   pos.x += screen_pixel_offset_x * inv_pixel_screen_width;
-  pos.y += screen_pixel_offset_y * inv_pixel_screen_width;
+  pos.y += screen_pixel_offset_y * inv_pixel_screen_height;
   
   // If we ever want to render the tilemap at an offset from the top left, this is how that'd be done
   // pos.x += screen_start_offset.x;

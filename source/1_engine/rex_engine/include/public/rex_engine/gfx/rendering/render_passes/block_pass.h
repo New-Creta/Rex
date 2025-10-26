@@ -75,6 +75,7 @@ namespace rex
 			int screen_pixel_offset_x;
 			int screen_pixel_offset_y;
 			float inv_pixel_screen_width;
+			float inv_pixel_screen_height;
 		};
 
 		class BlockRenderPass : public RenderPass

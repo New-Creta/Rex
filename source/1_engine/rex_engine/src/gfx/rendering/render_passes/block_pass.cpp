@@ -222,7 +222,9 @@ namespace rex
 
 			m_render_metadata.screen_pixel_offset_x = 0;
 			m_render_metadata.screen_pixel_offset_y = 0;
-			m_render_metadata.inv_pixel_screen_width = 1.0f / (2.0f * tile_size.x * m_camera_params.zoom_level.x);
+			//m_render_metadata.inv_pixel_screen_width = 1.0f / (2.0f * tile_size.x * m_camera_params.zoom_level.x); // how big 
+			m_render_metadata.inv_pixel_screen_width = m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
+			m_render_metadata.inv_pixel_screen_height = m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
 			if (m_tile_render_info == nullptr)
 			{
@@ -287,6 +289,12 @@ namespace rex
 			rsl::point<TileCount> screen_resolution{};
 			screen_resolution.x.get() = m_render_target->width() / (m_scene_params.tileset->tile_size().x * m_camera_params.zoom_level.x);
 			screen_resolution.y.get() = m_render_target->height() / (m_scene_params.tileset->tile_size().y * m_camera_params.zoom_level.y);
+
+			// Draw 1 extra tile on each axis to allow for panning
+			// This is so there won't be a black border drawn
+			// when the camera is moving
+			screen_resolution.x.get() += 1;
+			screen_resolution.y.get() += 1;
 
 			return screen_resolution;
 		}
