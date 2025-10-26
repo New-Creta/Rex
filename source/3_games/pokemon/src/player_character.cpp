@@ -30,6 +30,10 @@ namespace pokemon
 			m_animated_sprite->tick(dt);
 			continue_movement();
 		}
+		else
+		{
+			finish_movement();
+		}
 	}
 	void PlayerCharacter::handle_input(const rex::InputInfo& inputInfo)
 	{
@@ -186,6 +190,16 @@ namespace pokemon
 		}
 
 		m_walking_counter--;
+	}
+	void PlayerCharacter::finish_movement()
+	{
+		switch (m_facing_direction)
+		{
+		case rex::Direction::North: face_up();	break;
+		case rex::Direction::East:  face_right();	break;
+		case rex::Direction::South: face_down();	break;
+		case rex::Direction::West:  face_left(); break;
+		}
 	}
 
 	rex::PixelCoord PlayerCharacter::pos() const

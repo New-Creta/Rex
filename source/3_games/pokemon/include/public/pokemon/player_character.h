@@ -46,6 +46,7 @@ namespace pokemon
 		void walk_right();
 
 		void continue_movement();
+		void finish_movement();
 
 	private:
 		rex::PixelCoord m_pos;
