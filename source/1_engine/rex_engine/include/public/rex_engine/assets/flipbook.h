@@ -40,6 +40,9 @@ namespace rex
 
 		const FlipbookAnimation* find_animation(rsl::string_view animationName) const;
 
+		const TextureAsset* sprites_texture() const;
+		rsl::pointi8 sprite_size() const;
+
 	private:
 		TextureAsset* m_texture; // the spriteset texture to use for the animations
 		rsl::pointi8 m_sprite_size; // the size of a single tile in the texture	

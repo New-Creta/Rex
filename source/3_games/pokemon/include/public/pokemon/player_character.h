@@ -25,7 +25,7 @@ namespace pokemon
 		void set_pos(TileCoord pos);
 
 	private:
-		void init_animations();
+		//void init_animations();
 		void init_input();
 		void init_gfx_proxy();
 
@@ -50,7 +50,7 @@ namespace pokemon
 	private:
 		TileCoord m_pos;
 		rex::InputMapping* m_input_mappings;
-		rex::Flipbook* m_animations;
+		//rex::Flipbook* m_animations;
 		rex::Direction m_facing_direction;
 
 		rex::gfx::AnimatedSprite* m_animated_sprite;

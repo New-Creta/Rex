@@ -61,10 +61,27 @@ namespace rex
 			bool flip_y;
 		};
 
+		struct AnimatedSpritePassCreationInfo
+		{
+			RenderTargetBase* render_target;
+		};
+		struct AnimatedSpritePassSceneParams
+		{
+			const TilesetAsset* tileset;
+		};
+		struct AnimatedSpritePassCameraParams
+		{
+			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
+		};
+
+
 		class AnimatedSpritesPass : public RenderPass
 		{
 		public:
-			AnimatedSpritesPass(const AnimatedSpritesPassDynamicInputs& inputs);
+			AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
+
+			void update_scene_params(const SceneParams& params);
+			void update_camera_params(const CameraParams& params);
 
 			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
 
@@ -101,11 +118,13 @@ namespace rex
 			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_per_instance_info;
 
 			rex::gfx::RenderTargetBase* m_render_target;
-			rsl::point<TileCount> m_screen_resolution;
 
 			rsl::vector<AnimatedSpriteDrawList> m_draw_list;
 
 			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
+
+			SceneParams m_scene_params;
+			CameraParams m_camera_params;
 		};
 	}
 }

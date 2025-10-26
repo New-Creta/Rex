@@ -45,4 +45,14 @@ namespace rex
 			? rsl::iterator_to_pointer(it)
 			: nullptr;
 	}
+
+	const TextureAsset* Flipbook::sprites_texture() const
+	{
+		return m_texture;
+	}
+
+	rsl::pointi8 Flipbook::sprite_size() const
+	{
+		return m_sprite_size;
+	}
 }

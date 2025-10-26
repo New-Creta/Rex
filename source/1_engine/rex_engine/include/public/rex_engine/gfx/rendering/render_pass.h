@@ -41,6 +41,16 @@ namespace rex
 			rsl::unique_ptr<PipelineState> pso;
 		};
 
+		struct SceneParams
+		{
+			const TilesetAsset* tileset;
+		};
+		struct CameraParams
+		{
+			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
+		};
+
+
 		// A render pass acts like the "material" for the render pipeline
 		// It holds a set of data that needs to be tied to the render pipeline
 		// as well as the logic on how to use the render pipeline to draw

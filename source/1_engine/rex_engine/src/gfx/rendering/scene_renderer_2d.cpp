@@ -31,7 +31,9 @@ namespace rex
 			//rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
 			//animated_sprites_inputs.render_target = render_target;
 			//animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
-			//m_animted_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
+			AnimatedSpritePassCreationInfo animatedspritepass_creation_info{};
+			animatedspritepass_creation_info.render_target = render_target;
+			m_animted_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animatedspritepass_creation_info);
 
 			// draw the water
 			// water is animated by bit shifting its pixels
@@ -51,18 +53,13 @@ namespace rex
 			render_ctx->set_render_target(render_target);
 			render_ctx->clear_render_target(render_target);
 
-			s32 render_target_width = render_target->width();
-			s32 render_target_height = render_target->height();
+			f32 render_target_width = render_target->width();
+			f32 render_target_height = render_target->height();
 
-			rsl::point<f32> inv_zoom_level{};
-			inv_zoom_level.x = 1.0f / m_zoom_level.x;
-			inv_zoom_level.y = 1.0f / m_zoom_level.y;
-			f32 viewport_width = static_cast<f32>(render_target_width) * m_zoom_level.x;
-			f32 viewport_height = static_cast<f32>(render_target_height) * m_zoom_level.y;
-			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
+			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(render_target_width, render_target_height), 0.0f, 1.0f };
 			render_ctx->set_viewport(viewport);
 
-			rex::gfx::ScissorRect rect = { 0, 0, viewport_width, viewport_height };
+			rex::gfx::ScissorRect rect = { 0, 0, render_target_width, render_target_height };
 			render_ctx->set_scissor_rect(rect);
 
 			render_tilemap(render_ctx.get());
@@ -72,7 +69,7 @@ namespace rex
 
 		void SceneRenderer2D::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite)
 		{
-			m_animated_sprites.emplace_back(rsl::move(animatedSprite));
+			m_animted_sprites_pass->add_sprite(rsl::move(animatedSprite));
 		}
 
 		void SceneRenderer2D::update_params(const SceneRenderParams& params)
@@ -83,14 +80,26 @@ namespace rex
 		void SceneRenderer2D::update_zoom(rsl::point<f32> zoomLevel)
 		{
 			m_zoom_level = zoomLevel;
+
+			// The zoom indicates how many tiles we can render
+			// If zoom is 1, that means we can render
+			// render target width / tile size to the screen
+			// if we have a zoom value, we change this default
+			// to draw more or less tiles to the screen
+			CameraParams params{};
+			params.zoom_level = m_zoom_level;
+
+			m_block_render_pass->update_camera_params(params);
+			m_animted_sprites_pass->update_camera_params(params);
 		}
 
 		void SceneRenderer2D::notify_new_tileset(const TilesetAsset* tileset)
 		{
-			BlockRenderPassSceneParams params{};
+			SceneParams params{};
 			params.tileset = tileset;
 
 			m_block_render_pass->update_scene_params(params);
+			m_animted_sprites_pass->update_scene_params(params);
 
 			//BlockRenderPassDynamicInputs inputs{};
 			//inputs.tileset = tileset;
@@ -111,7 +120,7 @@ namespace rex
 
 		void SceneRenderer2D::render_flipbook_animations(RenderContext* renderCtx)
 		{
-
+			m_animted_sprites_pass->render(renderCtx);
 		}
 
 		void SceneRenderer2D::render_dynamic_animations(RenderContext* renderCtx)

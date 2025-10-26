@@ -36,14 +36,14 @@ namespace rex
 		{
 			RenderTargetBase* render_target;
 		};
-		struct BlockRenderPassSceneParams
-		{
-			const TilesetAsset* tileset;
-		};
-		struct BlockRenderPassCameraParams
-		{
-			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
-		};
+		//struct SceneParams
+		//{
+		//	const TilesetAsset* tileset;
+		//};
+		//struct CameraParams
+		//{
+		//	rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
+		//};
 
 		struct BlockRenderPassTilemapParams
 		{
@@ -62,8 +62,8 @@ namespace rex
 		public:
 			BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo);
 
-			void update_scene_params(const BlockRenderPassSceneParams& params);
-			void update_camera_params(const BlockRenderPassCameraParams& params);
+			void update_scene_params(const SceneParams& params);
+			void update_camera_params(const CameraParams& params);
 
 			//void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
 
@@ -112,8 +112,8 @@ namespace rex
 			//const rex::TilesetAsset* m_tileset;
 			//rsl::point<TileCount> m_screen_resolution;
 
-			BlockRenderPassSceneParams m_scene_params;
-			BlockRenderPassCameraParams m_camera_params;
+			SceneParams m_scene_params;
+			CameraParams m_camera_params;
 		};
 	}
 }

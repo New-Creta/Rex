@@ -12,7 +12,7 @@ namespace pokemon
 		: m_facing_direction(rex::Direction::South)
 		, m_walking_counter(0)
 	{
-		init_animations();
+		//init_animations();
 		init_input();
 		init_gfx_proxy();
 	}
@@ -30,10 +30,10 @@ namespace pokemon
 		m_input_mappings->handle_input(inputInfo);
 	}
 
-	void PlayerCharacter::init_animations()
-	{
-		m_animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/anims/player_anim.json");
-	}
+	//void PlayerCharacter::init_animations()
+	//{
+	//	m_animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/anims/player_anim.json");
+	//}
 	void PlayerCharacter::init_input()
 	{
 		m_input_mappings = rex::asset_db::instance()->load<rex::InputMapping>("Pokemon/inputs/player_input.json");
@@ -45,7 +45,8 @@ namespace pokemon
 	}
 	void PlayerCharacter::init_gfx_proxy()
 	{
-		m_animated_sprite = rex::gfx::gal::instance()->create_animated_sprite();
+		rex::Flipbook* animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/anims/player_anim.json");
+		m_animated_sprite = rex::gfx::gal::instance()->create_animated_sprite(animations);
 		face_down();
 	}
 
@@ -100,40 +101,40 @@ namespace pokemon
 
 	void PlayerCharacter::face_up()
 	{
-		m_animated_sprite->set_animation(m_animations->find_animation("up_idle"));
+		m_animated_sprite->set_animation("up_idle");
 	}
 	void PlayerCharacter::face_down()
 	{
-		m_animated_sprite->set_animation(m_animations->find_animation("down_idle"));
+		m_animated_sprite->set_animation("down_idle");
 	}
 	void PlayerCharacter::face_left()
 	{
-		m_animated_sprite->set_animation(m_animations->find_animation("left_idle"));
+		m_animated_sprite->set_animation("left_idle");
 	}
 	void PlayerCharacter::face_right()
 	{
-		m_animated_sprite->set_animation(m_animations->find_animation("right_idle"));
+		m_animated_sprite->set_animation("right_idle");
 	}
 
 	void PlayerCharacter::walk_up()
 	{
 		m_walking_counter = 4;
-		m_animated_sprite->set_animation(m_animations->find_animation("up_walk"));
+		m_animated_sprite->set_animation("up_walk");
 	}
 	void PlayerCharacter::walk_down()
 	{
 		m_walking_counter = 4;
-		m_animated_sprite->set_animation(m_animations->find_animation("down_walk"));
+		m_animated_sprite->set_animation("down_walk");
 	}
 	void PlayerCharacter::walk_left()
 	{
 		m_walking_counter = 4;
-		m_animated_sprite->set_animation(m_animations->find_animation("left_walk"));
+		m_animated_sprite->set_animation("left_walk");
 	}
 	void PlayerCharacter::walk_right()
 	{
 		m_walking_counter = 4;
-		m_animated_sprite->set_animation(m_animations->find_animation("right_walk"));
+		m_animated_sprite->set_animation("right_walk");
 	}
 
 	void PlayerCharacter::continue_movement()

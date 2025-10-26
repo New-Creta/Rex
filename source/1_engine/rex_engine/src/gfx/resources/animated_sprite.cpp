@@ -6,6 +6,10 @@ namespace rex
 {
 	namespace gfx
 	{
+		AnimatedSprite::AnimatedSprite(Flipbook* animations)
+			: m_animations(animations)
+		{}
+
 		void AnimatedSprite::tick(f32 dt)
 		{
 			if (!m_active_animation)
@@ -22,10 +26,20 @@ namespace rex
 			m_current_sprite_frame_counter++;
 		}
 
-		void AnimatedSprite::set_animation(const rex::FlipbookAnimation* newActiveAnimation)
+		void AnimatedSprite::set_animation(rsl::string_view name)
 		{
-			REX_ASSERT_X(newActiveAnimation, "New animation is nullptr, this is not allowed");
-			m_active_animation = newActiveAnimation;
+			m_active_animation = m_animations->find_animation(name);
+			REX_ASSERT_X(m_active_animation, "New animation is nullptr, this is not allowed");
 		}
+
+		const Texture2D* AnimatedSprite::sprites_texture() const
+		{
+			return m_animations->sprites_texture()->texture_resource();
+		}
+		rsl::pointi8 AnimatedSprite::sprite_size() const
+		{
+			return m_animations->sprite_size();
+		}
+
 	}
 }

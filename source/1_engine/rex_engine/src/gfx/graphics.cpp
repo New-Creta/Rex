@@ -209,9 +209,9 @@ namespace rex
 			return m_backbuffer_render_target.get();
 		}
 
-		AnimatedSprite* GALBase::create_animated_sprite()
+		AnimatedSprite* GALBase::create_animated_sprite(Flipbook* animations)
 		{
-			rsl::unique_ptr<AnimatedSprite> animated_sprite = rsl::make_unique<AnimatedSprite>();
+			rsl::unique_ptr<AnimatedSprite> animated_sprite = rsl::make_unique<AnimatedSprite>(animations);
 			AnimatedSprite* raw_animated_sprite = animated_sprite.get();
 			scene_renderer::instance()->add_animated_sprite(rsl::move(animated_sprite));
 

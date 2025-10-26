@@ -221,7 +221,12 @@ namespace pokemon
 	void GameSession::on_map_change()
 	{
 		rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
-		rex::gfx::scene_renderer::instance()->update_zoom({4.5f, 5.0f});
 
+		rsl::point<f32> zoom{};
+
+		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
+		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
+
+		rex::gfx::scene_renderer::instance()->update_zoom(zoom);
 	}
 }

@@ -24,7 +24,7 @@ namespace rex
 			init();
 		}
 
-		void BlockRenderPass::update_scene_params(const BlockRenderPassSceneParams& params)
+		void BlockRenderPass::update_scene_params(const SceneParams& params)
 		{
 			m_scene_params = params;
 
@@ -36,9 +36,14 @@ namespace rex
 			init_render_info(render_ctx.get());
 			init_tile_indices_uab(render_ctx.get());
 		}
-		void BlockRenderPass::update_camera_params(const BlockRenderPassCameraParams& params)
+		void BlockRenderPass::update_camera_params(const CameraParams& params)
 		{
 			m_camera_params = params;
+
+			auto render_ctx = gal::instance()->new_render_ctx();
+			init_tilemap();
+			init_render_info(render_ctx.get());
+			init_tile_indices_uab(render_ctx.get());
 		}
 
 		//void BlockRenderPass::update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs)
@@ -174,11 +179,20 @@ namespace rex
 			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
 
 			rsl::pointi8 num_tiles_on_screen{};
-			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * inv_zoom_level.x);
-			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * inv_zoom_level.y);
+			//num_tiles_on_screen.x = tile_size.x;
+			//num_tiles_on_screen.y = tile_size.y;
 
-			f32 inv_tile_width = 2.0f / tile_size.x; // num_tiles_on_screen.x;
-			f32 inv_tile_height = 2.0f / tile_size.y; // num_tiles_on_screen.y;
+			//num_tiles_on_screen.x = m_render_target->width() / tile_size.x;
+			//num_tiles_on_screen.y = m_render_target->height() / tile_size.y;
+
+			//num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * inv_zoom_level.x);
+			//num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * inv_zoom_level.y);
+
+			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * m_camera_params.zoom_level.x);
+			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * m_camera_params.zoom_level.y);
+
+			f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
+			f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
 
 			s32 tileset_width = m_scene_params.tileset->tileset_texture()->width();
 			s32 tileset_height = m_scene_params.tileset->tileset_texture()->height();
@@ -271,8 +285,8 @@ namespace rex
 		rsl::point<TileCount> BlockRenderPass::calc_screen_resolution() const
 		{
 			rsl::point<TileCount> screen_resolution{};
-			screen_resolution.x.get() = m_render_target->width() / m_scene_params.tileset->tile_size().x / m_camera_params.zoom_level.x;
-			screen_resolution.y.get() = m_render_target->height() / m_scene_params.tileset->tile_size().y / m_camera_params.zoom_level.y;
+			screen_resolution.x.get() = m_render_target->width() / (m_scene_params.tileset->tile_size().x * m_camera_params.zoom_level.x);
+			screen_resolution.y.get() = m_render_target->height() / (m_scene_params.tileset->tile_size().y * m_camera_params.zoom_level.y);
 
 			return screen_resolution;
 		}

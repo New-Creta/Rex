@@ -189,7 +189,7 @@ namespace rex
       virtual rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc) = 0;
       virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
       
-      AnimatedSprite* create_animated_sprite();
+      AnimatedSprite* create_animated_sprite(Flipbook* animations);
 
       // --------------------------------
       // View creation
