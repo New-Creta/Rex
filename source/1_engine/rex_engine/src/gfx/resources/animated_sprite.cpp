@@ -34,6 +34,11 @@ namespace rex
 
 		void AnimatedSprite::set_animation(rsl::string_view name)
 		{
+			if (m_active_animation && m_active_animation->name() == name)
+			{
+				return;
+			}
+
 			m_active_animation = m_animations->find_animation(name);
 			m_current_anim_sprite_idx = 0;
 			m_current_sprite_frame_counter = 0;

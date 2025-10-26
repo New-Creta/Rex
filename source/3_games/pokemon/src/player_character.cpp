@@ -72,7 +72,7 @@ namespace pokemon
 			face_up();
 			m_facing_direction = rex::Direction::North;
 		}
-		else
+		else if (m_walking_counter == 0)
 		{
 			walk_up();
 		}
@@ -89,7 +89,7 @@ namespace pokemon
 			face_down();
 			m_facing_direction = rex::Direction::South;
 		}
-		else
+		else if (m_walking_counter == 0)
 		{
 			walk_down();
 		}
@@ -106,7 +106,7 @@ namespace pokemon
 			face_left();
 			m_facing_direction = rex::Direction::West;
 		}
-		else
+		else if (m_walking_counter == 0)
 		{
 			walk_left();
 		}
@@ -123,7 +123,7 @@ namespace pokemon
 			face_right();
 			m_facing_direction = rex::Direction::East;
 		}
-		else
+		else if (m_walking_counter == 0)
 		{
 			walk_right();
 		}
@@ -190,6 +190,11 @@ namespace pokemon
 		}
 
 		m_walking_counter--;
+
+		if (m_walking_counter == 0 && (m_pos.x % 8 != 0 || m_pos.y % 8 != 0))
+		{
+			__debugbreak();
+		}
 	}
 	void PlayerCharacter::finish_movement()
 	{
