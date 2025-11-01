@@ -313,6 +313,18 @@ namespace rex
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
+			// Basic blending operation
+			// If we output an alpha value of 0.0f
+			// we use the pixel that's in the render target
+			desc.pso_desc.output_merger.blend_state.render_target[0].blend_enable = true;
+			desc.pso_desc.output_merger.blend_state.render_target[0].logic_op_enable = false;
+			desc.pso_desc.output_merger.blend_state.render_target[0].src_blend = Blend::SrcAlpha;
+			desc.pso_desc.output_merger.blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
+			desc.pso_desc.output_merger.blend_state.render_target[0].blend_op = BlendOp::Add;
+			desc.pso_desc.output_merger.blend_state.render_target[0].src_blend_alpha = Blend::One;
+			desc.pso_desc.output_merger.blend_state.render_target[0].dst_blend_alpha = Blend::Zero;
+			desc.pso_desc.output_merger.blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
+
 			// We're rendering directly to the back buffer
 			desc.framebuffer_desc.clear();
 			desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());

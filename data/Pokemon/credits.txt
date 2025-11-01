@@ -13,6 +13,8 @@ https://github.com/pret/pokeheartgold
 https://github.com/pret/pokefirered
 https://www.spriters-resource.com/game_boy_gbc/pokemongoldsilver/sheet/60234/
 https://www.youtube.com/watch?app=desktop&v=SK7XT0DWqtE
+https://www.reddit.com/r/pokemon/comments/pjzo1e/looking_to_recolour_pokémon_red_game_keep_the
+https://gbdev.io/pandocs
 
 Programmer - Nick De Breuck
 Programmer - Dave De Breuck

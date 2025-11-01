@@ -37,17 +37,6 @@ namespace pokemon
 			finish_movement();
 		}
 	}
-	void PlayerCharacter::handle_input(const rex::KeyState& inputInfo)
-	{
-		// We've got a problem here as the engine will wait 15 frames to send a new "key down message"
-		// as Windows only sends one every 15 frames
-		m_input_mappings->handle_input(inputInfo);
-	}
-
-	//void PlayerCharacter::init_animations()
-	//{
-	//	m_animations = rex::asset_db::instance()->load<rex::Flipbook>("pokemon/anims/player_anim.json");
-	//}
 	void PlayerCharacter::init_input()
 	{
 		m_input_mappings = rex::asset_db::instance()->load<rex::InputMapping>("Pokemon/inputs/player_input.json");

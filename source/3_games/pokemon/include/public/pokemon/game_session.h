@@ -40,7 +40,6 @@ namespace pokemon
 
     void init_map(const SaveFile& saveFile);
     void init_player(const SaveFile& saveFile);
-    void init_input();
     void init_renderer();
 
     void draw();

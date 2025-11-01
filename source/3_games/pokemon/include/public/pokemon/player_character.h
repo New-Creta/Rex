@@ -19,13 +19,11 @@ namespace pokemon
 		PlayerCharacter();
 
 		void tick(f32 dt);
-		void handle_input(const rex::KeyState& inputInfo);
 
 		rex::PixelCoord pos() const;
 		void set_pos(rex::PixelCoord pos);
 
 	private:
-		//void init_animations();
 		void init_input();
 		void init_gfx_proxy();
 

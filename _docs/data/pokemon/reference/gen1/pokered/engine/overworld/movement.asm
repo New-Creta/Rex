@@ -556,6 +556,7 @@ CheckSpriteAvailability:
 .done
 	ret
 
+; loads the sprite image into hl
 UpdateSpriteImage:
 	ld h, HIGH(wSpriteStateData1)
 	ldh a, [hCurrentSpriteOffset]

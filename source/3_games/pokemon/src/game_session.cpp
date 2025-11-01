@@ -56,7 +56,6 @@ namespace pokemon
 
 		init_map(startup_save_file);
 		init_player(startup_save_file);
-		init_input();
 
 		// In the future this render graph should be provided by the engine
 		// the game provides the engine information what kind of render graph is needed for the game
@@ -104,20 +103,6 @@ namespace pokemon
 		
 		m_player_character = rsl::make_unique<PlayerCharacter>();
 		m_player_character->set_pos(world_coord_converter.to_pixel_coord(saveFile.position));
-	}
-
-	void GameSession::init_input()
-	{
-		rex::event_system::instance()->subscribe<rex::KeyDown>(
-			[this](const rex::KeyDown& ev)
-			{
-				rex::KeyState input_info{};
-				input_info.action.type = rex::InputActionType::Key;
-				input_info.action.data.key_code = ev.key();
-				input_info.ticks_pressed = 0;
-
-				m_player_character->handle_input(input_info);
-			});
 	}
 
 	void GameSession::init_renderer()

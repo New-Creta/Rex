@@ -23,6 +23,11 @@ namespace rex
 		ImageLoadResult image_load_res = load_image(content);
 
 		// A tileset only holds 1 channel, we have to convert it to 4 channels as that's what the GPU expects
+		// originally coming from .2bpp assets with the following color pallete
+		// 0x1 -> white
+		// 0x2 -> light grey
+		// 0x3 -> dark grey
+		// 0x4 -> black
 		rsl::unique_array<rsl::Rgba> rgba = rsl::make_unique<rsl::Rgba[]>(image_load_res.width * image_load_res.height * sizeof(rsl::Rgba));
 		for (s32 color_idx = 0; color_idx < image_load_res.width * image_load_res.height; ++color_idx)
 		{
