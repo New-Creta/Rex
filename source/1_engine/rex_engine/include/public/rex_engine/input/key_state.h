@@ -6,7 +6,7 @@
 namespace rex
 {
 	// Describes information about what input was given by the user
-	struct InputInfo
+	struct KeyState
 	{
 		// the action that was given by the user
 		InputAction action;

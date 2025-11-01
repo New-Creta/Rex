@@ -3,7 +3,7 @@
 #include "rex_engine/assets/asset.h"
 
 #include "rex_engine/input/input_action.h"
-#include "rex_engine/input/input_info.h"
+#include "rex_engine/input/key_state.h"
 
 #include "rex_std/functional.h"
 #include "rex_std/string.h"
@@ -14,10 +14,10 @@ namespace rex
 	class InputMapping : public Asset
 	{
 	public:
-		using input_action_callback = rsl::function<void(const InputInfo&)>;
+		using input_action_callback = rsl::function<void(const KeyState&)>;
 		InputMapping(rsl::unordered_map<rsl::string, InputAction>&& mappings);
 
-		void handle_input(const InputInfo& inputInfo);
+		void handle_input(const KeyState& inputInfo);
 
 		void bind_action(rsl::string_view name, input_action_callback&& callback);
 

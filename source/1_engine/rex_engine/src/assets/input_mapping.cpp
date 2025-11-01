@@ -12,7 +12,7 @@ namespace rex
 
 	}
 
-	void InputMapping::handle_input(const rex::InputInfo& inputInfo)
+	void InputMapping::handle_input(const rex::KeyState& inputInfo)
 	{
 		auto it = m_actions.find(inputInfo.action);
 		if (it != m_actions.cend())

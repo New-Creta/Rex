@@ -3,6 +3,7 @@
 #include "rex_engine/app/core_application_state.h"
 #include "rex_engine/engine/state_controller.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/input/input_state.h"
 #include "rex_engine/settings/boot_settings.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/text_processing/ini.h"
@@ -91,6 +92,7 @@ namespace rex
     void shutdown_globals();
 
   private:
+    rsl::unique_ptr<InputState> m_input_state;
     StateController<ApplicationState> m_app_state;
     rsl::string m_app_name;
     s32 m_exit_code;

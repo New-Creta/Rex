@@ -158,6 +158,7 @@ namespace rex
     m_app_state.change_state(ApplicationState::Initializing);
 
     init_globals();
+    m_input_state = rsl::make_unique<InputState>();
 
     engine::instance()->advance_frame();
 
@@ -178,6 +179,8 @@ namespace rex
   void CoreApplication::update()
   {
     engine::instance()->advance_frame();
+
+    m_input_state->tick();
 
     platform_update();
   }

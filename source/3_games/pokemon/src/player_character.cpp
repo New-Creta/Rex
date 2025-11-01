@@ -19,6 +19,8 @@ namespace pokemon
 
 	void PlayerCharacter::tick(f32 dt)
 	{
+		//REX_INFO(LogPlayerCharacter, "new frame");
+
 		if (m_was_moving)
 		{
 			m_was_moving = false;
@@ -35,8 +37,10 @@ namespace pokemon
 			finish_movement();
 		}
 	}
-	void PlayerCharacter::handle_input(const rex::InputInfo& inputInfo)
+	void PlayerCharacter::handle_input(const rex::KeyState& inputInfo)
 	{
+		// We've got a problem here as the engine will wait 15 frames to send a new "key down message"
+		// as Windows only sends one every 15 frames
 		m_input_mappings->handle_input(inputInfo);
 	}
 
@@ -48,10 +52,10 @@ namespace pokemon
 	{
 		m_input_mappings = rex::asset_db::instance()->load<rex::InputMapping>("Pokemon/inputs/player_input.json");
 
-		m_input_mappings->bind_action("up", [this](const rex::InputInfo& info) { move_up(info); });
-		m_input_mappings->bind_action("down", [this](const rex::InputInfo& info) { move_down(info); });
-		m_input_mappings->bind_action("left", [this](const rex::InputInfo& info) { move_left(info); });
-		m_input_mappings->bind_action("right", [this](const rex::InputInfo& info) { move_right(info); });
+		m_input_mappings->bind_action("up", [this](const rex::KeyState& info) { move_up(info); });
+		m_input_mappings->bind_action("down", [this](const rex::KeyState& info) { move_down(info); });
+		m_input_mappings->bind_action("left", [this](const rex::KeyState& info) { move_left(info); });
+		m_input_mappings->bind_action("right", [this](const rex::KeyState& info) { move_right(info); });
 	}
 	void PlayerCharacter::init_gfx_proxy()
 	{
@@ -60,7 +64,7 @@ namespace pokemon
 		face_down();
 	}
 
-	void PlayerCharacter::move_up(const rex::InputInfo& info)
+	void PlayerCharacter::move_up(const rex::KeyState& info)
 	{
 		if (m_was_moving && m_facing_direction != rex::Direction::North)
 		{
@@ -77,7 +81,7 @@ namespace pokemon
 			walk_up();
 		}
 	}
-	void PlayerCharacter::move_down(const rex::InputInfo& info)
+	void PlayerCharacter::move_down(const rex::KeyState& info)
 	{
 		if (m_was_moving && m_facing_direction != rex::Direction::South)
 		{
@@ -94,7 +98,7 @@ namespace pokemon
 			walk_down();
 		}
 	}
-	void PlayerCharacter::move_left(const rex::InputInfo& info)
+	void PlayerCharacter::move_left(const rex::KeyState& info)
 	{
 		if (m_was_moving && m_facing_direction != rex::Direction::West)
 		{
@@ -111,7 +115,7 @@ namespace pokemon
 			walk_left();
 		}
 	}
-	void PlayerCharacter::move_right(const rex::InputInfo& info)
+	void PlayerCharacter::move_right(const rex::KeyState& info)
 	{
 		if (m_was_moving && m_facing_direction != rex::Direction::East)
 		{
@@ -190,11 +194,6 @@ namespace pokemon
 		}
 
 		m_walking_counter--;
-
-		if (m_walking_counter == 0 && (m_pos.x % 8 != 0 || m_pos.y % 8 != 0))
-		{
-			__debugbreak();
-		}
 	}
 	void PlayerCharacter::finish_movement()
 	{

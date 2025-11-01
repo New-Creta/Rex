@@ -10,8 +10,9 @@ namespace rex
 	class KeyDown : public Event<KeyDown>
 	{
 	public:
-		KeyDown(KeyCode key)
+		KeyDown(KeyCode key, s32 numTicks)
 			: m_key(key)
+			, m_num_ticks(numTicks)
 		{}
 
 		KeyCode key() const
@@ -19,7 +20,13 @@ namespace rex
 			return m_key;
 		}
 
+		s32 num_ticks() const
+		{
+			return m_num_ticks;
+		}
+
 	private:
 		KeyCode m_key;
+		s32 m_num_ticks;
 	};
 }

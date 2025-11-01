@@ -66,7 +66,17 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		f32 dt = 0.1f;
+		// pokemon was rendered at 30 fps
+		static f32 dt = 0.0f;
+		dt += rex::engine::instance()->frame_info().delta_time().to_milliseconds();
+
+		if (dt <= 30.0f)
+		{
+			return;
+		}
+
+		dt -= 30.0f;
+
 		m_player_character->tick(dt);
 		//clamp_player_pos();
 
@@ -101,51 +111,12 @@ namespace pokemon
 		rex::event_system::instance()->subscribe<rex::KeyDown>(
 			[this](const rex::KeyDown& ev)
 			{
-				rex::InputInfo input_info{};
+				rex::KeyState input_info{};
 				input_info.action.type = rex::InputActionType::Key;
 				input_info.action.data.key_code = ev.key();
 				input_info.ticks_pressed = 0;
 
 				m_player_character->handle_input(input_info);
-
-				// we should increase the input 2 pixels per key stroke
-				// this is because in the old pokemon games a single animation takes 4 ticks
-				// given that a tile is 8x8 pixels, to get through a single tile, 
-				// the game has to translate the camera 2 pixels per tick
-				// the player does have to play 2 tiles at a time (which is the width of a single square)
-
-				//switch (ev.key())
-				//{
-				//case rex::KeyCode::W:
-				//	m_player_position.y -= 1;
-				//	break;
-				//case rex::KeyCode::S:
-				//	m_player_position.y += 1;
-				//	break;
-				//case rex::KeyCode::A:
-				//	m_player_position.x -= 1;
-				//	break;
-				//case rex::KeyCode::D:
-				//	m_player_position.x += 1;
-				//	break;
-				//default:
-				//	break;
-				//}
-
-				//TileCoord player_pos = m_player_character->pos();
-
-				//rsl::pointi8 min_player_pos{}; //constants::player_render_position_top_left;
-				//rsl::pointi8 max_player_pos{}; //constants::player_render_position_bottom_right;
-
-				//player_pos.x = rsl::clamp_min(player_pos.x, min_player_pos.x);
-				//player_pos.y = rsl::clamp_min(player_pos.y, min_player_pos.y);
-
-				//rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
-
-				//player_pos.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.x), size.x.get() - max_player_pos.x));
-				//player_pos.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos.y), size.y.get() - max_player_pos.y));
-
-				//m_player_character->set_pos(player_pos);
 			});
 	}
 
