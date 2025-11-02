@@ -26,33 +26,33 @@
         {
             "name": "down_walk",
             "sprites": [
-                { "idx": 0, "num_frames": 4 },
-                { "idx": 3, "num_frames": 4 },
-                { "idx": 0, "num_frames": 4 },
-                { "idx": 3, "num_frames": 4, "flip_x": true}
+                { "idx": 0, "num_frames": 8 },
+                { "idx": 3, "num_frames": 8 },
+                { "idx": 0, "num_frames": 8 },
+                { "idx": 3, "num_frames": 8, "flip_x": true}
             ]
         },
         {
             "name": "up_walk",
             "sprites": [
-                { "idx": 1, "num_frames": 4 },
-                { "idx": 4, "num_frames": 4 },
-                { "idx": 1, "num_frames": 4 },
-                { "idx": 4, "num_frames": 4, "flip_x": true}
+                { "idx": 1, "num_frames": 8 },
+                { "idx": 4, "num_frames": 8 },
+                { "idx": 1, "num_frames": 8 },
+                { "idx": 4, "num_frames": 8, "flip_x": true}
             ]
         },
         {
             "name": "left_walk",
             "sprites": [
-                { "idx": 2, "num_frames": 4 },
-                { "idx": 5, "num_frames": 4 }
+                { "idx": 2, "num_frames": 8 },
+                { "idx": 5, "num_frames": 8 }
             ]
         },
         {
             "name": "right_walk",
             "sprites": [
-                { "idx": 5, "num_frames": 4, "flip_x": true },
-                { "idx": 2, "num_frames": 4, "flip_x": true }
+                { "idx": 5, "num_frames": 8, "flip_x": true },
+                { "idx": 2, "num_frames": 8, "flip_x": true }
             ]
         }
     ]

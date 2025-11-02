@@ -141,7 +141,7 @@ namespace pokemon
 
 	void PlayerCharacter::walk_up()
 	{
-		m_walking_counter = 8;
+		m_walking_counter = 16;
 		if (!m_was_moving/* && m_facing_direction != rex::Direction::North*/)
 		{
 			m_animated_sprite->set_animation("up_walk");
@@ -149,7 +149,7 @@ namespace pokemon
 	}
 	void PlayerCharacter::walk_down()
 	{
-		m_walking_counter = 8;
+		m_walking_counter = 16;
 		if (!m_was_moving/* && m_facing_direction != rex::Direction::South*/)
 		{
 			m_animated_sprite->set_animation("down_walk");
@@ -157,7 +157,7 @@ namespace pokemon
 	}
 	void PlayerCharacter::walk_left()
 	{
-		m_walking_counter = 8;
+		m_walking_counter = 16;
 		if (!m_was_moving/* && m_facing_direction != rex::Direction::West*/)
 		{
 			m_animated_sprite->set_animation("left_walk");
@@ -165,7 +165,7 @@ namespace pokemon
 	}
 	void PlayerCharacter::walk_right()
 	{
-		m_walking_counter = 8;
+		m_walking_counter = 16;
 		if (!m_was_moving/* && m_facing_direction != rex::Direction::East*/)
 		{
 			m_animated_sprite->set_animation("right_walk");
@@ -176,10 +176,10 @@ namespace pokemon
 	{
 		switch (m_facing_direction)
 		{
-		case rex::Direction::North: m_pos.y -= 2;	break;
-		case rex::Direction::East:  m_pos.x += 2;	break;
-		case rex::Direction::South: m_pos.y += 2;	break;
-		case rex::Direction::West:  m_pos.x -= 2; break;
+		case rex::Direction::North: m_pos.y -= 1;	break;
+		case rex::Direction::East:  m_pos.x += 1;	break;
+		case rex::Direction::South: m_pos.y += 1;	break;
+		case rex::Direction::West:  m_pos.x -= 1; break;
 		}
 
 		m_walking_counter--;
