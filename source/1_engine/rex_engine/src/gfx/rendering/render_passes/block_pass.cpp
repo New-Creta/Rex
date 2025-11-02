@@ -77,8 +77,11 @@ namespace rex
 
 			TileCoord tile_coords = params.coord_converter.to_tile_coord(params.top_left_start);
 
-			m_render_metadata.screen_pixel_offset_x = -params.top_left_start.x % params.coord_converter.num_pixels_per_tile;
-			m_render_metadata.screen_pixel_offset_y = params.top_left_start.y % params.coord_converter.num_pixels_per_tile;
+			s32 x_mod = params.top_left_start.x % params.coord_converter.num_pixels_per_tile;
+			s32 y_mod = params.top_left_start.y % params.coord_converter.num_pixels_per_tile;
+
+			m_render_metadata.screen_pixel_offset_x = -x_mod;
+			m_render_metadata.screen_pixel_offset_y = y_mod;
 
 			auto render_ctx = gal::instance()->new_render_ctx();
 			render_ctx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
@@ -223,8 +226,8 @@ namespace rex
 			m_render_metadata.screen_pixel_offset_x = 0;
 			m_render_metadata.screen_pixel_offset_y = 0;
 			//m_render_metadata.inv_pixel_screen_width = 1.0f / (2.0f * tile_size.x * m_camera_params.zoom_level.x); // how big 
-			m_render_metadata.inv_pixel_screen_width = m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
-			m_render_metadata.inv_pixel_screen_height = m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
+			m_render_metadata.inv_pixel_screen_width = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
+			m_render_metadata.inv_pixel_screen_height = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
 			if (m_tile_render_info == nullptr)
 			{
