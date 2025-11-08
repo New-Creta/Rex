@@ -103,6 +103,7 @@ namespace rex
 
 		DirectXInterface::DirectXInterface(const OutputWindowUserData& userData)
 			: GALBase(userData)
+			, m_rtv_clear_color(rsl::colors::White)
 		{
 		}
 

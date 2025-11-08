@@ -65,19 +65,7 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		// pokemon was rendered at 30 fps
-		static f32 dt = 0.0f;
-		dt += rex::engine::instance()->frame_info().delta_time().to_milliseconds();
-
-		//if (dt <= 30.0f)
-		//{
-		//	return;
-		//}
-
-		dt = 0.0f;
-//		dt -= 30.0f;
-
-		m_player_character->tick(dt);
+		m_player_character->tick(0.1f);
 		//clamp_player_pos();
 
 		draw();

@@ -17,6 +17,7 @@ float4 main(PS_INPUT pin) : SV_Target
   // Apply the diffuse strength on the final color
   float4 color = float4(texture_color.rgb, 1.0f);
   
+  // filter out white color channel
   if (color.r == 1.0f && color.g == 1.0f && color.b == 1.0f)
   {
     color = float4(1.0f, 0.0f, 0.0f, 0.0f);

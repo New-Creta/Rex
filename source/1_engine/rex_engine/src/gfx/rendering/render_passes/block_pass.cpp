@@ -251,6 +251,8 @@ namespace rex
 			desc.name = "Block Render Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
+			desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
+			desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
 
 			// We're rendering directly to the back buffer
 			desc.framebuffer_desc.clear();

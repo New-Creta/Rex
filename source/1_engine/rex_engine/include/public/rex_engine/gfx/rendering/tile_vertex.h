@@ -12,5 +12,11 @@ namespace rex
 			rsl::point<f32> pos;
 			rsl::point<f32> uv;
 		};
+
+		struct AnimatedTileVertex
+		{
+			glm::vec3 pos;
+			rsl::point<f32> uv;
+		};
 	}
 }

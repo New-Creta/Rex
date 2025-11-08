@@ -38,8 +38,11 @@ namespace rex
 			f32 uv_start_x;
 			f32 uv_start_y;
 
+			f32 player_is_on_grass;
+
 			bool flip_x;
 			bool flip_y;
+
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -110,6 +113,8 @@ namespace rex
 				s16 sprite_idx;
 				bool flip_x;
 				bool flip_y;
+
+				bool player_is_on_grass;
 			};
 
 			// sprites should be draw 0.5f tiles up from where they're positioned
@@ -118,12 +123,21 @@ namespace rex
 			// starting with the current active animation
 			// this mean the camera needs to move in pixels, not tiles
 
-
+			static s32 counter = 0;
 
 			s32 index_count = m_tiles_ib_gpu->count();
 			for (const rsl::unique_ptr<AnimatedSprite>& sprite : m_sprites)
 			{
 				SceneRenderInfo scene_render_info{};
+				static f32 is_on_grass = 0.0f;
+				if (counter % 60 == 0)
+				{
+					is_on_grass = (f32)!(bool)(is_on_grass);
+				}
+
+				counter++;
+
+				scene_render_info.player_is_on_grass = is_on_grass;
 
 				scene_render_info.inv_sprite_texture_width = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
 				scene_render_info.inv_sprite_texture_height = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
@@ -219,21 +233,36 @@ namespace rex
 		void AnimatedSpritesPass::init_vb(rex::gfx::RenderContext* renderCtx)
 		{
 			// Init the vertex buffer
-			const s32 num_vertices_per_tile = 4;
+			const s32 num_vertices_per_tile = 8;
 
-			rsl::array<TileVertex, num_vertices_per_tile> tile_vertices{};
+			rsl::array<AnimatedTileVertex, num_vertices_per_tile> tile_vertices{};
 
-			tile_vertices[0] = TileVertex{ rsl::point<f32>(0,  0),               rsl::point<f32>(0.0f, 0.0f) };
-			tile_vertices[1] = TileVertex{ rsl::point<f32>(1,	 0),               rsl::point<f32>(1.0f, 0.0f) };
-			tile_vertices[2] = TileVertex{ rsl::point<f32>(0,	-1),							 rsl::point<f32>(0.0f, 1.0f) };
-			tile_vertices[3] = TileVertex{ rsl::point<f32>(1,	-1),							 rsl::point<f32>(1.0f, 1.0f) };
+			// sprites are drawn using 2 rectangles, splitting top and bottom
+			// the top is always drawn on top of everything else
+			// the bottom is sometimes drawn below the background
+			// to give the illusion of 2.5D
+
+			// top vertices
+			tile_vertices[0] = AnimatedTileVertex{ glm::vec3(0, 0, 0),               rsl::point<f32>(0.0f, 0.0f) };
+			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	0, 0),               rsl::point<f32>(1.0f, 0.0f) };
+
+			// middle vertices
+			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 0),							 rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 0),							 rsl::point<f32>(1.0f, 0.5f) };
+
+			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 1),							 rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 1),							 rsl::point<f32>(1.0f, 0.5f) };
+
+			// bottom vertices
+			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(0,	-1, 1),							 rsl::point<f32>(0.0f, 1.0f) };
+			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	-1, 1),							 rsl::point<f32>(1.0f, 1.0f) };
 
 			if (!m_tiles_vb_gpu)
 			{
-				m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
+				m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(AnimatedTileVertex));
 			}
 
-			renderCtx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(TileVertex));
+			renderCtx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(AnimatedTileVertex));
 			renderCtx->transition_buffer(m_tiles_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
 		}
 		void AnimatedSpritesPass::init_ib(rex::gfx::RenderContext* renderCtx)
@@ -243,16 +272,27 @@ namespace rex
 				return;
 			}
 
-			const s32 num_indices_per_tile = 6;
-			rsl::array<u16, 6> tile_ib{};
+			const s32 num_indices_per_tile = 12;
+			rsl::array<u16, num_indices_per_tile > tile_ib{};
 
-			tile_ib[0] = 0;
+			// top rectangle
+			tile_ib[0] = 0;	
 			tile_ib[1] = 1;
 			tile_ib[2] = 2;
 
 			tile_ib[3] = 1;
 			tile_ib[4] = 3;
 			tile_ib[5] = 2;
+
+			// bottom rectangle
+			tile_ib[6] = 4;
+			tile_ib[7] = 5;
+			tile_ib[8] = 6;
+
+			tile_ib[9] = 5;
+			tile_ib[10] = 7;
+			tile_ib[11] = 6;
+
 
 			m_tiles_ib_gpu = rex::gfx::gal::instance()->create_index_buffer(num_indices_per_tile, rex::gfx::IndexBufferFormat::Uint16);
 
@@ -337,7 +377,7 @@ namespace rex
 			desc.pso_desc.input_layout =
 			{
 				// Per vertex data
-				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float2 },
+				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float3 },
 				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::TexCoord, rex::gfx::ShaderArithmeticType::Float2 },
 			};
 

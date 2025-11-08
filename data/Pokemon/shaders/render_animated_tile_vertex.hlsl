@@ -23,9 +23,11 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 
   float uv_start_x;
   float uv_start_y;
+  float player_is_on_grass;
   
   bool flip_x;
   bool flip_y;
+  
 };
 
 // Vertices expected for this shader are meant to spawn the entire screen
@@ -35,8 +37,9 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 
 struct VertexIn
 {
-  float2 PosL : POSITION; // The position of the vertex in local space
+  float3 PosL : POSITION; // The position of the vertex in local space
   float2 Uv : TEXCOORD0; // The UV of the vertex
+  uint VertexId : SV_VertexId;
 };
 
 struct VertexOut
@@ -67,13 +70,9 @@ float4 calculate_vertex_position(VertexIn vin)
   pos.y += vin.PosL.y * inv_sprite_screen_height;
   pos.y -= (8 * inv_tile_screen_height);
   pos.y += 4 * (inv_tile_screen_height / 8);
-  
-  // If we ever want to render the tilemap at an offset from the top left, this is how that'd be done
-  // pos.x += screen_start_offset.x;
-  // pos.x += screen_start_offset.y;
-  
+    
   // Offset the position to this position
-  return float4(pos, 0.0, 1.0f);
+  return float4(pos, vin.PosL.z * player_is_on_grass, 1.0f);
 }
 
 float2 calculate_vertex_uv(VertexIn vin)
