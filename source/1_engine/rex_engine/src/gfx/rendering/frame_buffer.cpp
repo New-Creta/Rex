@@ -21,7 +21,7 @@ namespace rex
 			, m_clear_state_desc(clearStateDesc)
 		{}
 
-		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(RenderTarget* renderTarget)
+		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(RenderTargetBase* renderTarget)
 			: m_render_target(renderTarget)
 		{}
 
@@ -29,10 +29,15 @@ namespace rex
 		{
 			return m_use_swapchain;
 		}
-		RenderTarget* FrameBufferAttachmentDesc::render_target() const
+		RenderTargetBase* FrameBufferAttachmentDesc::render_target() const 
 		{
 			return m_render_target;
 		}
+		DepthStencilBuffer* FrameBufferAttachmentDesc::depth_stencil_buffer() const 
+		{
+			return m_depth_stencil_buffer;
+		}
+
 		s32 FrameBufferAttachmentDesc::width() const
 		{
 			return m_width;
@@ -50,12 +55,16 @@ namespace rex
 			return m_clear_state_desc;
 		}
 
-		ColorBufferAttachment::ColorBufferAttachment(RenderTarget* resourceView)
+		ColorBufferAttachment::ColorBufferAttachment(RenderTargetBase* resourceView)
 			: m_render_target(resourceView)
 		{}
-		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(DepthStencilBuffer* /*depthStencilBuffer*/)
+		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(DepthStencilBuffer* depthStencilBuffer)
 		{
-			REX_ASSERT("To implement");
+			m_depth_stencil_buffer = depthStencilBuffer;
+			m_width = m_depth_stencil_buffer->width();
+			m_height = m_depth_stencil_buffer->height();
+			m_format = m_depth_stencil_buffer->format();
+			m_clear_state_desc = m_depth_stencil_buffer->clear_state();
 		}
 
 
@@ -63,7 +72,7 @@ namespace rex
 			: m_use_swapchain(true)
 		{}
 
-		RenderTarget* ColorBufferAttachment::render_target() const
+		RenderTargetBase* ColorBufferAttachment::render_target()
 		{
 			return m_render_target;
 		}
@@ -74,10 +83,11 @@ namespace rex
 
 		FrameBuffer::FrameBuffer(const FrameBufferDesc& desc)
 		{
-			for (const auto& attachment_desc : desc)
+			for (auto& attachment_desc : desc)
 			{
 				if (attachment_desc.use_swapchain())
 				{
+					REX_STATIC_TODO("This can be removed and replaced with BackBufferSwapChain")
 					m_attachments.emplace_back(swapchain_frame_buffer_handle());
 				}
 				else if (attachment_desc.render_target())
@@ -88,8 +98,8 @@ namespace rex
 				{
 					if (is_depth_format(attachment_desc.format()))
 					{
-						REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
-						m_depth_stencil_buffer = gfx::gal::instance()->create_depth_stencil_buffer(attachment_desc.width(), attachment_desc.height(), attachment_desc.format(), attachment_desc.clear_state());
+						//REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
+						m_depth_stencil_buffer = attachment_desc.depth_stencil_buffer(); // gfx::gal::instance()->create_depth_stencil_buffer(attachment_desc.width(), attachment_desc.height(), attachment_desc.format(), attachment_desc.clear_state());
 					}
 					else
 					{
@@ -106,20 +116,20 @@ namespace rex
 			if (m_attachments.front().use_swapchain())
 			{
 				// As the swapchain's back buffer gets cleared on a new frame, we don't have to clear it here
-				ctx->set_render_target(gfx::gal::instance()->backbuffer_rendertarget(), m_depth_stencil_buffer.get());
-				if (m_depth_stencil_buffer.get())
-				{
-					ctx->clear_depth_stencil_target(m_depth_stencil_buffer.get());
-				}
+				//ctx->set_render_target(gfx::gal::instance()->backbuffer_rendertarget(), m_depth_stencil_buffer.get());
+				//if (m_depth_stencil_buffer.get())
+				//{
+				//	ctx->clear_depth_stencil_target(m_depth_stencil_buffer.get());
+				//}
 			}
 			else
 			{
-				ctx->set_render_target(m_attachments.front().render_target(), m_depth_stencil_buffer.get());
-				ctx->clear_render_target(m_attachments.front().render_target(), m_depth_stencil_buffer.get());
+				ctx->set_render_target(m_attachments.front().render_target(), m_depth_stencil_buffer);
+				//ctx->clear_render_target(m_attachments.front().render_target(), m_depth_stencil_buffer.get());
 			}
 		}
 
-		const RenderTarget* FrameBuffer::render_target(s32 idx) const
+		RenderTargetBase* FrameBuffer::render_target(s32 idx)
 		{
 			return m_attachments[idx].render_target();
 		}

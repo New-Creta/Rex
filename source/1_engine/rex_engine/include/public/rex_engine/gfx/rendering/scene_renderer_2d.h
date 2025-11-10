@@ -12,6 +12,7 @@
 #include "rex_engine/gfx/rendering/render_passes/block_pass.h"
 
 #include "rex_engine/gfx/resources/animated_sprite.h"
+#include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 
 namespace rex
 {
@@ -48,6 +49,8 @@ namespace rex
 
 			rsl::point<TileCount> m_top_left;
 			rex::Tilemap* m_scene_tilemap;
+
+			rsl::unique_ptr<DepthStencilBuffer> m_depth_buffer;
 
 			rsl::unique_ptr<BlockRenderPass> m_block_render_pass;
 			rsl::unique_ptr<AnimatedSpritesPass> m_animted_sprites_pass;

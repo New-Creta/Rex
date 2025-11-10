@@ -110,7 +110,7 @@ namespace rex
 				});
 		}
 
-		const RenderTarget* RenderPass::render_target(s32 idx) const
+		RenderTargetBase* RenderPass::render_target(s32 idx)
 		{
 			return m_framebuffer->render_target(idx);
 		}

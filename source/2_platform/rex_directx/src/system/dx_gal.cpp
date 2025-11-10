@@ -378,9 +378,10 @@ namespace rex
 			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_depth_stencil(width, height, format, clearStateDesc);
 			DxResourceView desc_handle = create_dsv(d3d_texture.Get());
 
-			auto ds_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format, clearStateDesc);
+			auto dx_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format, clearStateDesc);
+			dx_buffer->debug_set_name("Depth Buffer");
 
-			return ds_buffer;
+			return dx_buffer;
 		}
 		rsl::unique_ptr<ConstantBuffer>       DirectXInterface::create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
 		{

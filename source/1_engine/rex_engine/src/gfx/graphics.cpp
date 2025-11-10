@@ -19,6 +19,8 @@
 #include "rex_engine/gfx/rendering/debug_renderer.h"
 #include "rex_engine/gfx/rendering/ui_renderer.h"
 
+#include "rex_engine/gfx/system/resource_manager.h"
+
 namespace rex
 {
 	namespace gfx
@@ -303,6 +305,8 @@ namespace rex
 		{
 			m_swapchain = gfx::gal::instance()->create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
 			m_backbuffer_render_target = rsl::make_unique<BackBufferRenderTarget>(m_swapchain.get());
+
+			resource_manager::instance()->add_render_target(m_backbuffer_render_target.get(), "Swapchain Render Target");
 		}
 		// Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
 		void GALBase::init_sub_engines()

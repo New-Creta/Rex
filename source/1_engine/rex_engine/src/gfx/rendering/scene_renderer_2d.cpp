@@ -1,5 +1,7 @@
 #include "rex_engine/gfx/rendering/scene_renderer_2d.h"
 
+#include "rex_engine/gfx/system/resource_manager.h"
+
 namespace rex
 {
 	namespace gfx
@@ -7,7 +9,14 @@ namespace rex
 		SceneRenderer2D::SceneRenderer2D()
 			: m_zoom_level(1.0f, 1.0f)
 		{
+
 			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+
+			ClearStateDesc clear_state{};
+			clear_state.flags.add_state(ClearBits::ClearDepthBuffer);
+			clear_state.depth = 0.0f;
+			m_depth_buffer = rex::gfx::gal::instance()->create_depth_stencil_buffer(render_target->width(), render_target->height(), TextureFormat::Depth32, clear_state);
+			resource_manager::instance()->add_depth_stencil_buffer(m_depth_buffer.get(), "World Depth Buffer");
 
 			//rsl::point<TileCount> screen_resolution{};
 			//screen_resolution.x.get() = render_target->width() / m_zoom_level;
@@ -50,8 +59,8 @@ namespace rex
 
 			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
 
-			render_ctx->set_render_target(render_target);
-			render_ctx->clear_render_target(render_target);
+			render_ctx->set_render_target(render_target, m_depth_buffer.get());
+			render_ctx->clear_render_target(render_target, m_depth_buffer.get());
 
 			f32 render_target_width = render_target->width();
 			f32 render_target_height = render_target->height();

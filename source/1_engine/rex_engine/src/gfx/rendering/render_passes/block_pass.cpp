@@ -2,6 +2,7 @@
 
 #include "rex_engine/gfx/system/shader_library.h"
 #include "rex_engine/gfx/rendering/tile_vertex.h"
+#include "rex_engine/gfx/system/resource_manager.h"
 
 #include "rex_engine/filesystem/path.h"
 
@@ -21,7 +22,6 @@ namespace rex
 			// tilemap: Can be null as the user should set the screen resolution. This screen resolution is used to initialize the tilemap
 			// tile render info: The tileset needs to be set in order to have this info. The tileset is set at runtime
 
-			//update_dynamic_inputs(inputs);
 			init();
 		}
 
@@ -46,27 +46,6 @@ namespace rex
 			init_render_info(render_ctx.get());
 			init_tile_indices_uab(render_ctx.get());
 		}
-
-		//void BlockRenderPass::update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs)
-		//{
-		//	if (inputs.tileset != nullptr)
-		//	{
-		//		m_scene_params.tileset = inputs.tileset;
-		//		set("tile_texture", m_scene_params.tileset->tileset_texture());
-		//	}
-		//	if (inputs.render_target != nullptr)
-		//	{
-		//		m_render_target = inputs.render_target;
-		//	}
-		//	if (inputs.screen_resolution.x.get() != 0 && inputs.screen_resolution.y.get() != 0)
-		//	{
-		//		m_screen_resolution = inputs.screen_resolution;
-		//		init_tilemap();
-		//	}
-
-		//	auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		//	init_render_info(render_ctx.get());
-		//}
 
 		void BlockRenderPass::update_tilemap(const BlockRenderPassTilemapParams& params)
 		{
@@ -191,14 +170,6 @@ namespace rex
 			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
 
 			rsl::pointi8 num_tiles_on_screen{};
-			//num_tiles_on_screen.x = tile_size.x;
-			//num_tiles_on_screen.y = tile_size.y;
-
-			//num_tiles_on_screen.x = m_render_target->width() / tile_size.x;
-			//num_tiles_on_screen.y = m_render_target->height() / tile_size.y;
-
-			//num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * inv_zoom_level.x);
-			//num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * inv_zoom_level.y);
 
 			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * m_camera_params.zoom_level.x);
 			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * m_camera_params.zoom_level.y);
@@ -225,7 +196,6 @@ namespace rex
 
 			m_render_metadata.screen_pixel_offset_x = 0;
 			m_render_metadata.screen_pixel_offset_y = 0;
-			//m_render_metadata.inv_pixel_screen_width = 1.0f / (2.0f * tile_size.x * m_camera_params.zoom_level.x); // how big 
 			m_render_metadata.inv_pixel_screen_width = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
 			m_render_metadata.inv_pixel_screen_height = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
@@ -253,10 +223,18 @@ namespace rex
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 			desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
 			desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
+			desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
+
+			desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer")->format();
 
 			// We're rendering directly to the back buffer
-			desc.framebuffer_desc.clear();
-			desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
+			rex::gfx::ClearStateDesc clear_state_desc{};
+			clear_state_desc.depth = 0.0f;
+			clear_state_desc.flags.add_state(rex::gfx::ClearBits::ClearDepthBuffer);
+
+			//desc.framebuffer_desc.clear();
+			desc.framebuffer_desc.emplace_back(FrameBufferAttachmentDesc(rex::gfx::resource_manager::instance()->find_render_target("Swapchain Render Target")));
+			desc.framebuffer_desc.emplace_back(FrameBufferAttachmentDesc(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer")));
 
 			// Assign the shaders used for the tile renderer
 			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);

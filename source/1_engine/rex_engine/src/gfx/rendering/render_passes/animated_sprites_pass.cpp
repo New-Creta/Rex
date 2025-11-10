@@ -7,6 +7,8 @@
 
 #include "rex_engine/gfx/resources/animated_sprite.h"
 
+#include "rex_engine/gfx/system/resource_manager.h"
+
 // rendering animated data is pretty straightforward
 // use the same principles as rendering the static tiles
 // however we also have to store where we want to draw the tile
@@ -243,19 +245,19 @@ namespace rex
 			// to give the illusion of 2.5D
 
 			// top vertices
-			tile_vertices[0] = AnimatedTileVertex{ glm::vec3(0, 0, 0),               rsl::point<f32>(0.0f, 0.0f) };
-			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	0, 0),               rsl::point<f32>(1.0f, 0.0f) };
+			tile_vertices[0] = AnimatedTileVertex{ glm::vec3(0, 0, 1),               rsl::point<f32>(0.0f, 0.0f) };
+			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	0, 1),               rsl::point<f32>(1.0f, 0.0f) };
 
 			// middle vertices
-			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 0),							 rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 0),							 rsl::point<f32>(1.0f, 0.5f) };
+			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 1),							 rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 1),							 rsl::point<f32>(1.0f, 0.5f) };
 
-			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 1),							 rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 1),							 rsl::point<f32>(1.0f, 0.5f) };
+			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 0),							 rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 0),							 rsl::point<f32>(1.0f, 0.5f) };
 
 			// bottom vertices
-			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(0,	-1, 1),							 rsl::point<f32>(0.0f, 1.0f) };
-			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	-1, 1),							 rsl::point<f32>(1.0f, 1.0f) };
+			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(0,	-1, 0),							 rsl::point<f32>(0.0f, 1.0f) };
+			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	-1, 0),							 rsl::point<f32>(1.0f, 1.0f) };
 
 			if (!m_tiles_vb_gpu)
 			{
@@ -352,7 +354,12 @@ namespace rex
 			desc.name = "Animated Sprites Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
+			desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
+			desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
+			desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
 
+			desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer")->format();
+			
 			// Basic blending operation
 			// If we output an alpha value of 0.0f
 			// we use the pixel that's in the render target
@@ -366,8 +373,8 @@ namespace rex
 			desc.pso_desc.output_merger.blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
 
 			// We're rendering directly to the back buffer
-			desc.framebuffer_desc.clear();
-			desc.framebuffer_desc.emplace_back(rex::gfx::swapchain_frame_buffer_handle());
+			desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_render_target("Swapchain Render Target"));
+			desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer"));
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");

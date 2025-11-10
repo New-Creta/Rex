@@ -71,8 +71,12 @@ float4 calculate_vertex_position(VertexIn vin)
   pos.y -= (8 * inv_tile_screen_height);
   pos.y += 4 * (inv_tile_screen_height / 8);
     
+  float z = vin.PosL.z + (player_is_on_grass * 1.0f);
+  z = min(1.0f, z);
+  // z = 0 * x + y == 1
+  // z = 1 * x + y == 1
   // Offset the position to this position
-  return float4(pos, vin.PosL.z * player_is_on_grass, 1.0f);
+  return float4(pos, z, 1.0f);
 }
 
 float2 calculate_vertex_uv(VertexIn vin)

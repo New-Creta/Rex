@@ -89,7 +89,7 @@ namespace rex
 			virtual void post_pass() {};
 
 		protected:
-			const RenderTarget* render_target(s32 idx) const;
+			RenderTargetBase* render_target(s32 idx);
 
 			void bind_my_params_to_pipeline(RenderContext* ctx);
 

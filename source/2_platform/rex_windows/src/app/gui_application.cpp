@@ -38,6 +38,7 @@
 #include "rex_engine/gfx/imgui/imgui_renderer.h"
 
 #include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+#include "rex_engine/gfx/system/resource_manager.h"
 
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
@@ -146,6 +147,7 @@ namespace rex
         gfx::shader_lib::shutdown();
         gfx::gal::shutdown();
         win::com_lib::shutdown();
+        gfx::resource_manager::shutdown();
       }
 
     private:
@@ -348,6 +350,8 @@ namespace rex
         user_data.window_height          = m_window->height();
         user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::instance()->get_int("max_frames_in_flight", 3);
+
+        gfx::resource_manager::init(globals::make_unique<gfx::ResourceManager>());
 
 #ifdef REX_USING_DIRECTX
         gfx::gal::init(globals::make_unique<gfx::DirectXInterface>(user_data));
