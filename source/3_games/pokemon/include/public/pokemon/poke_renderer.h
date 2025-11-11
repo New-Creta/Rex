@@ -31,6 +31,6 @@
 //
 //	private:
 //		rex::gfx::BlockRenderPass* m_block_render_pass;
-//		rex::gfx::AnimatedSpritesPass* m_animted_sprites_pass;
+//		rex::gfx::AnimatedSpritesPass* m_animated_sprites_pass;
 //	};
 //}

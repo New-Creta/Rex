@@ -82,6 +82,11 @@ namespace rex
 		{
 			m_parameters_store->set(name, sampler);
 		}
+		void RenderPass::set(rsl::string_view name, const RenderTarget* rt)
+		{
+			m_parameters_store->set(name, rt);
+		}
+
 		s32 RenderPass::slot(rsl::string_view name) const
 		{
 			return m_parameters_store->location(name).slot;

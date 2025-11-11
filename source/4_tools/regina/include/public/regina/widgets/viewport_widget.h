@@ -78,7 +78,7 @@ namespace regina
 		// The render target we're rendering to
 		rsl::unique_ptr<rex::gfx::RenderTarget> m_render_target;
 		// The render target's view as shader resource view, so it can be used in a shader
-		rsl::unique_ptr<rex::gfx::ResourceView> m_render_target_srv;
+		rex::gfx::ResourceView* m_render_target_srv;
 
 		// The actual render pass used for rendering
 		rsl::unique_ptr<rex::gfx::BlockRenderPass> m_block_render_pass;

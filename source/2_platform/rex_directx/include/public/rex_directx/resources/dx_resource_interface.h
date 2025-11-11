@@ -15,7 +15,7 @@ namespace rex
 
 			// This is made virtual so derived classes can be made
 			// that wrap resources and don't store them directly
-			virtual ID3D12Resource* dx_object() = 0;
+			virtual ID3D12Resource* dx_object() const = 0;
 		};
 	}
 }

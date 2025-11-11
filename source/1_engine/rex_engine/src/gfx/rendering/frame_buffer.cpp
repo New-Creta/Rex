@@ -12,6 +12,7 @@ namespace rex
 	{
 		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(SwapchainFrameBufferHandle)
 			: m_use_swapchain(true)
+			, m_depth_stencil_buffer(nullptr)
 		{}
 
 		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
@@ -19,10 +20,15 @@ namespace rex
 			, m_height(height)
 			, m_format(format)
 			, m_clear_state_desc(clearStateDesc)
+			, m_depth_stencil_buffer(nullptr)
 		{}
 
 		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(RenderTargetBase* renderTarget)
 			: m_render_target(renderTarget)
+			, m_width(renderTarget->width())
+			, m_height(renderTarget->height())
+			, m_format(TextureFormat::Unorm4Srgb)
+			, m_depth_stencil_buffer(nullptr)
 		{}
 
 		bool FrameBufferAttachmentDesc::use_swapchain() const
@@ -82,6 +88,7 @@ namespace rex
 		}
 
 		FrameBuffer::FrameBuffer(const FrameBufferDesc& desc)
+			: m_depth_stencil_buffer(nullptr)
 		{
 			for (auto& attachment_desc : desc)
 			{

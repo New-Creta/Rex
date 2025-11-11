@@ -88,7 +88,7 @@ namespace regina
 			ImGui::DragFloat("camera speed: ", &m_camera_move_speed, cam_speed_step, cam_speed_min, cam_speed_max, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 
 			ImVec2 imageSize{ (f32)m_render_target->width(), (f32)m_render_target->height() };
-			ImGui::Image((ImTextureID)m_render_target_srv.get(), imageSize);
+			ImGui::Image((ImTextureID)m_render_target_srv, imageSize);
 		}
 	}
 

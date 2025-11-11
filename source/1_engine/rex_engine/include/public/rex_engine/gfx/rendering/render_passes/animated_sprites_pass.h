@@ -89,7 +89,7 @@ namespace rex
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
-			RenderPassDesc create_desc() const;
+			RenderPassDesc create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const;
 
 			void init();
 

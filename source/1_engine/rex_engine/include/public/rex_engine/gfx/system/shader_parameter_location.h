@@ -10,8 +10,9 @@ namespace rex
 		// The 2D offset within a list of views
 		struct ViewOffset
 		{
-			s32 range_offset;			// the index of the range itself, within a list of ranges
-			s32 offset_within_range;	// the index of the view within the range it belongs to
+			//s32 range_offset;			// the index of the range itself, within a list of ranges
+			//s32 offset_within_range;	// the index of the view within the range it belongs to
+			s32 abs_offset; // the absolute offset of the view within the list
 		};
 
 		// A shader parameter can be stored at a certain location in a parameter store

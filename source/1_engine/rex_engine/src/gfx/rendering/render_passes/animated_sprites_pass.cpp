@@ -48,7 +48,7 @@ namespace rex
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
-			: RenderPass(create_desc())
+			: RenderPass(create_desc(creationInfo))
 			, m_render_target(creationInfo.render_target)
 		{
 			init();
@@ -332,6 +332,7 @@ namespace rex
 			{
 				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(SceneRenderInfo));
 				set("RenderingMetaData", m_tile_render_info.get());
+				set("RenderingMetaData2", m_tile_render_info.get());
 			}
 		}
 		void AnimatedSpritesPass::init_tile_indices_uab()
@@ -344,21 +345,22 @@ namespace rex
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
 			set("default_sampler", default_sampler);
+			//set("background_texture", (RenderTarget*)m_render_target);
 			//set("TileIndexIntoTextureBuffer", m_per_instance_info.get());
 		}
 
-		RenderPassDesc AnimatedSpritesPass::create_desc() const
+		RenderPassDesc AnimatedSpritesPass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const
 		{
 			RenderPassDesc desc{};
 
 			desc.name = "Animated Sprites Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
-			desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
-			desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
-			desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
+			//desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
+			//desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
+			//desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
 
-			desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer")->format();
+			//desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer")->format();
 			
 			// Basic blending operation
 			// If we output an alpha value of 0.0f
@@ -373,8 +375,8 @@ namespace rex
 			desc.pso_desc.output_merger.blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
 
 			// We're rendering directly to the back buffer
-			desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_render_target("Swapchain Render Target"));
-			desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Depth Buffer"));
+			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
+			//desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer"));
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");

@@ -30,8 +30,12 @@ namespace rex
 			m_expected_register = resource.shader_register + 1;
 
 			ViewOffset view_offset{};
-			view_offset.range_offset = m_ranges.size();
-			view_offset.offset_within_range = resource.shader_register - m_start_register;
+			view_offset.abs_offset = 0;
+			for (const ViewRangeDeclaration& range : m_ranges)
+			{
+				view_offset.abs_offset += range.num_views;
+			}
+			view_offset.abs_offset += resource.shader_register - m_start_register;
 
 			return view_offset;
 		}

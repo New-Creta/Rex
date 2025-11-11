@@ -20,7 +20,7 @@ namespace rex
 
 			// This is made virtual so derived classes can be made
 			// that wrap resources and don't store them directly
-			ID3D12Resource* dx_object() override
+			ID3D12Resource* dx_object() const override
 			{
 				return m_resource.Get();
 			}

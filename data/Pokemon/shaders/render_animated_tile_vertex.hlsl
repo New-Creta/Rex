@@ -76,7 +76,7 @@ float4 calculate_vertex_position(VertexIn vin)
   // z = 0 * x + y == 1
   // z = 1 * x + y == 1
   // Offset the position to this position
-  return float4(pos, z, 1.0f);
+  return float4(pos, vin.PosL.z, 1.0f);
 }
 
 float2 calculate_vertex_uv(VertexIn vin)

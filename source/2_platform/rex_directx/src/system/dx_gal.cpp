@@ -28,7 +28,6 @@
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
 
-
 #include "rex_engine/gfx/graphics.h"
 
 #include "rex_directx/resources/dx_root_signature.h"
@@ -58,6 +57,7 @@
 #include "rex_engine/gfx/materials/material_library.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
 #include "rex_engine/gfx/system/resource_cache.h"
+#include "rex_engine/gfx/system/resource_manager.h"
 
 
 
@@ -506,10 +506,17 @@ namespace rex
 		
 		// View creation
 		// -------------------------------------------
-		rsl::unique_ptr<ResourceView> DirectXInterface::create_srv(RenderTarget* rt)
+		ResourceView* DirectXInterface::create_srv(const RenderTarget* rt)
 		{
+			ResourceView* cached_view = resource_manager::instance()->shader_resource_view(rt);
+			if (cached_view)
+			{
+				return cached_view;
+			}
+
 			DxResourceView view = create_texture2d_srv(d3d::to_dx12(rt)->dx_object());
-			return rsl::make_unique<DxResourceView>(view);
+			rsl::unique_ptr<ResourceView> view_ptr = rsl::make_unique<DxResourceView>(view);
+			return resource_manager::instance()->store_shader_resource_view(rt, rsl::move(view_ptr));
 		}
 
 

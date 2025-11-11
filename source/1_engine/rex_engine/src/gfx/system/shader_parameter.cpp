@@ -51,6 +51,11 @@ namespace rex
 		{
 			REX_ASSERT("Samplers cannot be tied to an inline view. They need to be tied to a view table");
 		}
+		void ViewShaderParam::update_view(ViewOffset offset, const RenderTarget* rt)
+		{
+			REX_ASSERT("Render targets (as textures) cannot be tied to an inline view. They need to be tied to a view table");
+		}
+
 		void ViewShaderParam::bind_to(RenderContext* ctx) const
 		{
 			switch (type())
@@ -63,8 +68,8 @@ namespace rex
 		{
 			REX_UNUSED_PARAM(offset);
 
-			REX_ASSERT_X(offset.range_offset == 0, "Invalid range offset for binding a single view");
-			REX_ASSERT_X(offset.offset_within_range == 0, "Invalid offset within range for binding a single view");
+			REX_ASSERT_X(offset.abs_offset == 0, "Invalid range offset for binding a single view");
+			//REX_ASSERT_X(offset.offset_within_range == 0, "Invalid offset within range for binding a single view");
 			m_gpu_address = gpuAddress;
 		}
 
@@ -92,6 +97,11 @@ namespace rex
 		{
 			update_view(offset, sampler->resource_view());
 		}
+		void ViewTableShaderParam::update_view(ViewOffset offset, const RenderTarget* rt)
+		{
+			const ResourceView* view = gal::instance()->create_srv(rt);
+			update_view(offset, view);
+		}
 		void ViewTableShaderParam::bind_to(RenderContext* ctx) const
 		{
 			ResourceViewType target_view_heap_type = ResourceViewType::Undefined;
@@ -111,8 +121,7 @@ namespace rex
 
 		void ViewTableShaderParam::update_view(ViewOffset offset, const ResourceView* view)
 		{
-			s32 abs_offset = offset.range_offset * offset.offset_within_range;
-			m_views[abs_offset] = view;
+			m_views[offset.abs_offset] = view;
 		}
 	}
 }

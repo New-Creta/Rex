@@ -24,7 +24,7 @@
 //		rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
 //		animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
 //		animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
-//		m_animted_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
+//		m_animated_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
 //
 //		// draw the water
 //		// water is animated by bit shifting its pixels

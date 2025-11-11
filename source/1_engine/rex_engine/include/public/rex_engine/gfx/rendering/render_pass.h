@@ -10,6 +10,7 @@
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
+#include "rex_engine/gfx/resources/render_target.h"
 
 #include "rex_engine/text_processing/json.h"
 
@@ -70,6 +71,7 @@ namespace rex
 			void set(rsl::string_view name, const UnorderedAccessBuffer* unorderedAccessBuffer);
 			void set(rsl::string_view name, const Texture2D* texture);
 			void set(rsl::string_view name, const Sampler2D* sampler);
+			void set(rsl::string_view name, const RenderTarget* rt);
 
 			// Return the slot of a renderpass parameter
 			s32 slot(rsl::string_view name) const;

@@ -13,6 +13,7 @@ namespace rex
 		class Sampler2D;
 		class ResourceView;
 		class RenderContext;
+		class RenderTarget;
 
 		// The parameter that's bound to the shader
 		enum class ShaderParameterType
@@ -50,6 +51,7 @@ namespace rex
 			virtual void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) = 0;
 			virtual void update_view(ViewOffset offset, const Texture2D* texture) = 0;
 			virtual void update_view(ViewOffset offset, const Sampler2D* sampler) = 0;
+			virtual void update_view(ViewOffset offset, const RenderTarget* rt) = 0;
 
 			// Bind the shader parameter to a render context
 			virtual void bind_to(RenderContext* ctx) const = 0;
@@ -69,6 +71,7 @@ namespace rex
 			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(ViewOffset offset, const Texture2D* texture) override;
 			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
+			void update_view(ViewOffset offset, const RenderTarget* rt) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
@@ -94,6 +97,7 @@ namespace rex
 			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(ViewOffset offset, const Texture2D* texture) override;
 			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
+			void update_view(ViewOffset offset, const RenderTarget* rt) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;

@@ -326,6 +326,11 @@ namespace rex
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
     }
 
+    // Set stencil buffer data
+    void DxRenderContext::set_stencil_value(u8 value)
+    {
+      m_cmd_list->OMSetStencilRef(value);
+    }
 
 
 

@@ -94,7 +94,7 @@ namespace rex
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
-			RenderPassDesc create_desc() const;
+			RenderPassDesc create_desc(const BlockRenderPassCreationInfo& creationInfo) const;
 
 			void init();
 

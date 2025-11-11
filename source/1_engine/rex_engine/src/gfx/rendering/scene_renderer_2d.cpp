@@ -10,13 +10,18 @@ namespace rex
 			: m_zoom_level(1.0f, 1.0f)
 		{
 
-			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+			m_render_target = rex::gfx::gal::instance()->create_render_target(
+				gal::instance()->back_buffer_width(),
+				gal::instance()->back_buffer_height(),
+				TextureFormat::Unorm4Srgb
+				);
+			//BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
 
 			ClearStateDesc clear_state{};
-			clear_state.flags.add_state(ClearBits::ClearDepthBuffer);
-			clear_state.depth = 0.0f;
-			m_depth_buffer = rex::gfx::gal::instance()->create_depth_stencil_buffer(render_target->width(), render_target->height(), TextureFormat::Depth32, clear_state);
-			resource_manager::instance()->add_depth_stencil_buffer(m_depth_buffer.get(), "World Depth Buffer");
+			clear_state.flags.add_state(ClearBits::ClearStencilBuffer);
+			clear_state.stencil = 0;
+			m_stencil_buffer = rex::gfx::gal::instance()->create_depth_stencil_buffer(m_render_target->width(), m_render_target->height(), TextureFormat::Depth24Stencil8, clear_state);
+			resource_manager::instance()->add_depth_stencil_buffer(m_stencil_buffer.get(), "World Stencil Buffer");
 
 			//rsl::point<TileCount> screen_resolution{};
 			//screen_resolution.x.get() = render_target->width() / m_zoom_level;
@@ -30,7 +35,7 @@ namespace rex
 			//block_pass_inputs.tileset = tileset;
 			//block_pass_inputs.screen_resolutions = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
 			BlockRenderPassCreationInfo blockpass_creation_info{};
-			blockpass_creation_info.render_target = render_target;
+			blockpass_creation_info.render_target = m_render_target.get();
 
 			m_block_render_pass = rsl::make_unique<BlockRenderPass>(blockpass_creation_info);
 
@@ -41,8 +46,8 @@ namespace rex
 			//animated_sprites_inputs.render_target = render_target;
 			//animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
 			AnimatedSpritePassCreationInfo animatedspritepass_creation_info{};
-			animatedspritepass_creation_info.render_target = render_target;
-			m_animted_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animatedspritepass_creation_info);
+			animatedspritepass_creation_info.render_target = m_render_target.get();
+			m_animated_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animatedspritepass_creation_info);
 
 			// draw the water
 			// water is animated by bit shifting its pixels
@@ -51,6 +56,11 @@ namespace rex
 			// draw the UI
 			//m_ui_pass = rex::gfx::renderer::instance()->add_render_pass(rsl::make_unique<UiPass>());
 
+			// composite the final render target based on input of above
+			 CompositePassCreationInfo compositepass_creation_info{};
+			 compositepass_creation_info.dst_render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
+			 compositepass_creation_info.src_render_target = m_render_target.get();
+			 m_composite_pass = rsl::make_unique<CompositePass>(compositepass_creation_info);
 		}
 
 		void SceneRenderer2D::render()
@@ -59,8 +69,8 @@ namespace rex
 
 			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
 
-			render_ctx->set_render_target(render_target, m_depth_buffer.get());
-			render_ctx->clear_render_target(render_target, m_depth_buffer.get());
+			render_ctx->set_render_target(render_target, m_stencil_buffer.get());
+			render_ctx->clear_render_target(render_target, m_stencil_buffer.get());
 
 			f32 render_target_width = render_target->width();
 			f32 render_target_height = render_target->height();
@@ -74,11 +84,13 @@ namespace rex
 			render_tilemap(render_ctx.get());
 			render_flipbook_animations(render_ctx.get());
 			render_dynamic_animations(render_ctx.get());
+
+			m_composite_pass->render(render_ctx.get());
 		}
 
 		void SceneRenderer2D::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite)
 		{
-			m_animted_sprites_pass->add_sprite(rsl::move(animatedSprite));
+			m_animated_sprites_pass->add_sprite(rsl::move(animatedSprite));
 		}
 
 		void SceneRenderer2D::update_params(const SceneRenderParams& params)
@@ -99,7 +111,7 @@ namespace rex
 			params.zoom_level = m_zoom_level;
 
 			m_block_render_pass->update_camera_params(params);
-			m_animted_sprites_pass->update_camera_params(params);
+			m_animated_sprites_pass->update_camera_params(params);
 		}
 
 		void SceneRenderer2D::notify_new_tileset(const TilesetAsset* tileset)
@@ -108,7 +120,7 @@ namespace rex
 			params.tileset = tileset;
 
 			m_block_render_pass->update_scene_params(params);
-			m_animted_sprites_pass->update_scene_params(params);
+			m_animated_sprites_pass->update_scene_params(params);
 
 			//BlockRenderPassDynamicInputs inputs{};
 			//inputs.tileset = tileset;
@@ -130,7 +142,7 @@ namespace rex
 
 		void SceneRenderer2D::render_flipbook_animations(RenderContext* renderCtx)
 		{
-			m_animted_sprites_pass->render(renderCtx);
+			m_animated_sprites_pass->render(renderCtx);
 		}
 
 		void SceneRenderer2D::render_dynamic_animations(RenderContext* renderCtx)

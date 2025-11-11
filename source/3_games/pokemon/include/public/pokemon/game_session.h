@@ -56,7 +56,7 @@ namespace pokemon
     rsl::unique_ptr<PlayerCharacter> m_player_character;
 
     //rex::gfx::BlockRenderPass* m_block_render_pass;
-    //rex::gfx::AnimatedSpritesPass* m_animted_sprites_pass;
+    //rex::gfx::AnimatedSpritesPass* m_animated_sprites_pass;
     
     //PokemonRenderer* m_renderer;
   };

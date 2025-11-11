@@ -158,6 +158,9 @@ namespace rex
 			// Update a texture's data
 			virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 
+			// Set stencil buffer data
+			virtual void set_stencil_value(u8 value) = 0;
+
 		protected:
 			void type_specific_reset(const ContextResetData& resetData);
 
