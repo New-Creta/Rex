@@ -332,7 +332,7 @@ namespace rex
 			{
 				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(SceneRenderInfo));
 				set("RenderingMetaData", m_tile_render_info.get());
-				set("RenderingMetaData2", m_tile_render_info.get());
+				//set("RenderingMetaData2", m_tile_render_info.get());
 			}
 		}
 		void AnimatedSpritesPass::init_tile_indices_uab()
@@ -380,8 +380,8 @@ namespace rex
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "render_animated_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "render_animated_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout =
 			{

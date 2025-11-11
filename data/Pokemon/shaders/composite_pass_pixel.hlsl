@@ -9,7 +9,7 @@ struct PS_INPUT
 SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
 Texture2D src_render_target : register(t0, RENDER_PASS_REGISTER_SPACE);
 
-float4 main(PS_INPUT pin) : SV_Target
+float4 PSMain(PS_INPUT pin) : SV_Target
 {
   // As textures are not in sRGB color space, we have to convert them
   float4 texture_color = src_render_target.Sample(default_sampler, pin.Uv);

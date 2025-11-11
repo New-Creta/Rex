@@ -6,7 +6,7 @@ struct PS_INPUT
   float2 Uv : TEXCOORD0;
 };
 
-cbuffer RenderingMetaData2 : register(b1, RENDER_PASS_REGISTER_SPACE)
+cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 {
   // Render target data
   float inv_tile_screen_width; // the inverse of the width of a single tile on the screen
@@ -32,7 +32,11 @@ SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
 Texture2D sprite_texture : register(t0, RENDER_PASS_REGISTER_SPACE);
 Texture2D background_texture : register(t1, RENDER_PASS_REGISTER_SPACE);
 
-float4 main(PS_INPUT pin) : SV_Target
+// See https://asawicki.info/news_1516_half-pixel_offset_in_directx_11 for information about the half pixel rule
+// the position input will always be the pixel idx value, with an offset of 0.5
+// we need to convert this position back into screen space, so we divide it by the resolution
+
+float4 PSMain(PS_INPUT pin) : SV_Target
 {
   // pin.PosH.x is of a rangbe between 0.5 and (width - 1) + 0.5
   // pin.PosH.y is of a rangbe between 0.5 and (height - 1) + 0.5

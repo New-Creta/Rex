@@ -26,7 +26,7 @@ namespace rex
 				return nullptr;
 			}
 
-			rsl::string_view name = shader_name(path);
+			scratch_string name = shader_name(path, type);
 
 			// If shader is cached already, just return that one
 			Shader* cached_shader = load(name);
@@ -68,9 +68,9 @@ namespace rex
 			m_shader_map.clear();
 		}
 
-		rsl::string_view ShaderLibrary::shader_name(rsl::string_view path) const
+		scratch_string ShaderLibrary::shader_name(rsl::string_view path, ShaderType type) const
 		{
-			return path::stem(path);
+			return scratch_string(rsl::format("{}_{}", path::stem(path), rsl::enum_refl::enum_name(type)));
 		}
 
 		namespace shader_lib

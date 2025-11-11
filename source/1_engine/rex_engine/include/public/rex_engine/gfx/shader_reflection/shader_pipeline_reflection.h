@@ -12,7 +12,7 @@ namespace rex
 		struct ShaderPipelineReflection
 		{
 			// This holds the parameters that are needed for the shader pipeline, but does not hold any data for them
-			// It just lists the expectedtype of resources that are expected to be bound and what slots they'll be bound to
+			// It just lists the expected type of resources that are expected to be bound and what slots they'll be bound to
 			rsl::vector<ShaderParameterDeclaration> parameters;
 
 			// This holds a lookup table from resource name to location within the above parameters

@@ -418,7 +418,7 @@ namespace rex
 		{
 			CompileShaderDesc compile_vs_desc{};
 			compile_vs_desc.shader_source_code = sourceCode;
-			compile_vs_desc.shader_entry_point = "main";
+			compile_vs_desc.shader_entry_point = "VSMain";
 			compile_vs_desc.shader_feature_target = "vs_5_1";
 			compile_vs_desc.shader_name = shaderName;
 			compile_vs_desc.shader_type = ShaderType::Vertex;
@@ -440,7 +440,7 @@ namespace rex
 		{
 			CompileShaderDesc compile_ps_desc{};
 			compile_ps_desc.shader_source_code = sourceCode;
-			compile_ps_desc.shader_entry_point = "main";
+			compile_ps_desc.shader_entry_point = "PSMain";
 			compile_ps_desc.shader_feature_target = "ps_5_1";
 			compile_ps_desc.shader_name = shaderName;
 			compile_ps_desc.shader_type = ShaderType::Pixel;

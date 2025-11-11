@@ -29,6 +29,15 @@ namespace rex
 
 		ShaderPipelineReflection ShaderPipelineReflectionBuilder::build()
 		{
+			// Deduplicate parameters between shaders if they share the same name
+			ShaderPipelineReflection final_result;
+			for (const ShaderParameterDesc& decl : m_reflection_result.material_param_store_desc.shader_resource_descs)
+			{
+				
+			}
+			
+
+
 			return rsl::exchange(m_reflection_result, ShaderPipelineReflection());
 		}
 

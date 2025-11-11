@@ -144,7 +144,7 @@ float2 calculate_vertex_uv(VertexIn vin)
   return uv;
 }
 
-VertexOut main(VertexIn vin)
+VertexOut VSMain(VertexIn vin)
 {
   VertexOut vout;
   

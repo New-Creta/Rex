@@ -12,7 +12,7 @@ struct VertexOut
   float2 Uv : TEXCOORD0;
 };
 
-VertexOut main(VertexIn vin)
+VertexOut VSMain(VertexIn vin)
 {
   VertexOut vout;
   
