@@ -345,7 +345,7 @@ namespace rex
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
 			set("default_sampler", default_sampler);
-			//set("background_texture", (RenderTarget*)m_render_target);
+			set("background_texture", (RenderTarget*)m_render_target);
 			//set("TileIndexIntoTextureBuffer", m_per_instance_info.get());
 		}
 
