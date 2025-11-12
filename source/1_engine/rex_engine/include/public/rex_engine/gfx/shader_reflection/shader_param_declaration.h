@@ -43,11 +43,11 @@ namespace rex
 				, visibility(shaderVis)
 			{}
 
-			s32 slot;									// the slot the parameter belongs to
-			s32 total_num_views;						// the total number of views within the parameter, this is the sum of all the views in every range
-			ShaderParameterType type;					// the type of the views within the ranges
-			rsl::vector<ViewRangeDeclaration> ranges;	// the ranges the parameter holds
-			ShaderVisibility visibility;				// which shader has visibility to this parameter
+			s32 slot;																		// the slot the parameter belongs to. Slot are like parameter indices in the root signature (for DX12)
+			s32 total_num_views;												// the total number of views within the parameter, this is the sum of all the views in every range
+			ShaderParameterType type;										// the type of the views within the ranges
+			rsl::vector<ViewRangeDeclaration> ranges;		// the ranges the parameter holds
+			ShaderVisibility visibility;								// which shader has visibility to this parameter
 		};
 	}
 }

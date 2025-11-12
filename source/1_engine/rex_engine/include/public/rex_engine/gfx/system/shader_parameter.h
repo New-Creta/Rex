@@ -47,11 +47,11 @@ namespace rex
 			ShaderParameterType type() const;
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			virtual void update_view(ViewOffset offset, const ConstantBuffer* cb) = 0;
-			virtual void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) = 0;
-			virtual void update_view(ViewOffset offset, const Texture2D* texture) = 0;
-			virtual void update_view(ViewOffset offset, const Sampler2D* sampler) = 0;
-			virtual void update_view(ViewOffset offset, const RenderTarget* rt) = 0;
+			virtual void update_view(s32 offset, const ConstantBuffer* cb) = 0;
+			virtual void update_view(s32 offset, const UnorderedAccessBuffer* uab) = 0;
+			virtual void update_view(s32 offset, const Texture2D* texture) = 0;
+			virtual void update_view(s32 offset, const Sampler2D* sampler) = 0;
+			virtual void update_view(s32 offset, const RenderTarget* rt) = 0;
 
 			// Bind the shader parameter to a render context
 			virtual void bind_to(RenderContext* ctx) const = 0;
@@ -67,18 +67,18 @@ namespace rex
 			ViewShaderParam(const ShaderParameterDesc& desc);
 
 			// Update a certain resource within the shader parameter, guaranteed there's only 1
-			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
-			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
-			void update_view(ViewOffset offset, const Texture2D* texture) override;
-			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
-			void update_view(ViewOffset offset, const RenderTarget* rt) override;
+			void update_view(s32 offset, const ConstantBuffer* cb) override;
+			void update_view(s32 offset, const UnorderedAccessBuffer* uab) override;
+			void update_view(s32 offset, const Texture2D* texture) override;
+			void update_view(s32 offset, const Sampler2D* sampler) override;
+			void update_view(s32 offset, const RenderTarget* rt) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
 
 		private:
 			// Update a certain resource within the shader parameter, guaranteed there's only 1
-			void update_view(ViewOffset offset, u64 gpuAddress);
+			void update_view(s32 offset, u64 gpuAddress);
 
 		private:
 			// For single views, we need to pass the gpu address
@@ -93,18 +93,18 @@ namespace rex
 			ViewTableShaderParam(const ShaderParameterDesc& desc);
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
-			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
-			void update_view(ViewOffset offset, const Texture2D* texture) override;
-			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
-			void update_view(ViewOffset offset, const RenderTarget* rt) override;
+			void update_view(s32 offset, const ConstantBuffer* cb) override;
+			void update_view(s32 offset, const UnorderedAccessBuffer* uab) override;
+			void update_view(s32 offset, const Texture2D* texture) override;
+			void update_view(s32 offset, const Sampler2D* sampler) override;
+			void update_view(s32 offset, const RenderTarget* rt) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
 
 		private:
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			void update_view(ViewOffset offset, const ResourceView* view);
+			void update_view(s32 offset, const ResourceView* view);
 
 		private:
 			rsl::vector<const ResourceView*> m_views;

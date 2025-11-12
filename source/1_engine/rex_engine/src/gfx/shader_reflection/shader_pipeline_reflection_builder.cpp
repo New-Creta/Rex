@@ -68,7 +68,7 @@ namespace rex
 
 			// Resource inputs will always be from the same shader, same type and register space
 			// Chances are we have 1 continious range that can store all the resources
-			// However, it is possible that resource registers are not continious
+			// However, it is possible that resource registers are not continuous
 			// in which case we split the resources of in another range
 
 			rsl::vector<ShaderResourceDeclaration> cb_views;
@@ -100,6 +100,9 @@ namespace rex
 			{
 				const ShaderResourceDeclaration& resource = resources[i];
 
+				// If the resource was already found in the map, meaning it's visible in another shader
+				// we have to add this shader's visibility to the existing entry's visibility
+				// instead of adding a new entry
 				if (paramStoreDesc->param_map.contains(resource.name))
 				{
 					s32 param_slot = paramStoreDesc->param_map.at(resource.name).slot;
@@ -119,8 +122,7 @@ namespace rex
 				s32 idx = paramStoreDesc->shader_resource_descs.size();
 
 				REX_ASSERT_X(resource.register_space == expectedRegisterSpace, "Unexpected register space of resource. space: {} expected: {}", resource.register_space, expectedRegisterSpace);
-				ViewOffset view_offset{};
-				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
+				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, 0 });
 				ViewRangeDeclaration view_range = ViewRangeDeclaration(resource.shader_register, 1, type, resource.register_space);
 				const auto& view_table = m_reflection_result.parameters.emplace_back(ShaderParameterDeclaration(slot, { view_range }, 1, type, visibility));
 				paramStoreDesc->shader_resource_descs.push_back(ShaderParameterDesc{ type, slot, view_table.total_num_views });
@@ -141,7 +143,10 @@ namespace rex
 			for (s32 i = 0; i < resources.size(); ++i)
 			{
 				const ShaderResourceDeclaration& resource = resources[i];
-				ViewOffset view_offset = view_table_builder.add_resource(resource);
+				REX_ASSERT_X(!paramStoreDesc->param_map.contains(resource.name), "Cannot use a non-constant buffer resource of the same name in multiple shaders.");
+
+
+				s32 view_offset = view_table_builder.add_resource(resource);
 				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 			}
 

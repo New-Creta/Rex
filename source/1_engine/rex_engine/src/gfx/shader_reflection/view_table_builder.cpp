@@ -16,7 +16,7 @@ namespace rex
 			, m_expected_resource_type(expectedResourceType)
 		{}
 
-		ViewOffset ViewTableBuilder::add_resource(const ShaderResourceDeclaration& resource)
+		s32 ViewTableBuilder::add_resource(const ShaderResourceDeclaration& resource)
 		{
 			REX_ASSERT_X(resource.register_space == m_expected_register_space, "Invalid register space for resource. expected: {} actual: {} resource: {}", m_expected_register, resource.register_space, resource.name);
 			REX_ASSERT_X(resource.resource_type == m_expected_resource_type, "Invalid resource type for resource. expected: {}, actual: {}, resource: {}", rsl::enum_refl::enum_name(m_expected_resource_type), rsl::enum_refl::enum_name(resource.resource_type), resource.name);
@@ -29,15 +29,14 @@ namespace rex
 
 			m_expected_register = resource.shader_register + 1;
 
-			ViewOffset view_offset{};
-			view_offset.abs_offset = 0;
+			s32 abs_offset = 0;
 			for (const ViewRangeDeclaration& range : m_ranges)
 			{
-				view_offset.abs_offset += range.num_views;
+				abs_offset += range.num_views;
 			}
-			view_offset.abs_offset += resource.shader_register - m_start_register;
+			abs_offset += resource.shader_register - m_start_register;
 
-			return view_offset;
+			return abs_offset;
 		}
 
 		ShaderParameterDeclaration ViewTableBuilder::build(s32 slot, ShaderVisibility visibility)
