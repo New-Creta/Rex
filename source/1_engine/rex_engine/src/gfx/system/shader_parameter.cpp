@@ -34,7 +34,9 @@ namespace rex
 		ViewShaderParam::ViewShaderParam(const ShaderParameterDesc& desc)
 			: ShaderParameter(desc)
 			, m_gpu_address(0)
-		{}
+		{
+			REX_ASSERT_X(desc.num_views == 1, "A view shader parameter can only hold a single view");
+		}
 		void ViewShaderParam::update_view(ViewOffset offset, const ConstantBuffer* cb)
 		{
 			update_view(offset, cb->gpu_address());

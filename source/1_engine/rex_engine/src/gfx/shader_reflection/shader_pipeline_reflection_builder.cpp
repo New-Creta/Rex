@@ -1,6 +1,8 @@
 #include "rex_engine/gfx/shader_reflection/shader_pipeline_reflection_builder.h"
 #include "rex_engine/gfx/shader_reflection/view_table_builder.h"
 
+#include "rex_std/bonus/utility/add_flag.h"
+
 namespace rex
 {
 	namespace gfx
@@ -29,15 +31,6 @@ namespace rex
 
 		ShaderPipelineReflection ShaderPipelineReflectionBuilder::build()
 		{
-			// Deduplicate parameters between shaders if they share the same name
-			ShaderPipelineReflection final_result;
-			for (const ShaderParameterDesc& decl : m_reflection_result.material_param_store_desc.shader_resource_descs)
-			{
-				
-			}
-			
-
-
 			return rsl::exchange(m_reflection_result, ShaderPipelineReflection());
 		}
 
@@ -105,10 +98,26 @@ namespace rex
 			// As we're processing a single view and not putting it in a table
 			for (s32 i = 0; i < resources.size(); ++i)
 			{
+				const ShaderResourceDeclaration& resource = resources[i];
+
+				if (paramStoreDesc->param_map.contains(resource.name))
+				{
+					s32 param_slot = paramStoreDesc->param_map.at(resource.name).slot;
+					auto it = rsl::find_if(m_reflection_result.parameters.begin(), m_reflection_result.parameters.end(),
+						[&](const ShaderParameterDeclaration& paramDecl)
+						{
+							return paramDecl.slot == param_slot;
+						});
+
+					REX_ASSERT_X(it != m_reflection_result.parameters.end(), "found existing parameter with name '{}', but not found parameter in list for root signature", resource.name);
+					rsl::add_flag(it->visibility, visibility);
+
+					continue;
+				}
+
 				s32 slot = m_reflection_result.parameters.size();
 				s32 idx = paramStoreDesc->shader_resource_descs.size();
 
-				const ShaderResourceDeclaration& resource = resources[i];
 				REX_ASSERT_X(resource.register_space == expectedRegisterSpace, "Unexpected register space of resource. space: {} expected: {}", resource.register_space, expectedRegisterSpace);
 				ViewOffset view_offset{};
 				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });

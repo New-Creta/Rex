@@ -9,6 +9,6 @@ pushd %RSL_PUBLISH_DIR%
 
 git pull
 
-copy %RSL_DIR% %RSL_PUBLISH_DIR% /Y
+xcopy %RSL_DIR% %RSL_PUBLISH_DIR% /E /Y
 
 popd

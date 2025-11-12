@@ -342,6 +342,12 @@ namespace rex
         case ShaderVisibility::Compute: break;
         }
 
+        // as shader visibility is a bit mask, it's possible more than 1 bit is set, so we have to loop through the bits
+        if ((s32)visibility < (s32)ShaderVisibility::All)
+        {
+          return D3D12_SHADER_VISIBILITY_ALL;
+        }
+
         REX_ASSERT("Unsupported shader visibility for directx 12: {}", rsl::enum_refl::enum_name(visibility));
         return invalid_obj<D3D12_SHADER_VISIBILITY>();
       }
