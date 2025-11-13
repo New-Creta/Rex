@@ -123,7 +123,6 @@ namespace rex
 		void RenderPass::bind_my_params_to_pipeline(RenderContext* ctx)
 		{
 			bind_params_to_pipeline(m_parameters_store.get(), ctx);
-
 		}
 
 		void RenderPass::bind_params_to_pipeline(ShaderParametersStore* paramsStore, RenderContext* ctx)

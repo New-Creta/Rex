@@ -2,12 +2,15 @@
 
 #include "rex_engine/filesystem/path.h"
 
+#include "rex_engine/gfx/core/types.h"
 #include "rex_engine/gfx/system/shader_library.h"
 #include "rex_engine/gfx/rendering/tile_vertex.h"
 
 #include "rex_engine/gfx/resources/animated_sprite.h"
 
 #include "rex_engine/gfx/system/resource_manager.h"
+
+#include "rex_engine/diagnostics/log.h"
 
 // rendering animated data is pretty straightforward
 // use the same principles as rendering the static tiles
@@ -17,34 +20,33 @@
 // the final position based on the inv tile size on the render target
 // It's more likely that the texture will change in a given pass,
 // so we also have to make sure we're using the correct texture for rendering
-// this can be done by storing an array of textures in the shader instead of a single one
+// this can be also done by storing an array of textures in the shader instead of a single one
 // and the per instance data can also store which texture idx need to be used
+// however, that last part is not implemented yet
+// the texture is set per sprite and draw call at the moment
 
 namespace rex
 {
 	namespace gfx
 	{
+		static const s32 FLIP_X_BIT = 0;
+		static const s32 FLIP_Y_BIT = 1;
+		static const s32 RENDER_BOTTOM_BEHIND_BG = 2;
+
 		struct SceneRenderInfo
 		{
-			f32 inv_tile_screen_width;
-			f32 inv_tile_screen_height;
-			//};
-			//struct InstanceRenderInfo
-			//{
-			f32 inv_sprite_screen_width;
-			f32 inv_sprite_screen_height;
+			// screen info
+			glm::vec2 inv_tile_screen_size;
+			glm::vec2 screen_size;
 
-			f32 inv_sprite_texture_width;
-			f32 inv_sprite_texture_height;
+			// sprite info
+			glm::vec2 inv_sprite_screen_size;
+			glm::vec2 inv_sprite_texture_size;
 
-			f32 uv_start_x;
-			f32 uv_start_y;
+			glm::vec2 top_left_offset;
+			glm::vec2 uv_start;
 
-			f32 player_is_on_grass;
-
-			bool flip_x;
-			bool flip_y;
-
+			s32 bit_masks;
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -72,58 +74,19 @@ namespace rex
 			m_sprites.emplace_back(rsl::move(sprite));
 			return m_sprites.back().get();
 		}
-		void AnimatedSpritesPass::push_sprite(const AnimatedSpriteDrawList& drawlist)
-		{
-			s32 max_num_drawlists = 16; // the maximum number of animated characters on screen in pokemon
-			REX_ASSERT_X(m_draw_list.size() < max_num_drawlists, "Cannot push more than {} animated sprites into the drawlist queue", max_num_drawlists);
-
-			m_draw_list.push_back(drawlist);
-		}
 
 		void AnimatedSpritesPass::render(rex::gfx::RenderContext* renderCtx)
 		{
-			//if (m_draw_list.empty())
-			//{
-			//	return;
-			//}
+			if (m_sprites.empty())
+			{
+				return;
+			}
 		
 			bind_to(renderCtx);
 
 			// Bind all the resources to the gfx pipeline
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
-			//renderCtx->set_render_target(m_render_target);
-			//renderCtx->clear_render_target(m_render_target);
-
-			//s32 render_target_width = m_render_target->width();
-			//s32 render_target_height = m_render_target->height();
-
-			//f32 viewport_width = static_cast<f32>(render_target_width);
-			//f32 viewport_height = static_cast<f32>(render_target_height);
-			//rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
-			//renderCtx->set_viewport(viewport);
-
-			//rex::gfx::ScissorRect rect = { 0, 0, viewport_width, viewport_height };
-			//renderCtx->set_scissor_rect(rect);
-
-			struct PerInstanceCB
-			{
-				u32 texture_tiles_per_row;   // the number of tiles per row in the tileset texture
-				f32 inv_texture_width;       // the inverse width of the tileset texture, in pixels
-				f32 inv_texture_height;      // the inverse height of the tileset texture, in pixels
-
-				s16 sprite_idx;
-				bool flip_x;
-				bool flip_y;
-
-				bool player_is_on_grass;
-			};
-
-			// sprites should be draw 0.5f tiles up from where they're positioned
-			// character movements works per pixel
-			// 4 pixels are moved per frame for the player
-			// starting with the current active animation
-			// this mean the camera needs to move in pixels, not tiles
 
 			static s32 counter = 0;
 
@@ -131,18 +94,23 @@ namespace rex
 			for (const rsl::unique_ptr<AnimatedSprite>& sprite : m_sprites)
 			{
 				SceneRenderInfo scene_render_info{};
-				static f32 is_on_grass = 0.0f;
+				static bool is_on_grass = false;
 				if (counter % 60 == 0)
 				{
-					is_on_grass = (f32)!(bool)(is_on_grass);
+					is_on_grass = !is_on_grass;
 				}
 
 				counter++;
 
-				scene_render_info.player_is_on_grass = is_on_grass;
+				if (is_on_grass)
+				{
+					rsl::add_flag(scene_render_info.bit_masks, BIT(RENDER_BOTTOM_BEHIND_BG));
+				}
 
-				scene_render_info.inv_sprite_texture_width = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
-				scene_render_info.inv_sprite_texture_height = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
+				scene_render_info.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
+				scene_render_info.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
+
+				scene_render_info.top_left_offset = { 8.0f, 7.5f };
 
 				rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
@@ -165,18 +133,27 @@ namespace rex
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
 
-				scene_render_info.inv_sprite_screen_width = inv_sprite_width;
-				scene_render_info.inv_sprite_screen_height = inv_sprite_height;
+				scene_render_info.inv_sprite_screen_size.x = inv_sprite_width;
+				scene_render_info.inv_sprite_screen_size.y = inv_sprite_height;
 
-				scene_render_info.inv_tile_screen_width = inv_tile_width;
-				scene_render_info.inv_tile_screen_height = inv_tile_height;
+				scene_render_info.inv_tile_screen_size.x = inv_tile_width;
+				scene_render_info.inv_tile_screen_size.y = inv_tile_height;
+
+				scene_render_info.screen_size.x = m_render_target->width();
+				scene_render_info.screen_size.y = m_render_target->height();
 
 				rsl::point<f32> uv_start = sprite->current_sprite_uv();
-				scene_render_info.uv_start_x = uv_start.x;
-				scene_render_info.uv_start_y = uv_start.y;
+				scene_render_info.uv_start.x = uv_start.x;
+				scene_render_info.uv_start.y = uv_start.y;
 
-				scene_render_info.flip_x = sprite->current_sprite().flip_x;
-				scene_render_info.flip_y = sprite->current_sprite().flip_y;
+				if (sprite->current_sprite().flip_x)
+				{
+					rsl::add_flag(scene_render_info.bit_masks, BIT(FLIP_X_BIT));
+				}
+				if (sprite->current_sprite().flip_y)
+				{
+					rsl::add_flag(scene_render_info.bit_masks, BIT(FLIP_Y_BIT));
+				}
 
 				renderCtx->update_buffer(m_tile_render_info.get(), &scene_render_info, sizeof(scene_render_info));
 
@@ -184,41 +161,7 @@ namespace rex
 				bind_my_params_to_pipeline(renderCtx);
 
 				renderCtx->draw_indexed(index_count, 0, 0, 0);
-
-				// this loop should essentially be the bottom loop
-				// when the user creates an animated sprite texture
-				// they can add that to the renderer
-				
-				// the renderer will then add it to correct pass (eg this one)
-				// which will then draw it to the screen
 			}
-
-			//for (const AnimatedSpriteDrawList& drawlist : m_draw_list)
-			//{
-			//	rsl::vec2 uv_size{};
-			//	rsl::pointi8 tile_size = drawlist.tileset->tile_size();
-			//	uv_size.x = tile_size.x / (f32)drawlist.tileset->tileset_texture()->width();
-			//	uv_size.y = tile_size.y / (f32)drawlist.tileset->tileset_texture()->height();
-
-			//	PerInstanceCB per_instance_cb{ };
-			//	per_instance_cb.texture_tiles_per_row = drawlist.tileset->num_tiles_per_row();
-			//	per_instance_cb.inv_texture_width = uv_size.x;
-			//	per_instance_cb.inv_texture_width = uv_size.y;
-
-			//	per_instance_cb.sprite_idx = drawlist.sprite_idx;
-			//	per_instance_cb.flip_x = drawlist.flip_x;
-			//	per_instance_cb.flip_y = drawlist.flip_y;
-
-			//	set("sprite_texture", drawlist.tileset->tileset_texture());
-
-			//	renderCtx->update_buffer(m_per_instance_cb.get(), &per_instance_cb, sizeof(per_instance_cb));
-			//	renderCtx->transition_buffer(m_per_instance_cb.get(), rex::gfx::ResourceState::NonPixelShaderResource);
-
-			//	const s32 index_count_per_instance = 6;
-			//	renderCtx->draw_indexed_instanced(index_count_per_instance, m_draw_list.size(), 0, 0, 0);
-			//}
-
-			m_draw_list.clear();
 		}
 
 		void AnimatedSpritesPass::init()
@@ -305,48 +248,19 @@ namespace rex
 		}
 		void AnimatedSpritesPass::init_render_info(rex::gfx::RenderContext* renderCtx)
 		{
-			// inverse tile width comes from diving from 2
-			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
-			//f32 inv_tile_width = 2.0f / m_screen_resolution.x.get();
-			//f32 inv_tile_height = 2.0f / m_screen_resolution.y.get();
-
-
-
-
-			//// Init the constant buffer
-			//struct TilemapRenderingMetaData
-			//{
-			//	// Render target data
-			//	u32 screen_width_in_tiles;   // the number of tiles we render on a single row
-			//	f32 inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
-			//	f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
-			//};
-
-			//TilemapRenderingMetaData render_metadata{};
-
-			//render_metadata.screen_width_in_tiles = m_screen_resolution.x.get();
-			//render_metadata.inv_tile_screen_width = inv_tile_width;
-			//render_metadata.inv_tile_screen_height = inv_tile_height;
-
 			if (m_tile_render_info == nullptr)
 			{
 				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(SceneRenderInfo));
 				set("RenderingMetaData", m_tile_render_info.get());
-				//set("RenderingMetaData2", m_tile_render_info.get());
 			}
 		}
-		void AnimatedSpritesPass::init_tile_indices_uab()
-		{
-			s32 num_allowed_animated_characters = 16;
-			m_per_instance_info = rex::gfx::gal::instance()->create_unordered_access_buffer(sizeof(PerSpriteInstanceData) * num_allowed_animated_characters);
-		}
+
 		void AnimatedSpritesPass::init_shader_params()
 		{
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
 			set("default_sampler", default_sampler);
 			set("background_texture", (RenderTarget*)m_render_target);
-			//set("TileIndexIntoTextureBuffer", m_per_instance_info.get());
 		}
 
 		RenderPassDesc AnimatedSpritesPass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const
@@ -356,11 +270,6 @@ namespace rex
 			desc.name = "Animated Sprites Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-
-			//desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer")->format();
 			
 			// Basic blending operation
 			// If we output an alpha value of 0.0f
@@ -376,7 +285,6 @@ namespace rex
 
 			// We're rendering directly to the back buffer
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
-			//desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer"));
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");
