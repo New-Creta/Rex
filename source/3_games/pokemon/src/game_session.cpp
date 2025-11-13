@@ -56,16 +56,16 @@ namespace pokemon
 
 		init_map(startup_save_file);
 		init_player(startup_save_file);
-
-		// In the future this render graph should be provided by the engine
-		// the game provides the engine information what kind of render graph is needed for the game
-		// the engine will then pick one of the prebuild render graphs
-		init_renderer();
+		init_camera();
 	}
 
 	void GameSession::update()
 	{
-		m_player_character->tick(0.1f);
+		// player moves camera, camera determines what we draw
+
+		f32 dt = rex::engine::instance()->frame_info().delta_time().to_milliseconds();
+
+		m_player_character->tick(dt);
 		//clamp_player_pos();
 
 		draw();
@@ -94,41 +94,24 @@ namespace pokemon
 		m_player_character->set_pos(world_coord_converter.to_pixel_coord(saveFile.position));
 	}
 
-	void GameSession::init_renderer()
+	void GameSession::init_camera()
 	{
-		// draw pass to render the static tiles that don't change
-		// this is essentially just the background
-		//rex::gfx::BlockRenderPassDynamicInputs block_pass_inputs{};
-		//block_pass_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-		//block_pass_inputs.tileset = m_active_map->blockset()->tileset();
-		//block_pass_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles)};
+		rex::PixelCoord res_size{};
+		res_size.x = constants::g_screen_width;
+		res_size.y = constants::g_screen_height;
 
-		//m_block_render_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::BlockRenderPass>(block_pass_inputs);
+		REX_STATIC_TODO("Add camera look ahead to constants")
+		rex::PixelCoord look_ahead{};
+		look_ahead.x = 16;
+		look_ahead.y = 8;
 
-		// draw the animated tiles
-		// the player, NPCs, flowers, ...
-		// sprite movement in old games is found in movement.asm
-		//rex::gfx::AnimatedSpritesPassDynamicInputs animated_sprites_inputs{};
-		//animated_sprites_inputs.render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
-		//animated_sprites_inputs.screen_resolution = { rex::TileCount(constants::g_screen_width_in_tiles), rex::TileCount(constants::g_screen_height_in_tiles) };
-		//m_animated_sprites_pass = rex::gfx::renderer::instance()->add_render_pass<rex::gfx::AnimatedSpritesPass>(animated_sprites_inputs);
-
-		// draw the water
-		// water is animated by bit shifting its pixels
-		//m_water_pass = rex::gfx::renderer::instance()->add_pass(rsl::make_unique<rex::gfx::BlockRenderPass>(inputs));
-
-		// draw the UI
-		//m_ui_pass = rex::gfx::renderer::instance()->add_render_pass(rsl::make_unique<UiPass>());
+		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead);
 	}
 
 	void GameSession::draw()
 	{
-		rex::PixelCoord top_left = m_player_character->pos();
-		top_left.x -= 64; // 8 tiles
-		top_left.y -= 64; // 8 tiles
-		//rsl::point<rex::TileCount> top_left{};
-		//top_left.x = rex::TileCount(m_player_character->pos().x);
-		//top_left.y = rex::TileCount(m_player_character->pos().y);
+		m_camera->set_pos(m_player_character->pos());
+		rex::PixelCoord top_left = m_camera->top_left();
 
 		rex::gfx::SceneRenderParams params{};
 		params.tiles_source = m_scene_blockmap->tiles();
@@ -137,17 +120,6 @@ namespace pokemon
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
-
-		//PokemonRendererParams params{};
-		//params.blockpass_params.tiles_source = m_scene_blockmap->tiles();
-		//params.blockpass_params.top_left_start = top_left;
-		//params.blockpass_params.world_width_in_tiles = m_scene_blockmap->width().get();
-
-		//m_renderer->update_params(params);
-
-		//m_block_render_pass->update_tilemap(params);
-		//auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		//m_block_render_pass->render(render_ctx.get());
 	}
 
 	// temporary function, this should be handled with collision detection in the future

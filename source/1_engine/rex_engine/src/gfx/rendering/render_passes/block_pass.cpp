@@ -88,7 +88,6 @@ namespace rex
 			}
 
 			const s32 tile_byte_size = sizeof(m_tilemap->tiles()[0]);
-			//renderCtx->set_stencil_value(1);
 			renderCtx->update_buffer(m_tiles_indices_buffer.get(), m_tilemap->tiles(), m_tilemap->num_tiles() * tile_byte_size);
 			renderCtx->transition_buffer(m_tiles_indices_buffer.get(), rex::gfx::ResourceState::NonPixelShaderResource);
 
@@ -107,14 +106,11 @@ namespace rex
 		void BlockRenderPass::init()
 		{
 			REX_ASSERT_X(m_render_target != nullptr, "No render target provided for render pass");
-			//REX_ASSERT_X(m_scene_params.tileset != nullptr, "No tileset provided for render pass");
 
 			auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 
 			init_vb(render_ctx.get());
 			init_ib(render_ctx.get());
-			//init_render_info(render_ctx.get());
-			//init_tilemap();
 			init_shader_params();
 		}
 
@@ -222,18 +218,6 @@ namespace rex
 			desc.name = "Block Render Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-
-			//desc.pso_desc.output_merger.depth_stencil_state.stencil_enable = true;
-			//desc.pso_desc.output_merger.depth_stencil_state.stencil_read_mask = 0xFF;
-			//desc.pso_desc.output_merger.depth_stencil_state.stencil_write_mask = 0xFF;
-			//desc.pso_desc.output_merger.depth_stencil_state.front_face.stencil_fail_op = StencilOp::Zero;
-			//desc.pso_desc.output_merger.depth_stencil_state.front_face.stencil_pass_op = StencilOp::Incr;
-			//desc.pso_desc.output_merger.depth_stencil_state.front_face.stencil_func = ComparisonFunc::Greater;
-
-			desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer")->format();
 
 			// We're rendering directly to the back buffer
 			rex::gfx::ClearStateDesc clear_state_desc{};
@@ -242,7 +226,6 @@ namespace rex
 
 			//desc.framebuffer_desc.clear();
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
-			desc.framebuffer_desc.emplace_back(FrameBufferAttachmentDesc(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer")));
 
 			// Assign the shaders used for the tile renderer
 			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);

@@ -8,72 +8,10 @@ namespace rex
 {
 	namespace gfx
 	{
-		//struct PerFrameData
-		//{
-		//	glm::vec2 inv_tile_size_on_screen; // The inverse dimensions of the tile on the backbuffer
-		//};
-
-		//struct PerTextureData
-		//{
-		//	rsl::pointi8 sprite_size;   // size of a single tile, in pixels
-		//};
-
-		//struct PerSpriteInstanceData
-		//{
-		//	// Information needed to draw the sprite at the correct position on screen
-		//	s32 tile_index_on_screen;   
-
-		//	// Information needed to select the correct sprite in the texture
-		//	s32 sprite_idx_in_texture;	// which sprite idx to use for the animation
-		//	bool flip_x;								// flip the sprite, left becomes right, right becomes left
-		//};
-
-		//struct AnimationRenderData
-		//{
-		//	rex::TilesetAsset texture; // texture that has the sprites to use for the animation
-		//	s32 idx;										// which sprite idx to use for the animation
-		//	bool flip_x;								// flip the sprite, left becomes right, right becomes left
-		//};
-
-		//struct AnimatedSpritesPassDynamicInputs
-		//{
-		//	RenderTargetBase* render_target;
-		//	rsl::point<TileCount> screen_resolution;
-		//};
-
-		//struct AnimatedSpriteDrawList
-		//{
-		//	const TilesetAsset* tileset;// the tileset holding the sprite
-		//	rsl::pointi8 top_left;
-		//	s16 sprite_idx;							// which sprite idx to use for the animation
-		//	bool flip_x;								// flip the sprite, left becomes right, right becomes left
-		//	bool flip_y;								// flip the sprite, up becomes down, down becomes up
-		//};
-
-		//struct PerInstanceCB
-		//{
-		//	u32 texture_tiles_per_row;   // the number of tiles per row in the tileset texture
-		//	f32 inv_texture_width;       // the inverse width of the tileset texture, in pixels
-		//	f32 inv_texture_height;      // the inverse height of the tileset texture, in pixels
-
-		//	s16 sprite_idx;
-		//	bool flip_x;
-		//	bool flip_y;
-		//};
-
 		struct AnimatedSpritePassCreationInfo
 		{
 			RenderTargetBase* render_target;
 		};
-		//struct AnimatedSpritePassSceneParams
-		//{
-		//	const TilesetAsset* tileset;
-		//};
-		//struct AnimatedSpritePassCameraParams
-		//{
-		//	rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
-		//};
-
 
 		class AnimatedSpritesPass : public RenderPass
 		{

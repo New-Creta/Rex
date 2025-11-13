@@ -40,7 +40,7 @@
 
 //-------------------------------------------------------------------------
 // Strong types
-#define REX_STRONG_TYPE(name, underlying) struct name : public underlying {};
+#define REX_STRONG_TYPE(name, underlying) struct name : public underlying { name() = default; name(const underlying& other) : underlying(other) {} };
 
 //-------------------------------------------------------------------------
 // TODO

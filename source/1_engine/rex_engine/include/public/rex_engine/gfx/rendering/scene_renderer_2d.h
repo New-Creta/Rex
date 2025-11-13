@@ -51,7 +51,6 @@ namespace rex
 			rsl::point<TileCount> m_top_left;
 			rex::Tilemap* m_scene_tilemap;
 
-			rsl::unique_ptr<DepthStencilBuffer> m_stencil_buffer;
 			rsl::unique_ptr<RenderTarget> m_render_target;
 
 			rsl::unique_ptr<BlockRenderPass> m_block_render_pass;

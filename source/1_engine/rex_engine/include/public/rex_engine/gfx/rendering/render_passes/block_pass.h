@@ -26,25 +26,10 @@ namespace rex
 {
 	namespace gfx
 	{
-		//struct BlockRenderPassDynamicInputs
-		//{
-		//	RenderTargetBase* render_target;
-		//	const TilesetAsset* tileset;
-		//	rsl::point<TileCount> screen_resolution;
-		//};
-
 		struct BlockRenderPassCreationInfo
 		{
 			RenderTargetBase* render_target;
 		};
-		//struct SceneParams
-		//{
-		//	const TilesetAsset* tileset;
-		//};
-		//struct CameraParams
-		//{
-		//	rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
-		//};
 
 		struct BlockRenderPassTilemapParams
 		{
@@ -85,8 +70,6 @@ namespace rex
 
 			void update_scene_params(const SceneParams& params);
 			void update_camera_params(const CameraParams& params);
-
-			//void update_dynamic_inputs(const BlockRenderPassDynamicInputs& inputs);
 
 			// Update the tilemap's indices that we need to draw to the screen
 			void update_tilemap(const BlockRenderPassTilemapParams& params);
@@ -129,9 +112,6 @@ namespace rex
 			rsl::unique_ptr<rex::Tilemap> m_tilemap;
 
 			rex::gfx::RenderTargetBase* m_render_target;
-
-			//const rex::TilesetAsset* m_tileset;
-			//rsl::point<TileCount> m_screen_resolution;
 
 			SceneParams m_scene_params;
 			CameraParams m_camera_params;

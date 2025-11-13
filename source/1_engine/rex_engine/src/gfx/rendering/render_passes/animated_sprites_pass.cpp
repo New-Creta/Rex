@@ -111,6 +111,7 @@ namespace rex
 				scene_render_info.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
 				scene_render_info.top_left_offset = { 8.0f, 7.5f };
+				//scene_render_info.top_left_offset = { 2.0f, 2.0f };
 
 				rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();

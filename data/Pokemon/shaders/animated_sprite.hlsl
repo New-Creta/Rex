@@ -65,8 +65,8 @@ float4 calculate_vertex_position(VertexIn vin)
   float2 pos = { -1.0f, 1.0f };                            // start from the top left
   pos += vin.PosL.xy * inv_sprite_screen_size;             // scale down to position to its size relative to the render target
 
-  pos.x += (top_left_offset.x * inv_tile_screen_size.x);   // offset the vertex based on the current instance we're rendering
-  pos.y -= (top_left_offset.y * inv_tile_screen_size.y);   // offset the vertex based on the current instance we're rendering
+  pos.x += (top_left_offset.x * inv_tile_screen_size.x);   // offset the vertex to where we want on screen
+  pos.y -= (top_left_offset.y * inv_tile_screen_size.y);   // offset the vertex to where we want on screen
     
   // Offset the position to this position
   return float4(pos, vin.PosL.z, 1.0f);

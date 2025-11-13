@@ -20,8 +20,6 @@ namespace rex
 			ClearStateDesc clear_state{};
 			clear_state.flags.add_state(ClearBits::ClearStencilBuffer);
 			clear_state.stencil = 0;
-			m_stencil_buffer = rex::gfx::gal::instance()->create_depth_stencil_buffer(m_render_target->width(), m_render_target->height(), TextureFormat::Depth24Stencil8, clear_state);
-			resource_manager::instance()->add_depth_stencil_buffer(m_stencil_buffer.get(), "World Stencil Buffer");
 
 			//rsl::point<TileCount> screen_resolution{};
 			//screen_resolution.x.get() = render_target->width() / m_zoom_level;
@@ -69,8 +67,8 @@ namespace rex
 
 			BackBufferRenderTarget* render_target = rex::gfx::gal::instance()->backbuffer_rendertarget();
 
-			render_ctx->set_render_target(render_target, m_stencil_buffer.get());
-			render_ctx->clear_render_target(render_target, m_stencil_buffer.get());
+			render_ctx->set_render_target(render_target);
+			render_ctx->clear_render_target(render_target);
 
 			f32 render_target_width = render_target->width();
 			f32 render_target_height = render_target->height();
