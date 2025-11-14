@@ -107,7 +107,7 @@ namespace pokemon
 		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
 		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
 
-		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead);
+		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead, zoom);
 	}
 
 	void GameSession::draw()
