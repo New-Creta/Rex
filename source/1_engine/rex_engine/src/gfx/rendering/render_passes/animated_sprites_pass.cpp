@@ -116,7 +116,12 @@ namespace rex
 				PixelCoord screen_pos = sprite->pos() - m_camera_params.top_left;
 				scene_render_info.screen_pos.x = screen_pos.x;
 				scene_render_info.screen_pos.y = screen_pos.y;
-				scene_render_info.screen_pos.y -= sprite_size.y / 4; // add a quarter of the sprite to its height so it's not fully aligned with the tiles. This gives a better 2.5D perspective
+
+				// See comment in wram.asm on line 91 related to Y screen position of wSpriteStateData1
+				// ; - 4: Y screen position (in pixels, always 4 pixels above grid which makes sprites appear to be in the center of a tile)
+				// The code that performs this offset if found in movement.asm
+				// look for "add $4" as its done in a few places, depending on the executing code
+				scene_render_info.screen_pos.y -= tile_size.y / 2; // == 4
 
 				rsl::point<f32> inv_zoom_level{};
 				inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
