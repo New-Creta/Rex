@@ -61,21 +61,7 @@ namespace regina
 
 		constexpr u8 g_screen_width_in_blocks = g_screen_width / g_block_width_px;
 		constexpr u8 g_screen_height_in_blocks = g_screen_height / g_block_height_px;
-
-		constexpr rsl::pointi8 player_render_position_top_left = { 8,8 };
-		constexpr rsl::pointi8 player_render_position_bottom_right =
-		{
-			g_screen_width_in_tiles - player_render_position_top_left.x,
-			g_screen_height_in_tiles - player_render_position_top_left.y
-		};
 	}
-
-	//struct TileVertex
-	//{
-	//	rsl::point<f32> pos;
-	//	rsl::point<f32> uv;
-	//};
-
 
 	// This struct is the mapping of the constant buffer with the same name in the shader
 	struct TileRenderingMetaData

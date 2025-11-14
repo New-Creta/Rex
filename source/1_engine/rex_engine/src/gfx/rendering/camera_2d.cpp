@@ -4,9 +4,10 @@ namespace rex
 {
 	namespace gfx
 	{
-		Camera2D::Camera2D(PixelCoord resolution, PixelCoord lookAhead)
+		Camera2D::Camera2D(PixelCoord resolution, PixelCoord lookAhead, glm::vec2 zoom)
 			: m_resolution(resolution)
 			, m_look_ahead(lookAhead)
+			, m_zoom(zoom)
 			, m_pos()
 		{}
 
@@ -23,5 +24,10 @@ namespace rex
 		{
 			return m_pos - (m_resolution / 2);
 		}
+		glm::vec2 Camera2D::zoom() const
+		{
+			return m_zoom;
+		}
+
 	}
 }

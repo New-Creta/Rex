@@ -61,8 +61,6 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		// player moves camera, camera determines what we draw
-
 		f32 dt = rex::engine::instance()->frame_info().delta_time().to_milliseconds();
 
 		m_player_character->tick(dt);
@@ -73,8 +71,8 @@ namespace pokemon
 
 	SaveFile GameSession::load_startup_savefile() const
 	{
-		// The startup save file is located at the root directory of the project
-		rsl::string startup_save_filepath(rex::cmdline::instance()->get_argument("StartupSaveFile").value_or(rex::path::join(rex::engine::instance()->project_root(), "startup_save_file.json")));
+		rex::scratch_string default_startup_save_filepath = rex::path::join(rex::engine::instance()->project_root(), "startup_save_file.json");
+		rsl::string startup_save_filepath(rex::cmdline::instance()->get_argument("StartupSaveFile").value_or(default_startup_save_filepath));
 		REX_ASSERT_X(rex::file::exists(startup_save_filepath), "startup save filepath does not exist.");
 		return SaveFile(startup_save_filepath);
 	}
@@ -100,10 +98,14 @@ namespace pokemon
 		res_size.x = constants::g_screen_width;
 		res_size.y = constants::g_screen_height;
 
-		REX_STATIC_TODO("Add camera look ahead to constants")
 		rex::PixelCoord look_ahead{};
-		look_ahead.x = 16;
-		look_ahead.y = 8;
+		look_ahead.x = constants::g_camera_look_ahead.x;
+		look_ahead.y = constants::g_camera_look_ahead.y;
+
+		rsl::point<f32> zoom{};
+
+		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
+		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
 
 		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead);
 	}
@@ -131,8 +133,8 @@ namespace pokemon
 		rex::PixelCoord player_pos = m_player_character->pos();
 		rex::TileCoord player_pos_in_tiles = map_coord_converter.to_tile_coord(player_pos);
 
-		rsl::pointi8 min_player_pos{}; //constants::player_render_position_top_left;
-		rsl::pointi8 max_player_pos{}; //constants::player_render_position_bottom_right;
+		rsl::pointi8 min_player_pos{};
+		rsl::pointi8 max_player_pos{};
 		rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
 
 		if (player_pos_in_tiles.x < 0 || player_pos_in_tiles.x > size.x.get() ||
@@ -153,12 +155,5 @@ namespace pokemon
 	void GameSession::on_map_change()
 	{
 		rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
-
-		rsl::point<f32> zoom{};
-
-		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
-		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
-
-		rex::gfx::scene_renderer::instance()->update_zoom(zoom);
 	}
 }

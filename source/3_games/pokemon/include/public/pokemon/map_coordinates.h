@@ -15,8 +15,6 @@ namespace pokemon
 
 	namespace coords
 	{
-		rex::TileCoord player_pos_to_screen_top_left(rex::TileCoord coord);
-
 		rex::TileCoord block_to_tile_coord(rex::BlockCoord coord);
 		rex::BlockCoord tile_to_block_coord(rex::TileCoord coord);
 		rex::TileCoord block_top_left_coord(rex::TileCoord coord);

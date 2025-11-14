@@ -42,6 +42,12 @@ namespace pokemon
 		constexpr u8 g_screen_width_in_blocks = g_screen_width / g_block_width_px;
 		constexpr u8 g_screen_height_in_blocks = g_screen_height / g_block_height_px;
 
+		constexpr rsl::pointi8 g_camera_look_ahead =
+		{
+			16,
+			8
+		};
+
 		constexpr rsl::pointi8 player_render_position_top_left = { 8,8 };
 		constexpr rsl::pointi8 player_render_position_bottom_right = 
 		{ 
