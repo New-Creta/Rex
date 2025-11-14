@@ -3,6 +3,7 @@
 #include "rex_engine/assets/flipbook.h"
 
 #include "rex_engine/engine/types.h"
+#include "rex_engine/math/coords.h"
 
 namespace rex
 {
@@ -17,6 +18,9 @@ namespace rex
 
 			void tick(f32 dt);
 
+			void set_pos(rex::PixelCoord pos);
+			rex::PixelCoord pos() const;
+
 			void set_animation(rsl::string_view name);
 			const Texture2D* sprites_texture() const;
 			rsl::pointi8 sprite_size() const;
@@ -29,6 +33,7 @@ namespace rex
 			const rex::FlipbookAnimation* m_active_animation;
 			s32 m_current_anim_sprite_idx;
 			s32 m_current_sprite_frame_counter;
+			rex::PixelCoord m_pos;
 		};
 	}
 }

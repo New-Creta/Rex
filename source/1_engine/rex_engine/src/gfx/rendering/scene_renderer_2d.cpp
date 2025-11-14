@@ -140,6 +140,12 @@ namespace rex
 
 		void SceneRenderer2D::render_flipbook_animations(RenderContext* renderCtx)
 		{
+			CameraParams params{};
+
+			params.zoom_level = m_zoom_level;
+			params.top_left = m_params.cam_top_left;
+			m_animated_sprites_pass->update_camera_params(params);
+
 			m_animated_sprites_pass->render(renderCtx);
 		}
 

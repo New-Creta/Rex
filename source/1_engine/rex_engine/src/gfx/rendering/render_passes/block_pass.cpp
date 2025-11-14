@@ -219,12 +219,6 @@ namespace rex
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
-			// We're rendering directly to the back buffer
-			rex::gfx::ClearStateDesc clear_state_desc{};
-			clear_state_desc.depth = 0.0f;
-			clear_state_desc.flags.add_state(rex::gfx::ClearBits::ClearDepthBuffer);
-
-			//desc.framebuffer_desc.clear();
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
 
 			// Assign the shaders used for the tile renderer

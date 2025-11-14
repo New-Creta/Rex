@@ -15,6 +15,7 @@ namespace rex
 			: m_animations(animations)
 			, m_current_anim_sprite_idx(0)
 			, m_active_animation(nullptr)
+			, m_pos()
 		{}
 
 		void AnimatedSprite::tick(f32 dt)
@@ -31,6 +32,15 @@ namespace rex
 			}
 
 			m_current_sprite_frame_counter++;
+		}
+
+		void AnimatedSprite::set_pos(rex::PixelCoord pos)
+		{
+			m_pos = pos;
+		}
+		rex::PixelCoord AnimatedSprite::pos() const
+		{
+			return m_pos;
 		}
 
 		void AnimatedSprite::set_animation(rsl::string_view name)

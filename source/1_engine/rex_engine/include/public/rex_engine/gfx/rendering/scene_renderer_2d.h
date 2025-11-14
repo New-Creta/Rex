@@ -25,6 +25,7 @@ namespace rex
 			PixelCoord top_left;
 			WorldCoordConverter coord_converter;
 			TileCount world_width_in_tiles;
+			PixelCoord cam_top_left;
 		};
 
 		class SceneRenderer2D : public Renderer

@@ -12,15 +12,12 @@ namespace pokemon
 		: m_facing_direction(rex::Direction::South)
 		, m_walking_counter(0)
 	{
-		//init_animations();
 		init_input();
 		init_gfx_proxy();
 	}
 
 	void PlayerCharacter::tick(f32 dt)
 	{
-		//REX_INFO(LogPlayerCharacter, "new frame");
-
 		if (m_was_moving)
 		{
 			m_was_moving = false;
@@ -36,6 +33,8 @@ namespace pokemon
 		{
 			finish_movement();
 		}
+
+		m_animated_sprite->set_pos(m_pos);
 	}
 	void PlayerCharacter::init_input()
 	{

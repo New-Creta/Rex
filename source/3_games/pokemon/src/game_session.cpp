@@ -118,6 +118,7 @@ namespace pokemon
 		params.top_left = top_left;
 		params.coord_converter = m_active_map->create_world_coord_converter();
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
+		params.cam_top_left = m_camera->top_left();
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
 	}

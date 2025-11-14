@@ -12,6 +12,8 @@
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/resources/render_target.h"
 
+#include "rex_engine/math/coords.h"
+
 #include "rex_engine/text_processing/json.h"
 
 #include "rex_std/string.h"
@@ -48,6 +50,7 @@ namespace rex
 		};
 		struct CameraParams
 		{
+			rex::PixelCoord top_left;
 			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
 		};
 

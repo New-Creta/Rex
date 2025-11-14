@@ -36,14 +36,14 @@ namespace rex
 		struct SceneRenderInfo
 		{
 			// screen info
-			glm::vec2 inv_tile_screen_size;
+			glm::vec2 inv_pixel_screen_size;
 			glm::vec2 screen_size;
 
 			// sprite info
 			glm::vec2 inv_sprite_screen_size;
 			glm::vec2 inv_sprite_texture_size;
 
-			glm::vec2 top_left_offset;
+			rsl::pointi32 screen_pos; // unit represented in pixels
 			glm::vec2 uv_start;
 
 			s32 bit_masks;
@@ -110,11 +110,14 @@ namespace rex
 				scene_render_info.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
 				scene_render_info.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
-				scene_render_info.top_left_offset = { 8.0f, 7.5f };
-				//scene_render_info.top_left_offset = { 2.0f, 2.0f };
-
 				rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
+
+				PixelCoord screen_pos = sprite->pos() - m_camera_params.top_left;
+				scene_render_info.screen_pos.x = screen_pos.x;
+				scene_render_info.screen_pos.y = screen_pos.y;
+				scene_render_info.screen_pos.y -= sprite_size.y / 4; // add a quarter of the sprite to its height so it's not fully aligned with the tiles. This gives a better 2.5D perspective
+
 				rsl::point<f32> inv_zoom_level{};
 				inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
 				inv_zoom_level.y = 1.0f / m_camera_params.zoom_level.y;
@@ -128,17 +131,14 @@ namespace rex
 				num_sprites_on_screen.x = m_render_target->width() / (sprite_size.x * m_camera_params.zoom_level.x);
 				num_sprites_on_screen.y = m_render_target->height() / (sprite_size.y * m_camera_params.zoom_level.y);
 
-				f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
-				f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
-
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
 
 				scene_render_info.inv_sprite_screen_size.x = inv_sprite_width;
 				scene_render_info.inv_sprite_screen_size.y = inv_sprite_height;
 
-				scene_render_info.inv_tile_screen_size.x = inv_tile_width;
-				scene_render_info.inv_tile_screen_size.y = inv_tile_height;
+				scene_render_info.inv_pixel_screen_size.x = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
+				scene_render_info.inv_pixel_screen_size.y = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
 				scene_render_info.screen_size.x = m_render_target->width();
 				scene_render_info.screen_size.y = m_render_target->height();
