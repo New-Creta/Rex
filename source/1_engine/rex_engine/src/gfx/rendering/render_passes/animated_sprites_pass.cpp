@@ -56,10 +56,6 @@ namespace rex
 			init();
 		}
 
-		void AnimatedSpritesPass::update_scene_params(const SceneParams& params)
-		{
-			m_scene_params = params;
-		}
 		void AnimatedSpritesPass::update_camera_params(const CameraParams& params)
 		{
 			m_camera_params = params;
@@ -126,12 +122,6 @@ namespace rex
 				rsl::point<f32> inv_zoom_level{};
 				inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
 				inv_zoom_level.y = 1.0f / m_camera_params.zoom_level.y;
-
-				rsl::pointi8 num_tiles_on_screen{};
-				rsl::pointi8 num_sprites_on_screen{};
-
-				num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * m_camera_params.zoom_level.x);
-				num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * m_camera_params.zoom_level.y);
 
 				num_sprites_on_screen.x = m_render_target->width() / (sprite_size.x * m_camera_params.zoom_level.x);
 				num_sprites_on_screen.y = m_render_target->height() / (sprite_size.y * m_camera_params.zoom_level.y);

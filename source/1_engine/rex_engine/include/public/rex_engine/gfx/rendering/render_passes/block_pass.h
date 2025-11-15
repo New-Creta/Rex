@@ -31,19 +31,21 @@ namespace rex
 			RenderTargetBase* render_target;
 		};
 
-		struct BlockRenderPassTilemapParams
-		{
-			// pointer to the tile source data. This data represents all the tiles in the current world
-			const u8* tiles_source;
+		//struct BlockRenderPassTilemapParams
+		//{
+		//	// pointer to the tile source data. This data represents all the tiles in the current world
+		//	const u8* tiles_source;
 
-			// the position (in tiles) from the world tiles from where we should start drawing
-			PixelCoord top_left_start;
+		//	// the position (in tiles) from the world tiles from where we should start drawing
+		//	PixelCoord top_left_start;
 
-			WorldCoordConverter coord_converter;
+		//	WorldCoordConverter coord_converter;
 
-			// the width of the world, in tiles
-			s32 world_width_in_tiles;
-		};
+		//	// the width of the world, in tiles
+		//	s32 world_width_in_tiles;
+
+		//	Camera2D* camera;
+		//};
 
 		struct TilemapRenderingMetaData
 		{
@@ -69,10 +71,10 @@ namespace rex
 			BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo);
 
 			void update_scene_params(const SceneParams& params);
-			void update_camera_params(const CameraParams& params);
+			//void update_camera_params(const CameraParams& params);
 
 			// Update the tilemap's indices that we need to draw to the screen
-			void update_tilemap(const BlockRenderPassTilemapParams& params);
+			void update_tilemap(const SceneRenderParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -88,7 +90,7 @@ namespace rex
 			void init_tilemap();
 			void init_shader_params();
 
-			rsl::point<TileCount> calc_screen_resolution() const;
+			rsl::point<TileCount> calc_screen_resolution(Camera2D* camera) const;
 
 		private:
 			// The vertex buffer for a single tile
@@ -114,7 +116,7 @@ namespace rex
 			rex::gfx::RenderTargetBase* m_render_target;
 
 			SceneParams m_scene_params;
-			CameraParams m_camera_params;
+			//CameraParams m_camera_params;
 			TilemapRenderingMetaData m_render_metadata;
 
 		};

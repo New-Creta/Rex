@@ -53,8 +53,8 @@ namespace rex
 
 			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
 
-			SceneParams m_scene_params;
-			CameraParams m_camera_params;
+			//SceneParams m_scene_params;
+			//CameraParams m_camera_params;
 		};
 	}
 }

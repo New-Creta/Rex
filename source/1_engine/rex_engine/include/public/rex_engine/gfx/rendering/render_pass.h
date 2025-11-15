@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/gfx/rendering/frame_buffer.h"
+#include "rex_engine/gfx/rendering/camera_2d.h"
 
 #include "rex_engine/gfx/resources/pipeline_state.h"
 #include "rex_engine/gfx/resources/root_signature.h"
@@ -20,7 +21,6 @@
 #include "rex_std/memory.h"
 #include "rex_std/optional.h"
 #include "rex_std/unordered_map.h"
-
 
 namespace rex
 {
@@ -47,12 +47,13 @@ namespace rex
 		struct SceneParams
 		{
 			const TilesetAsset* tileset;
+			//Camera2D* camera;
 		};
-		struct CameraParams
-		{
-			rex::PixelCoord top_left;
-			rsl::point<f32> zoom_level = rsl::point<f32>(1.0f, 1.0f);
-		};
+		//struct CameraParams
+		//{
+		//	rex::PixelCoord top_left;
+		//	glm::vec2 zoom_level = glm::vec2(1.0f, 1.0f);
+		//};
 
 
 		// A render pass acts like the "material" for the render pipeline

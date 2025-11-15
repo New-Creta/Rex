@@ -39,7 +39,7 @@ namespace pokemon
     void init_player(const SaveFile& saveFile);
     void init_camera();
 
-    void draw();
+    void update_render_info();
 
     void clamp_player_pos();
 

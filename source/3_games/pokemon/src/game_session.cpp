@@ -64,9 +64,12 @@ namespace pokemon
 		f32 dt = rex::engine::instance()->frame_info().delta_time().to_milliseconds();
 
 		m_player_character->tick(dt);
+		m_camera->set_pos(m_player_character->pos());
+
 		//clamp_player_pos();
 
-		draw();
+		// this likely doesn't need to happen every frame..
+		update_render_info();
 	}
 
 	SaveFile GameSession::load_startup_savefile() const
@@ -102,7 +105,7 @@ namespace pokemon
 		look_ahead.x = constants::g_camera_look_ahead.x;
 		look_ahead.y = constants::g_camera_look_ahead.y;
 
-		rsl::point<f32> zoom{};
+		glm::vec2 zoom{};
 
 		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
 		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
@@ -110,17 +113,13 @@ namespace pokemon
 		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead, zoom);
 	}
 
-	void GameSession::draw()
+	void GameSession::update_render_info()
 	{
-		m_camera->set_pos(m_player_character->pos());
-		rex::PixelCoord top_left = m_camera->top_left();
-
 		rex::gfx::SceneRenderParams params{};
 		params.tiles_source = m_scene_blockmap->tiles();
-		params.top_left = top_left;
+		params.camera = m_camera.get();
 		params.coord_converter = m_active_map->create_world_coord_converter();
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
-		params.cam_top_left = m_camera->top_left();
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
 	}
