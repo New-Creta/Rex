@@ -27,6 +27,8 @@ namespace rex
 		{
 			bind_to(renderCtx);
 
+			renderCtx->transition_buffer(m_src_render_target, ResourceState::PixelShaderResource);
+
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
 			renderCtx->draw_indexed(m_tiles_ib_gpu->count(), 0, 0, 0);

@@ -4,6 +4,8 @@
 #define FLIP_Y_BIT 1
 #define RENDER_BOTTOM_BEHIND_BG 2
 
+#define MAX_SPRITES 16
+
 // Every constant buffer needs to be 256 byte aligned
 // So we try to pack as much data together into 1 buffer
 cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
@@ -11,23 +13,33 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
   // Render target data
   float2 inv_pixel_screen_size;      // the inverse size of a single tile on the screen
   float2 screen_size; 
+};
 
+struct PerInstanceData
+{
+  // position
+  int2 position;
+  
   // Sprite info
-  float2 inv_sprite_screen_size;    // the inverse size of the sprite on the screen
-  float2 inv_sprite_texture_size;     // the inverse of the size of a single tile in the texture
-
-  // The position of the sprite on screen from the top left, represented in pixels
-  int2 screen_pos;
+  float2 inv_sprite_screen_size; // the inverse size of the sprite on the screen
+  float2 inv_sprite_texture_size; // the inverse of the size of a single tile in the texture  
 
   // SPRITE ANIMATION INFO
   // the start UV position for the current sprite
   // this allows the shader to select to correct sprite
   // from the texture
   float2 uv_start;
-
+  
   // flipping X or Y uv channels
   int bit_flags;
 };
+
+cbuffer PerInstanceBuffer : register(b1, RENDER_PASS_REGISTER_SPACE)
+{
+  // INSTANCE INFO
+  // The position of the sprite on screen from the top left, represented in pixels
+  PerInstanceData instance_data[MAX_SPRITES];
+}
 
 // Vertices expected for this shader are meant to spawn the entire screen
 // as in, without any transforms, it will cover { 0, 0 } until { 1, 1 } of the window
@@ -42,13 +54,14 @@ struct VertexIn
 {
   float3 PosL : POSITION; // The position of the vertex in local space
   float2 Uv : TEXCOORD0; // The UV of the vertex
-  uint VertexId : SV_VertexId;
+  uint InstanceId : SV_InstanceID;
 };
 
 struct VertexOut
 {
   float4 PosH : SV_POSITION;
   float2 Uv : TEXCOORD0;
+  uint InstanceId : SV_InstanceID;
 };
 
 bool is_bit_set(int mask, int bit)
@@ -62,10 +75,10 @@ float4 calculate_vertex_position(VertexIn vin)
 
   // Calculate the position of this sprite
   float2 pos = { -1.0f, 1.0f };                            // start from the top left
-  pos += vin.PosL.xy * inv_sprite_screen_size;             // scale down to position to its size relative to the render target
+  pos += vin.PosL.xy * instance_data[vin.InstanceId].inv_sprite_screen_size; // scale down to position to its size relative to the render target
 
-  pos.x += (screen_pos.x * inv_pixel_screen_size.x); // offset the vertex to where we want on screen
-  pos.y -= (screen_pos.y * inv_pixel_screen_size.y); // offset the vertex to where we want on screen
+  pos.x += (instance_data[vin.InstanceId].position.x * inv_pixel_screen_size.x); // offset the vertex to where we want on screen
+  pos.y -= (instance_data[vin.InstanceId].position.y * inv_pixel_screen_size.y); // offset the vertex to where we want on screen
     
   // Offset the position to this position
   return float4(pos, vin.PosL.z, 1.0f);
@@ -74,18 +87,18 @@ float4 calculate_vertex_position(VertexIn vin)
 float2 calculate_vertex_uv(VertexIn vin)
 {
   // Add the offset to the original uv offset
-  if (is_bit_set(bit_flags, FLIP_X_BIT))
+  if (is_bit_set(instance_data[vin.InstanceId].bit_flags, FLIP_X_BIT))
   {
     vin.Uv.x = 1.0f - vin.Uv.x;
   }
-  if (is_bit_set(bit_flags, FLIP_Y_BIT))
+  if (is_bit_set(instance_data[vin.InstanceId].bit_flags, FLIP_Y_BIT))
   {
     vin.Uv.y = 1.0f - vin.Uv.y;
   }
   
   float2 uv = { 0.0, 0.0 };
-  uv += vin.Uv * inv_sprite_texture_size;
-  uv += uv_start;
+  uv += vin.Uv * instance_data[vin.InstanceId].inv_sprite_texture_size;
+  uv += instance_data[vin.InstanceId].uv_start;
   
   return uv;
 }
@@ -96,7 +109,8 @@ VertexOut VSMain(VertexIn vin)
   
   vout.PosH = calculate_vertex_position(vin);
   vout.Uv = calculate_vertex_uv(vin);
-
+  vout.InstanceId = vin.InstanceId;
+  
   return vout;
 }
 
@@ -108,6 +122,7 @@ struct PS_INPUT
 {
   float4 PosH : SV_POSITION;
   float2 Uv : TEXCOORD0;
+  uint InstanceId : SV_InstanceID;
 };
 
 SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
@@ -122,7 +137,7 @@ float4 PSMain(PS_INPUT pin) : SV_Target
 {
   float2 uv_in_map = pin.PosH.xy / screen_size;
  
-  if (pin.PosH.z < 0.5f && is_bit_set(bit_flags, RENDER_BOTTOM_BEHIND_BG)) // only the bottom half of the sprite
+  if (pin.PosH.z < 0.5f && is_bit_set(instance_data[pin.InstanceId].bit_flags, RENDER_BOTTOM_BEHIND_BG)) // only the bottom half of the sprite
   {
     float4 background_color = background_texture.Sample(default_sampler, uv_in_map);
     background_color.a = 1.0f;

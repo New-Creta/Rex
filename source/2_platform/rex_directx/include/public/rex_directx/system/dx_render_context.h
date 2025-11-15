@@ -101,6 +101,7 @@ namespace rex
 
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;
+      void copy_rt_to_texture2d(Texture2D* texture, RenderTargetBase* rt) override;
 
       // Set stencil buffer data
       void set_stencil_value(u8 value) override;

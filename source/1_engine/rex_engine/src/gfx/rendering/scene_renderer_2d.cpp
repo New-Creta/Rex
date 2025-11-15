@@ -13,6 +13,9 @@ namespace rex
 				gal::instance()->back_buffer_height(),
 				TextureFormat::Unorm4Srgb
 				);
+			auto render_ctx = gal::instance()->new_render_ctx(nullptr, "Initialize 2D Scene Renderer Render Target");
+			render_ctx->transition_buffer(m_render_target.get(), ResourceState::RenderTarget);
+			render_ctx->clear_render_target(m_render_target.get());
 
 			// draw pass to render the static tiles that don't change
 			// this is essentially just the background
@@ -51,6 +54,9 @@ namespace rex
 			render_ctx->set_render_target(render_target);
 			render_ctx->clear_render_target(render_target);
 
+			render_ctx->transition_buffer(m_render_target.get(), ResourceState::RenderTarget);
+			render_ctx->clear_render_target(m_render_target.get());
+
 			f32 render_target_width = render_target->width();
 			f32 render_target_height = render_target->height();
 
@@ -60,7 +66,7 @@ namespace rex
 			rex::gfx::ScissorRect rect = { 0, 0, render_target_width, render_target_height };
 			render_ctx->set_scissor_rect(rect);
 
-			render_tilemap(render_ctx.get());
+			//render_tilemap(render_ctx.get());
 			render_flipbook_animations(render_ctx.get());
 			render_dynamic_animations(render_ctx.get());
 
@@ -76,7 +82,7 @@ namespace rex
 		{
 			m_params = params;
 
-			m_block_render_pass->update_params(params);
+			//m_block_render_pass->update_params(params);
 			m_animated_sprites_pass->update_params(params);
 		}
 

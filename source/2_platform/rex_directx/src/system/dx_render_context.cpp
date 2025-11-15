@@ -326,6 +326,22 @@ namespace rex
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
     }
 
+    void DxRenderContext::copy_rt_to_texture2d(Texture2D* texture, RenderTargetBase* rt)
+    {
+      UploadBufferLock upload_buffer_lock = api_engine()->lock_upload_buffer();
+
+      transition_buffer(texture, ResourceState::CopyDest);
+      transition_buffer(rt, ResourceState::CopySource);
+
+      DxTexture2D* dx_texture = d3d::to_dx12(texture);
+
+      DxRenderTarget* dx_rt = d3d::to_dx12((RenderTarget*)rt);
+      CD3DX12_TEXTURE_COPY_LOCATION dst_loc(dx_texture->dx_object(), 0);
+      CD3DX12_TEXTURE_COPY_LOCATION src_loc(dx_rt->dx_object(), 0);
+
+      m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
+    }
+
     // Set stencil buffer data
     void DxRenderContext::set_stencil_value(u8 value)
     {

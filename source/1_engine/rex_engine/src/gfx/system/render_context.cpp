@@ -54,7 +54,6 @@ namespace rex
     void RenderContext::type_specific_reset(const ContextResetData& resetData)
     {
       // By default we set the current backbuffer as render target
-      set_render_target(resetData.current_backbuffer_rt);
       m_shader_visible_srv_heap = resetData.shader_visible_srv_desc_heap;
       m_shader_visible_sampler_heap = resetData.shader_visible_sampler_desc_heap;
     }

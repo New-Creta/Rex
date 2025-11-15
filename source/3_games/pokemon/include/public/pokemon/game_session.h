@@ -51,6 +51,8 @@ namespace pokemon
     // The blockmap, representing the current map and surroundings
     rsl::unique_ptr<GameBlockMap> m_scene_blockmap;
     rsl::unique_ptr<PlayerCharacter> m_player_character;
+    rsl::unique_ptr<PlayerCharacter> m_player_character2;
+    rsl::unique_ptr<PlayerCharacter> m_player_character3;
 
     rsl::unique_ptr<rex::gfx::Camera2D> m_camera;
   };

@@ -354,7 +354,7 @@ namespace rex
 			sampler_desc.address_mode_w = rex::gfx::TextureAddressMode::Wrap;
 			sampler_desc.mip_lod_bias = 0.0f;
 			sampler_desc.max_anisotropy = 0;
-			sampler_desc.comparison_func = rex::gfx::ComparisonFunc::Always;
+			sampler_desc.comparison_func = rex::gfx::ComparisonFunc::Never;
 			sampler_desc.border_color = rex::gfx::BorderColor::TransparentBlack;
 			sampler_desc.min_lod = 0.0f;
 			sampler_desc.max_lod = 0.0f;

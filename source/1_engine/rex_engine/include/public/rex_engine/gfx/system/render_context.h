@@ -157,6 +157,7 @@ namespace rex
 			virtual void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
 			// Update a texture's data
 			virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
+			virtual void copy_rt_to_texture2d(Texture2D* texture, RenderTargetBase* rt) = 0;
 
 			// Set stencil buffer data
 			virtual void set_stencil_value(u8 value) = 0;

@@ -231,7 +231,7 @@ namespace rex
       desc.address_mode_w = TextureAddressMode::Wrap;
       desc.mip_lod_bias = 0.0f;
       desc.max_anisotropy = 0;
-      desc.comparison_func = ComparisonFunc::Always;
+      desc.comparison_func = ComparisonFunc::Never;
       desc.border_color = BorderColor::TransparentBlack;
       desc.min_lod = 0.0f;
       desc.max_lod = 0.0f;

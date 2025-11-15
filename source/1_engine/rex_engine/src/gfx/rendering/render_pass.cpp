@@ -33,7 +33,7 @@ namespace rex
 			ctx->set_pipeline_state(m_pso.get());
 			ctx->set_root_signature(m_pso->root_signature());
 			ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
-			ctx->set_blend_factor(m_blend_factor);
+			//ctx->set_blend_factor(m_blend_factor);
 
 			bind_my_params_to_pipeline(ctx);
 			m_framebuffer->bind_to(ctx);

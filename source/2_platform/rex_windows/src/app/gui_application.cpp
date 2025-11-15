@@ -143,6 +143,8 @@ namespace rex
 
         m_on_shutdown();
 
+        gfx::gal::instance()->flush();
+
         gfx::scene_renderer::shutdown();
         gfx::shader_lib::shutdown();
         gfx::gal::shutdown();

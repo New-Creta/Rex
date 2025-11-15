@@ -12,7 +12,11 @@ namespace pokemon
 		: m_facing_direction(rex::Direction::South)
 		, m_walking_counter(0)
 	{
-		init_input();
+		static int x = 0;
+		if (x == 0)
+		{
+			init_input();
+		}
 		init_gfx_proxy();
 	}
 
@@ -201,5 +205,6 @@ namespace pokemon
 	void PlayerCharacter::set_pos(rex::PixelCoord pos)
 	{
 		m_pos = pos;
+		m_animated_sprite->set_pos(m_pos);
 	}
 }

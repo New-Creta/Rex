@@ -10,7 +10,8 @@ namespace rex
       : RenderTarget(static_cast<s32>(resource->GetDesc().Width), static_cast<s32>(resource->GetDesc().Height), &m_view, clearColor)
       , DxResource(resource)
       , m_view(view)
-    {}
+    {
+    }
 
     const DxResourceView& DxRenderTarget::dx_view() const
     {

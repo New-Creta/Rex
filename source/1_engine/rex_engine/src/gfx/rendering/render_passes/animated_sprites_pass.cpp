@@ -32,21 +32,26 @@ namespace rex
 		static const s32 FLIP_X_BIT = 0;
 		static const s32 FLIP_Y_BIT = 1;
 		static const s32 RENDER_BOTTOM_BEHIND_BG = 2;
+		static const s32 MAX_SPRITES = 16;
 
 		struct SceneRenderInfo
 		{
 			// screen info
 			glm::vec2 inv_pixel_screen_size;
 			glm::vec2 screen_size;
+		};
 
+		struct PerInstanceData
+		{
 			// sprite info
 			glm::vec2 inv_sprite_screen_size;
 			glm::vec2 inv_sprite_texture_size;
 
-			rsl::pointi32 screen_pos; // unit represented in pixels
 			glm::vec2 uv_start;
 
 			s32 bit_masks;
+
+			rsl::pointi32 screen_pos; // unit represented in pixels
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -74,6 +79,9 @@ namespace rex
 				return;
 			}
 		
+			renderCtx->copy_rt_to_texture2d(m_render_target_as_texture.get(), m_render_target);
+			renderCtx->set_render_target(m_render_target);
+
 			bind_to(renderCtx);
 
 			// Bind all the resources to the gfx pipeline
@@ -81,39 +89,49 @@ namespace rex
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
 
 			static s32 counter = 0;
+			static bool is_on_grass = false;
+			if (counter % 60 == 0)
+			{
+				is_on_grass = !is_on_grass;
+			}
+
+			counter++;
+			
+			SceneRenderInfo scene_render_info{};
+			scene_render_info.inv_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
+			scene_render_info.inv_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
+
+			scene_render_info.screen_size.x = m_render_target->width();
+			scene_render_info.screen_size.y = m_render_target->height();
+			renderCtx->update_buffer(m_screen_info_cbuffer.get(), &scene_render_info, sizeof(scene_render_info));
 
 			s32 index_count = m_tiles_ib_gpu->count();
-			for (const rsl::unique_ptr<AnimatedSprite>& sprite : m_sprites)
+			for (s32 i = 0; i < m_sprites.size(); ++i)
 			{
-				SceneRenderInfo scene_render_info{};
-				static bool is_on_grass = false;
-				if (counter % 60 == 0)
-				{
-					is_on_grass = !is_on_grass;
-				}
+				const rsl::unique_ptr<AnimatedSprite>& sprite = m_sprites[i];
 
-				counter++;
+				PerInstanceData per_instance_data{};
 
 				if (is_on_grass)
 				{
-					rsl::add_flag(scene_render_info.bit_masks, BIT(RENDER_BOTTOM_BEHIND_BG));
+					rsl::add_flag(per_instance_data.bit_masks, BIT(RENDER_BOTTOM_BEHIND_BG));
 				}
 
-				scene_render_info.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
-				scene_render_info.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
+				per_instance_data.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
+				per_instance_data.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
 				rsl::pointi8 tile_size = m_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
 
 				PixelCoord screen_pos = sprite->pos() - m_params.camera->top_left();
-				scene_render_info.screen_pos.x = screen_pos.x;
-				scene_render_info.screen_pos.y = screen_pos.y;
+				per_instance_data.screen_pos.x = screen_pos.x;
+				per_instance_data.screen_pos.y = screen_pos.y;
 
 				// See comment in wram.asm on line 91 related to Y screen position of wSpriteStateData1
 				// ; - 4: Y screen position (in pixels, always 4 pixels above grid which makes sprites appear to be in the center of a tile)
 				// The code that performs this offset if found in movement.asm
 				// look for "add $4" as its done in a few places, depending on the executing code
-				scene_render_info.screen_pos.y -= tile_size.y / 2; // == 4
+				per_instance_data.screen_pos.y -= tile_size.y / 2; // == 4
 
 				rsl::point<f32> inv_zoom_level{};
 				inv_zoom_level.x = 1.0f / m_params.camera->zoom().x;
@@ -126,35 +144,29 @@ namespace rex
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
 
-				scene_render_info.inv_sprite_screen_size.x = inv_sprite_width;
-				scene_render_info.inv_sprite_screen_size.y = inv_sprite_height;
-
-				scene_render_info.inv_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
-				scene_render_info.inv_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
-
-				scene_render_info.screen_size.x = m_render_target->width();
-				scene_render_info.screen_size.y = m_render_target->height();
+				per_instance_data.inv_sprite_screen_size.x = inv_sprite_width;
+				per_instance_data.inv_sprite_screen_size.y = inv_sprite_height;
 
 				rsl::point<f32> uv_start = sprite->current_sprite_uv();
-				scene_render_info.uv_start.x = uv_start.x;
-				scene_render_info.uv_start.y = uv_start.y;
+				per_instance_data.uv_start.x = uv_start.x;
+				per_instance_data.uv_start.y = uv_start.y;
 
 				if (sprite->current_sprite().flip_x)
 				{
-					rsl::add_flag(scene_render_info.bit_masks, BIT(FLIP_X_BIT));
+					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_X_BIT));
 				}
 				if (sprite->current_sprite().flip_y)
 				{
-					rsl::add_flag(scene_render_info.bit_masks, BIT(FLIP_Y_BIT));
+					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
 				}
 
-				renderCtx->update_buffer(m_tile_render_info.get(), &scene_render_info, sizeof(scene_render_info));
+				renderCtx->update_buffer(m_per_instance_cbuffer.get(), &per_instance_data, sizeof(per_instance_data), sizeof(PerInstanceData) * i);
 
 				set("sprite_texture", sprite->sprites_texture());
 				bind_my_params_to_pipeline(renderCtx);
-
-				renderCtx->draw_indexed(index_count, 0, 0, 0);
 			}
+			
+			renderCtx->draw_indexed_instanced(index_count, m_sprites.size(), 0, 0, 0);
 		}
 
 		void AnimatedSpritesPass::init()
@@ -242,10 +254,16 @@ namespace rex
 		}
 		void AnimatedSpritesPass::init_render_info(rex::gfx::RenderContext* renderCtx)
 		{
-			if (m_tile_render_info == nullptr)
+			if (m_screen_info_cbuffer == nullptr)
 			{
-				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(SceneRenderInfo));
-				set("RenderingMetaData", m_tile_render_info.get());
+				m_screen_info_cbuffer = rex::gfx::gal::instance()->create_constant_buffer(sizeof(SceneRenderInfo));
+				set("RenderingMetaData", m_screen_info_cbuffer.get());
+			}
+
+			if (m_per_instance_cbuffer == nullptr)
+			{
+				m_per_instance_cbuffer = gal::instance()->create_constant_buffer(sizeof(PerInstanceData) * 16);
+				set("PerInstanceBuffer", m_per_instance_cbuffer.get());
 			}
 		}
 		void AnimatedSpritesPass::init_shader_params()
@@ -253,7 +271,9 @@ namespace rex
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
 			set("default_sampler", default_sampler);
-			set("background_texture", (RenderTarget*)m_render_target);
+
+			m_render_target_as_texture = rex::gfx::gal::instance()->create_texture2d(m_render_target->width(), m_render_target->height(), TextureFormat::Unorm4Srgb);
+			set("background_texture", m_render_target_as_texture.get());
 		}
 
 		RenderPassDesc AnimatedSpritesPass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const
