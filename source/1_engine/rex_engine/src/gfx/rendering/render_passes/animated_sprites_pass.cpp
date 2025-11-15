@@ -41,8 +41,10 @@ namespace rex
 			glm::vec2 screen_size;
 		};
 
-		struct PerInstanceData
+		struct PerSpriteInstanceData
 		{
+			rsl::pointi32 screen_pos; // unit represented in pixels
+
 			// sprite info
 			glm::vec2 inv_sprite_screen_size;
 			glm::vec2 inv_sprite_texture_size;
@@ -50,8 +52,6 @@ namespace rex
 			glm::vec2 uv_start;
 
 			s32 bit_masks;
-
-			rsl::pointi32 screen_pos; // unit represented in pixels
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -110,7 +110,7 @@ namespace rex
 			{
 				const rsl::unique_ptr<AnimatedSprite>& sprite = m_sprites[i];
 
-				PerInstanceData per_instance_data{};
+				PerSpriteInstanceData per_instance_data{};
 
 				if (is_on_grass)
 				{
@@ -160,7 +160,7 @@ namespace rex
 					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
 				}
 
-				renderCtx->update_buffer(m_per_instance_cbuffer.get(), &per_instance_data, sizeof(per_instance_data), sizeof(PerInstanceData) * i);
+				renderCtx->update_buffer(m_per_instance_cbuffer.get(), &per_instance_data, sizeof(per_instance_data), 48 * i);
 
 				set("sprite_texture", sprite->sprites_texture());
 				bind_my_params_to_pipeline(renderCtx);
@@ -262,7 +262,7 @@ namespace rex
 
 			if (m_per_instance_cbuffer == nullptr)
 			{
-				m_per_instance_cbuffer = gal::instance()->create_constant_buffer(sizeof(PerInstanceData) * 16);
+				m_per_instance_cbuffer = gal::instance()->create_constant_buffer(sizeof(PerSpriteInstanceData) * 16);
 				set("PerInstanceBuffer", m_per_instance_cbuffer.get());
 			}
 		}

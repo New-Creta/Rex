@@ -34,12 +34,14 @@ struct PerInstanceData
   int bit_flags;
 };
 
-cbuffer PerInstanceBuffer : register(b1, RENDER_PASS_REGISTER_SPACE)
-{
-  // INSTANCE INFO
-  // The position of the sprite on screen from the top left, represented in pixels
-  PerInstanceData instance_data[MAX_SPRITES];
-}
+StructuredBuffer<PerInstanceData> instance_data : register(t0, RENDER_PASS_REGISTER_SPACE);
+
+//cbuffer PerInstanceBuffer : register(b1, RENDER_PASS_REGISTER_SPACE)
+//{
+//  // INSTANCE INFO
+//  // The position of the sprite on screen from the top left, represented in pixels
+//  PerInstanceData instance_data[MAX_SPRITES];
+//}
 
 // Vertices expected for this shader are meant to spawn the entire screen
 // as in, without any transforms, it will cover { 0, 0 } until { 1, 1 } of the window
@@ -126,8 +128,8 @@ struct PS_INPUT
 };
 
 SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
-Texture2D sprite_texture : register(t0, RENDER_PASS_REGISTER_SPACE);
-Texture2D background_texture : register(t1, RENDER_PASS_REGISTER_SPACE);
+Texture2D sprite_texture : register(t1, RENDER_PASS_REGISTER_SPACE);
+Texture2D background_texture : register(t2, RENDER_PASS_REGISTER_SPACE);
 
 // See https://asawicki.info/news_1516_half-pixel_offset_in_directx_11 for information about the half pixel rule
 // the position input will always be the pixel idx value, with an offset of 0.5

@@ -66,7 +66,7 @@ namespace rex
 			rex::gfx::ScissorRect rect = { 0, 0, render_target_width, render_target_height };
 			render_ctx->set_scissor_rect(rect);
 
-			//render_tilemap(render_ctx.get());
+			render_tilemap(render_ctx.get());
 			render_flipbook_animations(render_ctx.get());
 			render_dynamic_animations(render_ctx.get());
 
@@ -82,7 +82,7 @@ namespace rex
 		{
 			m_params = params;
 
-			//m_block_render_pass->update_params(params);
+			m_block_render_pass->update_params(params);
 			m_animated_sprites_pass->update_params(params);
 		}
 
