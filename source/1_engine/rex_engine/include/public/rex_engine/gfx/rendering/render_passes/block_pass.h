@@ -71,11 +71,12 @@ namespace rex
 			void init();
 
 			void init_vb(rex::gfx::RenderContext* renderCtx);
-			//void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
-			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
-			void init_tilemap(const Camera2D* camera, const TilesetAsset* tileset);
 			void init_shader_params();
+			void init_tile_render_info();
+
+			void update_tilemaps(rex::gfx::RenderContext* renderCtx, const SceneRenderParams& params);
+			void update_render_metadata(rex::gfx::RenderContext* renderCtx, const SceneRenderParams& params);
 
 			rsl::point<TileCount> calc_screen_resolution(const Camera2D* camera, const TilesetAsset* tileset) const;
 
@@ -94,11 +95,11 @@ namespace rex
 
 			// The UAV holding the indices of all the tiles to render
 			// starting from the top left, going to the bottom right
-			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tiles_indices_buffer;
+			rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_screen_tilemap_gpu;
 
 			// The tilemap to render on screen.
 			// This is the source information that gets copied to the UAV buffer
-			rsl::unique_ptr<rex::Tilemap> m_screen_tilemap;
+			rsl::unique_ptr<rex::Tilemap> m_screen_tilemap_cpu;
 
 			rex::gfx::RenderTargetBase* m_render_target;
 
