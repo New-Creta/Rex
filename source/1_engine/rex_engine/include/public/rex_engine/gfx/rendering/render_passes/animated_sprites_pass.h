@@ -19,13 +19,9 @@ namespace rex
 		public:
 			AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
 
-			void update_params(const SceneRenderParams& params);
-
-			//void update_scene_params(const SceneParams& params);
-			//void update_camera_params(const CameraParams& params);
-
 			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
 
+			void update_params(const SceneRenderParams& params);
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
@@ -36,7 +32,6 @@ namespace rex
 			void init_vb(rex::gfx::RenderContext* renderCtx);
 			void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
-			//void init_tile_indices_uab();
 			void init_shader_params();
 
 		private:
@@ -57,9 +52,6 @@ namespace rex
 			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
 
 			SceneRenderParams m_params;
-
-			//SceneParams m_scene_params;
-			//CameraParams m_camera_params;
 		};
 	}
 }

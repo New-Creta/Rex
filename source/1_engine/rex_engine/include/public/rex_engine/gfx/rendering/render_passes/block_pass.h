@@ -102,10 +102,7 @@ namespace rex
 
 			rex::gfx::RenderTargetBase* m_render_target;
 
-			//SceneParams m_scene_params;
-			
 			TilemapRenderingMetaData m_render_metadata;
-
 		};
 	}
 }

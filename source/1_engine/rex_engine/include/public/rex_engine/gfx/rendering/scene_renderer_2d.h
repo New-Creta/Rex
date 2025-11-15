@@ -22,15 +22,6 @@ namespace rex
 {
 	namespace gfx
 	{
-
-		//struct SceneRenderParams
-		//{
-		//	const u8* tiles_source;
-		//	Camera2D* camera;
-		//	WorldCoordConverter coord_converter;
-		//	TileCount world_width_in_tiles;
-		//};
-
 		class SceneRenderer2D : public Renderer
 		{
 		public:
@@ -45,10 +36,7 @@ namespace rex
 			// Update the scene render parameters
 			void update_params(const SceneRenderParams& params);
 			// Return the current parameters the renderer uses for the world
-			SceneRenderParams current_params() const;
-
-			//void update_zoom(rsl::point<f32> zoomLevel);
-			//void notify_new_tileset(const TilesetAsset* tileset);
+			const SceneRenderParams& current_params() const;
 
 		private:
 			void render_tilemap(RenderContext* renderCtx);

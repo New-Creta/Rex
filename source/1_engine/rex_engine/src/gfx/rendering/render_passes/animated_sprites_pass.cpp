@@ -56,24 +56,15 @@ namespace rex
 			init();
 		}
 
-		void AnimatedSpritesPass::update_params(const SceneRenderParams& params)
-		{
-			m_params = params;
-		}
-
-		//void AnimatedSpritesPass::update_camera_params(const CameraParams& params)
-		//{
-		//	m_camera_params = params;
-
-		//	auto render_ctx = gal::instance()->new_render_ctx();
-
-		//	init_render_info(render_ctx.get());
-		//}
-
 		AnimatedSprite* AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
 		{
 			m_sprites.emplace_back(rsl::move(sprite));
 			return m_sprites.back().get();
+		}
+
+		void AnimatedSpritesPass::update_params(const SceneRenderParams& params)
+		{
+			m_params = params;
 		}
 
 		void AnimatedSpritesPass::render(rex::gfx::RenderContext* renderCtx)

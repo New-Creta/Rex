@@ -80,58 +80,18 @@ namespace rex
 			m_animated_sprites_pass->update_params(params);
 		}
 
-		//void SceneRenderer2D::update_zoom(rsl::point<f32> zoomLevel)
-		//{
-		//	m_zoom_level = zoomLevel;
-
-		//	// The zoom indicates how many tiles we can render
-		//	// If zoom is 1, that means we can render
-		//	// render target width / tile size to the screen
-		//	// if we have a zoom value, we change this default
-		//	// to draw more or less tiles to the screen
-		//	CameraParams params{};
-		//	params.zoom_level = m_zoom_level;
-
-		//	m_block_render_pass->update_camera_params(params);
-		//	m_animated_sprites_pass->update_camera_params(params);
-		//}
-
-		//void SceneRenderer2D::notify_new_tileset(const TilesetAsset* tileset)
-		//{
-		//	SceneParams params{};
-		//	params.tileset = tileset;
-		//	params.camera = m_params.camera;
-
-		//	m_block_render_pass->update_scene_params(params);
-		//	m_animated_sprites_pass->update_scene_params(params);
-
-		//	//BlockRenderPassDynamicInputs inputs{};
-		//	//inputs.tileset = tileset;
-
-		//	//m_block_render_pass->update_dynamic_inputs(inputs);
-		//}
+		const SceneRenderParams& SceneRenderer2D::current_params() const
+		{
+			return m_params;
+		}
 
 		void SceneRenderer2D::render_tilemap(RenderContext* renderCtx)
 		{
-			//BlockRenderPassTilemapParams params{};
-			//params.tiles_source = m_params.tiles_source;//  m_scene_tilemap->tiles();
-			//params.top_left_start = m_params.camera->top_left();// m_top_left;
-			//params.coord_converter = m_params.coord_converter;
-			//params.world_width_in_tiles = m_params.world_width_in_tiles.get();// m_scene_tilemap->width().get();
-			//params.camera = m_params.camera;
-
-			//m_block_render_pass->update_tilemap(m_params);
 			m_block_render_pass->render(renderCtx);
 		}
 
 		void SceneRenderer2D::render_flipbook_animations(RenderContext* renderCtx)
 		{
-			//CameraParams params{};
-
-			//params.zoom_level = m_params.camera->zoom();
-			//params.top_left = m_params.camera->top_left();
-			//m_animated_sprites_pass->update_camera_params(params);
-
 			m_animated_sprites_pass->render(renderCtx);
 		}
 
