@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/gfx/rendering/render_pass.h"
+#include "rex_engine/gfx/rendering/render_params.h"
 
 #include "rex_engine/assets/texture_asset.h"
 
@@ -18,8 +19,10 @@ namespace rex
 		public:
 			AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
 
-			void update_scene_params(const SceneParams& params);
-			void update_camera_params(const CameraParams& params);
+			void update_params(const SceneRenderParams& params);
+
+			//void update_scene_params(const SceneParams& params);
+			//void update_camera_params(const CameraParams& params);
 
 			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
 
@@ -52,6 +55,8 @@ namespace rex
 			rex::gfx::RenderTargetBase* m_render_target;
 
 			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
+
+			SceneRenderParams m_params;
 
 			//SceneParams m_scene_params;
 			//CameraParams m_camera_params;

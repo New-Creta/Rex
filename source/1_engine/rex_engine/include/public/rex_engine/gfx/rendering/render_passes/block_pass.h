@@ -12,6 +12,7 @@
 #include "rex_engine/gfx/resources/constant_buffer.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
+#include "rex_engine/gfx/rendering/render_params.h"
 
 #include "rex_engine/gfx/system/render_context.h"
 
@@ -30,22 +31,6 @@ namespace rex
 		{
 			RenderTargetBase* render_target;
 		};
-
-		//struct BlockRenderPassTilemapParams
-		//{
-		//	// pointer to the tile source data. This data represents all the tiles in the current world
-		//	const u8* tiles_source;
-
-		//	// the position (in tiles) from the world tiles from where we should start drawing
-		//	PixelCoord top_left_start;
-
-		//	WorldCoordConverter coord_converter;
-
-		//	// the width of the world, in tiles
-		//	s32 world_width_in_tiles;
-
-		//	Camera2D* camera;
-		//};
 
 		struct TilemapRenderingMetaData
 		{
@@ -70,11 +55,13 @@ namespace rex
 		public:
 			BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo);
 
-			void update_scene_params(const SceneParams& params);
+			void update_params(const SceneRenderParams& params);
+
+			//void update_scene_params(const SceneParams& params);
 			//void update_camera_params(const CameraParams& params);
 
 			// Update the tilemap's indices that we need to draw to the screen
-			void update_tilemap(const SceneRenderParams& params);
+			//void update_tilemap(const SceneRenderParams& params);
 
 			void render(rex::gfx::RenderContext* renderCtx);
 
@@ -84,13 +71,13 @@ namespace rex
 			void init();
 
 			void init_vb(rex::gfx::RenderContext* renderCtx);
-			void init_render_info(rex::gfx::RenderContext* renderCtx);
+			//void init_render_info(rex::gfx::RenderContext* renderCtx);
 			void init_ib(rex::gfx::RenderContext* renderCtx);
 			void init_tile_indices_uab(rex::gfx::RenderContext* renderCtx);
-			void init_tilemap();
+			void init_tilemap(const Camera2D* camera, const TilesetAsset* tileset);
 			void init_shader_params();
 
-			rsl::point<TileCount> calc_screen_resolution(Camera2D* camera) const;
+			rsl::point<TileCount> calc_screen_resolution(const Camera2D* camera, const TilesetAsset* tileset) const;
 
 		private:
 			// The vertex buffer for a single tile
@@ -111,12 +98,12 @@ namespace rex
 
 			// The tilemap to render on screen.
 			// This is the source information that gets copied to the UAV buffer
-			rsl::unique_ptr<rex::Tilemap> m_tilemap;
+			rsl::unique_ptr<rex::Tilemap> m_screen_tilemap;
 
 			rex::gfx::RenderTargetBase* m_render_target;
 
-			SceneParams m_scene_params;
-			//CameraParams m_camera_params;
+			//SceneParams m_scene_params;
+			
 			TilemapRenderingMetaData m_render_metadata;
 
 		};

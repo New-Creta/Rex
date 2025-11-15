@@ -63,6 +63,7 @@ namespace pokemon
 	{
 		f32 dt = rex::engine::instance()->frame_info().delta_time().to_milliseconds();
 
+		// Tick all objects in the scene that require ticking
 		m_player_character->tick(dt);
 		m_camera->set_pos(m_player_character->pos());
 
@@ -84,9 +85,8 @@ namespace pokemon
 	{
 		m_active_map = rex::asset_db::instance()->load<rex::Map>(saveFile.current_map_filepath);
 		m_scene_blockmap = rsl::make_unique<GameBlockMap>(m_active_map);
-		on_map_change();
+		//on_map_change();
 	}
-
 	void GameSession::init_player(const SaveFile& saveFile)
 	{
 		rex::WorldCoordConverter world_coord_converter = m_active_map->create_world_coord_converter();
@@ -94,7 +94,6 @@ namespace pokemon
 		m_player_character = rsl::make_unique<PlayerCharacter>();
 		m_player_character->set_pos(world_coord_converter.to_pixel_coord(saveFile.position));
 	}
-
 	void GameSession::init_camera()
 	{
 		rex::PixelCoord res_size{};
@@ -116,6 +115,7 @@ namespace pokemon
 	void GameSession::update_render_info()
 	{
 		rex::gfx::SceneRenderParams params{};
+		params.tileset = m_active_map->blockset()->tileset();
 		params.tiles_source = m_scene_blockmap->tiles();
 		params.camera = m_camera.get();
 		params.coord_converter = m_active_map->create_world_coord_converter();
@@ -151,8 +151,8 @@ namespace pokemon
 
 	}
 
-	void GameSession::on_map_change()
-	{
-		rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
-	}
+	//void GameSession::on_map_change()
+	//{
+	//	rex::gfx::scene_renderer::instance()->notify_new_tileset(m_active_map->blockset()->tileset());
+	//}
 }

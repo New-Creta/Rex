@@ -56,14 +56,19 @@ namespace rex
 			init();
 		}
 
-		void AnimatedSpritesPass::update_camera_params(const CameraParams& params)
+		void AnimatedSpritesPass::update_params(const SceneRenderParams& params)
 		{
-			m_camera_params = params;
-
-			auto render_ctx = gal::instance()->new_render_ctx();
-
-			init_render_info(render_ctx.get());
+			m_params = params;
 		}
+
+		//void AnimatedSpritesPass::update_camera_params(const CameraParams& params)
+		//{
+		//	m_camera_params = params;
+
+		//	auto render_ctx = gal::instance()->new_render_ctx();
+
+		//	init_render_info(render_ctx.get());
+		//}
 
 		AnimatedSprite* AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
 		{
@@ -106,10 +111,10 @@ namespace rex
 				scene_render_info.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
 				scene_render_info.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
-				rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
+				rsl::pointi8 tile_size = m_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
 
-				PixelCoord screen_pos = sprite->pos() - m_camera_params.top_left;
+				PixelCoord screen_pos = sprite->pos() - m_params.camera->top_left();
 				scene_render_info.screen_pos.x = screen_pos.x;
 				scene_render_info.screen_pos.y = screen_pos.y;
 
@@ -120,11 +125,12 @@ namespace rex
 				scene_render_info.screen_pos.y -= tile_size.y / 2; // == 4
 
 				rsl::point<f32> inv_zoom_level{};
-				inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
-				inv_zoom_level.y = 1.0f / m_camera_params.zoom_level.y;
+				inv_zoom_level.x = 1.0f / m_params.camera->zoom().x;
+				inv_zoom_level.y = 1.0f / m_params.camera->zoom().y;
 
-				num_sprites_on_screen.x = m_render_target->width() / (sprite_size.x * m_camera_params.zoom_level.x);
-				num_sprites_on_screen.y = m_render_target->height() / (sprite_size.y * m_camera_params.zoom_level.y);
+				rsl::pointi8 num_sprites_on_screen{};
+				num_sprites_on_screen.x = m_render_target->width() / (sprite_size.x * m_params.camera->zoom().x);
+				num_sprites_on_screen.y = m_render_target->height() / (sprite_size.y * m_params.camera->zoom().y);
 
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
@@ -132,8 +138,8 @@ namespace rex
 				scene_render_info.inv_sprite_screen_size.x = inv_sprite_width;
 				scene_render_info.inv_sprite_screen_size.y = inv_sprite_height;
 
-				scene_render_info.inv_pixel_screen_size.x = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
-				scene_render_info.inv_pixel_screen_size.y = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
+				scene_render_info.inv_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
+				scene_render_info.inv_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
 				scene_render_info.screen_size.x = m_render_target->width();
 				scene_render_info.screen_size.y = m_render_target->height();
@@ -168,6 +174,7 @@ namespace rex
 
 			init_vb(render_ctx.get());
 			init_ib(render_ctx.get());
+			init_render_info(render_ctx.get());
 			init_shader_params();
 		}
 
@@ -250,7 +257,6 @@ namespace rex
 				set("RenderingMetaData", m_tile_render_info.get());
 			}
 		}
-
 		void AnimatedSpritesPass::init_shader_params()
 		{
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);

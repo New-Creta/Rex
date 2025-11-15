@@ -43,7 +43,7 @@ namespace pokemon
 
     void clamp_player_pos();
 
-    void on_map_change();
+    //void on_map_change();
 
   private:
     rex::Map* m_active_map;

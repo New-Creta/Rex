@@ -13,8 +13,7 @@ namespace rex
 		BlockRenderPass::BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo)
 			: RenderPass(create_desc(creationInfo))
 			, m_render_target(creationInfo.render_target)
-			, m_scene_params()
-			//, m_camera_params()
+			//, m_scene_params()
 			, m_render_metadata()
 		{
 			// The following member variables are allowed to be null by the endo of construction
@@ -25,18 +24,18 @@ namespace rex
 			init();
 		}
 
-		void BlockRenderPass::update_scene_params(const SceneParams& params)
-		{
-			m_scene_params = params;
+		//void BlockRenderPass::update_scene_params(const SceneParams& params)
+		//{
+		//	m_scene_params = params;
 
-			set("tile_texture", m_scene_params.tileset->tileset_texture());
+		//	set("tile_texture", m_scene_params.tileset->tileset_texture());
 
-			auto render_ctx = gal::instance()->new_render_ctx();
+		//	auto render_ctx = gal::instance()->new_render_ctx();
 
-			init_tilemap();
-			init_render_info(render_ctx.get());
-			init_tile_indices_uab(render_ctx.get());
-		}
+		//	init_tilemap();
+		//	init_render_info(render_ctx.get());
+		//	init_tile_indices_uab(render_ctx.get());
+		//}
 		//void BlockRenderPass::update_camera_params(const CameraParams& params)
 		//{
 		//	m_camera_params = params;
@@ -47,38 +46,121 @@ namespace rex
 		//	init_tile_indices_uab(render_ctx.get());
 		//}
 
-		void BlockRenderPass::update_tilemap(const BlockRenderPassTilemapParams& params)
+		void BlockRenderPass::update_params(const SceneRenderParams& params)
 		{
-			if (!m_screen_tilemap)
+			if (!params.tileset)
 			{
 				return;
 			}
 
-			TileCoord tile_coords = params.coord_converter.to_tile_coord(params.top_left_start);
+			auto render_ctx = gal::instance()->new_render_ctx();
 
-			s32 x_mod = params.top_left_start.x % params.coord_converter.num_pixels_per_tile;
-			s32 y_mod = params.top_left_start.y % params.coord_converter.num_pixels_per_tile;
+			init_tilemap(params.camera, params.tileset);
+			init_tile_indices_uab(render_ctx.get());
+
+			rsl::pointi8 tile_size = params.tileset->tile_size();
+			rsl::point<f32> inv_zoom_level{};
+			inv_zoom_level.x = 1.0f / params.camera->zoom().x;
+			inv_zoom_level.y = 1.0f / params.camera->zoom().y;
+
+			// inverse tile width comes from diving from 2
+			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
+
+			rsl::pointi8 num_tiles_on_screen{};
+
+			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * params.camera->zoom().x);
+			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * params.camera->zoom().y);
+
+			f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
+			f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
+
+			s32 tileset_width = params.tileset->tileset_texture()->width();
+			s32 tileset_height = params.tileset->tileset_texture()->height();
+
+			rsl::vec2 uv_size{};
+			uv_size.x = tile_size.x / (f32)tileset_width;
+			uv_size.y = tile_size.y / (f32)tileset_height;
+
+			// Init the constant buffer
+			m_render_metadata.texture_tiles_per_row = params.tileset->num_tiles_per_row();
+			m_render_metadata.inv_texture_width = uv_size.x;
+			m_render_metadata.inv_texture_height = uv_size.y;
+
+			m_render_metadata.screen_width_in_tiles = m_screen_tilemap->width().get();
+			m_render_metadata.inv_tile_screen_width = inv_tile_width;
+			m_render_metadata.inv_tile_screen_height = inv_tile_height;
+
+			m_render_metadata.screen_pixel_offset_x = 0;
+			m_render_metadata.screen_pixel_offset_y = 0;
+			m_render_metadata.inv_pixel_screen_width = 2 * params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
+			m_render_metadata.inv_pixel_screen_height = 2 * params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
+
+			PixelCoord top_left = params.camera->top_left();
+
+			s32 x_mod = top_left.x % params.coord_converter.num_pixels_per_tile;
+			s32 y_mod = top_left.y % params.coord_converter.num_pixels_per_tile;
 
 			m_render_metadata.screen_pixel_offset_x = -x_mod;
 			m_render_metadata.screen_pixel_offset_y = y_mod;
 
-			auto render_ctx = gal::instance()->new_render_ctx();
+			if (m_tile_render_info == nullptr)
+			{
+				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
+				set("RenderingMetaData", m_tile_render_info.get());
+			}
+
 			render_ctx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
 
-			rsl::point<TileCount> screen_resolution = calc_screen_resolution();
-			s32 num_tiles_until_end_of_row = params.world_width_in_tiles - tile_coords.x;
+			set("tile_texture", params.tileset->tileset_texture());
+
+			TileCoord tile_coords = params.coord_converter.to_tile_coord(params.camera->top_left());
+			rsl::point<TileCount> screen_resolution = calc_screen_resolution(params.camera, params.tileset);
+			s32 num_tiles_until_end_of_row = params.world_width_in_tiles.get() - tile_coords.x;
 			s32 num_to_copy = rsl::min(screen_resolution.x.get(), num_tiles_until_end_of_row);
 
-			s32 start_idx = tile_coords.y * params.world_width_in_tiles + tile_coords.x;
+			s32 start_idx = tile_coords.y * params.world_width_in_tiles.get() + tile_coords.x;
 			const u8* src = params.tiles_source + start_idx;
 			s32 offset = 0;
 			for (s32 row = 0; row < screen_resolution.y.get(); ++row)
 			{
 				m_screen_tilemap->set(src, num_to_copy, offset);
 				offset += screen_resolution.x.get();
-				src += params.world_width_in_tiles;
+				src += params.world_width_in_tiles.get();
 			}
 		}
+
+		//void BlockRenderPass::update_tilemap(const BlockRenderPassTilemapParams& params)
+		//{
+		//	if (!m_screen_tilemap)
+		//	{
+		//		return;
+		//	}
+
+		//	TileCoord tile_coords = params.coord_converter.to_tile_coord(params.top_left_start);
+
+		//	s32 x_mod = params.top_left_start.x % params.coord_converter.num_pixels_per_tile;
+		//	s32 y_mod = params.top_left_start.y % params.coord_converter.num_pixels_per_tile;
+
+		//	m_render_metadata.screen_pixel_offset_x = -x_mod;
+		//	m_render_metadata.screen_pixel_offset_y = y_mod;
+
+		//	auto render_ctx = gal::instance()->new_render_ctx();
+		//	render_ctx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
+
+		//	rsl::point<TileCount> screen_resolution = calc_screen_resolution();
+		//	s32 num_tiles_until_end_of_row = params.world_width_in_tiles - tile_coords.x;
+		//	s32 num_to_copy = rsl::min(screen_resolution.x.get(), num_tiles_until_end_of_row);
+
+		//	s32 start_idx = tile_coords.y * params.world_width_in_tiles + tile_coords.x;
+		//	const u8* src = params.tiles_source + start_idx;
+		//	s32 offset = 0;
+		//	for (s32 row = 0; row < screen_resolution.y.get(); ++row)
+		//	{
+		//		m_screen_tilemap->set(src, num_to_copy, offset);
+		//		offset += screen_resolution.x.get();
+		//		src += params.world_width_in_tiles;
+		//	}
+		//}
 
 		void BlockRenderPass::render(rex::gfx::RenderContext* renderCtx)
 		{
@@ -151,59 +233,59 @@ namespace rex
 			renderCtx->update_buffer(m_tiles_ib_gpu.get(), tile_ib.data(), tile_ib.size() * sizeof(tile_ib[0]));
 			renderCtx->transition_buffer(m_tiles_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
 		}
-		void BlockRenderPass::init_render_info(rex::gfx::RenderContext* renderCtx)
-		{
-			if (!m_scene_params.tileset)
-			{
-				return;
-			}
+		//void BlockRenderPass::init_render_info(rex::gfx::RenderContext* renderCtx)
+		//{
+		//	if (!m_scene_params.tileset)
+		//	{
+		//		return;
+		//	}
 
-			rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
-			rsl::point<f32> inv_zoom_level{};
-			inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
-			inv_zoom_level.y = 1.0f / m_camera_params.zoom_level.y;
+		//	rsl::pointi8 tile_size = m_scene_params.tileset->tile_size();
+		//	rsl::point<f32> inv_zoom_level{};
+		//	inv_zoom_level.x = 1.0f / m_camera_params.zoom_level.x;
+		//	inv_zoom_level.y = 1.0f / m_camera_params.zoom_level.y;
 
-			// inverse tile width comes from diving from 2
-			// this is because ndc coordinates have a width of 2 (going from -1 to 1)
+		//	// inverse tile width comes from diving from 2
+		//	// this is because ndc coordinates have a width of 2 (going from -1 to 1)
 
-			rsl::pointi8 num_tiles_on_screen{};
+		//	rsl::pointi8 num_tiles_on_screen{};
 
-			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * m_camera_params.zoom_level.x);
-			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * m_camera_params.zoom_level.y);
+		//	num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * m_camera_params.zoom_level.x);
+		//	num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * m_camera_params.zoom_level.y);
 
-			f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
-			f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
+		//	f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
+		//	f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
 
-			s32 tileset_width = m_scene_params.tileset->tileset_texture()->width();
-			s32 tileset_height = m_scene_params.tileset->tileset_texture()->height();
+		//	s32 tileset_width = m_scene_params.tileset->tileset_texture()->width();
+		//	s32 tileset_height = m_scene_params.tileset->tileset_texture()->height();
 
-			rsl::vec2 uv_size{};
-			uv_size.x = tile_size.x / (f32)tileset_width;
-			uv_size.y = tile_size.y / (f32)tileset_height;
+		//	rsl::vec2 uv_size{};
+		//	uv_size.x = tile_size.x / (f32)tileset_width;
+		//	uv_size.y = tile_size.y / (f32)tileset_height;
 
-			// Init the constant buffer
+		//	// Init the constant buffer
 
-			m_render_metadata.texture_tiles_per_row = m_scene_params.tileset->num_tiles_per_row();
-			m_render_metadata.inv_texture_width = uv_size.x;
-			m_render_metadata.inv_texture_height = uv_size.y;
+		//	m_render_metadata.texture_tiles_per_row = m_scene_params.tileset->num_tiles_per_row();
+		//	m_render_metadata.inv_texture_width = uv_size.x;
+		//	m_render_metadata.inv_texture_height = uv_size.y;
 
-			m_render_metadata.screen_width_in_tiles = m_screen_tilemap->width().get();
-			m_render_metadata.inv_tile_screen_width = inv_tile_width;
-			m_render_metadata.inv_tile_screen_height = inv_tile_height;
+		//	m_render_metadata.screen_width_in_tiles = m_screen_tilemap->width().get();
+		//	m_render_metadata.inv_tile_screen_width = inv_tile_width;
+		//	m_render_metadata.inv_tile_screen_height = inv_tile_height;
 
-			m_render_metadata.screen_pixel_offset_x = 0;
-			m_render_metadata.screen_pixel_offset_y = 0;
-			m_render_metadata.inv_pixel_screen_width = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
-			m_render_metadata.inv_pixel_screen_height = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
+		//	m_render_metadata.screen_pixel_offset_x = 0;
+		//	m_render_metadata.screen_pixel_offset_y = 0;
+		//	m_render_metadata.inv_pixel_screen_width = 2 * m_camera_params.zoom_level.x / m_render_target->width(); // how big is 1 tile pixel on the screen
+		//	m_render_metadata.inv_pixel_screen_height = 2 * m_camera_params.zoom_level.y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
-			if (m_tile_render_info == nullptr)
-			{
-				m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
-				set("RenderingMetaData", m_tile_render_info.get());
-			}
+		//	if (m_tile_render_info == nullptr)
+		//	{
+		//		m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
+		//		set("RenderingMetaData", m_tile_render_info.get());
+		//	}
 
-			renderCtx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
-		}
+		//	renderCtx->update_buffer(m_tile_render_info.get(), &m_render_metadata, sizeof(m_render_metadata));
+		//}
 		void BlockRenderPass::init_tile_indices_uab(rex::gfx::RenderContext* renderCtx)
 		{
 			if (!m_tiles_indices_buffer || m_tiles_indices_buffer->size() < m_screen_tilemap->num_tiles())
@@ -240,23 +322,24 @@ namespace rex
 
 			set("default_sampler", default_sampler);
 		}
-		void BlockRenderPass::init_tilemap()
+		void BlockRenderPass::init_tilemap(const Camera2D* camera, const TilesetAsset* tileset)
 		{
 			REX_ASSERT_X(m_render_target != nullptr, "Cannot create a tilemap without a render target. The render target is needed to calculate how many tiles we can fit on screen");
-			REX_ASSERT_X(m_scene_params.tileset != nullptr, "Cannot create a tilemap without a tileset as we need the size of a single tile in pixels");
+			REX_ASSERT_X(tileset != nullptr, "Cannot create a tilemap without a tileset as we need the size of a single tile in pixels");
+			REX_ASSERT_X(camera != nullptr, "Cannot create a tilemap without a camera as we need the zoom factor");
 
-			rsl::point<TileCount> screen_resolution = calc_screen_resolution();
+			rsl::point<TileCount> screen_resolution = calc_screen_resolution(camera, tileset);
 
 			// Not sure if we should calculate the number of tiles to render or have the user specify this
 			// The gameboy has a set resolution, which is the tile resolution we should target for the game
 			m_screen_tilemap = rsl::make_unique<rex::Tilemap>(screen_resolution);
 		}
 
-		rsl::point<TileCount> BlockRenderPass::calc_screen_resolution(Camera2D* camera) const
+		rsl::point<TileCount> BlockRenderPass::calc_screen_resolution(const Camera2D* camera, const TilesetAsset* tileset) const
 		{
 			rsl::point<TileCount> screen_resolution{};
-			screen_resolution.x.get() = m_render_target->width() / (m_scene_params.tileset->tile_size().x * camera->zoom().x);
-			screen_resolution.y.get() = m_render_target->height() / (m_scene_params.tileset->tile_size().y * camera->zoom().y);
+			screen_resolution.x.get() = m_render_target->width() / (tileset->tile_size().x * camera->zoom().x);
+			screen_resolution.y.get() = m_render_target->height() / (tileset->tile_size().y * camera->zoom().y);
 
 			// Draw 1 extra tile on each axis to allow for panning
 			// This is so there won't be a black border drawn
