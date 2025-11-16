@@ -10,7 +10,7 @@
 
 namespace rex
 {
-	// A block is a 4x4 matrix of tiles
+	// A block is a 4x4 matrix of tiles stored row major
 	// +-----+-----+-----+-----+
 	// |  1  |  2  |  3  |  4  |
 	// +-----+-----+-----+-----+
@@ -42,7 +42,7 @@ namespace rex
 		u8 index_at(rsl::pointi8 coord) const;
 
 		// fill in a buffer with tile indices of a single row
-		void fill_tiles(s32 rowIdx, u8* dstBuff, s32 dstBuffSize) const;
+		void read_row(s32 rowIdx, u8* dstBuff, s32 dstBuffSize) const;
 
 		// iterator functions to allow for range based for
 		rsl::random_access_iterator<u8> begin();

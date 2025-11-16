@@ -2,25 +2,25 @@
 
 namespace rex
 {
-	FlipbookAnimation::FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookSprite>&& sprites)
+	FlipbookAnimation::FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookAnimationFrame>&& sprites)
 		: m_name(name)
-		, m_sprites(rsl::move(sprites))
+		, m_frames(rsl::move(sprites))
 	{}
 
 	bool FlipbookAnimation::has_finished_animation(s32 spriteIdx, s32 frameIdx) const
 	{
-		return frameIdx >= m_sprites[spriteIdx].num_frames;
+		return frameIdx >= m_frames[spriteIdx].num_frames;
 	}
-	s32 FlipbookAnimation::next_sprite_idx(s32 currentSpriteIdx) const
+	s32 FlipbookAnimation::next_frame_idx(s32 currentFrameIdx) const
 	{
-		return currentSpriteIdx + 1 >= m_sprites.size()
+		return currentFrameIdx + 1 >= m_frames.size()
 			? 0
-			: currentSpriteIdx + 1;
+			: currentFrameIdx + 1;
 	}
 
-	const FlipbookSprite& FlipbookAnimation::sprite(s32 idx) const
+	const FlipbookAnimationFrame& FlipbookAnimation::frame(s32 idx) const
 	{
-		return m_sprites[idx];
+		return m_frames[idx];
 	}
 
 	rsl::string_view FlipbookAnimation::name() const

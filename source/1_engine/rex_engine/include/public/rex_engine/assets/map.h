@@ -34,8 +34,7 @@ namespace rex
 	struct MapHeader
 	{
 		rsl::string name;											// name of the map
-		s8 width_in_blocks;										// represented in block count
-		s8 height_in_blocks;									// represented in block count
+		BlockCount size;
 		s8 border_block_idx;									// Index of the block used for the border if no connection blocks are present
 	};
 
@@ -44,6 +43,11 @@ namespace rex
 	{
 		Map* map;
 		Direction direction;
+
+		// The offset is the how many tiles in a perpendicular angle of the direction a connection is connected
+		// Example:
+		// A connection to the north with an offset of 2
+		// The northern map's center will be offsetted 2 pixels to the right of the current map's center
 		s8 offset;
 	};
 
@@ -63,7 +67,7 @@ namespace rex
 		rsl::unique_array<rsl::unique_ptr<MapObject>> objects;
 		rsl::unique_array<TextEvent> text_events;
 
-		// A warp is a space that teleports to the player into another map
+		// A warp is a space that teleports the player into another map
 		// A good example of this is a door
 		rsl::unique_array<WarpEvent> warps;
 

@@ -17,8 +17,19 @@ namespace rex
 		using input_action_callback = rsl::function<void(const KeyState&)>;
 		InputMapping(rsl::unordered_map<rsl::string, InputAction>&& mappings);
 
+		// Handle an input event
+		// note we do not differentiate between key up and down events
+		// the user should specify their mappings to be triggered on key up or down events
+		// and assign them to a binding
+		// example:
+		// input_mapping->bind_action("my_key_pressed", do_something_on_key_press());
+		// input_mapping->bind_action("my_key_release", do_something_on_key_release());
 		void handle_input(const KeyState& inputInfo);
 
+		// bind an action to this input mapping
+		// as each input mapping registers themselves to listen to key events
+		// when an input event is fired that has an action bound to it
+		// that action will automatically be called
 		void bind_action(rsl::string_view name, input_action_callback&& callback);
 
 	private:

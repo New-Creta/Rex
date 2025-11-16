@@ -4,7 +4,7 @@
 
 namespace rex
 {
-	// A text event is something like a bilboard
+	// A text event is something like a billboard
 	// Something static in the scene that when interacted with
 	// displays some text on screen
 	struct TextEvent // BgEvent in pokemon code

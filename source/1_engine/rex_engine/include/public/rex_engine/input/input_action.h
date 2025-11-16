@@ -8,14 +8,20 @@
 namespace rex
 {
 	// Specifies what kind of input was pressed
-	enum class InputActionType
+	enum class InputDeviceType
 	{
 		Key,
 		Mouse,
 	};
+	enum class InputActionType
+	{
+		Down,
+		Up,
+	};
 
 	struct InputAction
 	{
+		InputDeviceType device;
 		InputActionType type;
 		union data
 		{
@@ -26,7 +32,11 @@ namespace rex
 
 	inline bool operator==(const InputAction& lhs, const InputAction& rhs)
 	{
-		return lhs.type == rhs.type && lhs.data.key_code == rhs.data.key_code;
+		return 
+			lhs.device == rhs.device &&
+			lhs.type == rhs.type && 
+			lhs.data.key_code == rhs.data.key_code
+			;
 	}
 	inline bool operator!=(const InputAction& lhs, const InputAction& rhs)
 	{
@@ -42,6 +52,7 @@ namespace rsl
 		rsl::hash_result operator()(const rex::InputAction& action) const
 		{
 			rsl::hash_result hash{};
+			hash = rsl::hash_combine(hash, rsl::comp_hash(action.device));
 			hash = rsl::hash_combine(hash, rsl::comp_hash(action.type));
 			hash = rsl::hash_combine(hash, rsl::comp_hash(action.data.key_code));
 

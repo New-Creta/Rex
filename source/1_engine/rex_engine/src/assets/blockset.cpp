@@ -27,7 +27,7 @@ namespace rex
 		return m_tile_indices[idx];
 	}
 
-	void Block::fill_tiles(s32 rowIdx, u8* dstBuff, s32 dstBuffSize) const
+	void Block::read_row(s32 rowIdx, u8* dstBuff, s32 dstBuffSize) const
 	{
 		const u8* start = m_tile_indices.data() + (rowIdx * s_num_tiles_per_row);
 		rsl::memcpy(dstBuff, start, rsl::min<s32>(dstBuffSize, s_num_tiles_per_row));
