@@ -12,18 +12,21 @@ namespace rex
 			// Split of the shader parameters by register space
 			ShaderResources splitted_babs = split_resources(signature.byte_address_buffers_resources());
 			ShaderResources splitted_uabs = split_resources(signature.unordered_access_buffers_resources());
+			ShaderResources splitted_sbs = split_resources(signature.structured_buffers_resources());
 			ShaderResources splitted_cbs = split_resources(signature.constant_buffers_resources());
 			ShaderResources splitted_textures = split_resources(signature.textures());
 			ShaderResources splitted_samplers = split_resources(signature.samplers());
 
 			add_bindings(splitted_babs.renderpass_resources, ShaderParameterType::ByteAddress, s_renderpass_register_space, visibility);
 			add_bindings(splitted_uabs.renderpass_resources, ShaderParameterType::UnorderedAccessView, s_renderpass_register_space, visibility);
+			add_bindings(splitted_sbs.renderpass_resources, ShaderParameterType::StructuredBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_cbs.renderpass_resources, ShaderParameterType::ConstantBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_textures.renderpass_resources, ShaderParameterType::Texture, s_renderpass_register_space, visibility);
 			add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, s_renderpass_register_space, visibility);
 
 			add_bindings(splitted_babs.material_resources, ShaderParameterType::ByteAddress, s_material_register_space, visibility);
 			add_bindings(splitted_uabs.material_resources, ShaderParameterType::UnorderedAccessView, s_material_register_space, visibility);
+			add_bindings(splitted_sbs.material_resources, ShaderParameterType::StructuredBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, s_material_register_space, visibility);
 			add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, s_material_register_space, visibility);
 			add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, s_material_register_space, visibility);
@@ -71,19 +74,20 @@ namespace rex
 			// However, it is possible that resource registers are not continuous
 			// in which case we split the resources of in another range
 
-			rsl::vector<ShaderResourceDeclaration> cb_views;
+			rsl::vector<ShaderResourceDeclaration> inline_view;
 			rsl::vector<ShaderResourceDeclaration> other_views;
 
 			for (const ShaderResourceDeclaration& resource : resources)
 			{
 				switch (resource.resource_type)
 				{
-				case ShaderParameterType::ConstantBuffer: cb_views.push_back(resource); break;
+				case ShaderParameterType::ConstantBuffer: inline_view.push_back(resource); break;
+				case ShaderParameterType::StructuredBuffer: inline_view.push_back(resource); break;
 				default: other_views.push_back(resource); break;
 				}
 			}
 
-			add_view_binding(param_store_desc, cb_views, type, expectedRegisterSpace, visibility);
+			add_view_binding(param_store_desc, inline_view, type, expectedRegisterSpace, visibility);
 			add_view_table_binding(param_store_desc, other_views, type, expectedRegisterSpace, visibility);
 		}
 		void ShaderPipelineReflectionBuilder::add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)

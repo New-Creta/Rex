@@ -86,6 +86,10 @@ namespace rex
 		{
 			m_parameters_store->set(name, rt);
 		}
+		void RenderPass::set(rsl::string_view name, const StructuredBuffer* sb)
+		{
+			m_parameters_store->set(name, sb);
+		}
 
 		s32 RenderPass::slot(rsl::string_view name) const
 		{

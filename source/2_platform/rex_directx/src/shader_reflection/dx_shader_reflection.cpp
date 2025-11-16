@@ -105,6 +105,14 @@ namespace rex
         bound_resource.resource_type = ShaderParameterType::Sampler;
         break;
       }
+      case D3D_SIT_STRUCTURED:
+        bound_resource.name = resource_desc.Name;
+        bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.register_space = resource_desc.Space;
+        bound_resource.shader_type = type;
+        bound_resource.resource_type = ShaderParameterType::StructuredBuffer;
+        break;
+
       default: REX_ASSERT("Invalid bound resource type");
       }
 
@@ -244,6 +252,9 @@ namespace rex
           break;
         case ShaderParameterType::ByteAddress:
           bound_resources.byte_address_buffers.push_back(bound_resource);
+          break;
+        case ShaderParameterType::StructuredBuffer:
+          bound_resources.structured_buffers.push_back(bound_resource);
           break;
         default:
           REX_ASSERT("Unknown shader parameter type");

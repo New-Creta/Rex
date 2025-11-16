@@ -20,6 +20,7 @@ namespace rex
       // Create a new 1D buffer on the gpu
       wrl::ComPtr<ID3D12Resource> create_buffer(rsl::memory_size size, s32 alignment = 0);
       wrl::ComPtr<ID3D12Resource> create_unordered_access_buffer(rsl::memory_size size, s32 alignment = 0);
+      wrl::ComPtr<ID3D12Resource> create_structured_buffer(rsl::memory_size size, s32 alignment = 0);
       // Create a new 2D texture on the gpu
       wrl::ComPtr<ID3D12Resource> create_texture2d(DXGI_FORMAT format, s32 width, s32 height, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE);
       wrl::ComPtr<ID3D12Resource> create_render_target(DXGI_FORMAT format, s32 width, s32 height, const ClearStateDesc& clearStateDesc, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE);

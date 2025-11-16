@@ -46,7 +46,7 @@ namespace rex
 			// about the screen and how big pixels of our sprites should be presented on screen
 			rsl::unique_ptr<ConstantBuffer> m_screen_info_cbuffer;
 
-			rsl::unique_ptr<ConstantBuffer> m_per_instance_cbuffer;
+			rsl::unique_ptr<StructuredBuffer> m_per_instance_buffer;
 
 			RenderTargetBase* m_render_target;
 			rsl::unique_ptr<Texture2D> m_render_target_as_texture;

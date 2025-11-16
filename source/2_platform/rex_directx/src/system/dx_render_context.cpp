@@ -11,6 +11,7 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/resources/dx_unordered_access_buffer.h"
+#include "rex_directx/resources/dx_structured_buffer.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
@@ -76,8 +77,13 @@ namespace rex
     {
       transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
-    // Transition an index buffer's resource state
+    // Transition an unordered access buffer's resource state
     void DxRenderContext::transition_buffer(UnorderedAccessBuffer* resource, ResourceState state)
+    {
+      transition_buffer(resource, d3d::dx12_resource(resource), state);
+    }
+    // Transition a structured buffer's resource state
+    void DxRenderContext::transition_buffer(StructuredBuffer* resource, ResourceState state)
     {
       transition_buffer(resource, d3d::dx12_resource(resource), state);
     }
@@ -298,6 +304,19 @@ namespace rex
       DxUnorderedAccessBuffer* dx_ua_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_ua_buffer->dx_object(), data, size, offset);
+    }
+    // Update a structured buffer's data
+    void DxRenderContext::update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
+    void DxRenderContext::update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
+    {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
+      DxStructuredBuffer* dx_sb = d3d::to_dx12(buffer);
+      transition_buffer(buffer, ResourceState::CopyDest);
+      update_buffer(dx_sb->dx_object(), data, size, offset);
     }
 
     // Update a texture's data on the gpu

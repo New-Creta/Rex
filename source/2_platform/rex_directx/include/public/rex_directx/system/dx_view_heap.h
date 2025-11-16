@@ -47,6 +47,8 @@ namespace rex
       DxResourceView create_uav(ID3D12Resource* resource, rsl::memory_size size);
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
+      // Create a shader resource view pointing to a structured buffer and return a handle pointing to this view
+      DxResourceView create_structured_buffer_srv(ID3D12Resource* resource, rsl::memory_size stride);
 
       // Create a 2D texture sampler
       rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);

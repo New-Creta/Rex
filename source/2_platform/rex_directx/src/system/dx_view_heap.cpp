@@ -106,7 +106,7 @@ namespace rex
     // Create a shader resource view pointing to a texture and return a handle pointing to this view
     DxResourceView DxViewHeap::create_texture2d_srv(ID3D12Resource* resource)
     {
-      REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a view heap that's not configured to create constant buffers views");
+      REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a texture view from a view heap that's not configured to create texture views");
 
       D3D12_RESOURCE_DESC resource_desc = resource->GetDesc();
       D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
@@ -115,6 +115,25 @@ namespace rex
       desc.Texture2D.MipLevels = 1;
       desc.Texture2D.MostDetailedMip = 0;
       desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+      DxResourceView desc_handle = new_free_handle();
+      m_device->CreateShaderResourceView(resource, &desc, desc_handle);
+      return desc_handle;
+    }
+
+    // Create a shader resource view pointing to a structured buffer and return a handle pointing to this view
+    DxResourceView DxViewHeap::create_structured_buffer_srv(ID3D12Resource* resource, rsl::memory_size stride)
+    {
+      REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a structured buffer view from a view heap that's not configured to create structured buffer views");
+
+      D3D12_RESOURCE_DESC resource_desc = resource->GetDesc();
+      D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+      desc.Format = DXGI_FORMAT_UNKNOWN;
+      desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+      desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+      desc.Buffer.NumElements = resource_desc.Width / stride.size_in_bytes();
+      desc.Buffer.StructureByteStride = stride.size_in_bytes();
+      desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
       DxResourceView desc_handle = new_free_handle();
       m_device->CreateShaderResourceView(resource, &desc, desc_handle);

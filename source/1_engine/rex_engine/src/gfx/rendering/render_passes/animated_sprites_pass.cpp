@@ -160,7 +160,7 @@ namespace rex
 					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
 				}
 
-				renderCtx->update_buffer(m_per_instance_cbuffer.get(), &per_instance_data, sizeof(per_instance_data), 48 * i);
+				renderCtx->update_buffer(m_per_instance_buffer.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
 
 				set("sprite_texture", sprite->sprites_texture());
 				bind_my_params_to_pipeline(renderCtx);
@@ -260,10 +260,10 @@ namespace rex
 				set("RenderingMetaData", m_screen_info_cbuffer.get());
 			}
 
-			if (m_per_instance_cbuffer == nullptr)
+			if (m_per_instance_buffer == nullptr)
 			{
-				m_per_instance_cbuffer = gal::instance()->create_constant_buffer(sizeof(PerSpriteInstanceData) * 16);
-				set("PerInstanceBuffer", m_per_instance_cbuffer.get());
+				m_per_instance_buffer = gal::instance()->create_structured_buffer(sizeof(PerSpriteInstanceData), 16);
+				set("instance_data", m_per_instance_buffer.get());
 			}
 		}
 		void AnimatedSpritesPass::init_shader_params()

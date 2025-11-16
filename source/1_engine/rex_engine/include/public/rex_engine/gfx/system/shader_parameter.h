@@ -14,6 +14,7 @@ namespace rex
 		class ResourceView;
 		class RenderContext;
 		class RenderTarget;
+		class StructuredBuffer;
 
 		// The parameter that's bound to the shader
 		enum class ShaderParameterType
@@ -23,7 +24,8 @@ namespace rex
 			Texture,
 			Sampler,
 			ByteAddress,
-			UnorderedAccessView
+			UnorderedAccessView,
+			StructuredBuffer
 		};
 
 		// A descriptor describing the parameter that's bound to the shader
@@ -52,6 +54,7 @@ namespace rex
 			virtual void update_view(s32 offset, const Texture2D* texture) = 0;
 			virtual void update_view(s32 offset, const Sampler2D* sampler) = 0;
 			virtual void update_view(s32 offset, const RenderTarget* rt) = 0;
+			virtual void update_view(s32 offset, const StructuredBuffer* sb) = 0;
 
 			// Bind the shader parameter to a render context
 			virtual void bind_to(RenderContext* ctx) const = 0;
@@ -72,6 +75,7 @@ namespace rex
 			void update_view(s32 offset, const Texture2D* texture) override;
 			void update_view(s32 offset, const Sampler2D* sampler) override;
 			void update_view(s32 offset, const RenderTarget* rt) override;
+			void update_view(s32 offset, const StructuredBuffer* sb) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
@@ -98,6 +102,7 @@ namespace rex
 			void update_view(s32 offset, const Texture2D* texture) override;
 			void update_view(s32 offset, const Sampler2D* sampler) override;
 			void update_view(s32 offset, const RenderTarget* rt) override;
+			void update_view(s32 offset, const StructuredBuffer* sb) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;

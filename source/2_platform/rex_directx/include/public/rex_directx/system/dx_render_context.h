@@ -44,6 +44,7 @@ namespace rex
       // Transition a render target's resource state
       void transition_buffer(RenderTargetBase* resource, ResourceState state)                     override;
       void transition_buffer(DepthStencilBuffer* resource, ResourceState state)                   override;
+      void transition_buffer(StructuredBuffer* resource, ResourceState state)                     override;
 
       // Set the render target of the context
       void set_render_target(RenderTargetBase* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) override;
@@ -98,6 +99,9 @@ namespace rex
       // Update an unordered access buffer's data
       void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
+      // Update a structured buffer's data
+      void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size) override;
+      void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
 
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;

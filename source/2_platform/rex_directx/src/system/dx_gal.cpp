@@ -26,6 +26,7 @@
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
+#include "rex_directx/resources/dx_structured_buffer.h"
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
 
 #include "rex_engine/gfx/graphics.h"
@@ -503,7 +504,29 @@ namespace rex
 
 			return uab;
 		}
-		
+		rsl::unique_ptr<StructuredBuffer>       DirectXInterface::create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data)
+		{
+			s32 size = stride.size_in_bytes() * numElements;
+
+			wrl::ComPtr<ID3D12Resource> d3d_buffer = allocate_structured_buffer(size);
+			d3d::set_debug_name_for(d3d_buffer.Get(), "Structured Buffer");
+			DxResourceView desc_handle = create_structured_buffer_srv(d3d_buffer.Get(), stride);
+
+			auto sb = rsl::make_unique<DxStructuredBuffer>(d3d_buffer, desc_handle, stride, size);
+
+			if (data)
+			{
+				auto copy_context = gfx::gal::instance()->new_render_ctx();
+				copy_context->update_buffer(sb.get(), data, size, 0);
+				auto sync_info = copy_context->execute_on_gpu();
+
+				auto render_context = gfx::gal::instance()->new_render_ctx();
+				render_context->stall(*sync_info.get());
+			}
+
+			return sb;
+		}
+
 		// View creation
 		// -------------------------------------------
 		ResourceView* DirectXInterface::create_srv(const RenderTarget* rt)
@@ -639,6 +662,11 @@ namespace rex
 		{
 			return m_heap->create_unordered_access_buffer(size);
 		}
+		// Allocate a 1D buffer on the gpu for a structured buffer, returning a DirectX resource
+		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_structured_buffer(rsl::memory_size size)
+		{
+			return m_heap->create_structured_buffer(size);
+		}
 		// Allocate a 2D buffer on the gpu, returning a DirectX resource
 		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_texture2d(s32 width, s32 height, TextureFormat format)
 		{
@@ -666,6 +694,10 @@ namespace rex
 		DxResourceView DirectXInterface::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
 		{
 			return d3d::to_dx12(cpu_view_heap(ResourceViewType::Texture2D))->create_texture2d_srv(texture.Get());
+		}
+		DxResourceView DirectXInterface::create_structured_buffer_srv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size stride)
+		{
+			return d3d::to_dx12(cpu_view_heap(ResourceViewType::StructuredBuffer))->create_structured_buffer_srv(resource.Get(), stride);
 		}
 		// Create a constant buffer view pointing for a given resource
 		DxResourceView DirectXInterface::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)

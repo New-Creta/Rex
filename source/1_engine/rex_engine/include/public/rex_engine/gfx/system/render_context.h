@@ -15,6 +15,7 @@
 #include "rex_engine/gfx/resources/pipeline_state.h"
 #include "rex_engine/gfx/resources/constant_buffer.h"
 #include "rex_engine/gfx/resources/clear_state.h"
+#include "rex_engine/gfx/resources/structured_buffer.h"
 
 #include "rex_engine/gfx/system/command_allocator.h"
 #include "rex_engine/gfx/system/view_heap.h"
@@ -97,6 +98,8 @@ namespace rex
 			virtual void transition_buffer(UnorderedAccessBuffer* resource, ResourceState state) = 0;
 			// Transition a depth stencil buffer's resource state
 			virtual void transition_buffer(DepthStencilBuffer* resource, ResourceState state) = 0;
+			// Transition a structured buffer's resource state
+			virtual void transition_buffer(StructuredBuffer* resource, ResourceState state) = 0;
 			// Set the render target of the context
 			virtual void set_render_target(RenderTargetBase* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) = 0;
 			// Clear the render target of the context
@@ -155,6 +158,9 @@ namespace rex
 			// Update an unordered access buffer's data
 			virtual void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size) = 0;
 			virtual void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
+			// Update an structured buffer's data
+			virtual void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size) = 0;
+			virtual void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
 			// Update a texture's data
 			virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 			virtual void copy_rt_to_texture2d(Texture2D* texture, RenderTargetBase* rt) = 0;

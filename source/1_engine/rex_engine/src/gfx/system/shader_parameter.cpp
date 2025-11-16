@@ -57,6 +57,10 @@ namespace rex
 		{
 			REX_ASSERT("Render targets (as textures) cannot be tied to an inline view. They need to be tied to a view table");
 		}
+		void ViewShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
+		{
+			update_view(offset, sb->gpu_address());
+		}
 
 		void ViewShaderParam::bind_to(RenderContext* ctx) const
 		{
@@ -103,6 +107,10 @@ namespace rex
 			const ResourceView* view = gal::instance()->create_srv(rt);
 			update_view(offset, view);
 		}
+		void ViewTableShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
+		{
+			update_view(offset, sb->view());
+		}
 		void ViewTableShaderParam::bind_to(RenderContext* ctx) const
 		{
 			ResourceViewType target_view_heap_type = ResourceViewType::Undefined;
@@ -110,6 +118,7 @@ namespace rex
 			{
 			case ShaderParameterType::ByteAddress: target_view_heap_type = ResourceViewType::ByteAddress; break;
 			case ShaderParameterType::UnorderedAccessView: target_view_heap_type = ResourceViewType::UnorderedAccess; break;
+			case ShaderParameterType::StructuredBuffer: target_view_heap_type = ResourceViewType::StructuredBuffer; break;
 			case ShaderParameterType::ConstantBuffer: target_view_heap_type = ResourceViewType::ConstantBuffer; break;
 			case ShaderParameterType::Texture: target_view_heap_type = ResourceViewType::Texture2D; break;
 			case ShaderParameterType::Sampler: target_view_heap_type = ResourceViewType::Sampler; break;

@@ -274,4 +274,14 @@
 	<Type Name="rex::Map">
 		<DisplayString>{m_desc.map_header.name} - {(int)m_desc.map_header.width_in_blocks}x{(int)m_desc.map_header.height_in_blocks}</DisplayString>
 	</Type>
+
+	<Type Name="rex::gfx::StructuredBuffer">
+		<Intrinsic Name="size" Expression="m_stride.m_size_in_bytes * m_num_elements" />
+		<DisplayString>size = {size()} stride = {m_stride} num = {m_num_elements}</DisplayString>
+		<Expand>
+			<Item Name="size">size()</Item>
+			<Item Name="stride">m_stride</Item>
+			<Item Name="num">m_num_elements</Item>
+		</Expand>
+	</Type>
 </AutoVisualizer>

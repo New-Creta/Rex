@@ -77,6 +77,7 @@ namespace rex
     class DepthStencilBuffer;
     class BackBufferRenderTarget;
     class UnorderedAccessBuffer;
+    class StructuredBuffer;
     struct SamplerDesc;
 
     // DirectX classes
@@ -99,6 +100,7 @@ namespace rex
     class DxDepthStencilBuffer;
     class DxUnorderedAccessBuffer;
     class DxPipelineState;
+    class DxStructuredBuffer;
     struct DxShaderPipelineParameters;
 
     namespace d3d
@@ -215,7 +217,8 @@ namespace rex
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
       const DxRenderTarget* to_dx12(const RenderTarget* renderTarget);
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer);
-      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* depthStencilBuffer);
+      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* unorderedAccessBuffer);
+      DxStructuredBuffer* to_dx12(StructuredBuffer* structuredBuffer);
       DxPipelineState* to_dx12(PipelineState* pso);
       DxShaderPipelineParameters to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters);
 
