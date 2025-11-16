@@ -1,33 +1,32 @@
 #include "defines.hlsl"
+#include "utils.hlsl" // for is_bit_set
 
+// Bit field indexes for the bit flags bellow in the per instance buffer
 #define FLIP_X_BIT 0
 #define FLIP_Y_BIT 1
 #define RENDER_BOTTOM_BEHIND_BG 2
 
-#define MAX_SPRITES 16
-
-// Every constant buffer needs to be 256 byte aligned
-// So we try to pack as much data together into 1 buffer
+// Data to describe how big the render target is
+// as well how we're mapping the vintage pixels onto it
 cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 {
-  // Render target data
-  float2 inv_pixel_screen_size;      // the inverse size of a single tile on the screen
-  float2 screen_size; 
+  float2 inv_vintage_pixel_screen_size;      // the inverse size of a single vintage pixel on the render target
+  float2 render_target_size;                 
 };
 
+// Information unique for every sprite
 struct PerInstanceData
 {
-  // position
+  // screen position, scaled in vintage pixel coordinates
   int2 position;
   
   // Sprite info
-  float2 inv_sprite_screen_size; // the inverse size of the sprite on the screen
-  float2 inv_sprite_texture_size; // the inverse of the size of a single tile in the texture  
+  float2 inv_sprite_screen_size;  // the inverse size of the sprite on the vintage screen
+  float2 inv_sprite_texture_size; // the inverse size of the sprite within its texture
 
-  // SPRITE ANIMATION INFO
   // the start UV position for the current sprite
   // this allows the shader to select to correct sprite
-  // from the texture
+  // from the texture with the same vertex UV information
   float2 uv_start;
   
   // flipping X or Y uv channels
@@ -36,17 +35,13 @@ struct PerInstanceData
 
 StructuredBuffer<PerInstanceData> instance_data : register(t0, RENDER_PASS_REGISTER_SPACE);
 
-//cbuffer PerInstanceBuffer : register(b1, RENDER_PASS_REGISTER_SPACE)
-//{
-//  // INSTANCE INFO
-//  // The position of the sprite on screen from the top left, represented in pixels
-//  PerInstanceData instance_data[MAX_SPRITES];
-//}
-
-// Vertices expected for this shader are meant to spawn the entire screen
-// as in, without any transforms, it will cover { 0, 0 } until { 1, 1 } of the window
-// This shader transforms the vertex positions and UVs to only spawn the size a single
-// tile takes up in the render target and in the tileset texture
+// Vertices expected for this shader are meant to span the entire screen
+// as in, without any transforms, it will cover { -1, 1 } until { 1, -1 } of the window (NDC coordinates)
+// This shader transforms the vertex positions and UVs to only span the size of the sprite on the vintage screen
+// Meaning if a sprite is 16x16 pixels, it'll be shrunk down to represent 16x16 pixels
+// However because we're rendering on a bigger render target than the vintage screen
+// the 16x16 pixels will be grown so the span the same amount of space on the rendertarget
+// as they would have on the old vintage screen
 
 // =========================================
 // VERTEX SHADER
@@ -54,8 +49,8 @@ StructuredBuffer<PerInstanceData> instance_data : register(t0, RENDER_PASS_REGIS
 
 struct VertexIn
 {
-  float3 PosL : POSITION; // The position of the vertex in local space
-  float2 Uv : TEXCOORD0; // The UV of the vertex
+  float3 PosL : POSITION;             // The position of the vertex in local space. This should always be one of the corners of the screen
+  float2 Uv : TEXCOORD0;              
   uint InstanceId : SV_InstanceID;
 };
 
@@ -66,29 +61,27 @@ struct VertexOut
   uint InstanceId : SV_InstanceID;
 };
 
-bool is_bit_set(int mask, int bit)
-{
-  return (mask >> bit) & 0x01;
-}
-
 float4 calculate_vertex_position(VertexIn vin)
 {
   VertexOut vout;
 
-  // Calculate the position of this sprite
-  float2 pos = { -1.0f, 1.0f };                            // start from the top left
-  pos += vin.PosL.xy * instance_data[vin.InstanceId].inv_sprite_screen_size; // scale down to position to its size relative to the render target
+  float2 pos = { -1.0f, 1.0f };                                               // start from the top left
+  pos += vin.PosL.xy * instance_data[vin.InstanceId].inv_sprite_screen_size;  // scale down to position to its size relative to the render target
 
-  pos.x += (instance_data[vin.InstanceId].position.x * inv_pixel_screen_size.x); // offset the vertex to where we want on screen
-  pos.y -= (instance_data[vin.InstanceId].position.y * inv_pixel_screen_size.y); // offset the vertex to where we want on screen
+  // Offset the sprite onto the position where it should be drawn on screen
+  pos.x += (instance_data[vin.InstanceId].position.x * inv_vintage_pixel_screen_size.x); // offset the vertex to where we want on screen
+  pos.y -= (instance_data[vin.InstanceId].position.y * inv_vintage_pixel_screen_size.y); // offset the vertex to where we want on screen
     
-  // Offset the position to this position
+  // Store the Z value as well, as it'll be used to draw the background over the sprite if required
   return float4(pos, vin.PosL.z, 1.0f);
 }
 
 float2 calculate_vertex_uv(VertexIn vin)
 {
   // Add the offset to the original uv offset
+  
+  // flip the UVs based on the bits set in the bit mask
+  // We do it this way so we need to have less data stored on disk and the GPU
   if (is_bit_set(instance_data[vin.InstanceId].bit_flags, FLIP_X_BIT))
   {
     vin.Uv.x = 1.0f - vin.Uv.x;
@@ -99,7 +92,11 @@ float2 calculate_vertex_uv(VertexIn vin)
   }
   
   float2 uv = { 0.0, 0.0 };
+  
+  // scale down the UV so it only ranges a single sprite instead of the entire texture
   uv += vin.Uv * instance_data[vin.InstanceId].inv_sprite_texture_size;
+  
+  // offset the UV so it starts at the top left position of the sprite we want to draw
   uv += instance_data[vin.InstanceId].uv_start;
   
   return uv;
@@ -137,34 +134,32 @@ Texture2D background_texture : register(t2, RENDER_PASS_REGISTER_SPACE);
 
 float4 PSMain(PS_INPUT pin) : SV_Target
 {
-  float2 uv_in_map = pin.PosH.xy / screen_size;
+  float2 uv_in_map = pin.PosH.xy / render_target_size;
+  float3 white_color = { 1.0f, 1.0f, 1.0f };
  
   if (pin.PosH.z < 0.5f && is_bit_set(instance_data[pin.InstanceId].bit_flags, RENDER_BOTTOM_BEHIND_BG)) // only the bottom half of the sprite
   {
     float4 background_color = background_texture.Sample(default_sampler, uv_in_map);
     background_color.a = 1.0f;
 
-    // calculate the pixel we're currently drawing
-    // in the bg texture
-    if ((background_color.r == 1.0f && background_color.g == 1.0f && background_color.b == 1.0f) == false)
+    // check if the pixel in the background is white or not
+    // if it is not white, discard the pixel, allowing the background to remain
+    if (!are_equal(background_color.rgb, white_color))
     {
-      return background_color;
-    }    
-  } 
+      discard;
+    }
+  }
   
-  // As textures are not in sRGB color space, we have to convert them
   float4 texture_color = sprite_texture.Sample(default_sampler, pin.Uv);
-
-  // Apply the diffuse strength on the final color
-  float4 color = float4(texture_color.rgb, 1.0f);
+  float4 final_color = float4(texture_color.rgb, 1.0f);
   
-  // filter out white color channel
-  if (color.r == 1.0f && color.g == 1.0f && color.b == 1.0f)
+  // filter out white color, as this is meant to represent it's transparent
+  if (are_equal(final_color.rgb, white_color))
   {
-    color = float4(1.0f, 0.0f, 0.0f, 0.0f);
+    final_color = float4(1.0f, 0.0f, 0.0f, 0.0f);
   }
     
-  return color;
+  return final_color;
 }
 
 
