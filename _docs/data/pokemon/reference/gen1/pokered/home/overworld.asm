@@ -92,9 +92,9 @@ OverworldLoopLessDelay::
 	and a
 	jp z, OverworldLoop ; jump if a hidden object or bookshelf was found, but not if a card key door was found
 	call IsSpriteOrSignInFrontOfPlayer
-	ldh a, [hSpriteIndexOrTextID]
+	ldh a, [hSpriteIndexOrTextID] ; if hSpriteIndexOrTextID is set, that means either a sprite or text event is in front of the player
 	and a
-	jp z, OverworldLoop
+	jp z, OverworldLoop ; jump back to the loop if nothing's in front of the player
 .displayDialogue
 	predef GetTileAndCoordsInFrontOfPlayer
 	call UpdateSprites
@@ -2184,19 +2184,19 @@ LoadMapHeader::
 	ld [de], a ; x#SPRITESTATEDATA2_MAPX
 	inc e
 	ld a, [hli]
-	ld [de], a ; x#SPRITESTATEDATA2_MOVEMENTBYTE1
+	ld [de], a ; x#SPRITESTATEDATA2_MOVEMENTBYTE1 (WALK OR STAY) 
 	ld a, [hli]
-	ldh [hLoadSpriteTemp1], a ; save movement byte 2
+	ldh [hLoadSpriteTemp1], a ; save movement byte 2 (range or direction)
 	ld a, [hli]
 	ldh [hLoadSpriteTemp2], a ; save text ID and flags byte
 	push bc
 	push hl
 	ld b, $00
 	ld hl, wMapSpriteData
-	add hl, bc
+	add hl, bc ; bc == 0 here, I think?
 	ldh a, [hLoadSpriteTemp1]
 	ld [hli], a ; store movement byte 2 in byte 0 of sprite entry
-	ldh a, [hLoadSpriteTemp2]
+	ldh a, [hLoadSpriteTemp2] ; store the text ID in byte 0 of sprite entry
 	ld [hl], a ; this appears pointless, since the value is overwritten immediately after
 	ldh a, [hLoadSpriteTemp2]
 	ldh [hLoadSpriteTemp1], a
