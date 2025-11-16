@@ -411,6 +411,9 @@ namespace rex
     cmdline::shutdown();
     engine::shutdown();
 
+    // disable global destruction so we get an assert if one was missed
+    // we want globals to be destroyed when the app is still alive
+    // as we may need to perform certain cleanup operations
     globals::disable_global_destruction();
   }
 

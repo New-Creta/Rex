@@ -34,7 +34,7 @@ namespace rex
 
     // pausing/resuming the app will set or remove the pause state flag
     // this has no effect on the core loop of the app
-    // but it can be used by the user to disable certain event loops
+    // but the user can query this state and enable/disable ticks or systems
     void pause();
     void resume();
 
@@ -49,7 +49,7 @@ namespace rex
     bool is_marked_for_destroy() const;
     bool is_shutting_down() const;
 
-    // return the name of the application that was specified
+    // return the name of the application that was specified on construction
     rsl::string_view app_name() const;
 
   protected:
@@ -68,10 +68,11 @@ namespace rex
     void loop();
 
     // Initialization
+    // Initialize global systems (eg. filesystem, engine globals, thread pool, ..)
+    void init_globals();
     // The boot settings are one the first settings loaded by the engine
     // They are used to initialize the engine globals
     BootSettings load_boot_settings();
-    void init_globals();
     // Initialize the engine globals using the boot settings
     void init_engine_globals(const BootSettings& bootSettings);
     // load the commandline options of the application module and its dependencies
@@ -92,9 +93,28 @@ namespace rex
     void shutdown_globals();
 
   private:
+    // The input state holds which keys are up or down
+    // We need to use our own state mechanism and cannot forward them directly from the OS
+    // as it's possible the user ignores key input between frames, at a different rate than
+    // the OS sending the event a key is down
+    // Example:
+    // users performs an animation on key entry and ignores input while animation is playing
+    // if the animation lasts 8 frames, and on frame 7 a key is pressed and held until frame 10
+    // but the OS only sends key down events every 20 frames
+    // you will have missed a key event as it'd be ignored
+    // storing the state ourselves and resending the event until a key up event comes in solves this problem
     rsl::unique_ptr<InputState> m_input_state;
+
+    // The app state is simply a bit mask.
+    // this will do for now but if this won't be enough we may make this more complex
     StateController<ApplicationState> m_app_state;
+
+    // The app name given by the user on construction
     rsl::string m_app_name;
+
+    // The exit code of the app.
+    // this is held as a member so it can be set from anywhere
+    // the shutdown logic will use this value to return from the "run" function
     s32 m_exit_code;
   };
 } // namespace rex
