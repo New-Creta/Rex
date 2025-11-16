@@ -129,8 +129,8 @@ namespace rex
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
 
 			// Assign the shaders used for the tile renderer
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "render_tile_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout =
 			{

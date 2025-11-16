@@ -15,12 +15,11 @@ bool is_bit_set(int mask, int bit)
   return (mask >> bit) & 0x01;
 }
 
-// compare 2 floats and return if they're equal or not
+// compare 2 float3s and return if they're equal or not
 // this is useful to do for an if statement
 // as you can't compare colors directly in there
-bool are_equal(float3 lhs, float3 rhs)
+bool is_equal(float3 lhs, float3 rhs)
 {
   float dist = distance(lhs, rhs);
   return (dist <= 0.001f) ? true : false;
-
 }

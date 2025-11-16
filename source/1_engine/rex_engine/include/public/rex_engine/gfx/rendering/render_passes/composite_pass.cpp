@@ -65,8 +65,8 @@ namespace rex
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "composite_pass_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "composite_pass_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "composite_pass.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "composite_pass.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout =
 			{
@@ -134,7 +134,7 @@ namespace rex
 		}
 		void CompositePass::init_shader_params()
 		{
-			set("src_render_target", (RenderTarget*)m_src_render_target);
+			set("src_texture", (RenderTarget*)m_src_render_target);
 
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 			set("default_sampler", default_sampler);

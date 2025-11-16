@@ -144,7 +144,7 @@ float4 PSMain(PS_INPUT pin) : SV_Target
 
     // check if the pixel in the background is white or not
     // if it is not white, discard the pixel, allowing the background to remain
-    if (!are_equal(background_color.rgb, white_color))
+    if (!is_equal(background_color.rgb, white_color))
     {
       discard;
     }
@@ -154,7 +154,7 @@ float4 PSMain(PS_INPUT pin) : SV_Target
   float4 final_color = float4(texture_color.rgb, 1.0f);
   
   // filter out white color, as this is meant to represent it's transparent
-  if (are_equal(final_color.rgb, white_color))
+  if (is_equal(final_color.rgb, white_color))
   {
     final_color = float4(1.0f, 0.0f, 0.0f, 0.0f);
   }

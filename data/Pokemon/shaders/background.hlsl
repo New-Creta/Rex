@@ -1,9 +1,10 @@
 #include "defines.hlsl"
+#include "utils.hlsl" // for is_bit_set
 
 // This buffers holds the indices of each tile in the texture.
 // Using this information, we can calculate the UV for each vertex
 // Each index is only 1 byte, so you need to use bit shifting to unpack it
-// TLDR: this maps instance id --> tile id in texture
+// TLDR: this maps instance id --> tile id in the texture
 ByteAddressBuffer TileIndexIntoTextureBuffer : register(t0, RENDER_PASS_REGISTER_SPACE);
 
 // Every constant buffer needs to be 256 byte aligned
@@ -11,19 +12,15 @@ ByteAddressBuffer TileIndexIntoTextureBuffer : register(t0, RENDER_PASS_REGISTER
 cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 {
   // Tile texture data
-  int texture_tiles_per_row;     // the number of tiles per tile row in the texture
-  float inv_tile_texture_width;  // the inverse of the width of a single tile in the texture
-  float inv_tile_texture_height; // the inverse of the height of a single tile in the texture
+  int texture_tiles_per_row;        // the number of tiles per tile row in the texture
+  float2 inv_tile_texture_size;          // the inverse of the width of a single tile in the texture
 
   // Render target data
-  uint screen_tiles_per_row;     // the number of tiles per tile row on the screen
-  float inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
-  float inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
+  uint screen_tiles_per_row;        // the number of tiles per tile row on the screen
+  float2 inv_tile_screen_size;      // the inverse of the width of a single tile on the screen
   
-  int screen_pixel_offset_x;
-  int screen_pixel_offset_y;
-  float inv_pixel_screen_width;
-  float inv_pixel_screen_height;
+  int2 screen_pixel_offset;         // the extra offset of a tile using vintage pixel size
+  float2 inv_pixel_screen_size;     // the inverse size of a single vintage pixel
 };
 
 // Vertices expected for this shader are meant to spawn the entire screen
@@ -33,10 +30,10 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 
 struct VertexIn
 {
-  float2 PosL : POSITION;       // The position of the vertex in local space
-  float2 Uv : TEXCOORD0;        // The UV of the vertex
+  float2 PosL : POSITION; // The position of the vertex in local space
+  float2 Uv : TEXCOORD0; // The UV of the vertex
 
-  uint instanceId : SV_InstanceID;  // The instance the vertex belongs to
+  uint instanceId : SV_InstanceID; // The instance the vertex belongs to
 };
 
 struct VertexOut
@@ -67,13 +64,13 @@ float4 calculate_vertex_position(VertexIn vin)
 
   // Calculate the position of this cell, starting from top left
   float2 pos = { -1, 1 }; // start from the top left
-  pos.x += vin.PosL.x * inv_tile_screen_width; // scale down to position to its size relative to the render target
-  pos.x += (screen_tile_coord_idx.x * inv_tile_screen_width); // offset the vertex based on the current instance we're rendering
-  pos.y += vin.PosL.y * inv_tile_screen_height;
-  pos.y -= (screen_tile_coord_idx.y * inv_tile_screen_height);
+  pos.x += vin.PosL.x * inv_tile_screen_size.x; // scale down to position to its size relative to the render target
+  pos.x += (screen_tile_coord_idx.x * inv_tile_screen_size.x); // offset the vertex based on the current instance we're rendering
+  pos.y += vin.PosL.y * inv_tile_screen_size.y;
+  pos.y -= (screen_tile_coord_idx.y * inv_tile_screen_size.y);
 
-  pos.x += screen_pixel_offset_x * inv_pixel_screen_width;
-  pos.y += screen_pixel_offset_y * inv_pixel_screen_height;
+  pos.x += screen_pixel_offset.x * inv_pixel_screen_size.x;
+  pos.y += screen_pixel_offset.y * inv_pixel_screen_size.y;
   
   // when the player is on a grass tile
   // we should disable the white color channel
@@ -131,14 +128,14 @@ float2 calculate_vertex_uv(VertexIn vin)
   
   // Calculate the the top left uv coordinate of the tile we want
   float2 tile_uv_start;
-  tile_uv_start.x = tex_tile_coord_idx.x * inv_tile_texture_width;
-  tile_uv_start.y = tex_tile_coord_idx.y * inv_tile_texture_height;
+  tile_uv_start.x = tex_tile_coord_idx.x * inv_tile_texture_size.x;
+  tile_uv_start.y = tex_tile_coord_idx.y * inv_tile_texture_size.y;
 
   // Add the offset to the original uv offset
   float2 uv = { 0.0, 0.0 };
-  uv.x += vin.Uv.x * inv_tile_texture_width;
+  uv.x += vin.Uv.x * inv_tile_texture_size.x;
   uv.x += tile_uv_start.x;
-  uv.y += vin.Uv.y * inv_tile_texture_height;
+  uv.y += vin.Uv.y * inv_tile_texture_size.y;
   uv.y += tile_uv_start.y;
   
   return uv;
@@ -149,9 +146,29 @@ VertexOut VSMain(VertexIn vin)
   VertexOut vout;
   
   vout.PosH = calculate_vertex_position(vin);
-  vout.Uv = calculate_vertex_uv(vin);  
+  vout.Uv = calculate_vertex_uv(vin);
 
   return vout;
+}
+
+struct PS_INPUT
+{
+  float4 PosH : SV_POSITION;
+  float2 Uv : TEXCOORD0;
+};
+
+SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
+Texture2D tile_texture : register(t0, RENDER_PASS_REGISTER_SPACE);
+
+float4 PSMain(PS_INPUT pin) : SV_Target
+{
+  // As textures are not in sRGB color space, we have to convert them
+  float4 texture_color = tile_texture.Sample(default_sampler, pin.Uv);
+
+  // Apply the diffuse strength on the final color
+  float4 color = float4(texture_color.rgb, 1.0f);
+  
+  return color;
 }
 
 
