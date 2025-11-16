@@ -56,11 +56,6 @@ namespace pokemon
 
 		init_map(startup_save_file);
 		init_player(startup_save_file);
-		m_player_character2 = rsl::make_unique<PlayerCharacter>();
-		m_player_character2->set_pos(m_active_map->create_world_coord_converter().to_pixel_coord(rex::TileCoord({ 24, 24 })));
-		m_player_character3 = rsl::make_unique<PlayerCharacter>();
-		m_player_character3->set_pos(m_active_map->create_world_coord_converter().to_pixel_coord(rex::TileCoord({ 26, 24 })));
-
 		init_camera();
 	}
 
