@@ -132,6 +132,9 @@ Texture2D background_texture : register(t2, RENDER_PASS_REGISTER_SPACE);
 // the position input will always be the pixel idx value, with an offset of 0.5
 // we need to convert this position back into screen space, so we divide it by the resolution
 
+// What we could do as well is set the alpha value in the vertex shader if the tile rendered is a tile that may be transparent
+// Then blending can be used to render the correct pixel or not
+
 float4 PSMain(PS_INPUT pin) : SV_Target
 {
   float2 uv_in_map = pin.PosH.xy / render_target_size;
