@@ -17,8 +17,8 @@ namespace pokemon
   rex::Rect8 rect_for_connection(const rex::Map* map, const rex::MapConnection & conn)
   {
     // Maps are always center aligned, their midpoint shifts depending on the connection offset
-    s8 mid_point_x = constants::g_map_padding_blocks + ((map->desc().map_header.width_in_blocks / 2) + conn.offset);
-    s8 mid_point_y = constants::g_map_padding_blocks + ((map->desc().map_header.height_in_blocks / 2) + conn.offset);
+    s8 mid_point_x = constants::g_map_padding_blocks + ((map->desc().map_header.size.x.get() / 2) + conn.offset);
+    s8 mid_point_y = constants::g_map_padding_blocks + ((map->desc().map_header.size.y.get() / 2) + conn.offset);
 
     s8 start = 0;
     s8 end = 0;
@@ -26,14 +26,14 @@ namespace pokemon
     // depending on the connection's direction
     if (conn.direction == rex::Direction::North || conn.direction == rex::Direction::South)
     {
-      start = static_cast<s8>(rsl::clamp_min(mid_point_x - (conn.map->desc().map_header.width_in_blocks / 2) + conn.offset, 0));
-      s8 depth = static_cast<s8>(rsl::min(map->desc().map_header.width_in_blocks + constants::g_map_padding_blocks, static_cast<s32>(conn.map->desc().map_header.width_in_blocks)));
+      start = static_cast<s8>(rsl::clamp_min(mid_point_x - (conn.map->desc().map_header.size.x.get() / 2) + conn.offset, 0));
+      s8 depth = static_cast<s8>(rsl::min(map->desc().map_header.size.x.get() + constants::g_map_padding_blocks, static_cast<s32>(conn.map->desc().map_header.size.x.get())));
       end = static_cast<s8>(start + depth);
     }
     else
     {
-      start = static_cast<s8>(rsl::clamp_min(mid_point_y - (conn.map->desc().map_header.height_in_blocks / 2) + conn.offset, 0));
-      s8 depth = static_cast<s8>(rsl::min(map->desc().map_header.height_in_blocks + constants::g_map_padding_blocks, static_cast<s32>(conn.map->desc().map_header.height_in_blocks)));
+      start = static_cast<s8>(rsl::clamp_min(mid_point_y - (conn.map->desc().map_header.size.y.get() / 2) + conn.offset, 0));
+      s8 depth = static_cast<s8>(rsl::min(map->desc().map_header.size.y.get() + constants::g_map_padding_blocks, static_cast<s32>(conn.map->desc().map_header.size.y.get())));
       end = static_cast<s8>(start + depth);
     }
 
@@ -49,14 +49,14 @@ namespace pokemon
       res.bottom_right.y = res.top_left.y + constants::g_map_padding_blocks;
       break;
     case rex::Direction::East:
-      res.top_left.x = map->desc().map_header.width_in_blocks + constants::g_map_padding_blocks;
+      res.top_left.x = map->desc().map_header.size.x.get() + constants::g_map_padding_blocks;
       res.top_left.y = start;
       res.bottom_right.x = res.top_left.x + constants::g_map_padding_blocks;
       res.bottom_right.y = end;
       break;
     case rex::Direction::South:
       res.top_left.x = start;
-      res.top_left.y = map->desc().map_header.height_in_blocks + constants::g_map_padding_blocks;
+      res.top_left.y = map->desc().map_header.size.y.get() + constants::g_map_padding_blocks;
       res.bottom_right.x = end;
       res.bottom_right.y = res.top_left.y + constants::g_map_padding_blocks;
       break;
@@ -76,14 +76,14 @@ namespace pokemon
     s8 projected_point = 0;
     if (conn.direction == rex::Direction::North || conn.direction == rex::Direction::South)
     {
-      s8 mid_point_x = conn.map->desc().map_header.width_in_blocks / 2 - conn.offset;
-      s8 offset_from_mid = constants::g_map_padding_blocks + (mapObject->desc().map_header.width_in_blocks / 2) - coord.x;
+      s8 mid_point_x = conn.map->desc().map_header.size.x.get() / 2 - conn.offset;
+      s8 offset_from_mid = constants::g_map_padding_blocks + (mapObject->desc().map_header.size.x.get() / 2) - coord.x;
       projected_point = mid_point_x - offset_from_mid;
     }
     else
     {
-      s8 mid_point_y = conn.map->desc().map_header.height_in_blocks / 2 - conn.offset;
-      s8 offset_from_mid = constants::g_map_padding_blocks + (mapObject->desc().map_header.height_in_blocks / 2) - coord.y;
+      s8 mid_point_y = conn.map->desc().map_header.size.y.get() / 2 - conn.offset;
+      s8 offset_from_mid = constants::g_map_padding_blocks + (mapObject->desc().map_header.size.y.get() / 2) - coord.y;
       projected_point = mid_point_y - offset_from_mid;
     }
 
@@ -93,7 +93,7 @@ namespace pokemon
     {
     case rex::Direction::North:
       res.x = projected_point;
-      res.y = conn.map->desc().map_header.height_in_blocks - constants::g_map_padding_blocks;
+      res.y = conn.map->desc().map_header.size.y.get() - constants::g_map_padding_blocks;
       break;
     case rex::Direction::East:
       res.x = 0;
@@ -104,7 +104,7 @@ namespace pokemon
       res.y = 0;
       break;
     case rex::Direction::West:
-      res.x = conn.map->desc().map_header.width_in_blocks - constants::g_map_padding_blocks;
+      res.x = conn.map->desc().map_header.size.x.get() - constants::g_map_padding_blocks;
       res.y = projected_point;
       break;
     }
@@ -172,7 +172,7 @@ namespace pokemon
 				for (s8 x = rect.top_left.x, conn_x = top_left_conn.x; x < rect.bottom_right.x; ++x, ++conn_x)
 				{
 					// Look up the block index of the current block we're looking at in the connection map
-					s16 conn_idx = conn_y * conn.map->desc().map_header.width_in_blocks + conn_x;
+					s16 conn_idx = conn_y * conn.map->desc().map_header.size.x.get() + conn_x;
 					u8 block_idx = conn_map_blocks[conn_idx];
 
 					// Assign the connection's block index to the map matrix
@@ -184,8 +184,8 @@ namespace pokemon
 	}
 	void GameBlockMap::init_inner_map_blocks(u8* blocks, s32 numBlocks, const rex::Map* map)
 	{
-    s32 height = map->desc().map_header.height_in_blocks;
-    s32 width = map->desc().map_header.width_in_blocks;
+    s32 height = map->desc().map_header.size.y.get();
+    s32 width = map->desc().map_header.size.x.get();
 
     const u8* map_blocks = map->blocks();
     for (s8 y = 0; y < height; ++y)

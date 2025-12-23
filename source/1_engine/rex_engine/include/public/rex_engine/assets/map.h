@@ -34,7 +34,7 @@ namespace rex
 	struct MapHeader
 	{
 		rsl::string name;											// name of the map
-		BlockCount size;
+		rsl::point<BlockCount> size;
 		s8 border_block_idx;									// Index of the block used for the border if no connection blocks are present
 	};
 
