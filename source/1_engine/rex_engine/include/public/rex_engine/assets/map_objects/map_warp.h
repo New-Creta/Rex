@@ -12,8 +12,8 @@ namespace rex
 	struct WarpEvent
 	{
 		rsl::pointi8 pos;
-		s8 dst_map_id;
-		s8 dst_warp_id;
+		s8 dst_map_id; // This will become some kind of GUID or pointer to the data they need
+		s8 dst_warp_id; // This will become some kind of GUID or pointer to the data they need
 	};
 
 }

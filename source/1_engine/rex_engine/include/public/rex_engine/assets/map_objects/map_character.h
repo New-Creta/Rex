@@ -22,8 +22,9 @@ namespace rex
 		MapCharacterMovementDirection direction;
 		MapCharacterMovement movement;
 
+		rsl::pointi8 pos;
+
 		// Future fields that will be present here
-		// - position
 		// - animation
 		// - text events
 	};

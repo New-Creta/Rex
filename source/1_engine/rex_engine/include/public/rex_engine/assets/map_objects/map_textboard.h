@@ -11,6 +11,6 @@ namespace rex
 	{
 		rsl::pointi8 pos;
 		rsl::string text;
-		s8 sign_id;
+		s8 sign_id; // This will become some kind of GUID or pointer to the data they need
 	};
 }

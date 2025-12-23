@@ -7,7 +7,9 @@ namespace rex
 {
 	struct MapPokemon : public MapObject
 	{
-		s8 pokemon_id;
+		s8 pokemon_id; // This will become some kind of GUID or pointer to the data they need
 		s8 pokemon_level;
+
+		rsl::pointi8 pos;
 	};
 }
