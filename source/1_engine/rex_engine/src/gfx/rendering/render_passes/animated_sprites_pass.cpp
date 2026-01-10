@@ -37,7 +37,7 @@ namespace rex
 		struct SceneRenderInfo
 		{
 			// screen info
-			glm::vec2 inv_pixel_screen_size;
+			glm::vec2 inv_vintage_pixel_screen_size;
 			glm::vec2 screen_size;
 		};
 
@@ -98,8 +98,8 @@ namespace rex
 			counter++;
 			
 			SceneRenderInfo scene_render_info{};
-			scene_render_info.inv_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
-			scene_render_info.inv_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
+			scene_render_info.inv_vintage_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
+			scene_render_info.inv_vintage_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
 			scene_render_info.screen_size.x = m_render_target->width();
 			scene_render_info.screen_size.y = m_render_target->height();
@@ -194,19 +194,34 @@ namespace rex
 			// to give the illusion of 2.5D
 
 			// top vertices
+			// TODO make these work with the shaders
 			tile_vertices[0] = AnimatedTileVertex{ glm::vec3(0, 0, 1),              rsl::point<f32>(0.0f, 0.0f) };
-			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	0, 1),              rsl::point<f32>(1.0f, 0.0f) };
+			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,    0, 1),              rsl::point<f32>(1.0f, 0.0f) };
 
 			// middle vertices
-			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 1),					rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 1),					rsl::point<f32>(1.0f, 0.5f) };
+			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(0,    -0.5f, 1),                    rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,    -0.5f, 1),                    rsl::point<f32>(1.0f, 0.5f) };
 
-			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(0,	-0.5f, 0),					rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	-0.5f, 0),					rsl::point<f32>(1.0f, 0.5f) };
+			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(0,    -0.5f, 0),                    rsl::point<f32>(0.0f, 0.5f) };
+			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,    -0.5f, 0),                    rsl::point<f32>(1.0f, 0.5f) };
 
 			// bottom vertices
-			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(0,	-1, 0),							rsl::point<f32>(0.0f, 1.0f) };
-			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	-1, 0),							rsl::point<f32>(1.0f, 1.0f) };
+			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(0,    -1, 0),                            rsl::point<f32>(0.0f, 1.0f) };
+			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,    -1, 0),                            rsl::point<f32>(1.0f, 1.0f) };
+
+			//tile_vertices[0] = AnimatedTileVertex{ glm::vec3(-1, 1, 1),              rsl::point<f32>(0.0f, 0.0f) };
+			//tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	1, 1),              rsl::point<f32>(1.0f, 0.0f) };
+
+			//// middle vertices
+			//tile_vertices[2] = AnimatedTileVertex{ glm::vec3(-1,	0, 1),					rsl::point<f32>(0.0f, 0.5f) };
+			//tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	0, 1),					rsl::point<f32>(1.0f, 0.5f) };
+
+			//tile_vertices[4] = AnimatedTileVertex{ glm::vec3(-1,	0, 0),					rsl::point<f32>(0.0f, 0.5f) };
+			//tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	0, 0),					rsl::point<f32>(1.0f, 0.5f) };
+
+			//// bottom vertices
+			//tile_vertices[6] = AnimatedTileVertex{ glm::vec3(-1,	-1, 0),							rsl::point<f32>(0.0f, 1.0f) };
+			//tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	-1, 0),							rsl::point<f32>(1.0f, 1.0f) };
 
 			if (!m_tiles_vb_gpu)
 			{

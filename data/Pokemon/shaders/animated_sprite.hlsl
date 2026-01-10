@@ -66,6 +66,7 @@ float4 calculate_vertex_position(VertexIn vin)
   VertexOut vout;
 
   float2 pos = { -1.0f, 1.0f };                                               // start from the top left
+  //float2 pos = { 0.0f, 0.0f }; // start from the top left
   pos += vin.PosL.xy * instance_data[vin.InstanceId].inv_sprite_screen_size;  // scale down to position to its size relative to the render target
 
   // Offset the sprite onto the position where it should be drawn on screen

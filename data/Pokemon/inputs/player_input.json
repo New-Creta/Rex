@@ -1,18 +1,22 @@
 [
-    {
-        "name": "up",
-        "key": "W"
-    },
-    {
-        "name": "down",
-        "key": "S"
-    },
-    {
-        "name": "left",
-        "key": "A"
-    },
-    {
-        "name": "right",
-        "key": "D"
-    }
+  {
+    "name": "up",
+    "key": "W",
+    "type": "Down"
+  },
+  {
+    "name": "down",
+    "key": "S",
+    "type": "Down"
+  },
+  {
+    "name": "left",
+    "key": "A",
+    "type": "Down"
+  },
+  {
+    "name": "right",
+    "key": "D",
+    "type": "Down"
+  }
 ]

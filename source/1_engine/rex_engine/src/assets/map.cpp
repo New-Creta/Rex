@@ -26,11 +26,11 @@ namespace rex
 
 	BlockCount Map::width() const
 	{
-		return BlockCount(m_desc.map_header.width_in_blocks);
+		return BlockCount(m_desc.map_header.size.x);
 	}
 	BlockCount Map::height() const
 	{
-		return BlockCount(m_desc.map_header.height_in_blocks);
+		return BlockCount(m_desc.map_header.size.y);
 	}
 
 	WorldCoordConverter Map::create_world_coord_converter()

@@ -8,6 +8,7 @@
 namespace rex
 {
 	class Flipbook;
+	struct FlipbookAnimationFrame;
 
 	namespace gfx
 	{
@@ -26,7 +27,7 @@ namespace rex
 			rsl::pointi8 sprite_size() const;
 
 			rsl::point<f32> current_sprite_uv() const;
-			const FlipbookSprite& current_sprite() const;
+			const FlipbookAnimationFrame& current_sprite() const;
 
 		private:
 			Flipbook* m_animations;

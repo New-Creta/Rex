@@ -27,7 +27,7 @@ namespace rex
 
 			if (m_active_animation->has_finished_animation(m_current_anim_sprite_idx, m_current_sprite_frame_counter))
 			{
-				m_current_anim_sprite_idx = m_active_animation->next_sprite_idx(m_current_anim_sprite_idx);
+				m_current_anim_sprite_idx = m_active_animation->next_frame_idx(m_current_anim_sprite_idx);
 				m_current_sprite_frame_counter = 0;
 			}
 
@@ -67,7 +67,7 @@ namespace rex
 
 		rsl::point<f32> AnimatedSprite::current_sprite_uv() const
 		{
-			s32 sprite_idx_in_texture = m_active_animation->sprite(m_current_anim_sprite_idx).sprite_idx;
+			s32 sprite_idx_in_texture = m_active_animation->frame(m_current_anim_sprite_idx).sprite_idx;
 			s32 sprites_per_row = m_animations->sprites_texture()->texture_resource()->width() / m_animations->sprite_size().x;
 
 			rsl::pointi8 sprite_coord{};
@@ -81,9 +81,9 @@ namespace rex
 			return uv_start;
 		}
 
-		const FlipbookSprite& AnimatedSprite::current_sprite() const
+		const FlipbookAnimationFrame& AnimatedSprite::current_sprite() const
 		{
-			return m_active_animation->sprite(m_current_anim_sprite_idx);
+			return m_active_animation->frame(m_current_anim_sprite_idx);
 		}
 	}
 }

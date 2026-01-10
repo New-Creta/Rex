@@ -154,7 +154,7 @@ namespace rex
 	void MapLoaderJson::init_blocks(const json::json& jsonContent, MapDesc& desc)
 	{
 		memory::Blob blockmap = vfs::instance()->read_file(jsonContent["map_blocks"]);
-		desc.blocks = rsl::make_unique<u8[]>(desc.map_header.width_in_blocks * desc.map_header.height_in_blocks);
+		desc.blocks = rsl::make_unique<u8[]>(desc.map_header.size.x.get() * desc.map_header.size.y.get());
 		rsl::memcpy(desc.blocks.get(), blockmap.data(), blockmap.size());
 	}
 	void MapLoaderJson::init_blockset(const json::json& jsonContent, MapDesc& desc)
@@ -167,8 +167,7 @@ namespace rex
 		MapHeader header{};
 
 		header.name = jsonContent["name"];
-		header.width_in_blocks = jsonContent["width"];
-		header.height_in_blocks = jsonContent["height"];
+		header.size = { BlockCount(jsonContent["width"]), BlockCount(jsonContent["height"]) };
 		header.border_block_idx = jsonContent["border_block_idx"];
 
 		return header;

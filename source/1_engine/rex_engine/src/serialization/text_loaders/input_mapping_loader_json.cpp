@@ -34,18 +34,24 @@ namespace rex
 		for (const rex::json::json& mapping : json_content)
 		{
 			rsl::string_view name = mapping["name"];
-			rsl::string_view key = mapping["key"];
+			rsl::string_view type_str = mapping["type"];
+			InputActionType type = rsl::enum_refl::enum_cast<InputActionType>(type_str).value();
 
 			InputAction action { };
-			if (key.contains("mouse"))
+			if (mapping.contains("key"))
 			{
-				action.type = InputActionType::Mouse;
-				action.data.mouse_button = rsl::enum_refl::enum_cast<MouseButton>(key).value();
-			}
-			else
-			{
-				action.type = InputActionType::Key;
+				rsl::string_view key = mapping["key"];
+
+				action.device = InputDeviceType::Key;
+				action.type = type;
 				action.data.key_code = rsl::enum_refl::enum_cast<KeyCode>(key).value();
+			}
+			else if (mapping.contains("button"))
+			{
+				rsl::string_view button = mapping["button"];
+				action.device = InputDeviceType::Mouse;
+				action.type = type;
+				action.data.mouse_button = rsl::enum_refl::enum_cast<MouseButton>(button).value();
 			}
 
 			mappings.emplace(name, action);
