@@ -51,7 +51,7 @@ namespace rex
 
 			// the structured buffered we hold per animated sprite instance
 			constexpr static s32 s_max_allowed_instances = 16;
-			rsl::unique_ptr<StructuredBuffer> m_per_instance_buffer_array;
+			rsl::unique_ptr<StructuredBuffer> m_per_instance_sb;
 
 			// The render target the pass will render to
 			RenderTargetBase* m_render_target;

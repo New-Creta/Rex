@@ -46,12 +46,6 @@ namespace rex
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
 			m_shader_parameters[loc.idx]->update_view(loc.view_offset, sampler);
 		}
-		void ShaderParametersStore::set(rsl::string_view name, const RenderTarget* rt)
-		{
-			REX_ASSERT_X(m_param_to_location_lookup->contains(name), "No parameter of name \"{}\" found", name);
-			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_parameters[loc.idx]->update_view(loc.view_offset, rt);
-		}
 		void ShaderParametersStore::set(rsl::string_view name, const StructuredBuffer* sb)
 		{
 			REX_ASSERT_X(m_param_to_location_lookup->contains(name), "No parameter of name \"{}\" found", name);

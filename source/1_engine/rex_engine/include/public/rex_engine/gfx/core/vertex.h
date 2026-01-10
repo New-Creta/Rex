@@ -112,6 +112,29 @@ namespace rex
     bool operator!=(const VertexPosTex& v1, const VertexPosTex& v2);
 
     //-----------------------------------------------------------------------
+    // VERTEX POS TEX
+    //
+    // ATTRIBUTES:
+    //  - POSITION 2D
+    //  - UV
+    //-----------------------------------------------------------------------
+    class VertexPos2DTex
+    {
+    public:
+      VertexPos2DTex();
+      VertexPos2DTex(const glm::vec2& position, const glm::vec2& uv);
+
+      static InputLayoutDesc layout();
+
+    public:
+      glm::vec2 position;
+      glm::vec2 uv;
+    };
+
+    bool operator==(const VertexPos2DTex& v1, const VertexPos2DTex& v2);
+    bool operator!=(const VertexPos2DTex& v1, const VertexPos2DTex& v2);
+
+    //-----------------------------------------------------------------------
     // VERTEX POS COL TEX
     //
     // ATTRIBUTES:

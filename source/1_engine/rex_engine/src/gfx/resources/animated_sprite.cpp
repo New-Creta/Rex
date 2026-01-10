@@ -13,7 +13,7 @@ namespace rex
 
 		AnimatedSprite::AnimatedSprite(Flipbook* animations)
 			: m_animations(animations)
-			, m_current_anim_sprite_idx(0)
+			, m_current_anim_frame_idx(0)
 			, m_active_animation(nullptr)
 			, m_pos()
 		{}
@@ -25,13 +25,13 @@ namespace rex
 				return;
 			}
 
-			if (m_active_animation->has_finished_animation(m_current_anim_sprite_idx, m_current_sprite_frame_counter))
+			if (m_active_animation->has_finished_animation(m_current_anim_frame_idx, m_current_anim_frame_counter))
 			{
-				m_current_anim_sprite_idx = m_active_animation->next_frame_idx(m_current_anim_sprite_idx);
-				m_current_sprite_frame_counter = 0;
+				m_current_anim_frame_idx = m_active_animation->next_frame_idx(m_current_anim_frame_idx);
+				m_current_anim_frame_counter = 0;
 			}
 
-			m_current_sprite_frame_counter++;
+			m_current_anim_frame_counter++;
 		}
 
 		void AnimatedSprite::set_pos(rex::PixelCoord pos)
@@ -51,8 +51,8 @@ namespace rex
 			}
 
 			m_active_animation = m_animations->find_animation(name);
-			m_current_anim_sprite_idx = 0;
-			m_current_sprite_frame_counter = 0;
+			m_current_anim_frame_idx = 0;
+			m_current_anim_frame_counter = 0;
 			REX_ASSERT_X(m_active_animation, "New animation is nullptr, this is not allowed");
 		}
 
@@ -67,7 +67,7 @@ namespace rex
 
 		rsl::point<f32> AnimatedSprite::current_sprite_uv() const
 		{
-			s32 sprite_idx_in_texture = m_active_animation->frame(m_current_anim_sprite_idx).sprite_idx;
+			s32 sprite_idx_in_texture = m_active_animation->frame(m_current_anim_frame_idx).sprite_idx;
 			s32 sprites_per_row = m_animations->sprites_texture()->texture_resource()->width() / m_animations->sprite_size().x;
 
 			rsl::pointi8 sprite_coord{};
@@ -83,7 +83,7 @@ namespace rex
 
 		const FlipbookAnimationFrame& AnimatedSprite::current_sprite() const
 		{
-			return m_active_animation->frame(m_current_anim_sprite_idx);
+			return m_active_animation->frame(m_current_anim_frame_idx);
 		}
 	}
 }

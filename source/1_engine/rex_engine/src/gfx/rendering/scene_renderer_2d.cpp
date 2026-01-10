@@ -45,6 +45,11 @@ namespace rex
 			m_composite_pass = rsl::make_unique<CompositePass>(compositepass_creation_info);
 		}
 
+		void SceneRenderer2D::new_frame()
+		{
+			// Nothing to implement
+		}
+
 		void SceneRenderer2D::render()
 		{
 			auto render_ctx = gal::instance()->new_render_ctx(nullptr, "2D Scene Render");

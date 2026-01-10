@@ -13,7 +13,7 @@ namespace rex
 
 		// the number of ticks it was pressed. this is the number of completed ticks
 		// meaning on the first tick it's pressed, this value is still 0
-		// a negative value means how many frames ago it was pressed
+		// a negative value means how many frames ago it was released
 		// this is useful information to have when you want to check
 		// if something was released
 		s32 ticks_pressed;

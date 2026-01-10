@@ -27,6 +27,9 @@ namespace rex
 		public:
 			SceneRenderer2D();
 
+			// prepare a new frame
+			void new_frame() override;
+
 			// call into each render pass to render a single frame
 			void render() override;
 
@@ -44,17 +47,15 @@ namespace rex
 			void render_dynamic_animations(RenderContext* renderCtx);
 
 		private:
-			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_animated_sprites;
-
-			rsl::point<TileCount> m_top_left;
-			rex::Tilemap* m_scene_tilemap;
-
+			// Render target that will hold the output of the renderer after all passes are done
 			rsl::unique_ptr<RenderTarget> m_render_target;
 
+			// Passes of this renderer
 			rsl::unique_ptr<BlockRenderPass> m_block_render_pass;
 			rsl::unique_ptr<AnimatedSpritesPass> m_animated_sprites_pass;
 			rsl::unique_ptr<CompositePass> m_composite_pass;
 
+			// Parameters of this renderer, passed to passes for shader logic
 			SceneRenderParams m_params;
 		};
 

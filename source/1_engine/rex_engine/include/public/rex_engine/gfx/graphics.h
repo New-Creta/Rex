@@ -89,7 +89,7 @@ namespace rex
   {
     class GALBase;
     class PipelineState;
-    class LegacyRenderer;
+    class Renderer;
 
     namespace gal
     {
@@ -311,7 +311,7 @@ namespace rex
       rsl::unique_ptr<BackBufferRenderTarget> m_backbuffer_render_target;
 
       rsl::unordered_map<u64, rsl::unique_ptr<ResourceView>> m_resources_on_gpu;                                    // Holds a map of all resources already present on the GPU and their views
-      rsl::vector<rsl::unique_ptr<LegacyRenderer>> m_renderers;                                                           // Holds all the renderers
+      rsl::vector<rsl::unique_ptr<Renderer>> m_renderers;                                                           // Holds all the renderers
       rsl::array<RasterStateDesc, rsl::enum_refl::enum_count<CommonRasterState>()> m_common_raster_states;          // Holds a list of common raster states
       rsl::array<rsl::unique_ptr<Sampler2D>, rsl::enum_refl::enum_count<CommonSampler>()> m_common_samplers;        // Holds a list of common samplers
     };

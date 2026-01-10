@@ -11,6 +11,7 @@ namespace rex
 {
 	namespace gfx
 	{
+		// Represents a structured buffer on the GPU
 		class StructuredBuffer : public Resource
 		{
 		public:
@@ -23,9 +24,16 @@ namespace rex
 			s32 num_elements() const;
 
 		private:
+			// The address of the buffer on the GPU
 			u64 m_gpu_address;
+
+			// A view to the buffer
 			ResourceView* m_view;
+
+			// The size of 1 element in the buffer
 			rsl::memory_size m_stride;
+
+			// The number of elements within the buffer
 			s32 m_num_elements;
 
 		};

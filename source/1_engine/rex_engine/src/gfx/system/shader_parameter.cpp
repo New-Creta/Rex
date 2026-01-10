@@ -53,10 +53,6 @@ namespace rex
 		{
 			REX_ASSERT("Samplers cannot be tied to an inline view. They need to be tied to a view table");
 		}
-		void ViewShaderParam::update_view(s32 offset, const RenderTarget* rt)
-		{
-			REX_ASSERT("Render targets (as textures) cannot be tied to an inline view. They need to be tied to a view table");
-		}
 		void ViewShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
 		{
 			update_view(offset, sb->gpu_address());
@@ -102,11 +98,7 @@ namespace rex
 		{
 			update_view(offset, sampler->resource_view());
 		}
-		void ViewTableShaderParam::update_view(s32 offset, const RenderTarget* rt)
-		{
-			const ResourceView* view = gal::instance()->create_srv(rt);
-			update_view(offset, view);
-		}
+	
 		void ViewTableShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
 		{
 			update_view(offset, sb->view());

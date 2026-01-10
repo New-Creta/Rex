@@ -7,7 +7,9 @@ namespace rex
 {
 	class Map;
 
+	// return width and height of a map in pixels
 	rsl::pointi32 size_in_px(const Map* map);
+	// returns with and height of a map in tiles
 	rsl::point<TileCount> size_in_tiles(const Map* map);
 
 	REX_STRONG_TYPE(BlockCoord, rsl::pointi8);

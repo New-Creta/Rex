@@ -214,6 +214,54 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
+    // VERTEX POS TEX
+    //
+    // ATTRIBUTES:
+    //  - POSITION 2D
+    //  - UV
+    //-----------------------------------------------------------------------
+    VertexPos2DTex::VertexPos2DTex()
+      : position(0.0f)
+      , uv(0.0f)
+    {
+
+    }
+
+    //-----------------------------------------------------------------------
+    VertexPos2DTex::VertexPos2DTex(const glm::vec2& position, const glm::vec2& uv)
+      : position(position)
+      , uv(uv)
+    {
+    }
+    
+    //-----------------------------------------------------------------------
+    InputLayoutDesc VertexPos2DTex::layout()
+    {
+      InputLayoutDesc desc
+      {
+        InputLayoutElementDesc
+        {
+          ShaderSemantic::Position,  ShaderArithmeticType::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0
+        },
+        InputLayoutElementDesc
+        {
+          ShaderSemantic::TexCoord,  ShaderArithmeticType::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0
+        },
+      };
+    }
+
+    //-----------------------------------------------------------------------
+    bool operator==(const VertexPos2DTex& v1, const VertexPos2DTex& v2)
+    {
+      return v1.position == v2.position && v1.uv == v2.uv;
+    }
+    //-----------------------------------------------------------------------
+    bool operator!=(const VertexPos2DTex& v1, const VertexPos2DTex& v2)
+    {
+      return !(v1 == v2);
+    }
+
+    //-----------------------------------------------------------------------
     // VERTEX POS COL TEX
     //
     // ATTRIBUTES:

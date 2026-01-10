@@ -8,6 +8,7 @@ namespace rex
 {
 	namespace gfx
 	{
+		// A class that represents the current active backbuffer as a render target
 		class BackBufferRenderTarget : public RenderTargetBase
 		{
 		public:

@@ -155,7 +155,6 @@ namespace rex
             void set(rsl::string_view name, const UnorderedAccessBuffer* cb);
             void set(rsl::string_view name, const Texture2D* texture);
             void set(rsl::string_view name, const Sampler2D* sampler);
-            void set(rsl::string_view name, const RenderTarget* rt);
             void set(rsl::string_view name, const StructuredBuffer* sb);
 
             // Return the location of a resource

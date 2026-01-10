@@ -10,11 +10,15 @@ namespace rex
 	class OsKeyDown;
 	class OsKeyUp;
 
+	// This class holds the input state of all keys of a keyboard
+	// it has capacity to tick, incrementing tick count how long keys are pressed
 	class InputState
 	{
 	public:
 		InputState();
 
+		// Increase tick count how long keys are pressed
+		// remove any keys that are no longer pressed
 		void tick();
 
 	private:

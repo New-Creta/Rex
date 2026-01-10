@@ -11,14 +11,14 @@ namespace rex
 		ResourceView* ResourceManager::store_shader_resource_view(const RenderTargetBase* rt, rsl::unique_ptr<ResourceView> view)
 		{
 			ResourceView* view_ptr = view.get();
-			m_shader_resource_views.emplace(rt, rsl::move(view));
+			m_render_targets_resource_views.emplace(rt, rsl::move(view));
 			return view_ptr;
 		}
 		ResourceView* ResourceManager::shader_resource_view(const RenderTargetBase* rt)
 		{
-			if (m_shader_resource_views.contains(rt))
+			if (m_render_targets_resource_views.contains(rt))
 			{
-				return m_shader_resource_views.at(rt).get();
+				return m_render_targets_resource_views.at(rt).get();
 			}
 
 			return nullptr;

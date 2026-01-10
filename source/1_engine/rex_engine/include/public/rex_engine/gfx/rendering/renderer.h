@@ -35,24 +35,15 @@ namespace rex
 		};
 
 		// Renderer interface, very basic implementation and will likely be extended in the future
-		class LegacyRenderer
+		class Renderer
 		{
 		public:
-			virtual ~LegacyRenderer() = default;
+			virtual ~Renderer() = default;
 
 			// Prepare the renderer for a new frame
 			virtual void new_frame() = 0;
 
 			// Render a new frame
-			virtual void render() = 0;
-		};
-
-		class Renderer
-		{
-		public:
-			Renderer();
-			~Renderer();
-
 			virtual void render() = 0;
 		};
 	}

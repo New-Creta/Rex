@@ -3,8 +3,8 @@
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_engine/gfx/core/types.h"
+#include "rex_engine/gfx/core/vertex.h"
 #include "rex_engine/gfx/system/shader_library.h"
-#include "rex_engine/gfx/rendering/tile_vertex.h"
 
 #include "rex_engine/gfx/resources/animated_sprite.h"
 
@@ -33,6 +33,8 @@ namespace rex
 		static const s32 FLIP_Y_BIT = 1;
 		static const s32 RENDER_BOTTOM_BEHIND_BG = 2;
 		static const s32 MAX_SPRITES = 16;
+
+		using AnimatedTileVertex = VertexPosTex;
 
 		struct SceneRenderInfo
 		{
@@ -160,7 +162,7 @@ namespace rex
 					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
 				}
 
-				renderCtx->update_buffer(m_per_instance_buffer_array.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
+				renderCtx->update_buffer(m_per_instance_sb.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
 
 				set("sprite_texture", sprite->sprites_texture());
 				bind_my_params_to_pipeline(renderCtx);
@@ -194,19 +196,19 @@ namespace rex
 			// to give the illusion of 2.5D
 
 			// top vertices
-			sprite_vertices[0] = AnimatedTileVertex{ glm::vec3(-1,   1, 1),              rsl::point<f32>(0.0f, 0.0f) };
-			sprite_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	   1, 1),              rsl::point<f32>(1.0f, 0.0f) };
+			sprite_vertices[0] = AnimatedTileVertex{ glm::vec3(-1,   1, 1),    glm::vec2(0.0f, 0.0f) };
+			sprite_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	   1, 1),    glm::vec2(1.0f, 0.0f) };
 
 			// middle vertices
-			sprite_vertices[2] = AnimatedTileVertex{ glm::vec3(-1,	 0, 1),					rsl::point<f32>(0.0f, 0.5f) };
-			sprite_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	   0, 1),					rsl::point<f32>(1.0f, 0.5f) };
+			sprite_vertices[2] = AnimatedTileVertex{ glm::vec3(-1,	 0, 1),			glm::vec2(0.0f, 0.5f) };
+			sprite_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	   0, 1),			glm::vec2(1.0f, 0.5f) };
 
-			sprite_vertices[4] = AnimatedTileVertex{ glm::vec3(-1,	 0, 0),					rsl::point<f32>(0.0f, 0.5f) };
-			sprite_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	   0, 0),					rsl::point<f32>(1.0f, 0.5f) };
+			sprite_vertices[4] = AnimatedTileVertex{ glm::vec3(-1,	 0, 0),			glm::vec2(0.0f, 0.5f) };
+			sprite_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	   0, 0),			glm::vec2(1.0f, 0.5f) };
 
 			// bottom vertices
-			sprite_vertices[6] = AnimatedTileVertex{ glm::vec3(-1,	-1, 0),							rsl::point<f32>(0.0f, 1.0f) };
-			sprite_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	  -1, 0),							rsl::point<f32>(1.0f, 1.0f) };
+			sprite_vertices[6] = AnimatedTileVertex{ glm::vec3(-1,	-1, 0),			glm::vec2(0.0f, 1.0f) };
+			sprite_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	  -1, 0),			glm::vec2(1.0f, 1.0f) };
 
 			if (!m_sprite_vb_gpu)
 			{
@@ -260,10 +262,10 @@ namespace rex
 				set("RenderingMetaData", m_screen_info_cbuffer.get());
 			}
 
-			if (m_per_instance_buffer_array == nullptr)
+			if (m_per_instance_sb == nullptr)
 			{
-				m_per_instance_buffer_array = gal::instance()->create_structured_buffer(sizeof(PerSpriteInstanceData), s_max_allowed_instances);
-				set("instance_data", m_per_instance_buffer_array.get());
+				m_per_instance_sb = gal::instance()->create_structured_buffer(sizeof(PerSpriteInstanceData), s_max_allowed_instances);
+				set("instance_data", m_per_instance_sb.get());
 			}
 		}
 		void AnimatedSpritesPass::init_shader_params()
@@ -304,12 +306,7 @@ namespace rex
 			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Vertex);
 			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Pixel);
 
-			desc.pso_desc.input_layout =
-			{
-				// Per vertex data
-				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float3 },
-				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::TexCoord, rex::gfx::ShaderArithmeticType::Float2 },
-			};
+			desc.pso_desc.input_layout = AnimatedTileVertex::layout();
 
 			return desc;
 		}

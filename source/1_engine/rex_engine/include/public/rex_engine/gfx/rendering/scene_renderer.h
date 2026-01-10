@@ -29,7 +29,7 @@ namespace rex
 			glm::vec3 light_direction;	// The light direction of the scene
 		};
 
-		class SceneRenderer : public LegacyRenderer
+		class SceneRenderer : public Renderer
 		{
 		public:
 			SceneRenderer();

@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
+#include "rex_engine/gfx/core/vertex.h"
 #include "rex_engine/gfx/system/shader_library.h"
-#include "rex_engine/gfx/rendering/tile_vertex.h"
 #include "rex_engine/gfx/system/resource_manager.h"
 
 #include "rex_engine/filesystem/path.h"
@@ -10,6 +10,8 @@ namespace rex
 {
 	namespace gfx
 	{
+		using TileVertex = VertexPos2DTex;
+
 		BlockRenderPass::BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo)
 			: RenderPass(create_desc(creationInfo))
 			, m_render_target(creationInfo.render_target)
@@ -74,10 +76,10 @@ namespace rex
 
 			rsl::array<TileVertex, num_vertices_per_tile> tile_vertices{};
 
-			tile_vertices[0] = TileVertex{ rsl::point<f32>(0,  0),               rsl::point<f32>(0.0f, 0.0f) };
-			tile_vertices[1] = TileVertex{ rsl::point<f32>(1,	 0),               rsl::point<f32>(1.0f, 0.0f) };
-			tile_vertices[2] = TileVertex{ rsl::point<f32>(0,	-1),							 rsl::point<f32>(0.0f, 1.0f) };
-			tile_vertices[3] = TileVertex{ rsl::point<f32>(1,	-1),							 rsl::point<f32>(1.0f, 1.0f) };
+			tile_vertices[0] = TileVertex{ glm::vec2(0,  0),               glm::vec2(0.0f, 0.0f) };
+			tile_vertices[1] = TileVertex{ glm::vec2(1,	 0),               glm::vec2(1.0f, 0.0f) };
+			tile_vertices[2] = TileVertex{ glm::vec2(0,	-1),							 glm::vec2(0.0f, 1.0f) };
+			tile_vertices[3] = TileVertex{ glm::vec2(1,	-1),							 glm::vec2(1.0f, 1.0f) };
 
 			m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
 
@@ -132,12 +134,7 @@ namespace rex
 			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Vertex);
 			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Pixel);
 
-			desc.pso_desc.input_layout =
-			{
-				// Per vertex data
-				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float2 },
-				rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::TexCoord, rex::gfx::ShaderArithmeticType::Float2 },
-			};
+			desc.pso_desc.input_layout = TileVertex::layout();
 
 			return desc;
 		}

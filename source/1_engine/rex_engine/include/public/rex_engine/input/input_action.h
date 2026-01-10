@@ -8,17 +8,21 @@
 namespace rex
 {
 	// Specifies what kind of input was pressed
+	// This is mainly targeting PC input for now but
+	// can be changed in the future
 	enum class InputDeviceType
 	{
 		Key,
 		Mouse,
 	};
+	// Pressed is not here as thaat's determined by the tick count of a key state
 	enum class InputActionType
 	{
 		Down,
 		Up,
 	};
 
+	// This is all the data you need to determine what kind of input happened
 	struct InputAction
 	{
 		InputDeviceType device;
