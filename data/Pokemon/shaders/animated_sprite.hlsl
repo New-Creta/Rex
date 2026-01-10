@@ -65,9 +65,24 @@ float4 calculate_vertex_position(VertexIn vin)
 {
   VertexOut vout;
 
-  float2 pos = { -1.0f, 1.0f };                                               // start from the top left
-  //float2 pos = { 0.0f, 0.0f }; // start from the top left
-  pos += vin.PosL.xy * instance_data[vin.InstanceId].inv_sprite_screen_size;  // scale down to position to its size relative to the render target
+  // Scale the vertex position from NDC -> (0, 1)
+  float2 scaled_vertex_pos = vin.PosL.xy;
+  scaled_vertex_pos *= 0.5f;
+  scaled_vertex_pos += 0.5f;
+  
+  // As our coordinate system works from the top left
+  // but textures' coordinates start from the bottom left
+  // we have fix the y value here 
+  scaled_vertex_pos.y -= 1; 
+
+  // Use the scaled vertex position
+  // and scale it with the sprite size on screen
+  float2 pos = scaled_vertex_pos * instance_data[vin.InstanceId].inv_sprite_screen_size;
+  
+  // the above position is offseted from the origin
+  // however, the origin us calculated from the top left of the screen
+  // so we have to add that ofset
+  pos += float2(-1.0f, 1.0f);
 
   // Offset the sprite onto the position where it should be drawn on screen
   pos.x += (instance_data[vin.InstanceId].position.x * inv_vintage_pixel_screen_size.x); // offset the vertex to where we want on screen
