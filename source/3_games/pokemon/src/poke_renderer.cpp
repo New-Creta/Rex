@@ -1,6 +1,6 @@
 //#include "pokemon/poke_renderer.h"
 //
-//#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+//#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 //#include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
 //
 //#include "pokemon/render_constants.h"

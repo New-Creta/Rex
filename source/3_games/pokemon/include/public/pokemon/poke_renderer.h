@@ -2,7 +2,7 @@
 //
 //#include "rex_engine/gfx/rendering/renderer.h"
 //
-//#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+//#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 //
 //namespace rex
 //{

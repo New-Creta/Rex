@@ -9,6 +9,9 @@ namespace rex
 {
 	enum class LoadFlags;
 
+	// An asset importer is a wrapper around asset loaders
+	// Given an asset path, it will look in its internal loaders
+	// if any of them can load the asset at the specified filepath
 	class AssetImporter
 	{
 	public:

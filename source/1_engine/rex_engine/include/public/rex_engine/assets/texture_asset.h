@@ -16,7 +16,7 @@ namespace rex
 	class TextureAsset : public Asset
 	{
 	public:
-		TextureAsset(rsl::unique_array<u8> data, s32 width, s32 height, s32 numChannels);
+		TextureAsset(u8* data, s32 width, s32 height, s32 numChannels);
 		TextureAsset(rsl::Rgba* data, s32 width, s32 height, s32 numChannels);
 		~TextureAsset();
 

@@ -41,27 +41,9 @@ namespace rex
 			desc.name = "Composite Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Greater;
-			//desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-
-			//desc.pso_desc.dsv_format = rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer")->format();
-
-			// Basic blending operation
-			// If we output an alpha value of 0.0f
-			// we use the pixel that's in the render target
-			//desc.pso_desc.output_merger.blend_state.render_target[0].blend_enable = true;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].logic_op_enable = false;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].src_blend = Blend::SrcAlpha;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].blend_op = BlendOp::Add;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].src_blend_alpha = Blend::One;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].dst_blend_alpha = Blend::Zero;
-			//desc.pso_desc.output_merger.blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
 
 			// We're rendering directly to the back buffer
 			desc.framebuffer_desc.emplace_back(creationInfo.dst_render_target);
-			//desc.framebuffer_desc.emplace_back(rex::gfx::resource_manager::instance()->find_depth_stencil_buffer("World Stencil Buffer"));
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");
@@ -93,11 +75,6 @@ namespace rex
 			const s32 num_vertices_per_tile = 4;
 
 			rsl::array<CompositePassVertex, num_vertices_per_tile> tile_vertices{};
-
-			// sprites are drawn using 2 rectangles, splitting top and bottom
-			// the top is always drawn on top of everything else
-			// the bottom is sometimes drawn below the background
-			// to give the illusion of 2.5D
 
 			tile_vertices[0] = CompositePassVertex{ glm::vec2(-1, 1),                glm::vec2(0.0f, 0.0f) };
 			tile_vertices[1] = CompositePassVertex{ glm::vec2(1,	1),               glm::vec2(1.0f, 0.0f) };

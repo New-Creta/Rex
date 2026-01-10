@@ -25,7 +25,7 @@ cbuffer RenderingMetaData : register(b0, RENDER_PASS_REGISTER_SPACE)
 
 // Vertices expected for this shader are meant to spawn the entire screen
 // as in, without any transforms, it will cover { 0, 0 } until { 1, 1 } of the window
-// This shader transforms the vertex positions and UVs to only spawn the size a single
+// This shader transforms the vertex positions and UVs to only span the size a single
 // tile takes up in the render target and in the tileset texture
 
 struct VertexIn
@@ -71,11 +71,7 @@ float4 calculate_vertex_position(VertexIn vin)
 
   pos.x += screen_pixel_offset.x * inv_pixel_screen_size.x;
   pos.y += screen_pixel_offset.y * inv_pixel_screen_size.y;
-  
-  // when the player is on a grass tile
-  // we should disable the white color channel
-
- 
+   
   // Offset the position to this position
   return float4(pos, 0.5f, 1.0f);
 }

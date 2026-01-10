@@ -22,8 +22,8 @@ namespace rex
 		bool is_partially_loaded;
 	};
 
-	// The asset path keeps track of asset metadata (eg. where they were loaded from)
-	// It also owns the loading of each asset using loaders (similar system as assimp https://github.com/assimp/assimp
+	// The asset database keeps track of asset metadata (eg. where they were loaded from)
+	// It also owns the loading of each asset using loaders (similar system as assimp https://github.com/assimp/assimp)
 	// each loader can support a set of extensions and is responsible for loading an asset
 	// of a matching extension
 	// asset loading is type based, meaning, you always assign a loader to a type of asset

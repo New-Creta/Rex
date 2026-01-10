@@ -9,7 +9,7 @@
 
 #include "rex_engine/gfx/rendering/renderer.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
-#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_engine/assets/tileset_asset.h"

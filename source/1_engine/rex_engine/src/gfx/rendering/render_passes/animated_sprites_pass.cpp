@@ -79,14 +79,14 @@ namespace rex
 				return;
 			}
 		
-			renderCtx->copy_rt_to_texture2d(m_render_target_as_texture.get(), m_render_target);
+			renderCtx->copy_rt_to_texture2d(m_background_texture.get(), m_render_target);
 			renderCtx->set_render_target(m_render_target);
 
 			bind_to(renderCtx);
 
 			// Bind all the resources to the gfx pipeline
-			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
-			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
+			renderCtx->set_vertex_buffer(m_sprite_vb_gpu.get(), 0);
+			renderCtx->set_index_buffer(m_sprite_ib_gpu.get());
 
 			static s32 counter = 0;
 			static bool is_on_grass = false;
@@ -105,7 +105,7 @@ namespace rex
 			scene_render_info.screen_size.y = m_render_target->height();
 			renderCtx->update_buffer(m_screen_info_cbuffer.get(), &scene_render_info, sizeof(scene_render_info));
 
-			s32 index_count = m_tiles_ib_gpu->count();
+			s32 index_count = m_sprite_ib_gpu->count();
 			for (s32 i = 0; i < m_sprites.size(); ++i)
 			{
 				const rsl::unique_ptr<AnimatedSprite>& sprite = m_sprites[i];
@@ -120,7 +120,6 @@ namespace rex
 				per_instance_data.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
 				per_instance_data.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
 
-				rsl::pointi8 tile_size = m_params.tileset->tile_size();
 				rsl::pointi8 sprite_size = sprite->sprite_size();
 
 				PixelCoord screen_pos = sprite->pos() - m_params.camera->top_left();
@@ -131,6 +130,7 @@ namespace rex
 				// ; - 4: Y screen position (in pixels, always 4 pixels above grid which makes sprites appear to be in the center of a tile)
 				// The code that performs this offset if found in movement.asm
 				// look for "add $4" as its done in a few places, depending on the executing code
+				rsl::pointi8 tile_size = m_params.tileset->tile_size();
 				per_instance_data.screen_pos.y -= tile_size.y / 2; // == 4
 
 				rsl::point<f32> inv_zoom_level{};
@@ -160,7 +160,7 @@ namespace rex
 					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
 				}
 
-				renderCtx->update_buffer(m_per_instance_buffer.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
+				renderCtx->update_buffer(m_per_instance_buffer_array.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
 
 				set("sprite_texture", sprite->sprites_texture());
 				bind_my_params_to_pipeline(renderCtx);
@@ -186,7 +186,7 @@ namespace rex
 			// Init the vertex buffer
 			const s32 num_vertices_per_tile = 8;
 
-			rsl::array<AnimatedTileVertex, num_vertices_per_tile> tile_vertices{};
+			rsl::array<AnimatedTileVertex, num_vertices_per_tile> sprite_vertices{};
 
 			// sprites are drawn using 2 rectangles, splitting top and bottom
 			// the top is always drawn on top of everything else
@@ -194,63 +194,63 @@ namespace rex
 			// to give the illusion of 2.5D
 
 			// top vertices
-			tile_vertices[0] = AnimatedTileVertex{ glm::vec3(-1,   1, 1),              rsl::point<f32>(0.0f, 0.0f) };
-			tile_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	   1, 1),              rsl::point<f32>(1.0f, 0.0f) };
+			sprite_vertices[0] = AnimatedTileVertex{ glm::vec3(-1,   1, 1),              rsl::point<f32>(0.0f, 0.0f) };
+			sprite_vertices[1] = AnimatedTileVertex{ glm::vec3(1,	   1, 1),              rsl::point<f32>(1.0f, 0.0f) };
 
 			// middle vertices
-			tile_vertices[2] = AnimatedTileVertex{ glm::vec3(-1,	 0, 1),					rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	   0, 1),					rsl::point<f32>(1.0f, 0.5f) };
+			sprite_vertices[2] = AnimatedTileVertex{ glm::vec3(-1,	 0, 1),					rsl::point<f32>(0.0f, 0.5f) };
+			sprite_vertices[3] = AnimatedTileVertex{ glm::vec3(1,	   0, 1),					rsl::point<f32>(1.0f, 0.5f) };
 
-			tile_vertices[4] = AnimatedTileVertex{ glm::vec3(-1,	 0, 0),					rsl::point<f32>(0.0f, 0.5f) };
-			tile_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	   0, 0),					rsl::point<f32>(1.0f, 0.5f) };
+			sprite_vertices[4] = AnimatedTileVertex{ glm::vec3(-1,	 0, 0),					rsl::point<f32>(0.0f, 0.5f) };
+			sprite_vertices[5] = AnimatedTileVertex{ glm::vec3(1,	   0, 0),					rsl::point<f32>(1.0f, 0.5f) };
 
 			// bottom vertices
-			tile_vertices[6] = AnimatedTileVertex{ glm::vec3(-1,	-1, 0),							rsl::point<f32>(0.0f, 1.0f) };
-			tile_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	  -1, 0),							rsl::point<f32>(1.0f, 1.0f) };
+			sprite_vertices[6] = AnimatedTileVertex{ glm::vec3(-1,	-1, 0),							rsl::point<f32>(0.0f, 1.0f) };
+			sprite_vertices[7] = AnimatedTileVertex{ glm::vec3(1,	  -1, 0),							rsl::point<f32>(1.0f, 1.0f) };
 
-			if (!m_tiles_vb_gpu)
+			if (!m_sprite_vb_gpu)
 			{
-				m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(AnimatedTileVertex));
+				m_sprite_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(AnimatedTileVertex));
 			}
 
-			renderCtx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(AnimatedTileVertex));
-			renderCtx->transition_buffer(m_tiles_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
+			renderCtx->update_buffer(m_sprite_vb_gpu.get(), sprite_vertices.data(), sprite_vertices.size() * sizeof(AnimatedTileVertex));
+			renderCtx->transition_buffer(m_sprite_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
 		}
 		void AnimatedSpritesPass::init_ib(rex::gfx::RenderContext* renderCtx)
 		{
-			if (m_tiles_ib_gpu)
+			if (m_sprite_ib_gpu)
 			{
 				return;
 			}
 
 			const s32 num_indices_per_tile = 12;
-			rsl::array<u16, num_indices_per_tile > tile_ib{};
+			rsl::array<u16, num_indices_per_tile > sprite_ib{};
 
 			// top rectangle
-			tile_ib[0] = 0;	
-			tile_ib[1] = 1;
-			tile_ib[2] = 2;
+			sprite_ib[0] = 0;	
+			sprite_ib[1] = 1;
+			sprite_ib[2] = 2;
 
-			tile_ib[3] = 1;
-			tile_ib[4] = 3;
-			tile_ib[5] = 2;
+			sprite_ib[3] = 1;
+			sprite_ib[4] = 3;
+			sprite_ib[5] = 2;
 
 			// bottom rectangle
-			tile_ib[6] = 4;
-			tile_ib[7] = 5;
-			tile_ib[8] = 6;
+			sprite_ib[6] = 4;
+			sprite_ib[7] = 5;
+			sprite_ib[8] = 6;
 
-			tile_ib[9] = 5;
-			tile_ib[10] = 7;
-			tile_ib[11] = 6;
+			sprite_ib[9] = 5;
+			sprite_ib[10] = 7;
+			sprite_ib[11] = 6;
 
 
-			m_tiles_ib_gpu = rex::gfx::gal::instance()->create_index_buffer(num_indices_per_tile, rex::gfx::IndexBufferFormat::Uint16);
+			m_sprite_ib_gpu = rex::gfx::gal::instance()->create_index_buffer(num_indices_per_tile, rex::gfx::IndexBufferFormat::Uint16);
 
 			// create the constant buffer
 			// -----------------------------------------
-			renderCtx->update_buffer(m_tiles_ib_gpu.get(), tile_ib.data(), tile_ib.size() * sizeof(tile_ib[0]));
-			renderCtx->transition_buffer(m_tiles_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
+			renderCtx->update_buffer(m_sprite_ib_gpu.get(), sprite_ib.data(), sprite_ib.size() * sizeof(sprite_ib[0]));
+			renderCtx->transition_buffer(m_sprite_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
 		}
 		void AnimatedSpritesPass::init_render_info(rex::gfx::RenderContext* renderCtx)
 		{
@@ -260,10 +260,10 @@ namespace rex
 				set("RenderingMetaData", m_screen_info_cbuffer.get());
 			}
 
-			if (m_per_instance_buffer == nullptr)
+			if (m_per_instance_buffer_array == nullptr)
 			{
-				m_per_instance_buffer = gal::instance()->create_structured_buffer(sizeof(PerSpriteInstanceData), 16);
-				set("instance_data", m_per_instance_buffer.get());
+				m_per_instance_buffer_array = gal::instance()->create_structured_buffer(sizeof(PerSpriteInstanceData), s_max_allowed_instances);
+				set("instance_data", m_per_instance_buffer_array.get());
 			}
 		}
 		void AnimatedSpritesPass::init_shader_params()
@@ -272,8 +272,8 @@ namespace rex
 
 			set("default_sampler", default_sampler);
 
-			m_render_target_as_texture = rex::gfx::gal::instance()->create_texture2d(m_render_target->width(), m_render_target->height(), TextureFormat::Unorm4Srgb);
-			set("background_texture", m_render_target_as_texture.get());
+			m_background_texture = rex::gfx::gal::instance()->create_texture2d(m_render_target->width(), m_render_target->height(), TextureFormat::Unorm4Srgb);
+			set("background_texture", m_background_texture.get());
 		}
 
 		RenderPassDesc AnimatedSpritesPass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const

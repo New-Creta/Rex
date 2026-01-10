@@ -62,10 +62,8 @@ namespace rex
 		rsl::unique_array<MapConnection> connections;
 
 		// The objects within a map (characters, items, pokemon, ...)
-		// This should be merged with object and text events
 		// An object is "something" in a map the player can interact with
 		rsl::unique_array<rsl::unique_ptr<MapObject>> objects;
-		rsl::unique_array<TextEvent> text_events;
 
 		// A warp is a space that teleports the player into another map
 		// A good example of this is a door
@@ -84,7 +82,7 @@ namespace rex
 	class Map : public Asset
 	{
 	public:
-		Map(MapDesc&& desc);
+		explicit Map(MapDesc&& desc);
 
 		const MapDesc& desc() const;
 		const u8* blocks(s32 offset = 0) const;

@@ -39,7 +39,7 @@
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/events/input/key_down.h"
 
-#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
 namespace pokemon
 {

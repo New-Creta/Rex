@@ -29,6 +29,7 @@ namespace rex
 			void init_shader_params();
 
 		private:
+
 			// The vertex buffer for a single tile
 			// As we use instanced rendering, we only store 4 vertices
 			rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_vb_gpu;

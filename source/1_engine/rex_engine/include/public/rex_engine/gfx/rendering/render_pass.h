@@ -47,14 +47,7 @@ namespace rex
 		struct SceneParams
 		{
 			const TilesetAsset* tileset;
-			//Camera2D* camera;
 		};
-		//struct CameraParams
-		//{
-		//	rex::PixelCoord top_left;
-		//	glm::vec2 zoom_level = glm::vec2(1.0f, 1.0f);
-		//};
-
 
 		// A render pass acts like the "material" for the render pipeline
 		// It holds a set of data that needs to be tied to the render pipeline

@@ -362,7 +362,6 @@ namespace rex
 #endif
 
         gfx::shader_lib::init(globals::make_unique<gfx::ShaderLibrary>());
-        //gfx::renderer::init(globals::make_unique<gfx::Renderer>());
         gfx::scene_renderer::init(globals::make_unique<gfx::SceneRenderer2D>());
 
         // Add the imgui renderer, which is our main UI renderer for the moment

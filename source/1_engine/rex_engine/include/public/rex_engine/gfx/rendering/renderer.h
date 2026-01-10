@@ -55,12 +55,5 @@ namespace rex
 
 			virtual void render() = 0;
 		};
-
-		//namespace renderer
-		//{
-		//	void init(globals::GlobalUniquePtr<Renderer> renderer);
-		//	Renderer* instance();
-		//	void shutdown();
-		//}
 	}
 }

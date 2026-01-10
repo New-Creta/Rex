@@ -100,7 +100,7 @@ namespace rex
     // Example:
     // users performs an animation on key entry and ignores input while animation is playing
     // if the animation lasts 8 frames, and on frame 7 a key is pressed and held until frame 10
-    // but the OS only sends key down events every 20 frames
+    // but the OS only sends repeated key down events every 20 frames
     // you will have missed a key event as it'd be ignored
     // storing the state ourselves and resending the event until a key up event comes in solves this problem
     rsl::unique_ptr<InputState> m_input_state;

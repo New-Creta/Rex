@@ -1,4 +1,4 @@
-#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
 #include "rex_engine/gfx/system/shader_library.h"
 #include "rex_engine/gfx/rendering/tile_vertex.h"

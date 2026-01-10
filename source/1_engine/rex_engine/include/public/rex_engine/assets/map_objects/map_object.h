@@ -12,7 +12,8 @@ namespace rex
 		Character, // default
 		Item,
 		Trainer,
-		Pokemon
+		Pokemon,
+		TextBoard
 	};
 
 	// an object event is a dynamic object in the scene
@@ -21,8 +22,6 @@ namespace rex
 	struct MapObject : public Asset // object event in pokemon code
 	{
 		rsl::string text_id;		// This will become some kind of GUID or pointer to the data they need
-		rsl::string sprite_id;	// This will become some kind of GUID or pointer to the data they need
-
 		rsl::pointi8 pos;
 	};
 }

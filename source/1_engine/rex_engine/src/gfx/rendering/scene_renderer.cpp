@@ -81,7 +81,7 @@ namespace rex
 			}
 		}
 
-		void SceneRenderer::init_render_graphes()
+		void SceneRenderer::init_render_graphs()
 		{
 			init_geometry_render_pass();
 		}

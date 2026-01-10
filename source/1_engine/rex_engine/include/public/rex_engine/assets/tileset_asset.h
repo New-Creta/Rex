@@ -12,10 +12,6 @@ namespace rex
 		class Texture2D;
 	}
 
-	// MERGE TILESET AND TILESET ASSET
-	// one represent the metadata + binary data
-	// the other represents just the binary data
-
 	// To render a tileset, you need a few things
 	// 1) the tileset texture, obviously
 	// 2) the blockset

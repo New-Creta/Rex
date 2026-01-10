@@ -5,7 +5,7 @@
 
 namespace rex
 {
-	// Key up event coming from the operating system
+	// Key down event coming from the operating system
 	class OsKeyDown : public Event<OsKeyDown>
 	{
 	public:

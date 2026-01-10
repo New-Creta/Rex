@@ -25,6 +25,7 @@ namespace rex
 
 	DEFINE_LOG_CATEGORY(LogAssetLoader);
 
+	// An asset loader is an object that can handle the deserialization of an asset
 	class AssetLoader
 	{
 	public:

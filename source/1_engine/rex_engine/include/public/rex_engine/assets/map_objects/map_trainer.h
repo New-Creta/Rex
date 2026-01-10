@@ -7,6 +7,7 @@ namespace rex
 {
 	struct MapTrainer : public MapCharacter
 	{
+		rsl::string sprite_id;	// This will become some kind of GUID or pointer to the data they need
 		s8 trainer_class; // This will become some kind of GUID or pointer to the data they need
 		s8 trainer_number; // This will become some kind of GUID or pointer to the data they need
 	};

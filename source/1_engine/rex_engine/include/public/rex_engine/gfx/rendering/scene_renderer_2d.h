@@ -9,7 +9,7 @@
 #include "rex_engine/gfx/rendering/renderer.h"
 
 #include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
-#include "rex_engine/gfx/rendering/render_passes/block_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 #include "rex_engine/gfx/rendering/render_passes/composite_pass.h"
 
 #include "rex_engine/gfx/resources/animated_sprite.h"

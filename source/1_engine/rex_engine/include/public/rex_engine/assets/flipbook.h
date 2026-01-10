@@ -28,6 +28,7 @@ namespace rex
 		// return if it has reached its limit already or not
 		bool has_finished_animation(s32 spriteIdx, s32 frameIdx) const;
 
+		// returns currentFrameIdx + 1 or 0 if we'd be at the end of animations frames
 		s32 next_frame_idx(s32 currentFrameIdx) const;
 
 		const FlipbookAnimationFrame& frame(s32 idx) const;

@@ -11,6 +11,11 @@
 
 namespace rex
 {
+	// Input mapping is a structure holding input action names
+	// and maps them to user inputs.
+	// These user inputs in return are mapped on to callback functions
+	// allowing users to give a name to a device + key/button (eg. keyboard, 'W' key) and
+	// map this input onto a callback
 	class InputMapping : public Asset
 	{
 	public:

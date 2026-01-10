@@ -29,6 +29,7 @@ namespace rex
 	{
 		struct BlockRenderPassCreationInfo
 		{
+			// The render target where the pass will render to
 			RenderTargetBase* render_target;
 		};
 
@@ -44,10 +45,10 @@ namespace rex
 			f32 inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
 			f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
 
-			int screen_pixel_offset_x;
-			int screen_pixel_offset_y;
-			float inv_pixel_screen_width;
-			float inv_pixel_screen_height;
+			int screen_pixel_offset_x;			// Additional vintage pixel offset applied to the camera position (useful for when player is walking)
+			int screen_pixel_offset_y;			// Additional vintage pixel offset applied to the camera position (useful for when player is walking)
+			float inv_pixel_screen_width;		// the inverse size of a single vintage pixel
+			float inv_pixel_screen_height;	// the inverse size of a single vintage pixel
 		};
 
 		class BlockRenderPass : public RenderPass
@@ -56,13 +57,6 @@ namespace rex
 			BlockRenderPass(const BlockRenderPassCreationInfo& creationInfo);
 
 			void update_params(const SceneRenderParams& params);
-
-			//void update_scene_params(const SceneParams& params);
-			//void update_camera_params(const CameraParams& params);
-
-			// Update the tilemap's indices that we need to draw to the screen
-			//void update_tilemap(const SceneRenderParams& params);
-
 			void render(rex::gfx::RenderContext* renderCtx);
 
 		private:
