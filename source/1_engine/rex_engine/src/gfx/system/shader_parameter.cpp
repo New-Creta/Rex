@@ -57,6 +57,10 @@ namespace rex
 		{
 			update_view(offset, sb->gpu_address());
 		}
+		void ViewShaderParam::update_view(s32, const ResourceView*)
+		{
+			REX_ASSERT("Views cannot be tied to an inline view. They need to be tied to a view table");
+		}
 
 		void ViewShaderParam::bind_to(RenderContext* ctx) const
 		{
@@ -98,11 +102,15 @@ namespace rex
 		{
 			update_view(offset, sampler->resource_view());
 		}
-	
 		void ViewTableShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
 		{
 			update_view(offset, sb->view());
 		}
+		void ViewTableShaderParam::update_view(s32 offset, const ResourceView* view)
+		{
+			m_views[offset] = view;
+		}
+
 		void ViewTableShaderParam::bind_to(RenderContext* ctx) const
 		{
 			ResourceViewType target_view_heap_type = ResourceViewType::Undefined;
@@ -121,9 +129,5 @@ namespace rex
 			ctx->bind_view_table(slot(), start_handle);
 		}
 
-		void ViewTableShaderParam::update_view(s32 offset, const ResourceView* view)
-		{
-			m_views[offset] = view;
-		}
 	}
 }

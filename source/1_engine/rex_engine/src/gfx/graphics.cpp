@@ -16,7 +16,7 @@
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/gfx/rendering/renderer.h"
 #include "rex_engine/gfx/rendering/scene_renderer_2d.h"
-#include "rex_engine/gfx/rendering/debug_renderer.h"
+#include "rex_engine/gfx/rendering/debug_renderer_2d.h"
 #include "rex_engine/gfx/rendering/ui_renderer.h"
 
 #include "rex_engine/gfx/system/resource_manager.h"

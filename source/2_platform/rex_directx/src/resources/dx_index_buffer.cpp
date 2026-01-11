@@ -9,7 +9,7 @@ namespace rex
       , DxResource(resource)
     {}
 
-    void* DxIndexBuffer::api_object()
+    void* DxIndexBuffer::api_object() const
     {
       return dx_object();
     }

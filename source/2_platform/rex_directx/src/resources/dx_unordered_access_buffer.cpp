@@ -15,7 +15,7 @@ namespace rex
 			return &m_resource_view;
 		}
 
-		void* DxUnorderedAccessBuffer::api_object()
+		void* DxUnorderedAccessBuffer::api_object() const
 		{
 			return dx_object();
 		}

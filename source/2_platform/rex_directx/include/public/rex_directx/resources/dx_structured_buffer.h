@@ -13,7 +13,7 @@ namespace rex
 		public:
 			DxStructuredBuffer(wrl::ComPtr<ID3D12Resource> resource, DxResourceView view, rsl::memory_size stride, s32 numElements);
 
-			void* api_object() override;
+			void* api_object() const override;
 
 		private:
 			DxResourceView m_view;

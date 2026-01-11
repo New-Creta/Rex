@@ -20,7 +20,6 @@ namespace rex
 			virtual const ResourceView* view() const = 0;
 			virtual const rsl::Color4f& clear_color() const = 0;
 
-
 		private:
 			s32 m_width;
 			s32 m_height;

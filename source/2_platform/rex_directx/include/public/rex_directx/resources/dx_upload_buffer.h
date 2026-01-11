@@ -31,7 +31,7 @@ namespace rex
       // Write data on cpu side, it returns the offset into the upload buffer where data was written to
       s64 stage_texture_data(const void* data, s32 width, s32 height, TextureFormat format) override;
 
-      void* api_object() override;
+      void* api_object() const override;
 
     private:
       void* m_mapped_data;                         // A pointed pointing to the bit of memory that's mapped between cpu and gpu

@@ -14,7 +14,7 @@ namespace rex
       return { m_shader_bytecode->GetBufferPointer(), m_shader_bytecode->GetBufferSize() };
     }
 
-    void* DxShader::api_object()
+    void* DxShader::api_object() const
     {
       return m_shader_bytecode.Get();
     }

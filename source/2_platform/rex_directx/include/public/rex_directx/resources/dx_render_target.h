@@ -18,7 +18,7 @@ namespace rex
       // Return a view to the object
       const DxResourceView& dx_view() const;
 
-      void* api_object() override;
+      void* api_object() const override;
 
     private:
       DxResourceView m_view;

@@ -9,12 +9,12 @@ namespace rex
     {}
 
     // Return the wrapped DirectX object
-    ID3D12RootSignature* DxRootSignature::dx_object()
+    ID3D12RootSignature* DxRootSignature::dx_object() const
     {
       return m_root_signature.Get();
     }
 
-    void* DxRootSignature::api_object()
+    void* DxRootSignature::api_object() const
     {
       return dx_object();
     }

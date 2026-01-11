@@ -18,7 +18,7 @@ namespace rex
       return m_view;
     }
 
-    void* DxRenderTarget::api_object()
+    void* DxRenderTarget::api_object() const
     {
       return dx_object();
     }

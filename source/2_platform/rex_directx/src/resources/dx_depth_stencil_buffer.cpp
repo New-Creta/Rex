@@ -17,7 +17,7 @@ namespace rex
 			return &m_view;
 		}
 
-		void* DxDepthStencilBuffer::api_object()
+		void* DxDepthStencilBuffer::api_object() const
 		{
 			return dx_object();
 		}

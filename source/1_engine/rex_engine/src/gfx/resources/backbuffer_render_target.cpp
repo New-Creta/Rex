@@ -19,9 +19,9 @@ namespace rex
 			return m_swapchain->current_buffer()->clear_color();
 		}
 
-		void* BackBufferRenderTarget::api_object()
+		void* BackBufferRenderTarget::api_object() const
 		{
-			return swapchain()->current_buffer()->api_object();
+			return m_swapchain->current_buffer()->api_object();
 		}
 
 		Swapchain* BackBufferRenderTarget::swapchain()

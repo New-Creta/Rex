@@ -130,16 +130,16 @@ namespace rex
 	}
 	void MapLoaderJson::init_text_events(const json::json& jsonContent, MapDesc& desc)
 	{
-		s32 idx = 0;
-		desc.text_events = rsl::make_unique<TextEvent[]>(jsonContent["bg_events"].size());
-		for (const json::json& evt : jsonContent["bg_events"])
-		{
-			desc.text_events[idx].pos.x = evt["x"];
-			desc.text_events[idx].pos.y = evt["y"];
-			desc.text_events[idx].text = evt["text"];
-			desc.text_events[idx].sign_id = -1;
-			++idx;
-		}
+		//s32 idx = 0;
+		//desc.text_events = rsl::make_unique<TextEvent[]>(jsonContent["bg_events"].size());
+		//for (const json::json& evt : jsonContent["bg_events"])
+		//{
+		//	desc.text_events[idx].pos.x = evt["x"];
+		//	desc.text_events[idx].pos.y = evt["y"];
+		//	desc.text_events[idx].text = evt["text"];
+		//	desc.text_events[idx].sign_id = -1;
+		//	++idx;
+		//}
 	}
 	void MapLoaderJson::init_scripts(const json::json& jsonContent, MapDesc& desc)
 	{
@@ -210,7 +210,7 @@ namespace rex
 
 		res->pos.x = jsonContent["x"];
 		res->pos.y = jsonContent["y"];
-		res->sprite_id = jsonContent["sprite"];
+		//res->sprite_id = jsonContent["sprite"];
 		res->text_id = jsonContent["text"];
 
 		return res;

@@ -68,8 +68,8 @@ namespace rex
 			void set(rsl::string_view name, const UnorderedAccessBuffer* unorderedAccessBuffer);
 			void set(rsl::string_view name, const Texture2D* texture);
 			void set(rsl::string_view name, const Sampler2D* sampler);
-			void set(rsl::string_view name, const RenderTarget* rt);
 			void set(rsl::string_view name, const StructuredBuffer* sb);
+			void set(rsl::string_view name, const ResourceView* view);
 
 			// Return the slot of a renderpass parameter
 			s32 slot(rsl::string_view name) const;

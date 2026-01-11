@@ -17,17 +17,18 @@ namespace rex
 
 		CompositePass::CompositePass(const CompositePassCreationInfo& creationInfo)
 			: RenderPass(create_desc(creationInfo))
-			, m_src_render_target(creationInfo.src_render_target)
-			, m_dst_render_target(creationInfo.dst_render_target)
+			, m_src_shader_resource_view(nullptr)
+			, m_src_render_target_texture(creationInfo.src_render_target)
+			, m_dst_render_target_texture(creationInfo.dst_render_target)
 		{
-			init();
+			init(creationInfo);
 		}
 
 		void CompositePass::render(rex::gfx::RenderContext* renderCtx)
 		{
 			bind_to(renderCtx);
 
-			renderCtx->transition_buffer(m_src_render_target, ResourceState::PixelShaderResource);
+			renderCtx->transition_buffer(m_src_render_target_texture, ResourceState::PixelShaderResource);
 
 			renderCtx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_tiles_ib_gpu.get());
@@ -60,13 +61,13 @@ namespace rex
 			return desc;
 		}
 
-		void CompositePass::init()
+		void CompositePass::init(const CompositePassCreationInfo& creationInfo)
 		{
 			auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
 
 			init_vb(render_ctx.get());
 			init_ib(render_ctx.get());
-			init_shader_params();
+			init_shader_params(creationInfo);
 		}
 
 		void CompositePass::init_vb(RenderContext* renderCtx)
@@ -109,9 +110,11 @@ namespace rex
 			renderCtx->update_buffer(m_tiles_ib_gpu.get(), tile_ib.data(), tile_ib.size() * sizeof(tile_ib[0]));
 			renderCtx->transition_buffer(m_tiles_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
 		}
-		void CompositePass::init_shader_params()
+		void CompositePass::init_shader_params(const CompositePassCreationInfo& creationInfo)
 		{
-			set("src_texture", (RenderTarget*)m_src_render_target);
+			m_src_shader_resource_view = gal::instance()->create_srv(creationInfo.src_render_target);
+
+			set("src_texture", m_src_shader_resource_view);
 
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 			set("default_sampler", default_sampler);

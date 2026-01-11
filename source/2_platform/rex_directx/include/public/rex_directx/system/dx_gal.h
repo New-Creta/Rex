@@ -109,7 +109,7 @@ namespace rex
       rsl::unique_ptr<StructuredBuffer>       create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data = nullptr)                  override;
 
       // View creation
-      ResourceView* create_srv(const RenderTarget* rt) override;
+      ResourceView* create_srv(const RenderTargetBase* rt) override;
 
       // -------------------------
       // Resource creation from Direct X

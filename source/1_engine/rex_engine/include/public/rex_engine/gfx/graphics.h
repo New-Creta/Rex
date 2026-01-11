@@ -197,7 +197,7 @@ namespace rex
       // View creation
       // --------------------------------
       // Create a shader resource view pointing to a render target
-      virtual ResourceView* create_srv(const RenderTarget* rt) = 0;
+      virtual ResourceView* create_srv(const RenderTargetBase* rt) = 0;
 
       // --------------------------------
       // Contexts

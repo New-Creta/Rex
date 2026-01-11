@@ -15,7 +15,7 @@ namespace rex
     public:
       DxIndexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numIndices, IndexBufferFormat format);
 
-      void* api_object() override;
+      void* api_object() const override;
 
     };
 

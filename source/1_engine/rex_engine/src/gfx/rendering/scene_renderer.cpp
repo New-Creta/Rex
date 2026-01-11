@@ -26,7 +26,7 @@ namespace rex
 			: m_scene_data()
 		{
 			init_gpu_resources();
-			init_render_graphes();
+			init_render_graphs();
 		}
 
 		void SceneRenderer::new_frame()

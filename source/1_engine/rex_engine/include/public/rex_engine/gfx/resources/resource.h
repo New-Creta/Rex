@@ -12,7 +12,7 @@ namespace rex
 
       // Returns the api specific object that the resource is wrapping
       // for example, for texture on DirectX 12, this would return the ID3D12Resource*
-      virtual void* api_object() = 0;
+      virtual void* api_object() const = 0;
 
     private:
 

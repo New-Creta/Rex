@@ -529,7 +529,7 @@ namespace rex
 
 		// View creation
 		// -------------------------------------------
-		ResourceView* DirectXInterface::create_srv(const RenderTarget* rt)
+		ResourceView* DirectXInterface::create_srv(const RenderTargetBase* rt)
 		{
 			ResourceView* cached_view = resource_manager::instance()->shader_resource_view(rt);
 			if (cached_view)
@@ -537,7 +537,7 @@ namespace rex
 				return cached_view;
 			}
 
-			DxResourceView view = create_texture2d_srv(d3d::to_dx12(rt)->dx_object());
+			DxResourceView view = create_texture2d_srv(static_cast<ID3D12Resource*>(rt->api_object()));
 			rsl::unique_ptr<ResourceView> view_ptr = rsl::make_unique<DxResourceView>(view);
 			return resource_manager::instance()->store_shader_resource_view(rt, rsl::move(view_ptr));
 		}

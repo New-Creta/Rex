@@ -10,7 +10,7 @@ namespace rex
     {
     }
 
-    void* DxVertexBuffer::api_object()
+    void* DxVertexBuffer::api_object() const
     {
       return dx_object();
     }

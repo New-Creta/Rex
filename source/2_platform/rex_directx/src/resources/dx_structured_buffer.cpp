@@ -12,7 +12,7 @@ namespace rex
 
 		}
 
-		void* DxStructuredBuffer::api_object()
+		void* DxStructuredBuffer::api_object() const
 		{
 			return dx_object();
 		}

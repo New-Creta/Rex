@@ -53,8 +53,8 @@ namespace rex
 			virtual void update_view(s32 offset, const UnorderedAccessBuffer* uab) = 0;
 			virtual void update_view(s32 offset, const Texture2D* texture) = 0;
 			virtual void update_view(s32 offset, const Sampler2D* sampler) = 0;
-			virtual void update_view(s32 offset, const RenderTarget* rt) = 0;
 			virtual void update_view(s32 offset, const StructuredBuffer* sb) = 0;
+			virtual void update_view(s32 offset, const ResourceView* view) = 0;
 
 			// Bind the shader parameter to a render context
 			virtual void bind_to(RenderContext* ctx) const = 0;
@@ -74,8 +74,8 @@ namespace rex
 			void update_view(s32 offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(s32 offset, const Texture2D* texture) override;
 			void update_view(s32 offset, const Sampler2D* sampler) override;
-			void update_view(s32 offset, const RenderTarget* rt) override;
 			void update_view(s32 offset, const StructuredBuffer* sb) override;
+			void update_view(s32 offset, const ResourceView* view) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
@@ -101,15 +101,13 @@ namespace rex
 			void update_view(s32 offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(s32 offset, const Texture2D* texture) override;
 			void update_view(s32 offset, const Sampler2D* sampler) override;
-			void update_view(s32 offset, const RenderTarget* rt) override;
 			void update_view(s32 offset, const StructuredBuffer* sb) override;
+			void update_view(s32 offset, const ResourceView* view);
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
 
 		private:
-			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			void update_view(s32 offset, const ResourceView* view);
 
 		private:
 			rsl::vector<const ResourceView*> m_views;

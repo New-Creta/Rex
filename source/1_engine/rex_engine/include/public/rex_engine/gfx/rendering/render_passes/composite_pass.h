@@ -22,11 +22,11 @@ namespace rex
 		private:
 			RenderPassDesc create_desc(const CompositePassCreationInfo& creationInfo) const;
 
-			void init();
+			void init(const CompositePassCreationInfo& creationInfo);
 
 			void init_vb(RenderContext* renderCtx);
 			void init_ib(RenderContext* renderCtx);
-			void init_shader_params();
+			void init_shader_params(const CompositePassCreationInfo& creationInfo);
 
 		private:
 
@@ -37,8 +37,9 @@ namespace rex
 			// It's just 6 indices, allowing us to make a single quad
 			rsl::unique_ptr<rex::gfx::IndexBuffer> m_tiles_ib_gpu;
 
-			RenderTargetBase* m_src_render_target;
-			RenderTargetBase* m_dst_render_target;
+			ResourceView* m_src_shader_resource_view;
+			RenderTargetBase* m_src_render_target_texture;
+			RenderTargetBase* m_dst_render_target_texture;
 		};
 	}
 }
