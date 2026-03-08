@@ -14,6 +14,8 @@ namespace rex
 	struct AssetLoaderDesc
 	{
 		rsl::version version;
+
+		// the supported extensions of the asset loader
 		rsl::vector<rsl::string_view> extensions;
 	};
 

@@ -7,7 +7,7 @@ namespace rex
 		class DebugRenderer2D
 		{
 		public:
-
+			// Nothing to implement yet..
 
 		private:
 

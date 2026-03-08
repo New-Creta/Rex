@@ -12,6 +12,7 @@ namespace rex
 	// An asset importer is a wrapper around asset loaders
 	// Given an asset path, it will look in its internal loaders
 	// if any of them can load the asset at the specified filepath
+	// the asset will be loaded and returned
 	class AssetImporter
 	{
 	public:

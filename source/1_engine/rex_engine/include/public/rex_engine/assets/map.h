@@ -47,7 +47,7 @@ namespace rex
 		// The offset is the how many tiles in a perpendicular angle of the direction a connection is connected
 		// Example:
 		// A connection to the north with an offset of 2
-		// The northern map's center will be offsetted 2 pixels to the right of the current map's center
+		// The northern map's center will be offsetted 2 tiles to the right of the current map's center
 		s8 offset;
 	};
 

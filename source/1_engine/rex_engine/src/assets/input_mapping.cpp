@@ -1,9 +1,12 @@
 #include "rex_engine/assets/input_mapping.h"
+#include "rex_engine/engine/asset_db.h"
+
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/events/input/key_down.h"
 #include "rex_engine/event_system/events/input/key_up.h"
+
 
 namespace rex
 {
@@ -29,7 +32,7 @@ namespace rex
 			{
 				rex::KeyState input_info{};
 				input_info.action.device = InputDeviceType::Key;
-				input_info.action.type = rex::InputActionType::Down;
+				input_info.action.type = rex::InputActionType::Up;
 				input_info.action.data.key_code = ev.key();
 				input_info.ticks_pressed = -1;
 
@@ -51,7 +54,7 @@ namespace rex
 		auto it = m_mappings.find(name);
 		if (it == m_mappings.cend())
 		{
-			REX_ERROR(LogInputMapping, "'{}' is not a known mapping", name);
+			REX_ERROR(LogInputMapping, "'{}' is not a known mapping for '{}'", name, asset_db::instance()->asset_path(this));
 			return;
 		}
 

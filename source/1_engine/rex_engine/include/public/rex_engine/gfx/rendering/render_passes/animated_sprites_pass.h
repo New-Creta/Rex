@@ -18,7 +18,7 @@ namespace rex
 		class AnimatedSpritesPass : public RenderPass
 		{
 		public:
-			AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
+			explicit AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
 
 			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
 

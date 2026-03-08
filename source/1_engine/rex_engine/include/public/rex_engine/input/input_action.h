@@ -15,7 +15,7 @@ namespace rex
 		Key,
 		Mouse,
 	};
-	// Pressed is not here as thaat's determined by the tick count of a key state
+	// Pressed is not here as that's determined by the tick count of a key state
 	enum class InputActionType
 	{
 		Down,
