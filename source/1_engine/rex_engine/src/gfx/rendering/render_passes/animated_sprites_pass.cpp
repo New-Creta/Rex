@@ -90,6 +90,7 @@ namespace rex
 			renderCtx->set_vertex_buffer(m_sprite_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_sprite_ib_gpu.get());
 
+			REX_STATIC_TODO("Detect if the player is on the grass tile dynamically");
 			static s32 counter = 0;
 			static bool is_on_grass = false;
 			if (counter % 60 == 0)
@@ -302,9 +303,9 @@ namespace rex
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
 
 			// Assign the shaders used for the tile renderer
-			rex::scratch_string project_shaders = rex::path::join(rex::engine::instance()->project_root(), "shaders");
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(project_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Pixel);
+			rex::scratch_string engine_shaders = rex::path::join(rex::engine::instance()->engine_root(), "shaders");
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout = AnimatedTileVertex::layout();
 

@@ -76,10 +76,10 @@ namespace rex
 
 			rsl::array<TileVertex, num_vertices_per_tile> tile_vertices{};
 
-			tile_vertices[0] = TileVertex{ glm::vec2(0,  0),               glm::vec2(0.0f, 0.0f) };
-			tile_vertices[1] = TileVertex{ glm::vec2(1,	 0),               glm::vec2(1.0f, 0.0f) };
-			tile_vertices[2] = TileVertex{ glm::vec2(0,	-1),							 glm::vec2(0.0f, 1.0f) };
-			tile_vertices[3] = TileVertex{ glm::vec2(1,	-1),							 glm::vec2(1.0f, 1.0f) };
+			tile_vertices[0] = TileVertex{ glm::vec2(0,  0),    glm::vec2(0.0f, 0.0f) };
+			tile_vertices[1] = TileVertex{ glm::vec2(1,	 0),    glm::vec2(1.0f, 0.0f) };
+			tile_vertices[2] = TileVertex{ glm::vec2(0,	-1),	glm::vec2(0.0f, 1.0f) };
+			tile_vertices[3] = TileVertex{ glm::vec2(1,	-1),	glm::vec2(1.0f, 1.0f) };
 
 			m_tiles_vb_gpu = rex::gfx::gal::instance()->create_vertex_buffer(num_vertices_per_tile, sizeof(TileVertex));
 
@@ -124,15 +124,15 @@ namespace rex
 		RenderPassDesc BlockRenderPass::create_desc(const BlockRenderPassCreationInfo& creationInfo) const
 		{
 			RenderPassDesc desc{};
-			desc.name = "Block Render Pass";
+			desc.name = "Background Pass";
 
 			desc.pso_desc.output_merger.raster_state = rex::gfx::gal::instance()->common_raster_state(rex::gfx::CommonRasterState::DefaultDepth);
 
 			desc.framebuffer_desc.emplace_back(creationInfo.render_target);
 
 			// Assign the shaders used for the tile renderer
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->project_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->engine_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(rex::engine::instance()->engine_root(), "shaders", "background.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout = TileVertex::layout();
 

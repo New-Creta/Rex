@@ -20,7 +20,7 @@ namespace rex
 			[this](const rex::KeyDown& ev)
 			{
 				rex::KeyState input_info{};
-				input_info.action.device = InputDeviceType::Key;
+				input_info.action.device = InputDeviceType::Keyboard;
 				input_info.action.type = rex::InputActionType::Down;
 				input_info.action.data.key_code = ev.key();
 				input_info.ticks_pressed = ev.num_ticks();
@@ -31,7 +31,7 @@ namespace rex
 			[this](const rex::KeyUp& ev)
 			{
 				rex::KeyState input_info{};
-				input_info.action.device = InputDeviceType::Key;
+				input_info.action.device = InputDeviceType::Keyboard;
 				input_info.action.type = rex::InputActionType::Up;
 				input_info.action.data.key_code = ev.key();
 				input_info.ticks_pressed = -1;

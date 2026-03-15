@@ -103,6 +103,7 @@ namespace rex
 				}
 				else
 				{
+					REX_STATIC_TODO("Requires cleanup");
 					if (is_depth_format(attachment_desc.format()))
 					{
 						//REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
@@ -120,6 +121,7 @@ namespace rex
 
 		void FrameBuffer::bind_to(RenderContext* ctx)
 		{
+			REX_STATIC_TODO("Requires cleanup");
 			if (m_attachments.front().use_swapchain())
 			{
 				// As the swapchain's back buffer gets cleared on a new frame, we don't have to clear it here

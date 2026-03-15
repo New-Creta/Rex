@@ -42,7 +42,7 @@ namespace rex
 			{
 				rsl::string_view key = mapping["key"];
 
-				action.device = InputDeviceType::Key;
+				action.device = InputDeviceType::Keyboard;
 				action.type = type;
 				action.data.key_code = rsl::enum_refl::enum_cast<KeyCode>(key).value();
 			}
