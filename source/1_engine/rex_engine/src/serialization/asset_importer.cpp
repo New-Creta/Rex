@@ -34,8 +34,6 @@ namespace rex
 	}
 	rsl::unique_ptr<Asset> AssetImporter::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
-		rsl::vector<rsl::string_view> allowed_extensions;
-
 		for (rsl::unique_ptr<AssetLoader>& loader : m_loaders)
 		{
 			if (loader->can_load(assetPath))
@@ -48,8 +46,6 @@ namespace rex
 	}
 	void AssetImporter::hydrate_asset(Asset* asset, rsl::string_view assetPath)
 	{
-		rsl::vector<rsl::string_view> allowed_extensions;
-
 		for (rsl::unique_ptr<AssetLoader>& loader : m_loaders)
 		{
 			if (loader->can_load(assetPath))

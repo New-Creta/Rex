@@ -16,8 +16,8 @@ namespace rex
 
 	InputState::InputState()
 	{
-		event_system::instance()->subscribe<OsKeyDown>([this](const OsKeyDown& ev) { on_os_key_down(ev); });
-		event_system::instance()->subscribe<OsKeyUp>([this](const OsKeyUp& ev) { on_os_key_up(ev); });
+		event_system::instance()->subscribe<OSKeyDown>([this](const OSKeyDown& ev) { on_os_key_down(ev); });
+		event_system::instance()->subscribe<OSKeyUp>([this](const OSKeyUp& ev) { on_os_key_up(ev); });
 	}
 
 	void InputState::tick()
@@ -38,14 +38,14 @@ namespace rex
 		}
 	}
 
-	void InputState::on_os_key_down(const OsKeyDown& ev)
+	void InputState::on_os_key_down(const OSKeyDown& ev)
 	{
 		if (!m_key_states.contains(ev.key()))
 		{
 			m_key_states[ev.key()] = 0;
 		}
 	}
-	void InputState::on_os_key_up(const OsKeyUp& ev)
+	void InputState::on_os_key_up(const OSKeyUp& ev)
 	{
 		m_key_states[ev.key()] = -1;
 	}

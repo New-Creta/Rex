@@ -94,25 +94,21 @@ namespace rex
 			{
 				if (attachment_desc.use_swapchain())
 				{
-					REX_STATIC_TODO("This can be removed and replaced with BackBufferSwapChain")
+					REX_STATIC_WARNING("This can be removed and replaced with BackBufferSwapChain")
 					m_attachments.emplace_back(swapchain_frame_buffer_handle());
 				}
 				else if (attachment_desc.render_target())
 				{
 					m_attachments.emplace_back(attachment_desc.render_target());
 				}
+				else if (is_depth_format(attachment_desc.format()))
+				{
+						REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
+						m_depth_stencil_buffer = attachment_desc.depth_stencil_buffer();
+				}
 				else
 				{
-					REX_STATIC_TODO("Requires cleanup");
-					if (is_depth_format(attachment_desc.format()))
-					{
-						//REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
-						m_depth_stencil_buffer = attachment_desc.depth_stencil_buffer(); // gfx::gal::instance()->create_depth_stencil_buffer(attachment_desc.width(), attachment_desc.height(), attachment_desc.format(), attachment_desc.clear_state());
-					}
-					else
-					{
-						REX_ASSERT("To implement");
-					}
+					REX_ASSERT("This path should not be reachable. Unknown attachment for framebuffer");
 				}
 			}
 
@@ -121,7 +117,7 @@ namespace rex
 
 		void FrameBuffer::bind_to(RenderContext* ctx)
 		{
-			REX_STATIC_TODO("Requires cleanup");
+			REX_STATIC_WARNING("Requires cleanup");
 			if (m_attachments.front().use_swapchain())
 			{
 				// As the swapchain's back buffer gets cleared on a new frame, we don't have to clear it here

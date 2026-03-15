@@ -191,7 +191,7 @@ namespace regina
 					continue;
 				}
 
-				REX_STATIC_TODO("Load tiles per block from tileset/config");
+				REX_STATIC_WARNING("Load tiles per block from tileset/config");
 				const s32 tiles_per_block = 4;
 				s32 half_width_in_tiles = (current_node.map->desc().map_header.width_in_blocks * tiles_per_block / 2);
 				s32 half_height_in_tiles = (current_node.map->desc().map_header.height_in_blocks * tiles_per_block / 2);

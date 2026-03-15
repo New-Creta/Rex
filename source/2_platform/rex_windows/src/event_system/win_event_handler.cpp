@@ -192,11 +192,11 @@ namespace rex
           break;
 
         case WM_KEYDOWN: 
-          event_system::instance()->fire_event(OsKeyDown(internal::keycode_from_vk(wparam, lparam)));
+          event_system::instance()->fire_event(OSKeyDown(internal::keycode_from_vk(wparam, lparam)));
           break;
         case WM_KEYUP:
           event_system::instance()->fire_event(
-            OsKeyUp(internal::keycode_from_vk(wparam, lparam)));
+            OSKeyUp(internal::keycode_from_vk(wparam, lparam)));
           break;
         case WM_SHOWWINDOW:
           was_resizing = was_resizing;

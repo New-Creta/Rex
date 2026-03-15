@@ -51,6 +51,7 @@ namespace rex
 			float inv_pixel_screen_height;	// the inverse size of a single vintage pixel
 		};
 
+		REX_STATIC_WARNING("This should get a better name");
 		class BlockRenderPass : public RenderPass
 		{
 		public:

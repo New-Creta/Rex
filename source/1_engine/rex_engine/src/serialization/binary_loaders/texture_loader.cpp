@@ -24,15 +24,16 @@ namespace rex
 
 		// A tileset only holds 1 channel, we have to convert it to 4 channels as that's what the GPU expects
 		// originally coming from .2bpp assets with the following color pallete
-		// 0x1 -> white
-		// 0x2 -> light grey
-		// 0x3 -> dark grey
-		// 0x4 -> black
+		// 0b00 -> white
+		// 0b01 -> light grey
+		// 0b10 -> dark grey
+		// 0b11 -> black
+		REX_STATIC_WARNING("This code always expects 2bpp format and will therefore fail for other textures. That should get fixed");
 		rsl::unique_array<rsl::Rgba> rgba = rsl::make_unique<rsl::Rgba[]>(image_load_res.width * image_load_res.height * sizeof(rsl::Rgba));
-		for (s32 color_idx = 0; color_idx < image_load_res.width * image_load_res.height; ++color_idx)
+		for (s32 texel_idx = 0; texel_idx < image_load_res.width * image_load_res.height; ++texel_idx)
 		{
-			u8 color = image_load_res.data[color_idx];
-			rsl::Rgba& rgba_color = rgba[color_idx];
+			u8 color = image_load_res.data[texel_idx];
+			rsl::Rgba& rgba_color = rgba[texel_idx];
 			rgba_color.red = color;
 			rgba_color.green = color;
 			rgba_color.blue = color;

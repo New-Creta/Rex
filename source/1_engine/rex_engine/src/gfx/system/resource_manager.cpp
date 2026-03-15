@@ -8,6 +8,8 @@ namespace rex
 	{
 		DEFINE_LOG_CATEGORY(LogResourceManager);
 
+		REX_STATIC_WARNING("This class can likely receive a better name, indicating that it's storing GPU resources.");
+
 		ResourceView* ResourceManager::store_shader_resource_view(const RenderTargetBase* rt, rsl::unique_ptr<ResourceView> view)
 		{
 			ResourceView* view_ptr = view.get();

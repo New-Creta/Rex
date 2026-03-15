@@ -46,6 +46,8 @@ namespace rex
 
 			// The tick counter for the current active frame
 			s32 m_current_anim_frame_counter;
+
+			REX_STATIC_WARNING("Ideally this should not need a position. The position should be determined by the object that it's rendering")
 			rex::PixelCoord m_pos;
 		};
 	}

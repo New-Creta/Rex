@@ -6,10 +6,10 @@
 namespace rex
 {
 	// Key up event coming from the operating system
-	class OsKeyUp : public Event<OsKeyUp>
+	class OSKeyUp : public Event<OSKeyUp>
 	{
 	public:
-		OsKeyUp(KeyCode key)
+		OSKeyUp(KeyCode key)
 			: m_key(key)
 		{}
 

@@ -26,7 +26,7 @@ namespace rex
 
 		if (json_content.is_discarded())
 		{
-			REX_ERROR(LogAssetLoader, "Could not load InputMapping at '{}'. Json is invalid", json_content);
+			REX_ERROR(LogAssetLoader, "Could not load InputMapping at '{}'. Json is invalid", assetPath);
 			return nullptr;
 		}
 

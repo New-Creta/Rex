@@ -81,7 +81,7 @@ namespace regina
 
 		rsl::unique_ptr<MainEditorWidget> main_editor_widget = rsl::make_unique<MainEditorWidget>();
 
-		REX_STATIC_TODO("This should be read from project/user settings");
+		REX_STATIC_WARNING("This should be read from project/user settings");
 		rex::scratch_string start_scene = rex::path::join(rex::engine::instance()->data_root(), rex::settings::instance()->get_string("StartScene"));
 		REX_INFO(LogRegina, "Loading {}", start_scene);
 

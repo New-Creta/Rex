@@ -7,8 +7,8 @@
 
 namespace rex
 {
-	class OsKeyDown;
-	class OsKeyUp;
+	class OSKeyDown;
+	class OSKeyUp;
 
 	// This class holds the input state of all keys of a keyboard
 	// it has capacity to tick, incrementing tick count how long keys are pressed
@@ -22,8 +22,8 @@ namespace rex
 		void tick();
 
 	private:
-		void on_os_key_down(const OsKeyDown& ev);
-		void on_os_key_up(const OsKeyUp& ev);
+		void on_os_key_down(const OSKeyDown& ev);
+		void on_os_key_up(const OSKeyUp& ev);
 		
 	private:
 		rsl::unordered_map<KeyCode, s32> m_key_states;

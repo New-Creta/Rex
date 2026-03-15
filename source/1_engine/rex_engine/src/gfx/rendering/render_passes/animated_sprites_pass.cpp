@@ -90,7 +90,7 @@ namespace rex
 			renderCtx->set_vertex_buffer(m_sprite_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_sprite_ib_gpu.get());
 
-			REX_STATIC_TODO("Detect if the player is on the grass tile dynamically");
+			REX_STATIC_WARNING("Detect if the player is on the grass tile dynamically");
 			static s32 counter = 0;
 			static bool is_on_grass = false;
 			if (counter % 60 == 0)

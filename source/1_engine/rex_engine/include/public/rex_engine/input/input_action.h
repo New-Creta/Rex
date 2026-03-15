@@ -12,7 +12,7 @@ namespace rex
 	// can be changed in the future
 	enum class InputDeviceType
 	{
-		Key,
+		Keyboard,
 		Mouse,
 	};
 	// Pressed is not here as that's determined by the tick count of a key state
