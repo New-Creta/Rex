@@ -8,11 +8,6 @@
 
 namespace pokemon
 {
-	//struct BlockCoord : rsl::pointi8 {};  // strong type
-	//struct SquareCoord : rsl::pointi8 {}; // strong type
-	//struct TileCoord : rsl::pointi8 {};   // strong type
-	//struct PixelCoord : rsl::pointi8 {};   // strong type
-
 	namespace coords
 	{
 		rex::TileCoord block_to_tile_coord(rex::BlockCoord coord);

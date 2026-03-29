@@ -67,8 +67,6 @@ namespace pokemon
 		m_player_character->tick(dt);
 		m_camera->set_pos(m_player_character->pos());
 
-		//clamp_player_pos();
-
 		// this likely doesn't need to happen every frame..
 		update_render_info();
 	}
@@ -122,32 +120,4 @@ namespace pokemon
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
 	}
-
-	// temporary function, this should be handled with collision detection in the future
-	void GameSession::clamp_player_pos()
-	{
-		rex::WorldCoordConverter map_coord_converter = m_active_map->create_world_coord_converter();
-
-		rex::PixelCoord player_pos = m_player_character->pos();
-		rex::TileCoord player_pos_in_tiles = map_coord_converter.to_tile_coord(player_pos);
-
-		rsl::pointi8 min_player_pos{};
-		rsl::pointi8 max_player_pos{};
-		rsl::point<rex::TileCount> size = rex::size_in_tiles(m_active_map);
-
-		if (player_pos_in_tiles.x < 0 || player_pos_in_tiles.x > size.x.get() ||
-			player_pos_in_tiles.y < 0 || player_pos_in_tiles.y > size.y.get())
-		{
-			player_pos_in_tiles.x = rsl::clamp_min(player_pos_in_tiles.x, player_pos_in_tiles.x);
-			player_pos_in_tiles.y = rsl::clamp_min(player_pos_in_tiles.y, player_pos_in_tiles.y);
-
-
-			player_pos_in_tiles.x = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos_in_tiles.x), size.x.get() - player_pos_in_tiles.x));
-			player_pos_in_tiles.y = static_cast<s8>(rsl::clamp_max(static_cast<s32>(player_pos_in_tiles.y), size.y.get() - player_pos_in_tiles.y));
-
-			m_player_character->set_pos(map_coord_converter.to_pixel_coord(player_pos_in_tiles));
-		}
-
-	}
-
 }

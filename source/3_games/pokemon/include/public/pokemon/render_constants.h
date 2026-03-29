@@ -51,8 +51,8 @@ namespace pokemon
 		constexpr rsl::pointi8 player_render_position_top_left = { 8,8 };
 		constexpr rsl::pointi8 player_render_position_bottom_right = 
 		{ 
-			g_screen_width_in_tiles /*- player_render_position_top_left.x*/,
-			g_screen_height_in_tiles /*- player_render_position_top_left.y*/ 
+			g_screen_width_in_tiles,
+			g_screen_height_in_tiles 
 		};
 	}
 }

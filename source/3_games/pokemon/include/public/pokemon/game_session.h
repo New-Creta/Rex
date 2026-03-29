@@ -41,10 +41,6 @@ namespace pokemon
 
     void update_render_info();
 
-    void clamp_player_pos();
-
-    //void on_map_change();
-
   private:
     rex::Map* m_active_map;
 
