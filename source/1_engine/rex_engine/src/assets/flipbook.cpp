@@ -2,9 +2,10 @@
 
 namespace rex
 {
-	FlipbookAnimation::FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookAnimationFrame>&& sprites)
+	FlipbookAnimation::FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookAnimationFrame>&& sprites, int ticksBetweenInterrupt)
 		: m_name(name)
 		, m_frames(rsl::move(sprites))
+		, m_ticks_between_interrupt(ticksBetweenInterrupt)
 	{}
 
 	bool FlipbookAnimation::has_finished_animation(s32 spriteIdx, s32 frameIdx) const
@@ -16,6 +17,21 @@ namespace rex
 		return currentFrameIdx + 1 >= m_frames.size()
 			? 0
 			: currentFrameIdx + 1;
+	}
+
+	bool FlipbookAnimation::can_be_interrupted(int tickNum) const
+	{
+		if (m_ticks_between_interrupt == 0)
+		{
+			return true;
+		}
+
+		if (tickNum == 0)
+		{
+			return false;
+		}
+
+		return tickNum % m_ticks_between_interrupt == 0;
 	}
 
 	const FlipbookAnimationFrame& FlipbookAnimation::frame(s32 idx) const

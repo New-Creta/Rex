@@ -13,12 +13,13 @@ namespace rex
 
 		AnimatedSprite::AnimatedSprite(Flipbook* animations)
 			: m_animations(animations)
-			, m_current_anim_frame_idx(0)
 			, m_active_animation(nullptr)
-			, m_pos()
+			, m_current_anim_frame_idx(0)
+			, m_current_anim_frame_counter(0)
+			, m_num_animation_ticks(0)
 		{}
 
-		void AnimatedSprite::tick(f32 dt)
+		void AnimatedSprite::tick()
 		{
 			if (!m_active_animation)
 			{
@@ -32,6 +33,7 @@ namespace rex
 			}
 
 			m_current_anim_frame_counter++;
+			m_num_animation_ticks++;
 		}
 
 		void AnimatedSprite::set_pos(rex::PixelCoord pos)
@@ -50,10 +52,24 @@ namespace rex
 				return;
 			}
 
+			REX_ASSERT_X(can_be_interrupted(), "A new animation was requested but the animation cannot be interrupted");
+
 			m_active_animation = m_animations->find_animation(name);
 			m_current_anim_frame_idx = 0;
 			m_current_anim_frame_counter = 0;
+			m_num_animation_ticks = 0;
 			REX_ASSERT_X(m_active_animation, "New animation is nullptr, this is not allowed");
+		}
+
+		bool AnimatedSprite::can_be_interrupted() const
+		{
+			// If there's no active animation, of course, it can be interrupted
+			if (!m_active_animation)
+			{
+				return true;
+			}
+
+			return m_active_animation->can_be_interrupted(m_num_animation_ticks);
 		}
 
 		const Texture2D* AnimatedSprite::sprites_texture() const

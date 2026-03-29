@@ -22,7 +22,7 @@ namespace rex
 	class FlipbookAnimation
 	{
 	public:
-		FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookAnimationFrame>&& sprites);
+		FlipbookAnimation(rsl::string_view name, rsl::vector<FlipbookAnimationFrame>&& sprites, int ticksBetweenInterrupt);
 
 		// Given a sprite index and the number of frames its displayed on screen
 		// return if it has reached its limit already or not
@@ -31,12 +31,15 @@ namespace rex
 		// returns currentFrameIdx + 1 or 0 if we'd be at the end of animations frames
 		s32 next_frame_idx(s32 currentFrameIdx) const;
 
+		bool can_be_interrupted(int tickNum) const;
+
 		const FlipbookAnimationFrame& frame(s32 idx) const;
 		rsl::string_view name() const;
 
 	private:
 		rsl::string m_name;
 		rsl::vector<FlipbookAnimationFrame> m_frames;
+		int m_ticks_between_interrupt;
 	};
 
 	// A flipbook is a structure holding a set of animations

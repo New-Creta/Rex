@@ -41,8 +41,8 @@ namespace rex
 				sprite.flip_y = sprite_json.value("flip_y", false);
 				sprites.emplace_back(sprite);
 			}
-
-			animations.emplace_back(name, rsl::move(sprites));
+			int ticks_between_interrupt = anim["ticks_between_interrupt"];
+			animations.emplace_back(name, rsl::move(sprites), ticks_between_interrupt);
 		}
 
 		return rsl::make_unique<Flipbook>(sprite_size, texture, rsl::move(animations));

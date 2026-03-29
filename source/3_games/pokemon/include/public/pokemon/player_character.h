@@ -33,28 +33,16 @@ namespace pokemon
 		void move_left(const rex::KeyState& info);
 		void move_right(const rex::KeyState& info);
 
-		void face_up();
-		void face_down();
-		void face_left();
-		void face_right();
-
-		void walk_up();
-		void walk_down();
-		void walk_left();
-		void walk_right();
-
 		void continue_movement();
 		void finish_movement();
+
+		void move(rex::Direction direction, rsl::string_view idle_anim, rsl::string_view walk_anim);
 
 	private:
 		rex::PixelCoord m_pos;
 		rex::InputMapping* m_input_mappings;
-		//rex::Flipbook* m_animations;
 		rex::Direction m_facing_direction;
 
 		rex::gfx::AnimatedSprite* m_animated_sprite;
-
-		s32 m_walking_counter;
-		bool m_was_moving;
 	};
 }

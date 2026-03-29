@@ -19,13 +19,18 @@ namespace rex
 
 			// If there's an animation active
 			// tick this animation
-			void tick(f32 dt);
+			void tick();
 
-			void set_pos(rex::PixelCoord pos);
-			rex::PixelCoord pos() const;
-
+			// Needed for rendering
+			void set_pos(PixelCoord pos);
+			PixelCoord pos() const;
 
 			void set_animation(rsl::string_view name);
+
+			// This is essentially a wrapped on the call towards the current active anim
+			bool can_be_interrupted() const;
+
+			// Used for rendering
 			const Texture2D* sprites_texture() const;
 			rsl::pointi8 sprite_size() const;
 
@@ -43,6 +48,9 @@ namespace rex
 
 			// The frame within the animation that is active
 			s32 m_current_anim_frame_idx;
+
+			// The total number of frames done in the active animation
+			s32 m_num_animation_ticks;
 
 			// The tick counter for the current active frame
 			s32 m_current_anim_frame_counter;
