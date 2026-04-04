@@ -16,7 +16,6 @@
 
 #include "pokemon/poke_structs.h"
 #include "pokemon/render_constants.h"
-#include "pokemon/poke_renderer.h"
 
 #include "rex_std/bonus/math.h"
 #include "rex_std/bonus/math/point.h"
