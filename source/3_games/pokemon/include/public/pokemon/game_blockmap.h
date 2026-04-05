@@ -12,10 +12,10 @@ namespace pokemon
 
 	private:
 		void init_border_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
-		void init_connection_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
-		void init_inner_map_blocks(u8* blocks, s32 numBlocks, const rex::Map* map);
+		void init_connection_blocks(u8* blocks, const rex::Map* map);
+		void init_inner_map_blocks(u8* blocks, const rex::Map* map);
 
-		void convert_blocks_to_tiles(u8* blocks, s32 numBlocks, const rex::Map* map);
+		void convert_blocks_to_tiles(const rex::Map* map);
 
 		s32 width_in_blocks() const;
 		s32 height_in_blocks() const;

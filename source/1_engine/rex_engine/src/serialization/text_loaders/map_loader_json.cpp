@@ -130,6 +130,9 @@ namespace rex
 	}
 	void MapLoaderJson::init_text_events(const json::json& jsonContent, MapDesc& desc)
 	{
+		REX_UNUSED_PARAM(jsonContent);
+		REX_UNUSED_PARAM(desc);
+
 		//s32 idx = 0;
 		//desc.text_events = rsl::make_unique<TextEvent[]>(jsonContent["bg_events"].size());
 		//for (const json::json& evt : jsonContent["bg_events"])

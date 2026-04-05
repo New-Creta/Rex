@@ -18,7 +18,7 @@ namespace pokemon
 	public:
 		PlayerCharacter();
 
-		void tick(f32 dt);
+		void tick();
 
 		rex::PixelCoord pos() const;
 		void set_pos(rex::PixelCoord pos);
@@ -28,10 +28,10 @@ namespace pokemon
 		void init_gfx_proxy();
 
 		// movement
-		void move_up(const rex::KeyState& info);
-		void move_down(const rex::KeyState& info);
-		void move_left(const rex::KeyState& info);
-		void move_right(const rex::KeyState& info);
+		void move_up();
+		void move_down();
+		void move_left();
+		void move_right();
 
 		void continue_movement();
 		void finish_movement();

@@ -29,7 +29,7 @@ namespace pokemon
 		init_gfx_proxy();
 	}
 
-	void PlayerCharacter::tick(f32 dt)
+	void PlayerCharacter::tick()
 	{	
 		if (m_animated_sprite->can_be_interrupted())
 		{
@@ -47,10 +47,10 @@ namespace pokemon
 	{
 		m_input_mappings = rex::asset_db::instance()->load<rex::InputMapping>("Pokemon/inputs/player_input.json");
 
-		m_input_mappings->bind_action("up", [this](const rex::KeyState& info) { move_up(info); });
-		m_input_mappings->bind_action("down", [this](const rex::KeyState& info) { move_down(info); });
-		m_input_mappings->bind_action("left", [this](const rex::KeyState& info) { move_left(info); });
-		m_input_mappings->bind_action("right", [this](const rex::KeyState& info) { move_right(info); });
+		m_input_mappings->bind_action("up", [this](const rex::KeyState& info) { REX_UNUSED_PARAM(info); move_up(); });
+		m_input_mappings->bind_action("down", [this](const rex::KeyState& info) { REX_UNUSED_PARAM(info); move_down(); });
+		m_input_mappings->bind_action("left", [this](const rex::KeyState& info) { REX_UNUSED_PARAM(info); move_left(); });
+		m_input_mappings->bind_action("right", [this](const rex::KeyState& info) { REX_UNUSED_PARAM(info); move_right(); });
 	}
 	void PlayerCharacter::init_gfx_proxy()
 	{
@@ -84,19 +84,19 @@ namespace pokemon
 		}
 	}
 
-	void PlayerCharacter::move_up(const rex::KeyState& info)
+	void PlayerCharacter::move_up()
 	{
 		move(rex::Direction::North, UpIdleAnim, UpWalkAnim);
 	}
-	void PlayerCharacter::move_down(const rex::KeyState& info)
+	void PlayerCharacter::move_down()
 	{
 		move(rex::Direction::South, DownIdleAnim, DownWalkAnim);
 	}
-	void PlayerCharacter::move_left(const rex::KeyState& info)
+	void PlayerCharacter::move_left()
 	{
 		move(rex::Direction::West, LeftIdleAnim, LeftWalkAnim);
 	}
-	void PlayerCharacter::move_right(const rex::KeyState& info)
+	void PlayerCharacter::move_right()
 	{
 		move(rex::Direction::East, RightIdleAnim, RightWalkAnim);
 	}

@@ -20,8 +20,10 @@ namespace rex
 
 	}
 
-	rsl::unique_ptr<Asset> InputMappingLoaderJson::load(rsl::string_view assetPath, LoadFlags flags)
+	rsl::unique_ptr<Asset> InputMappingLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
+		REX_UNUSED_PARAM(loadFlags);
+
 		rex::json::json json_content = rex::json::read_from_file(assetPath);
 
 		if (json_content.is_discarded())

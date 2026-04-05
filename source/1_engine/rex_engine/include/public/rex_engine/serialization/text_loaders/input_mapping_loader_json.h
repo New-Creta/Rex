@@ -9,6 +9,6 @@ namespace rex
 	public:
 		InputMappingLoaderJson();
 
-		rsl::unique_ptr<Asset> load(rsl::string_view assetPath, LoadFlags flags) override;
+		rsl::unique_ptr<Asset> load(rsl::string_view assetPath, LoadFlags loadFlags) override;
 	};
 }

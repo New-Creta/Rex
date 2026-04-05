@@ -60,10 +60,8 @@ namespace pokemon
 
 	void GameSession::update()
 	{
-		f32 dt = rex::engine::instance()->frame_info().delta_time().to_milliseconds();
-
 		// Tick all objects in the scene that require ticking
-		m_player_character->tick(dt);
+		m_player_character->tick();
 		m_camera->set_pos(m_player_character->pos());
 
 		// this likely doesn't need to happen every frame..
@@ -102,8 +100,8 @@ namespace pokemon
 
 		glm::vec2 zoom{};
 
-		zoom.x = rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width;
-		zoom.y = rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height;
+		zoom.x = static_cast<f32>(rex::gfx::gal::instance()->back_buffer_width() / constants::g_screen_width);
+		zoom.y = static_cast<f32>(rex::gfx::gal::instance()->back_buffer_height() / constants::g_screen_height);
 
 		m_camera = rsl::make_unique<rex::gfx::Camera2D>(res_size, look_ahead, zoom);
 	}

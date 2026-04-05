@@ -506,7 +506,7 @@ namespace rex
 		}
 		rsl::unique_ptr<StructuredBuffer>       DirectXInterface::create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data)
 		{
-			s32 size = stride.size_in_bytes() * numElements;
+			s32 size = narrow_cast<s32>(stride.size_in_bytes() * numElements);
 
 			wrl::ComPtr<ID3D12Resource> d3d_buffer = allocate_structured_buffer(size);
 			d3d::set_debug_name_for(d3d_buffer.Get(), "Structured Buffer");

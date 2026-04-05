@@ -24,6 +24,8 @@ namespace rex
 
 	rsl::unique_ptr<Asset> BlocksetLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
+		REX_ASSERT_X(loadFlags == LoadFlags::None, "Blocksets cannot be partially loaded, therefore load flags should always be none");
+
 		rex::json::json json_content = rex::json::read_from_file(assetPath);
 
 		rsl::string_view tileset_path = json_content["tileset"];
@@ -36,6 +38,9 @@ namespace rex
 	}
 	void BlocksetLoaderJson::hydrate_asset(Asset* asset, rsl::string_view assetPath)
 	{
+		REX_UNUSED_PARAM(asset);
+		REX_UNUSED_PARAM(assetPath);
+
 		// Nothing to implement
 	}
 

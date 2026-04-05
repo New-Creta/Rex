@@ -131,8 +131,8 @@ namespace rex
       desc.Format = DXGI_FORMAT_UNKNOWN;
       desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
       desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-      desc.Buffer.NumElements = resource_desc.Width / stride.size_in_bytes();
-      desc.Buffer.StructureByteStride = stride.size_in_bytes();
+      desc.Buffer.NumElements = narrow_cast<UINT>(resource_desc.Width / stride.size_in_bytes());
+      desc.Buffer.StructureByteStride = narrow_cast<UINT>(stride.size_in_bytes());
       desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
       DxResourceView desc_handle = new_free_handle();

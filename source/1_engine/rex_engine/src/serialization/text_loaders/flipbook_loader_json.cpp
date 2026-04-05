@@ -18,6 +18,8 @@ namespace rex
 
 	rsl::unique_ptr<Asset> FlipbookLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
+		REX_ASSERT_X(loadFlags == LoadFlags::None, "Flipbooks cannot be partially loaded, therefore load flags should always be none");
+
 		rex::json::json json_blob = rex::json::read_from_file(assetPath);
 
 		rsl::pointi8 sprite_size;

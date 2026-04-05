@@ -57,7 +57,7 @@ TEST_CASE("TEST - Directory - List Entries Recursive")
 {
   rex::TempCwd tmp_cwd("directory_tests");
 
-  auto entries = rex::directory::list_entries("list_dir", rex::directory::Recursive::yes);
+  auto entries = rex::directory::list_entries("list_dir", rex::Recursive::yes);
 
   REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [](rsl::string_view entry) {return rex::path::is_same(entry, "folder1"); }) != entries.cend());
   REX_CHECK(rsl::find_if(entries.cbegin(), entries.cend(), [](rsl::string_view entry) {return rex::path::is_same(entry, "folder2"); }) != entries.cend());
@@ -179,12 +179,12 @@ TEST_CASE("TEST - Directory - Size")
   rex::TempCwd tmp_cwd("directory_tests");
 
   {
-    rsl::memory_size dir_size = rex::directory::size("dir_with_size_of_10_bytes_non_recursive", rex::directory::Recursive::no);
+    rsl::memory_size dir_size = rex::directory::size("dir_with_size_of_10_bytes_non_recursive", rex::Recursive::no);
     REX_CHECK(dir_size == 10_bytes);
   }
 
   {
-    rsl::memory_size dir_size = rex::directory::size("dir_with_size_of_100_bytes_recursive", rex::directory::Recursive::yes);
+    rsl::memory_size dir_size = rex::directory::size("dir_with_size_of_100_bytes_recursive", rex::Recursive::yes);
     REX_CHECK(dir_size == 100_bytes);
   }
 

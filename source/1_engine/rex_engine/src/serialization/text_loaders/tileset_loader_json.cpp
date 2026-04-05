@@ -24,6 +24,8 @@ namespace rex
 
 	rsl::unique_ptr<Asset> TilesetLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
 	{
+		REX_ASSERT_X(loadFlags == LoadFlags::None, "Tilesets cannot be partially loaded, therefore load flags should always be none");
+
 		rex::json::json json_content = rex::json::read_from_file(assetPath);
 
 		rsl::pointi8 tile_size{};
@@ -51,6 +53,10 @@ namespace rex
 	}
 	void TilesetLoaderJson::hydrate_asset(Asset* asset, rsl::string_view assetPath)
 	{
+		REX_UNUSED_PARAM(asset);
+		REX_UNUSED_PARAM(assetPath);
+
+		REX_ASSERT("Cannot hydra tiletsets as they cannot be partially loaded");
 		// Nothing to implement
 	}
 

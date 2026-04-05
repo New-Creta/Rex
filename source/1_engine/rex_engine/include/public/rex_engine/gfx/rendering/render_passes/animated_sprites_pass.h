@@ -31,7 +31,7 @@ namespace rex
 			void init();
 
 			void init_vb(RenderContext* renderCtx);
-			void init_render_info(RenderContext* renderCtx);
+			void init_render_info();
 			void init_ib(RenderContext* renderCtx);
 			void init_shader_params();
 
