@@ -12,6 +12,12 @@ namespace rex
 
 	namespace gfx
 	{
+		// An animated sprite is a sprite on the screen
+		// that is backboned by animations (other than a static sprite image)
+		// Meaning that this sprite object can update the sprite it displays at runtime
+		// Which sprite is active is determined by the game
+		// All this object is responsible for is making sure the sprit's data
+		// is send to the gpu so it can be rendered
 		class AnimatedSprite
 		{
 		public:

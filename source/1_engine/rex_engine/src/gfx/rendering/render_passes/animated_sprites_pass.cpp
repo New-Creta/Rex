@@ -76,6 +76,24 @@ namespace rex
 
 		void AnimatedSpritesPass::render(rex::gfx::RenderContext* renderCtx)
 		{
+			struct SpriteToRender
+			{
+				// The texture holding the sprite to render
+				const Texture2D* sprites_texture;
+
+				// The area within the texture containing the sprite to render
+				rsl::point<f32> sprite_uv_begin;
+				rsl::point<f32> sprite_uv_end;
+
+				// Information where to draw the sprite
+				PixelCoord pos;
+			};
+
+
+
+
+
+
 			if (m_sprites.empty())
 			{
 				return;
