@@ -345,7 +345,7 @@ namespace rex
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
     }
 
-    void DxRenderContext::copy_rt_to_texture2d(Texture2D* texture, RenderTargetBase* rt)
+    void DxRenderContext::copy_rt_to_texture2d(RenderTargetBase* rt, Texture2D* texture)
     {
       UploadBufferLock upload_buffer_lock = api_engine()->lock_upload_buffer();
 

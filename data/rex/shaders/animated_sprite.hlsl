@@ -2,9 +2,9 @@
 #include "utils.hlsl" // for is_bit_set
 
 // Bit field indexes for the bit flags bellow in the per instance buffer
-#define FLIP_X_BIT 0
-#define FLIP_Y_BIT 1
-#define RENDER_BOTTOM_BEHIND_BG 2
+#define FLIP_X_BIT              1 // 0b01
+#define FLIP_Y_BIT              2 // 0b10
+#define RENDER_BOTTOM_BEHIND_BG 3 // 0b11
 
 // Data to describe how big the render target is
 // as well how we're mapping the vintage pixels onto it
@@ -27,7 +27,7 @@ struct PerInstanceData
   // the start UV position for the current sprite
   // this allows the shader to select to correct sprite
   // from the texture with the same vertex UV information
-  float2 uv_start;
+  float2 uv_begin;
   
   // flipping X or Y uv channels
   int bit_flags;
@@ -80,7 +80,7 @@ float4 calculate_vertex_position(VertexIn vin)
   float2 pos = scaled_vertex_pos * instance_data[vin.InstanceId].inv_sprite_screen_size;
   
   // the above position is offseted from the origin
-  // however, the origin us calculated from the top left of the screen
+  // however, the origin is calculated from the top left of the screen
   // so we have to add that ofset
   pos += float2(-1.0f, 1.0f);
 
@@ -113,7 +113,7 @@ float2 calculate_vertex_uv(VertexIn vin)
   uv += vin.Uv * instance_data[vin.InstanceId].inv_sprite_texture_size;
   
   // offset the UV so it starts at the top left position of the sprite we want to draw
-  uv += instance_data[vin.InstanceId].uv_start;
+  uv += instance_data[vin.InstanceId].uv_begin;
   
   return uv;
 }

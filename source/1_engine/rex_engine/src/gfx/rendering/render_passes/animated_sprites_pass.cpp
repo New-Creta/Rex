@@ -29,10 +29,20 @@ namespace rex
 {
 	namespace gfx
 	{
-		static const s32 FLIP_X_BIT = 0;
-		static const s32 FLIP_Y_BIT = 1;
-		static const s32 RENDER_BOTTOM_BEHIND_BG = 2;
 		static const s32 MAX_SPRITES = 16;
+
+		// Make sure this is 32 bits as on the GPU it's also 32 bits
+		enum class SpriteRenderBits : s32
+		{
+			None										= 0,
+
+			// If set, the sprite will be flipped, making left -> right and right -> left
+			FlipX										= BIT(1),
+			// If set, the sprite will be flipped, making up -> down and down -> up
+			FlipY   								= BIT(2),
+			// If set, the sprite's bottom half will be rendered behind the background
+			RenderBottomBehindBg   	= BIT(3),
+		};
 
 		using AnimatedTileVertex = VertexPosTex;
 
@@ -51,9 +61,9 @@ namespace rex
 			glm::vec2 inv_sprite_screen_size;
 			glm::vec2 inv_sprite_texture_size;
 
-			glm::vec2 uv_start;
+			glm::vec2 uv_begin;
 
-			s32 bit_masks;
+			SpriteRenderBits bit_masks;
 		};
 
 		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
@@ -82,42 +92,48 @@ namespace rex
 				const Texture2D* sprites_texture;
 
 				// The area within the texture containing the sprite to render
-				rsl::point<f32> sprite_uv_begin;
-				rsl::point<f32> sprite_uv_end;
+				glm::vec2 uv_begin;
+				rsl::point<s8> size;
 
 				// Information where to draw the sprite
 				PixelCoord pos;
+
+				// Extra metadata to indicate how to render the sprite
+				SpriteRenderBits render_bits;
 			};
 
+			rsl::vector<SpriteToRender> sprites_to_render;
+			for (const auto& sprite : m_sprites)
+			{
+				sprites_to_render.emplace_back(
+					SpriteToRender{
+						sprite->sprites_texture(),
+					glm::vec2{sprite->current_sprite_uv().x, sprite->current_sprite_uv().y},
+						sprite->sprite_size(),
+						sprite->pos(),
+						sprite->current_sprite().flip_x ? SpriteRenderBits::FlipX : SpriteRenderBits::None
+					}
+				);
+			}
 
-
-
-
-
-			if (m_sprites.empty())
+			if (sprites_to_render.empty())
 			{
 				return;
 			}
-		
-			renderCtx->copy_rt_to_texture2d(m_background_texture.get(), m_render_target);
+
+			// Copy the render target to the background texture
+			// so the background's pixels can be used if a sprite's bottom should be rendered behind it
+			renderCtx->copy_rt_to_texture2d(m_render_target, m_background_texture.get());
 			renderCtx->set_render_target(m_render_target);
 
+			// Bind the pass to the render context
 			bind_to(renderCtx);
 
 			// Bind all the resources to the gfx pipeline
 			renderCtx->set_vertex_buffer(m_sprite_vb_gpu.get(), 0);
 			renderCtx->set_index_buffer(m_sprite_ib_gpu.get());
 
-			REX_STATIC_WARNING("Detect if the player is on the grass tile dynamically");
-			static s32 counter = 0;
-			static bool is_on_grass = false;
-			if (counter % 60 == 0)
-			{
-				is_on_grass = !is_on_grass;
-			}
-
-			counter++;
-			
+			// Generate all the informated needed for the renderer to render this data and upload it to the gpu
 			SceneRenderInfo scene_render_info{};
 			scene_render_info.inv_vintage_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
 			scene_render_info.inv_vintage_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
@@ -125,25 +141,14 @@ namespace rex
 			scene_render_info.screen_size.x = static_cast<f32>(m_render_target->width());
 			scene_render_info.screen_size.y = static_cast<f32>(m_render_target->height());
 			renderCtx->update_buffer(m_screen_info_cbuffer.get(), &scene_render_info, sizeof(scene_render_info));
-
-			s32 index_count = m_sprite_ib_gpu->count();
 			for (s32 i = 0; i < m_sprites.size(); ++i)
 			{
-				const rsl::unique_ptr<AnimatedSprite>& sprite = m_sprites[i];
+				const SpriteToRender& sprite = sprites_to_render[i];
 
 				PerSpriteInstanceData per_instance_data{};
 
-				if (is_on_grass)
-				{
-					rsl::add_flag(per_instance_data.bit_masks, BIT(RENDER_BOTTOM_BEHIND_BG));
-				}
-
-				per_instance_data.inv_sprite_texture_size.x = 1.0f / (sprite->sprites_texture()->width() / sprite->sprite_size().x);
-				per_instance_data.inv_sprite_texture_size.y = 1.0f / (sprite->sprites_texture()->height() / sprite->sprite_size().y);
-
-				rsl::pointi8 sprite_size = sprite->sprite_size();
-
-				PixelCoord screen_pos = sprite->pos() - m_params.camera->top_left();
+				// Needed to determine where to draw
+				PixelCoord screen_pos = sprite.pos - m_params.camera->top_left();
 				per_instance_data.screen_pos.x = screen_pos.x;
 				per_instance_data.screen_pos.y = screen_pos.y;
 
@@ -154,13 +159,9 @@ namespace rex
 				rsl::pointi8 tile_size = m_params.tileset->tile_size();
 				per_instance_data.screen_pos.y -= tile_size.y / 2; // == 4
 
-				rsl::point<f32> inv_zoom_level{};
-				inv_zoom_level.x = 1.0f / m_params.camera->zoom().x;
-				inv_zoom_level.y = 1.0f / m_params.camera->zoom().y;
-
 				rsl::pointi8 num_sprites_on_screen{};
-				num_sprites_on_screen.x = narrow_cast<s8>(m_render_target->width() / (sprite_size.x * m_params.camera->zoom().x));
-				num_sprites_on_screen.y = narrow_cast<s8>(m_render_target->height() / (sprite_size.y * m_params.camera->zoom().y));
+				num_sprites_on_screen.x = narrow_cast<s8>(m_render_target->width() / (sprite.size.x * m_params.camera->zoom().x));
+				num_sprites_on_screen.y = narrow_cast<s8>(m_render_target->height() / (sprite.size.y * m_params.camera->zoom().y));
 
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
@@ -168,25 +169,21 @@ namespace rex
 				per_instance_data.inv_sprite_screen_size.x = inv_sprite_width;
 				per_instance_data.inv_sprite_screen_size.y = inv_sprite_height;
 
-				rsl::point<f32> uv_start = sprite->current_sprite_uv();
-				per_instance_data.uv_start.x = uv_start.x;
-				per_instance_data.uv_start.y = uv_start.y;
+				// Needed to determine what to draw
+				per_instance_data.uv_begin								= sprite.uv_begin;
+				per_instance_data.inv_sprite_texture_size.x = 1.0f / (sprite.sprites_texture->width() / sprite.size.x);
+				per_instance_data.inv_sprite_texture_size.y = 1.0f / (sprite.sprites_texture->height() / sprite.size.y);
 
-				if (sprite->current_sprite().flip_x)
-				{
-					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_X_BIT));
-				}
-				if (sprite->current_sprite().flip_y)
-				{
-					rsl::add_flag(per_instance_data.bit_masks, BIT(FLIP_Y_BIT));
-				}
+				// Needed to determine hwo to draw
+				per_instance_data.bit_masks								= sprite.render_bits;
 
 				renderCtx->update_buffer(m_per_instance_sb.get(), &per_instance_data, sizeof(per_instance_data), sizeof(per_instance_data) * i);
 
-				set("sprite_texture", sprite->sprites_texture());
+				set("sprite_texture", sprite.sprites_texture);
 				bind_my_params_to_pipeline(renderCtx);
 			}
 			
+			s32 index_count = m_sprite_ib_gpu->count();
 			renderCtx->draw_indexed_instanced(index_count, m_sprites.size(), 0, 0, 0);
 		}
 
