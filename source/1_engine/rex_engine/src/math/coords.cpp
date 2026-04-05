@@ -1,6 +1,7 @@
 #include "rex_engine/math/coords.h"
 
 #include "rex_engine/assets/blockset.h"
+#include "rex_engine/engine/casting.h"
 
 #include "rex_engine/assets/map.h"
 
@@ -30,16 +31,16 @@ namespace rex
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		BlockCoord coord{};
-		coord.x = tile_coord.x / num_tiles_per_block;
-		coord.y = tile_coord.y / num_tiles_per_block;
+		coord.x = rex::numeric_cast<int8>(tile_coord.x / num_tiles_per_block);
+		coord.y = rex::numeric_cast<int8>(tile_coord.y / num_tiles_per_block);
 
 		return coord;
 	}
 	BlockCoord WorldCoordConverter::to_block_coord(TileCoord inCoord) const
 	{
 		BlockCoord coord{};
-		coord.x = inCoord.x / num_tiles_per_block;
-		coord.y = inCoord.y / num_tiles_per_block;
+		coord.x = rex::numeric_cast<int8>(inCoord.x / num_tiles_per_block);
+		coord.y = rex::numeric_cast<int8>(inCoord.y / num_tiles_per_block);
 
 		return coord;
 	}
@@ -47,8 +48,8 @@ namespace rex
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		BlockCoord coord{};
-		coord.x = tile_coord.x / num_tiles_per_block;
-		coord.y = tile_coord.y / num_tiles_per_block;
+		coord.x = rex::numeric_cast<int8>(tile_coord.x / num_tiles_per_block);
+		coord.y = rex::numeric_cast<int8>(tile_coord.y / num_tiles_per_block);
 
 		return coord;
 	}
@@ -57,16 +58,16 @@ namespace rex
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		SquareCoord coord{};
-		coord.x = tile_coord.x / num_tiles_per_square;
-		coord.y = tile_coord.y / num_tiles_per_square;
+		coord.x = rex::numeric_cast<int8>(tile_coord.x / num_tiles_per_square);
+		coord.y = rex::numeric_cast<int8>(tile_coord.y / num_tiles_per_square);
 
 		return coord;
 	}
 	SquareCoord WorldCoordConverter::to_square_coord(TileCoord inCoord) const
 	{
 		SquareCoord coord{};
-		coord.x = inCoord.x / num_tiles_per_square;
-		coord.y = inCoord.y / num_tiles_per_square;
+		coord.x = rex::numeric_cast<int8>(inCoord.x / num_tiles_per_square);
+		coord.y = rex::numeric_cast<int8>(inCoord.y / num_tiles_per_square);
 
 		return coord;
 	}
@@ -74,8 +75,8 @@ namespace rex
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		SquareCoord coord{};
-		coord.x = tile_coord.x / num_tiles_per_square;
-		coord.y = tile_coord.y / num_tiles_per_square;
+		coord.x = rex::numeric_cast<int8>(tile_coord.x / num_tiles_per_square);
+		coord.y = rex::numeric_cast<int8>(tile_coord.y / num_tiles_per_square);
 
 		return coord;
 	}
@@ -83,22 +84,22 @@ namespace rex
 	TileCoord WorldCoordConverter::to_tile_coord(BlockCoord inCoord) const
 	{
 		TileCoord tile_coord{};
-		tile_coord.x = inCoord.x * num_tiles_per_block;
-		tile_coord.y = inCoord.y * num_tiles_per_block;
+		tile_coord.x = rex::numeric_cast<int8>(inCoord.x * num_tiles_per_block);
+		tile_coord.y = rex::numeric_cast<int8>(inCoord.y * num_tiles_per_block);
 		return tile_coord;
 	}
 	TileCoord WorldCoordConverter::to_tile_coord(SquareCoord inCoord) const
 	{
 		TileCoord tile_coord{};
-		tile_coord.x = inCoord.x * num_tiles_per_square;
-		tile_coord.y = inCoord.y * num_tiles_per_square;
+		tile_coord.x = rex::numeric_cast<int8>(inCoord.x * num_tiles_per_square);
+		tile_coord.y = rex::numeric_cast<int8>(inCoord.y * num_tiles_per_square);
 		return tile_coord;
 	}
 	TileCoord WorldCoordConverter::to_tile_coord(PixelCoord inCoord) const
 	{
 		TileCoord tile_coord{};
-		tile_coord.x = inCoord.x / num_pixels_per_tile;
-		tile_coord.y = inCoord.y / num_pixels_per_tile;
+		tile_coord.x = rex::numeric_cast<int8>(inCoord.x / num_pixels_per_tile);
+		tile_coord.y = rex::numeric_cast<int8>(inCoord.y / num_pixels_per_tile);
 		return tile_coord;
 	}
 
@@ -106,23 +107,23 @@ namespace rex
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		PixelCoord coord{};
-		coord.x = tile_coord.x * num_pixels_per_tile;
-		coord.y = tile_coord.y * num_pixels_per_tile;
+		coord.x = rex::numeric_cast<int16>(tile_coord.x * num_pixels_per_tile);
+		coord.y = rex::numeric_cast<int16>(tile_coord.y * num_pixels_per_tile);
 		return coord;
 	}
 	PixelCoord WorldCoordConverter::to_pixel_coord(SquareCoord inCoord) const
 	{
 		TileCoord tile_coord = to_tile_coord(inCoord);
 		PixelCoord coord{};
-		coord.x = tile_coord.x * num_pixels_per_tile;
-		coord.y = tile_coord.y * num_pixels_per_tile;
+		coord.x = rex::numeric_cast<int16>(tile_coord.x * num_pixels_per_tile);
+		coord.y = rex::numeric_cast<int16>(tile_coord.y * num_pixels_per_tile);
 		return coord;
 	}
 	PixelCoord WorldCoordConverter::to_pixel_coord(TileCoord inCoord) const
 	{
 		PixelCoord coord{};
-		coord.x = inCoord.x * num_pixels_per_tile;
-		coord.y = inCoord.y * num_pixels_per_tile;
+		coord.x = rex::numeric_cast<int16>(inCoord.x * num_pixels_per_tile);
+		coord.y = rex::numeric_cast<int16>(inCoord.y * num_pixels_per_tile);
 		return coord;
 	}
 

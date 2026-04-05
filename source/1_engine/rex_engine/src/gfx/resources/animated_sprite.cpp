@@ -3,6 +3,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_engine/engine/casting.h"
+
 #include "rex_engine/gfx/resources/texture_2d.h"
 
 namespace rex
@@ -87,8 +89,8 @@ namespace rex
 			s32 sprites_per_row = m_animations->sprites_texture()->texture_resource()->width() / m_animations->sprite_size().x;
 
 			rsl::pointi8 sprite_coord{};
-			sprite_coord.x = sprite_idx_in_texture % sprites_per_row;
-			sprite_coord.y = sprite_idx_in_texture / sprites_per_row;
+			sprite_coord.x = numeric_cast<s8>(sprite_idx_in_texture % sprites_per_row);
+			sprite_coord.y = numeric_cast<s8>(sprite_idx_in_texture / sprites_per_row);
 
 			rsl::point<f32> uv_start{};
 			uv_start.x = (sprite_coord.x * m_animations->sprite_size().x) / static_cast<f32>(m_animations->sprites_texture()->texture_resource()->width());

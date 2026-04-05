@@ -201,8 +201,8 @@ namespace rex
 			// TILE INFO
 			// ---------------
 			rsl::pointi8 num_tiles_on_screen{};
-			num_tiles_on_screen.x = m_render_target->width() / (tile_size.x * params.camera->zoom().x);
-			num_tiles_on_screen.y = m_render_target->height() / (tile_size.y * params.camera->zoom().y);
+			num_tiles_on_screen.x = narrow_cast<s8>(m_render_target->width() / (tile_size.x * params.camera->zoom().x));
+			num_tiles_on_screen.y = narrow_cast<s8>(m_render_target->height() / (tile_size.y * params.camera->zoom().y));
 
 			f32 inv_tile_width = 2.0f / num_tiles_on_screen.x;
 			f32 inv_tile_height = 2.0f / num_tiles_on_screen.y;
@@ -228,8 +228,8 @@ namespace rex
 		rsl::point<TileCount> BlockRenderPass::calc_screen_resolution(const Camera2D* camera, const TilesetAsset* tileset) const
 		{
 			rsl::point<TileCount> screen_resolution{};
-			screen_resolution.x.get() = m_render_target->width() / (tileset->tile_size().x * camera->zoom().x);
-			screen_resolution.y.get() = m_render_target->height() / (tileset->tile_size().y * camera->zoom().y);
+			screen_resolution.x.get() = static_cast<s32>(m_render_target->width() / (tileset->tile_size().x * camera->zoom().x));
+			screen_resolution.y.get() = static_cast<s32>(m_render_target->height() / (tileset->tile_size().y * camera->zoom().y));
 
 			// Draw 1 extra tile on each axis to allow for panning
 			// This is so there won't be a black border drawn

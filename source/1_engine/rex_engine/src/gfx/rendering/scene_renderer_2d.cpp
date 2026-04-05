@@ -62,8 +62,8 @@ namespace rex
 			render_ctx->transition_buffer(m_render_target.get(), ResourceState::RenderTarget);
 			render_ctx->clear_render_target(m_render_target.get());
 
-			f32 render_target_width = render_target->width();
-			f32 render_target_height = render_target->height();
+			f32 render_target_width = static_cast<f32>(render_target->width());
+			f32 render_target_height = static_cast<f32>(render_target->height());
 
 			rex::gfx::Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(render_target_width, render_target_height), 0.0f, 1.0f };
 			render_ctx->set_viewport(viewport);
@@ -106,7 +106,7 @@ namespace rex
 			m_animated_sprites_pass->render(renderCtx);
 		}
 
-		void SceneRenderer2D::render_dynamic_animations(RenderContext* renderCtx)
+		void SceneRenderer2D::render_dynamic_animations(RenderContext* /*renderCtx*/)
 		{
 
 		}

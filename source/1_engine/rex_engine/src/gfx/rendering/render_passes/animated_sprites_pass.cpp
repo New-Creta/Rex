@@ -104,8 +104,8 @@ namespace rex
 			scene_render_info.inv_vintage_pixel_screen_size.x = 2 * m_params.camera->zoom().x / m_render_target->width(); // how big is 1 tile pixel on the screen
 			scene_render_info.inv_vintage_pixel_screen_size.y = 2 * m_params.camera->zoom().y / m_render_target->height(); // how big is 1 tile pixel on the screen
 
-			scene_render_info.screen_size.x = m_render_target->width();
-			scene_render_info.screen_size.y = m_render_target->height();
+			scene_render_info.screen_size.x = static_cast<f32>(m_render_target->width());
+			scene_render_info.screen_size.y = static_cast<f32>(m_render_target->height());
 			renderCtx->update_buffer(m_screen_info_cbuffer.get(), &scene_render_info, sizeof(scene_render_info));
 
 			s32 index_count = m_sprite_ib_gpu->count();
@@ -141,8 +141,8 @@ namespace rex
 				inv_zoom_level.y = 1.0f / m_params.camera->zoom().y;
 
 				rsl::pointi8 num_sprites_on_screen{};
-				num_sprites_on_screen.x = m_render_target->width() / (sprite_size.x * m_params.camera->zoom().x);
-				num_sprites_on_screen.y = m_render_target->height() / (sprite_size.y * m_params.camera->zoom().y);
+				num_sprites_on_screen.x = narrow_cast<s8>(m_render_target->width() / (sprite_size.x * m_params.camera->zoom().x));
+				num_sprites_on_screen.y = narrow_cast<s8>(m_render_target->height() / (sprite_size.y * m_params.camera->zoom().y));
 
 				f32 inv_sprite_width = 2.0f / num_sprites_on_screen.x;
 				f32 inv_sprite_height = 2.0f / num_sprites_on_screen.y;
@@ -180,7 +180,7 @@ namespace rex
 
 			init_vb(render_ctx.get());
 			init_ib(render_ctx.get());
-			init_render_info(render_ctx.get());
+			init_render_info();
 			init_shader_params();
 		}
 
@@ -255,7 +255,7 @@ namespace rex
 			renderCtx->update_buffer(m_sprite_ib_gpu.get(), sprite_ib.data(), sprite_ib.size() * sizeof(sprite_ib[0]));
 			renderCtx->transition_buffer(m_sprite_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
 		}
-		void AnimatedSpritesPass::init_render_info(rex::gfx::RenderContext* renderCtx)
+		void AnimatedSpritesPass::init_render_info()
 		{
 			if (m_screen_info_cbuffer == nullptr)
 			{
