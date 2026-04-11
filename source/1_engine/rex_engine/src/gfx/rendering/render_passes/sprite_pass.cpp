@@ -1,12 +1,10 @@
-#include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/sprite_pass.h"
 
 #include "rex_engine/filesystem/path.h"
 
 #include "rex_engine/gfx/core/types.h"
 #include "rex_engine/gfx/core/vertex.h"
 #include "rex_engine/gfx/system/shader_library.h"
-
-#include "rex_engine/gfx/resources/animated_sprite.h"
 
 #include "rex_engine/gfx/system/resource_manager.h"
 
@@ -29,21 +27,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		static const s32 MAX_SPRITES = 16;
-
-		// Make sure this is 32 bits as on the GPU it's also 32 bits
-		enum class SpriteRenderBits : s32
-		{
-			None										= 0,
-
-			// If set, the sprite will be flipped, making left -> right and right -> left
-			FlipX										= BIT(1),
-			// If set, the sprite will be flipped, making up -> down and down -> up
-			FlipY   								= BIT(2),
-			// If set, the sprite's bottom half will be rendered behind the background
-			RenderBottomBehindBg   	= BIT(3),
-		};
-
 		using AnimatedTileVertex = VertexPosTex;
 
 		struct SceneRenderInfo
@@ -66,57 +49,26 @@ namespace rex
 			SpriteRenderBits bit_masks;
 		};
 
-		AnimatedSpritesPass::AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo)
+		SpritePass::SpritePass(const AnimatedSpritePassCreationInfo& creationInfo)
 			: RenderPass(create_desc(creationInfo))
 			, m_render_target(creationInfo.render_target)
 		{
 			init();
 		}
 
-		AnimatedSprite* AnimatedSpritesPass::add_sprite(rsl::unique_ptr<AnimatedSprite> sprite)
+		SpriteRenderProxy* SpritePass::add_sprite(rsl::unique_ptr<SpriteRenderProxy> sprite)
 		{
-			m_sprites.emplace_back(rsl::move(sprite));
-			return m_sprites.back().get();
+			return m_sprites.emplace_back(rsl::move(sprite)).get();
 		}
 
-		void AnimatedSpritesPass::update_params(const SceneRenderParams& params)
+		void SpritePass::update_params(const SceneRenderParams& params)
 		{
 			m_params = params;
 		}
 
-		void AnimatedSpritesPass::render(rex::gfx::RenderContext* renderCtx)
+		void SpritePass::render(rex::gfx::RenderContext* renderCtx)
 		{
-			struct SpriteToRender
-			{
-				// The texture holding the sprite to render
-				const Texture2D* sprites_texture;
-
-				// The area within the texture containing the sprite to render
-				glm::vec2 uv_begin;
-				rsl::point<s8> size;
-
-				// Information where to draw the sprite
-				PixelCoord pos;
-
-				// Extra metadata to indicate how to render the sprite
-				SpriteRenderBits render_bits;
-			};
-
-			rsl::vector<SpriteToRender> sprites_to_render;
-			for (const auto& sprite : m_sprites)
-			{
-				sprites_to_render.emplace_back(
-					SpriteToRender{
-						sprite->sprites_texture(),
-					glm::vec2{sprite->current_sprite_uv().x, sprite->current_sprite_uv().y},
-						sprite->sprite_size(),
-						sprite->pos(),
-						sprite->current_sprite().flip_x ? SpriteRenderBits::FlipX : SpriteRenderBits::None
-					}
-				);
-			}
-
-			if (sprites_to_render.empty())
+			if (m_sprites.empty())
 			{
 				return;
 			}
@@ -143,7 +95,7 @@ namespace rex
 			renderCtx->update_buffer(m_screen_info_cbuffer.get(), &scene_render_info, sizeof(scene_render_info));
 			for (s32 i = 0; i < m_sprites.size(); ++i)
 			{
-				const SpriteToRender& sprite = sprites_to_render[i];
+				const SpriteRenderProxy& sprite = *m_sprites[i];
 
 				PerSpriteInstanceData per_instance_data{};
 
@@ -187,7 +139,7 @@ namespace rex
 			renderCtx->draw_indexed_instanced(index_count, m_sprites.size(), 0, 0, 0);
 		}
 
-		void AnimatedSpritesPass::init()
+		void SpritePass::init()
 		{
 			REX_ASSERT_X(m_render_target != nullptr, "No render target provided for render pass");
 
@@ -199,7 +151,7 @@ namespace rex
 			init_shader_params();
 		}
 
-		void AnimatedSpritesPass::init_vb(rex::gfx::RenderContext* renderCtx)
+		void SpritePass::init_vb(rex::gfx::RenderContext* renderCtx)
 		{
 			// Init the vertex buffer
 			const s32 num_vertices_per_tile = 8;
@@ -234,7 +186,7 @@ namespace rex
 			renderCtx->update_buffer(m_sprite_vb_gpu.get(), sprite_vertices.data(), sprite_vertices.size() * sizeof(AnimatedTileVertex));
 			renderCtx->transition_buffer(m_sprite_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
 		}
-		void AnimatedSpritesPass::init_ib(rex::gfx::RenderContext* renderCtx)
+		void SpritePass::init_ib(rex::gfx::RenderContext* renderCtx)
 		{
 			if (m_sprite_ib_gpu)
 			{
@@ -270,7 +222,7 @@ namespace rex
 			renderCtx->update_buffer(m_sprite_ib_gpu.get(), sprite_ib.data(), sprite_ib.size() * sizeof(sprite_ib[0]));
 			renderCtx->transition_buffer(m_sprite_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
 		}
-		void AnimatedSpritesPass::init_render_info()
+		void SpritePass::init_render_info()
 		{
 			if (m_screen_info_cbuffer == nullptr)
 			{
@@ -284,7 +236,7 @@ namespace rex
 				set("instance_data", m_per_instance_sb.get());
 			}
 		}
-		void AnimatedSpritesPass::init_shader_params()
+		void SpritePass::init_shader_params()
 		{
 			rex::gfx::Sampler2D* default_sampler = rex::gfx::gal::instance()->common_sampler(rex::gfx::CommonSampler::Default2D);
 
@@ -294,7 +246,7 @@ namespace rex
 			set("background_texture", m_background_texture.get());
 		}
 
-		RenderPassDesc AnimatedSpritesPass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const
+		RenderPassDesc SpritePass::create_desc(const AnimatedSpritePassCreationInfo& creationInfo) const
 		{
 			RenderPassDesc desc{};
 
@@ -319,8 +271,8 @@ namespace rex
 
 			// Assign the shaders used for the tile renderer
 			rex::scratch_string engine_shaders = rex::path::join(rex::engine::instance()->engine_root(), "shaders");
-			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Vertex);
-			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "animated_sprite.hlsl"), rex::gfx::ShaderType::Pixel);
+			desc.pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "sprite.hlsl"), rex::gfx::ShaderType::Vertex);
+			desc.pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::instance()->load(rex::path::join(engine_shaders, "sprite.hlsl"), rex::gfx::ShaderType::Pixel);
 
 			desc.pso_desc.input_layout = AnimatedTileVertex::layout();
 

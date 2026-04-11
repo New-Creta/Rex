@@ -211,15 +211,6 @@ namespace rex
 			return m_backbuffer_render_target.get();
 		}
 
-		AnimatedSprite* GALBase::create_animated_sprite(Flipbook* animations)
-		{
-			rsl::unique_ptr<AnimatedSprite> animated_sprite = rsl::make_unique<AnimatedSprite>(animations);
-			AnimatedSprite* raw_animated_sprite = animated_sprite.get();
-			scene_renderer::instance()->add_animated_sprite(rsl::move(animated_sprite));
-
-			return raw_animated_sprite;
-		}
-
 		// Create a new context which is used for rendering to render targets
 		ScopedGraphicsContext<RenderContext> GALBase::new_render_ctx(PipelineState* pso, rsl::string_view eventName)
 		{

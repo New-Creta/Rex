@@ -8,11 +8,10 @@
 
 #include "rex_engine/gfx/rendering/renderer.h"
 
-#include "rex_engine/gfx/rendering/render_passes/animated_sprites_pass.h"
+#include "rex_engine/gfx/rendering/render_passes/sprite_pass.h"
 #include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 #include "rex_engine/gfx/rendering/render_passes/composite_pass.h"
 
-#include "rex_engine/gfx/resources/animated_sprite.h"
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 
 #include "rex_engine/gfx/rendering/camera_2d.h"
@@ -33,8 +32,8 @@ namespace rex
 			// call into each render pass to render a single frame
 			void render() override;
 
-			// Add a new animated sprite to the renderer's representation of the world
-			void add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite);
+			// Add a new sprite to the renderer's representation of the world
+			SpriteRenderProxy* create_sprite_proxy();
 
 			// Update the scene render parameters
 			void update_params(const SceneRenderParams& params);
@@ -52,7 +51,7 @@ namespace rex
 
 			// Passes of this renderer
 			rsl::unique_ptr<BlockRenderPass> m_block_render_pass;
-			rsl::unique_ptr<AnimatedSpritesPass> m_animated_sprites_pass;
+			rsl::unique_ptr<SpritePass> m_animated_sprites_pass;
 			rsl::unique_ptr<CompositePass> m_composite_pass;
 
 			// Parameters of this renderer, passed to passes for shader logic

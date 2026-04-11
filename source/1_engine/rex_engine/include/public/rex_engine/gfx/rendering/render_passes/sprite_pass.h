@@ -15,12 +15,42 @@ namespace rex
 			RenderTargetBase* render_target;
 		};
 
-		class AnimatedSpritesPass : public RenderPass
+		// Make sure this is 32 bits as on the GPU it's also 32 bits
+		enum class SpriteRenderBits : s32
+		{
+			None = 0,
+
+			// If set, the sprite will be flipped, making left -> right and right -> left
+			FlipX = BIT(1),
+			// If set, the sprite will be flipped, making up -> down and down -> up
+			FlipY = BIT(2),
+			// If set, the sprite's bottom half will be rendered behind the background
+			RenderBottomBehindBg = BIT(3),
+		};
+
+		// Info required to render a single sprite
+		struct SpriteRenderProxy
+		{
+			// The texture holding the sprite to render
+			const Texture2D* sprites_texture;
+
+			// The area within the texture containing the sprite to render
+			glm::vec2 uv_begin;
+			rsl::point<s8> size;
+
+			// Information where to draw the sprite
+			PixelCoord pos;
+
+			// Extra metadata to indicate how to render the sprite
+			SpriteRenderBits render_bits;
+		};
+
+		class SpritePass : public RenderPass
 		{
 		public:
-			explicit AnimatedSpritesPass(const AnimatedSpritePassCreationInfo& creationInfo);
+			explicit SpritePass(const AnimatedSpritePassCreationInfo& creationInfo);
 
-			AnimatedSprite* add_sprite(rsl::unique_ptr<AnimatedSprite> sprite);
+			SpriteRenderProxy* add_sprite(rsl::unique_ptr<SpriteRenderProxy> sprite);
 
 			void update_params(const SceneRenderParams& params);
 			void render(RenderContext* renderCtx);
@@ -61,7 +91,7 @@ namespace rex
 			rsl::unique_ptr<Texture2D> m_background_texture;
 
 			// All the sprites we have to render
-			rsl::vector<rsl::unique_ptr<AnimatedSprite>> m_sprites;
+			rsl::vector<rsl::unique_ptr<SpriteRenderProxy>> m_sprites;
 
 			// Parameters required for rendering
 			SceneRenderParams m_params;

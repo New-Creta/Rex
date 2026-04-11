@@ -29,7 +29,7 @@ namespace rex
 			// sprite movement in old games is found in movement.asm
 			AnimatedSpritePassCreationInfo animatedspritepass_creation_info{};
 			animatedspritepass_creation_info.render_target = m_render_target.get();
-			m_animated_sprites_pass = rsl::make_unique<rex::gfx::AnimatedSpritesPass>(animatedspritepass_creation_info);
+			m_animated_sprites_pass = rsl::make_unique<rex::gfx::SpritePass>(animatedspritepass_creation_info);
 
 			// draw the water
 			// water is animated by bit shifting its pixels
@@ -78,9 +78,9 @@ namespace rex
 			m_composite_pass->render(render_ctx.get());
 		}
 
-		void SceneRenderer2D::add_animated_sprite(rsl::unique_ptr<AnimatedSprite> animatedSprite)
+		SpriteRenderProxy* SceneRenderer2D::create_sprite_proxy()
 		{
-			m_animated_sprites_pass->add_sprite(rsl::move(animatedSprite));
+			return m_animated_sprites_pass->add_sprite(rsl::make_unique<SpriteRenderProxy>());
 		}
 
 		void SceneRenderer2D::update_params(const SceneRenderParams& params)

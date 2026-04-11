@@ -83,6 +83,12 @@ namespace rex
 		m_asset_to_metadata.emplace(asset.get(), metadata);
 		auto emplace_result = m_path_to_asset.emplace(assetPath, rsl::move(asset));
 
+		if (!emplace_result.emplace_successful)
+		{
+			REX_ERROR(LogAssetDatabase, "Failed to load asset on path '{}' for type '{}'", assetPath, assetTypeId.name());
+			return nullptr;
+		}
+
 		// Asset is loaded, so fire the event that is has fully loaded
 		event_system::instance()->fire_event(EndAssetLoad(assetPath, asset.get()));
 		return emplace_result.inserted_element->value.get();

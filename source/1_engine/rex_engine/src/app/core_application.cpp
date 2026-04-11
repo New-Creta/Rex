@@ -23,12 +23,14 @@
 #include "rex_engine/filesystem/native_filesystem.h"
 #include "rex_engine/threading/thread_pool.h"
 
+#include "rex_engine/assets/animated_sprite.h"
 #include "rex_engine/assets/map.h"
 #include "rex_engine/assets/blockset.h"
 #include "rex_engine/assets/texture_asset.h"
 #include "rex_engine/assets/flipbook.h"
 #include "rex_engine/assets/input_mapping.h"
 
+#include "rex_engine/serialization/text_loaders/animated_sprite_loader_json.h"
 #include "rex_engine/serialization/text_loaders/map_loader_json.h"
 #include "rex_engine/serialization/text_loaders/tileset_loader_json.h"
 #include "rex_engine/serialization/text_loaders/blockset_loader_json.h"
@@ -335,6 +337,7 @@ namespace rex
     asset_db::instance()->add_loader<TextureAsset>(rsl::make_unique<TextureLoader>());
     asset_db::instance()->add_loader<Flipbook>(rsl::make_unique<FlipbookLoaderJson>());
     asset_db::instance()->add_loader<InputMapping>(rsl::make_unique<InputMappingLoaderJson>());
+    asset_db::instance()->add_loader<AnimatedSprite>(rsl::make_unique<AnimatedSpriteLoaderJson>());
   }
 
   //--------------------------------------------------------------------------------------------

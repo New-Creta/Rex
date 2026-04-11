@@ -10,7 +10,6 @@
 
 #include "rex_engine/gfx/rendering/render_pass.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
-#include "rex_engine/gfx/resources/animated_sprite.h"
 
 #include "rex_std/vector.h"
 #include "rex_std/memory.h"

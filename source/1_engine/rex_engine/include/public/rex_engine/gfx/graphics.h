@@ -56,7 +56,6 @@
 #include "rex_engine/gfx/resources/upload_buffer.h"
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
-#include "rex_engine/gfx/resources/animated_sprite.h"
 #include "rex_engine/gfx/resources/structured_buffer.h"
 #include "rex_engine/gfx/materials/material.h"
 #include "rex_engine/gfx/system/shader_pipeline.h"
@@ -191,8 +190,6 @@ namespace rex
       virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
       virtual rsl::unique_ptr<StructuredBuffer> create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data = nullptr) = 0;
       
-      AnimatedSprite* create_animated_sprite(Flipbook* animations);
-
       // --------------------------------
       // View creation
       // --------------------------------

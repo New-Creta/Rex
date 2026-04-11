@@ -1,4 +1,4 @@
-#include "rex_engine/gfx/resources/animated_sprite.h"
+#include "rex_engine/gfx/resources/gfx_animated_sprite.h"
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
