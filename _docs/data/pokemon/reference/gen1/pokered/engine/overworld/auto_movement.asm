@@ -136,6 +136,7 @@ RLEList_ProfOakWalkToLab:
 	db NPC_CHANGE_FACING, 1
 	db -1 ; end
 
+; player input is always read in the reverse order
 RLEList_PlayerWalkToLab:
 	db D_UP, 2
 	db D_RIGHT, 3

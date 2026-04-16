@@ -36,7 +36,7 @@ namespace pokemon
 
 	void PlayerCharacter::tick()
 	{	
-		rsl::scopeguard tick_anim = [this]() {m_animated_sprite->tick(m_pos); };
+		rsl::scopeguard tick_anim = [this]() { m_animated_sprite->tick(m_pos); };
 
 		// the position and facing direction is determined by the character, but animation and collision can influence it
 
@@ -135,6 +135,8 @@ namespace pokemon
 	}
 	void PlayerCharacter::go_idle()
 	{
+		// Set the movement state but don't update the animation
+		// This is because the animation might need to finish before idling is allowed
 		m_movement_state = PlayerMovementState::Idle;
 	}
 

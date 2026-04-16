@@ -36,6 +36,8 @@ namespace pokemon
 		void init_sprite();
 
 		// movement
+		// The below are requests but can fail if the animation
+		// cannot be interrupted
 		void move_up();
 		void move_down();
 		void move_left();

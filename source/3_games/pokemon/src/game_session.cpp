@@ -66,6 +66,29 @@ namespace pokemon
 
 		// this likely doesn't need to happen every frame..
 		update_render_info();
+
+
+		// Objective: Add NPCs
+		// Objective: Add collision
+
+
+
+		// Game tick is as followed
+		// 
+		// 1. If the player is still animating, tick the animation and advance to the next frame
+		//
+		// 2. Check if we're in the safari zone, if so check if the timer has expired
+		//
+		// 3. Check for status flags
+		//
+		// 4. Check if we have an opponent
+		// 
+		// 5. Check more status flags
+		//
+		// 6. Check if start is pressed
+
+
+		
 	}
 
 	SaveFile GameSession::load_startup_savefile() const
