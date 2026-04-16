@@ -2,7 +2,7 @@
   "name": "SafariZoneNorth",
   "width": 20,
   "height": 18,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\FOREST.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\FOREST.json",
   "map_blocks": "Pokemon\\map_blocks\\SafariZoneNorth.blk",
   "border_block_idx": 0,
   "connections": [],

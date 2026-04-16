@@ -20,8 +20,8 @@ namespace rex
     // Update the frame context's data based on the draw data and upload this to the gpu.
     ScopedPoolObject<SyncInfo> ImGuiFrameContext::update_data(ImDrawData* drawData)
     {
-      m_viewport.width = drawData->DisplaySize.x;
-      m_viewport.height = drawData->DisplaySize.y;
+      m_viewport.size.x = drawData->DisplaySize.x;
+      m_viewport.size.y = drawData->DisplaySize.y;
       m_viewport.min_depth = 0.0f;
       m_viewport.max_depth = 1.0f;
       m_viewport.top_left = glm::vec2();

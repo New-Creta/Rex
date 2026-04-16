@@ -43,7 +43,7 @@ DisplayTextID::
 	pop de
 	ld hl, wMapSpriteData ; NPC text entries
 	ldh a, [hSpriteIndexOrTextID]
-	dec a
+	dec a ; I believe we decrement here as sprite text ID starts from 1 instead of 0, as 0 is for the player
 	add a
 	add l
 	ld l, a
@@ -52,7 +52,7 @@ DisplayTextID::
 .noCarry
 	inc hl
 	ld a, [hl] ; a = text ID of the sprite
-	pop hl
+	pop hl ; hl = map text pointer
 .skipSpriteHandling
 ; look up the address of the text in the map's text entries
 	dec a

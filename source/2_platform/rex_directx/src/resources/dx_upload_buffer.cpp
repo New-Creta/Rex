@@ -13,16 +13,16 @@ namespace rex
   {
     DxUploadBuffer::DxUploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer)
       : UploadBuffer(uploadBuffer->GetDesc().Width)
-      , m_upload_buffer(uploadBuffer)
+      , DxResource(uploadBuffer)
       , m_mapped_data(nullptr)
     {
       CD3DX12_RANGE read_range(0, 0); // We do not intend to read from this resource on the CPU
-      DX_CALL(m_upload_buffer->Map(0, &read_range, &m_mapped_data));
+      DX_CALL(dx_object()->Map(0, &read_range, &m_mapped_data));
     }
 
     DxUploadBuffer::~DxUploadBuffer()
     {
-      m_upload_buffer->Unmap(0, nullptr);
+      dx_object()->Unmap(0, nullptr);
     }
 
     // Write data on cpu side, it returns the offset into the upload buffer where data was written to
@@ -64,11 +64,9 @@ namespace rex
       return inc_texture_offsset(total_size, alignment);
     }
 
-    ID3D12Resource* DxUploadBuffer::dx_object()
+    void* DxUploadBuffer::api_object() const
     {
-      return m_upload_buffer.Get();
+      return dx_object();
     }
-
-
   } // namespace gfx
 } // namespace rex

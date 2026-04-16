@@ -2,7 +2,7 @@
   "name": "SSAnneB1FRooms",
   "width": 12,
   "height": 8,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\SHIP.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\SHIP.json",
   "map_blocks": "Pokemon\\map_blocks\\SSAnneB1FRooms.blk",
   "border_block_idx": 12,
   "connections": [],

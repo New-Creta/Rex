@@ -2,7 +2,7 @@
   "name": "OaksLab",
   "width": 5,
   "height": 6,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\DOJO.json",
+   "type_name": "Map", "blockset": "Pokemon\\blocksets\\GYM.json",
   "map_blocks": "Pokemon\\map_blocks\\OaksLab.blk",
   "border_block_idx": 3,
   "connections": [],

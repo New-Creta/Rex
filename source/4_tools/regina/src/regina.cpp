@@ -3,7 +3,6 @@
 #include "regina/project.h"
 #include "regina/content_manager.h"
 #include "regina/scene_manager.h"
-#include "regina/scene_serializer.h"
 #include "regina/widgets/create_project_widget.h"
 #include "regina/widgets/main_editor_widget.h"
 
@@ -52,7 +51,7 @@ namespace regina
 	// Initialization
 	void Regina::init_serializers()
 	{
-		rex::asset_db::instance()->add_serializer<Scene>(rsl::make_unique<SceneSerializer>());
+
 	}
 	void Regina::init_content_scope()
 	{
@@ -82,7 +81,7 @@ namespace regina
 
 		rsl::unique_ptr<MainEditorWidget> main_editor_widget = rsl::make_unique<MainEditorWidget>();
 
-		REX_STATIC_TODO("This should be read from project/user settings");
+		REX_STATIC_WARNING("This should be read from project/user settings");
 		rex::scratch_string start_scene = rex::path::join(rex::engine::instance()->data_root(), rex::settings::instance()->get_string("StartScene"));
 		REX_INFO(LogRegina, "Loading {}", start_scene);
 

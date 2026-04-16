@@ -124,6 +124,7 @@ namespace rex
         class UnorderedAccessBuffer;
         class Texture2D;
         class Sampler2D;
+        class StructuredBuffer;
 
         // Describes the information needed to construct a shader parameter store
         struct ShaderParametersStoreDesc
@@ -154,6 +155,8 @@ namespace rex
             void set(rsl::string_view name, const UnorderedAccessBuffer* cb);
             void set(rsl::string_view name, const Texture2D* texture);
             void set(rsl::string_view name, const Sampler2D* sampler);
+            void set(rsl::string_view name, const StructuredBuffer* sb);
+            void set(rsl::string_view name, const ResourceView* view);
 
             // Return the location of a resource
             ShaderParameterLocation location(rsl::string_view name) const;

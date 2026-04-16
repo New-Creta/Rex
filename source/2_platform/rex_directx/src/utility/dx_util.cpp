@@ -27,6 +27,7 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/resources/dx_unordered_access_buffer.h"
+#include "rex_directx/resources/dx_structured_buffer.h"
 #include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_engine/gfx/shader_reflection/shader_param_declaration.h"
@@ -340,6 +341,12 @@ namespace rex
         case ShaderVisibility::Mesh: return D3D12_SHADER_VISIBILITY_MESH;
         case ShaderVisibility::All: return D3D12_SHADER_VISIBILITY_ALL;
         case ShaderVisibility::Compute: break;
+        }
+
+        // as shader visibility is a bit mask, it's possible more than 1 bit is set, so we have to loop through the bits
+        if ((s32)visibility < (s32)ShaderVisibility::All)
+        {
+          return D3D12_SHADER_VISIBILITY_ALL;
         }
 
         REX_ASSERT("Unsupported shader visibility for directx 12: {}", rsl::enum_refl::enum_name(visibility));
@@ -690,6 +697,7 @@ namespace rex
         case rex::gfx::ShaderParameterType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
         case rex::gfx::ShaderParameterType::ByteAddress:          return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
         case rex::gfx::ShaderParameterType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+        case rex::gfx::ShaderParameterType::StructuredBuffer:     return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
         default: break;
         }
 
@@ -765,13 +773,21 @@ namespace rex
       {
         return static_cast<DxRenderTarget*>(renderTarget);
       }
+      const DxRenderTarget* to_dx12(const RenderTarget* renderTarget)
+      {
+        return static_cast<const DxRenderTarget*>(renderTarget);
+      }
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer)
       {
         return static_cast<DxDepthStencilBuffer*>(depthStencilBuffer);
       }
-      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* depthStencilBuffer)
+      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* unorderedAccessBuffer)
       {
-        return static_cast<DxUnorderedAccessBuffer*>(depthStencilBuffer);
+        return static_cast<DxUnorderedAccessBuffer*>(unorderedAccessBuffer);
+      }
+      DxStructuredBuffer* to_dx12(StructuredBuffer* structuredBuffer)
+      {
+        return static_cast<DxStructuredBuffer*>(structuredBuffer);
       }
       DxPipelineState* to_dx12(PipelineState* pso)
       {
@@ -850,6 +866,10 @@ namespace rex
       ID3D12Resource* dx12_resource(Texture2D* texture)
       {
         return static_cast<DxTexture2D*>(texture)->dx_object();
+      }
+      ID3D12Resource* dx12_resource(Resource* resource)
+      {
+        return static_cast<ID3D12Resource*>(resource->api_object());
       }
       ID3D12PipelineState* dx12_pso(PipelineState* pso)
       {

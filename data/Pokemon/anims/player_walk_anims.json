@@ -1,0 +1,67 @@
+{
+    "sprite_size": 
+    {
+        "x": 16,
+        "y": 16
+    },
+    "texture": "Pokemon/sprites/red.png",
+    "animations": 
+    [
+        { 
+            "name": "down_idle",
+            "sprites": [ { "idx": 0 }],
+            "ticks_between_interrupt": 0
+        },
+        {
+            "name": "up_idle",
+            "sprites": [ { "idx": 1 }],
+            "ticks_between_interrupt": 0
+        },
+        {
+            "name": "left_idle",
+            "sprites": [ { "idx": 2 }],
+            "ticks_between_interrupt": 0
+        },
+        {
+            "name": "right_idle",
+            "sprites": [ { "idx": 2, "flip_x": true } ],
+            "ticks_between_interrupt": 0
+        },
+        {
+            "name": "down_walk",
+            "sprites": [
+                { "idx": 0, "num_frames": 8 },
+                { "idx": 3, "num_frames": 8 },
+                { "idx": 0, "num_frames": 8 },
+                { "idx": 3, "num_frames": 8, "flip_x": true}
+            ],
+            "ticks_between_interrupt": 16
+        },
+        {
+            "name": "up_walk",
+            "sprites": [
+                { "idx": 1, "num_frames": 8 },
+                { "idx": 4, "num_frames": 8 },
+                { "idx": 1, "num_frames": 8 },
+                { "idx": 4, "num_frames": 8, "flip_x": true}
+            ],
+            "ticks_between_interrupt": 16
+        },
+        {
+            "name": "left_walk",
+            "sprites": [
+                { "idx": 2, "num_frames": 8 },
+                { "idx": 5, "num_frames": 8 }
+            ],
+            "ticks_between_interrupt": 16
+        },
+        {
+            "name": "right_walk",
+            "sprites": [
+                { "idx": 5, "num_frames": 8, "flip_x": true },
+                { "idx": 2, "num_frames": 8, "flip_x": true }
+            ],
+            "ticks_between_interrupt": 16
+        }
+    ]
+}

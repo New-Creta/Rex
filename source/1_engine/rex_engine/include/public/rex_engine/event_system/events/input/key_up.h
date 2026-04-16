@@ -5,10 +5,11 @@
 
 namespace rex
 {
+	// This event gets raised when user releases a key on their keyboard
 	class KeyUp : public Event<KeyUp>
 	{
 	public:
-		KeyUp(KeyCode key)
+		explicit KeyUp(KeyCode key)
 			: m_key(key)
 		{}
 

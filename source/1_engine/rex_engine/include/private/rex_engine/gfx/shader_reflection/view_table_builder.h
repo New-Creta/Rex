@@ -15,7 +15,7 @@ namespace rex
 		public:
 			ViewTableBuilder(s32 registerSpace, ShaderParameterType expectedResourceType);
 
-			ViewOffset add_resource(const ShaderResourceDeclaration& resource);
+			s32 add_resource(const ShaderResourceDeclaration& resource);
 
 			ShaderParameterDeclaration build(s32 slot, ShaderVisibility visibility);
 

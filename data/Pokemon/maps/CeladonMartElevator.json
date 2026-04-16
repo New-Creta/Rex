@@ -2,7 +2,7 @@
   "name": "CeladonMartElevator",
   "width": 2,
   "height": 2,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\LOBBY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\LOBBY.json",
   "map_blocks": "Pokemon\\map_blocks\\CeladonMartElevator.blk",
   "border_block_idx": 15,
   "connections": [],

@@ -52,7 +52,7 @@ DEFINE_LOG_CATEGORY(LogJson);
 #include <utility> // declval, forward, move, pair, swap
 #include <vector> // vector
 
-// #include <nlohmann/adl_serializer.hpp>
+// #include <nlohmann/adl_loader.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.11.3
@@ -2620,14 +2620,14 @@ JSON_HEDLEY_DIAGNOSTIC_POP
              class StringType, class BooleanType, class NumberIntegerType, \
              class NumberUnsignedType, class NumberFloatType,              \
              class AllocatorType,                                          \
-             template<typename, typename = void> class JSONSerializer,     \
+             template<typename, typename = void> class JSONLoader,     \
              class BinaryType,                                             \
              class CustomBaseClass>
 
 #define NLOHMANN_BASIC_JSON_TPL                                            \
     basic_json<ObjectType, ArrayType, StringType, BooleanType,             \
     NumberIntegerType, NumberUnsignedType, NumberFloatType,                \
-    AllocatorType, JSONSerializer, BinaryType, CustomBaseClass>
+    AllocatorType, JSONLoader, BinaryType, CustomBaseClass>
 
 // Macros to simplify conversion from/to types
 
@@ -3406,7 +3406,7 @@ NLOHMANN_JSON_NAMESPACE_END
     NLOHMANN_JSON_NAMESPACE_BEGIN
 
     /*!
-    @brief default JSONSerializer template argument
+    @brief default JSONLoader template argument
 
     This serializer ignores the template arguments and uses ADL
     ([argument-dependent lookup](https://en.cppreference.com/w/cpp/language/adl))
@@ -3433,7 +3433,7 @@ NLOHMANN_JSON_NAMESPACE_END
       class AllocatorType = rsl::allocator,     // the allocator type to use
       
       template<typename T, typename SFINAE = void> 
-      class JSONSerializer = adl_serializer,    // the serializer to resolve internal calls to "to_json()" and "from_json"
+      class JSONLoader = adl_serializer,    // the serializer to resolve internal calls to "to_json()" and "from_json"
   
       class BinaryType = rsl::vector<rsl::uint8>, // type for binary arrays  // cppcheck-suppress syntaxError
       class CustomBaseClass = void>               // extension point for user code
@@ -3551,7 +3551,7 @@ using from_json_function = decltype(T::from_json(rsl::declval<Args>()...));
 template<typename T, typename U>
 using get_template_function = decltype(rsl::declval<T>().template get<U>());
 
-// trait checking if JSONSerializer<T>::from_json(json const&, udt&) exists
+// trait checking if JSONLoader<T>::from_json(json const&, udt&) exists
 template<typename BasicJsonType, typename T, typename = void>
 struct has_from_json : rsl::false_type {};
 
@@ -3575,7 +3575,7 @@ struct has_from_json < BasicJsonType, T, enable_if_t < !is_basic_json<T>::value 
         const BasicJsonType&, T&>::value;
 };
 
-// This trait checks if JSONSerializer<T>::from_json(json const&) exists
+// This trait checks if JSONLoader<T>::from_json(json const&) exists
 // this overload is used for non-default-constructible user-defined-types
 template<typename BasicJsonType, typename T, typename = void>
 struct has_non_default_from_json : rsl::false_type {};
@@ -16946,7 +16946,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 // #include <nlohmann/detail/output/output_adapters.hpp>
 
-// #include <nlohmann/detail/output/serializer.hpp>
+// #include <nlohmann/detail/output/loader.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.11.3
@@ -19478,7 +19478,7 @@ The invariants are checked by member function assert_invariant().
 //   template<typename> 
 //   class AllocatorType, 
 //   template<typename, typename = void> 
-//   class JSONSerializer, 
+//   class JSONLoader, 
 //   class BinaryType, 
 //   class CustomBaseClass>
 NLOHMANN_BASIC_JSON_TPL_DECLARATION
@@ -19553,7 +19553,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// JSON Pointer, see @ref nlohmann::json_pointer
     using json_pointer = ::nlohmann::json_pointer<StringType>;
     template<typename T, typename SFINAE>
-    using json_serializer = JSONSerializer<T, SFINAE>;
+    using json_serializer = JSONLoader<T, SFINAE>;
     /// how to treat decoding errors
     using error_handler_t = detail::error_handler_t;
     /// how to treat CBOR tags
@@ -20220,10 +20220,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                detail::enable_if_t <
                    !detail::is_basic_json<U>::value && detail::is_compatible_type<basic_json_t, U>::value, int > = 0 >
     basic_json(CompatibleType && val) noexcept(noexcept( // NOLINT(bugprone-forwarding-reference-overload,bugprone-exception-escape)
-                JSONSerializer<U>::to_json(rsl::declval<basic_json_t&>(),
+                JSONLoader<U>::to_json(rsl::declval<basic_json_t&>(),
                                            rsl::forward<CompatibleType>(val))))
     {
-        JSONSerializer<U>::to_json(*this, rsl::forward<CompatibleType>(val));
+        JSONLoader<U>::to_json(*this, rsl::forward<CompatibleType>(val));
         set_parents();
         assert_invariant();
     }
@@ -20247,28 +20247,28 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         switch (val.type())
         {
             case value_t::boolean:
-                JSONSerializer<other_boolean_t>::to_json(*this, val.template get<other_boolean_t>());
+                JSONLoader<other_boolean_t>::to_json(*this, val.template get<other_boolean_t>());
                 break;
             case value_t::number_float:
-                JSONSerializer<other_number_float_t>::to_json(*this, val.template get<other_number_float_t>());
+                JSONLoader<other_number_float_t>::to_json(*this, val.template get<other_number_float_t>());
                 break;
             case value_t::number_integer:
-                JSONSerializer<other_number_integer_t>::to_json(*this, val.template get<other_number_integer_t>());
+                JSONLoader<other_number_integer_t>::to_json(*this, val.template get<other_number_integer_t>());
                 break;
             case value_t::number_unsigned:
-                JSONSerializer<other_number_unsigned_t>::to_json(*this, val.template get<other_number_unsigned_t>());
+                JSONLoader<other_number_unsigned_t>::to_json(*this, val.template get<other_number_unsigned_t>());
                 break;
             case value_t::string:
-                JSONSerializer<other_string_t>::to_json(*this, val.template get_ref<const other_string_t&>());
+                JSONLoader<other_string_t>::to_json(*this, val.template get_ref<const other_string_t&>());
                 break;
             case value_t::object:
-                JSONSerializer<other_object_t>::to_json(*this, val.template get_ref<const other_object_t&>());
+                JSONLoader<other_object_t>::to_json(*this, val.template get_ref<const other_object_t&>());
                 break;
             case value_t::array:
-                JSONSerializer<other_array_t>::to_json(*this, val.template get_ref<const other_array_t&>());
+                JSONLoader<other_array_t>::to_json(*this, val.template get_ref<const other_array_t&>());
                 break;
             case value_t::binary:
-                JSONSerializer<other_binary_t>::to_json(*this, val.template get_ref<const other_binary_t&>());
+                JSONLoader<other_binary_t>::to_json(*this, val.template get_ref<const other_binary_t&>());
                 break;
             case value_t::null:
                 *this = nullptr;
@@ -20959,7 +20959,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     The function is equivalent to executing
     @code {.cpp}
     ValueType ret;
-    JSONSerializer<ValueType>::from_json(*this, ret);
+    JSONLoader<ValueType>::from_json(*this, ret);
     return ret;
     @endcode
 
@@ -20991,10 +20991,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                    detail::has_from_json<basic_json_t, ValueType>::value,
                    int > = 0 >
     ValueType get_impl(detail::priority_tag<0> /*unused*/) const noexcept(noexcept(
-                JSONSerializer<ValueType>::from_json(rsl::declval<const basic_json_t&>(), rsl::declval<ValueType&>())))
+                JSONLoader<ValueType>::from_json(rsl::declval<const basic_json_t&>(), rsl::declval<ValueType&>())))
     {
         auto ret = ValueType();
-        JSONSerializer<ValueType>::from_json(*this, ret);
+        JSONLoader<ValueType>::from_json(*this, ret);
         return ret;
     }
 
@@ -21009,7 +21009,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     The function is equivalent to executing
     @code {.cpp}
-    return JSONSerializer<ValueType>::from_json(*this);
+    return JSONLoader<ValueType>::from_json(*this);
     @endcode
 
     This overloads is chosen if:
@@ -21033,9 +21033,9 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                    detail::has_non_default_from_json<basic_json_t, ValueType>::value,
                    int > = 0 >
     ValueType get_impl(detail::priority_tag<1> /*unused*/) const noexcept(noexcept(
-                JSONSerializer<ValueType>::from_json(rsl::declval<const basic_json_t&>())))
+                JSONLoader<ValueType>::from_json(rsl::declval<const basic_json_t&>())))
     {
-        return JSONSerializer<ValueType>::from_json(*this);
+        return JSONLoader<ValueType>::from_json(*this);
     }
 
     /*!
@@ -21183,9 +21183,9 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                    detail::has_from_json<basic_json_t, ValueType>::value,
                    int > = 0 >
     ValueType & get_to(ValueType& v) const noexcept(noexcept(
-                JSONSerializer<ValueType>::from_json(rsl::declval<const basic_json_t&>(), v)))
+                JSONLoader<ValueType>::from_json(rsl::declval<const basic_json_t&>(), v)))
     {
-        JSONSerializer<ValueType>::from_json(*this, v);
+        JSONLoader<ValueType>::from_json(*this, v);
         return v;
     }
 
@@ -21207,10 +21207,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         detail::enable_if_t <
             detail::has_from_json<basic_json_t, Array>::value, int > = 0 >
     Array get_to(T (&v)[N]) const // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
-    noexcept(noexcept(JSONSerializer<Array>::from_json(
+    noexcept(noexcept(JSONLoader<Array>::from_json(
                           rsl::declval<const basic_json_t&>(), v)))
     {
-        JSONSerializer<Array>::from_json(*this, v);
+        JSONLoader<Array>::from_json(*this, v);
         return v;
     }
 

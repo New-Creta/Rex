@@ -5,6 +5,9 @@
 
 namespace rex
 {
+  // A state controller is just a wrapper around a bool 
+  // allowing for easier bit manipulation of the enum
+  // to add or remove states, or test for presence of a flag
   template <typename TState, rsl::enable_if_t<rsl::is_enum_v<TState>, bool> = true>
   class StateController
   {

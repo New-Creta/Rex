@@ -7,15 +7,16 @@ namespace rex
     enum class ResourceViewType
     {
       Undefined,
-      ConstantBuffer   = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
-      Texture2D        = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
-      Texture3D        = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
-      TextureCube      = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
-      ByteAddress      = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
-      UnorderedAccess  = 1,  // Constant buffers, unordered access buffers and textures are sharing the same view heap
+      ConstantBuffer   = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      Texture2D        = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      Texture3D        = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      TextureCube      = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      ByteAddress      = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      UnorderedAccess  = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
+      StructuredBuffer = 1,  // Constant buffers, unordered access buffers, structured buffers and textures are sharing the same view heap
       RenderTarget     = 2,
       DepthStencil     = 3,
-      Sampler          = 4
+      Sampler          = 4,
     };
 
 

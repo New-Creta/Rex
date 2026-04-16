@@ -11,7 +11,9 @@ namespace regina
 	public:
 		ContentBrowserItem(rsl::string_view path, const Thumbnail* thumbnail);
 
-		void draw();
+		bool draw();
+
+		rsl::string_view path() const;
 
 	private:
 		rsl::string m_path;

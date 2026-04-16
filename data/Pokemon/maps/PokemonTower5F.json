@@ -2,7 +2,7 @@
   "name": "PokemonTower5F",
   "width": 10,
   "height": 9,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\CEMETERY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\CEMETERY.json",
   "map_blocks": "Pokemon\\map_blocks\\PokemonTower5F.blk",
   "border_block_idx": 1,
   "connections": [],

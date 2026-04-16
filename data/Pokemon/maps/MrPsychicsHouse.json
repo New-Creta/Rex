@@ -2,7 +2,7 @@
   "name": "MrPsychicsHouse",
   "width": 4,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\HOUSE.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\HOUSE.json",
   "map_blocks": "Pokemon\\map_blocks\\MrPsychicsHouse.blk",
   "border_block_idx": 10,
   "connections": [],

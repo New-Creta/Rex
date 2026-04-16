@@ -2,7 +2,7 @@
   "name": "LancesRoom",
   "width": 13,
   "height": 13,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\DOJO.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GYM.json",
   "map_blocks": "Pokemon\\map_blocks\\LancesRoom.blk",
   "border_block_idx": 3,
   "connections": [],

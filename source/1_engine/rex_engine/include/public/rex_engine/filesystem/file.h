@@ -18,32 +18,26 @@ namespace rex
     // --------------------------------
     // CREATING
     // --------------------------------
+    // Create a new empty file
+    Error create(rsl::string_view path);
 
     // --------------------------------
     // DELETING
     // --------------------------------
+    // Delete a file
+    Error del(rsl::string_view path);
 
     // --------------------------------
     // READING
     // --------------------------------
-
-    // --------------------------------
-    // WRITING
-    // --------------------------------
-
-    // --------------------------------
-    // CONVERTING
-    // --------------------------------
-
-    // --------------------------------
-    // QUERYING
-    // --------------------------------
-
-
     // Read from a file
     memory::Blob read_file(rsl::string_view path);
     // Read from a file, returns number of bytes read
     s32 read_file(rsl::string_view path, rsl::byte* buffer, s64 size);
+
+    // --------------------------------
+    // WRITING
+    // --------------------------------
     // Save content to a file
     Error write_to_file(rsl::string_view filepath, const void* data, card64 size);
     // Append a single line to a file
@@ -58,10 +52,14 @@ namespace rex
     Error copy(rsl::string_view src, rsl::string_view dst, OverwriteIfExist overwriteIfExist = OverwriteIfExist::no);
     // Move/Rename a file, overwriting an existing one is possible
     Error move(rsl::string_view src, rsl::string_view dst);
-    // Create a new empty file
-    Error create(rsl::string_view path);
-    // Delete a file
-    Error del(rsl::string_view path);
+
+    // --------------------------------
+    // CONVERTING
+    // --------------------------------
+
+    // --------------------------------
+    // QUERYING
+    // --------------------------------
     // return the file size
     card64 size(rsl::string_view path);
     // Check if a file exists

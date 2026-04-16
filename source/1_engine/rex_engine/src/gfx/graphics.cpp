@@ -14,7 +14,12 @@
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/gfx/graphics.h"
+#include "rex_engine/gfx/rendering/renderer.h"
+#include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+#include "rex_engine/gfx/rendering/debug_renderer_2d.h"
+#include "rex_engine/gfx/rendering/ui_renderer.h"
 
+#include "rex_engine/gfx/system/resource_manager.h"
 
 namespace rex
 {
@@ -97,6 +102,8 @@ namespace rex
 			// Performing all required gpu operations needed on resources those renderers need
 			// The resources are owned by the renderers, they're responsible for creating and destroying them
 			// However in the backend, the gpu manager controls when these resources actually get deallocated
+			scene_renderer::instance()->render();
+
 			for (auto& renderer : m_renderers)
 			{
 				renderer->render();
@@ -148,8 +155,8 @@ namespace rex
 			backbuffer_info.render_target = m_swapchain->current_buffer();
 			backbuffer_info.viewport.top_left.x = 0.0f;
 			backbuffer_info.viewport.top_left.y = 0.0f;
-			backbuffer_info.viewport.width = static_cast<f32>(m_swapchain->width());
-			backbuffer_info.viewport.height = static_cast<f32>(m_swapchain->height());
+			backbuffer_info.viewport.size.x = static_cast<f32>(m_swapchain->width());
+			backbuffer_info.viewport.size.y = static_cast<f32>(m_swapchain->height());
 			backbuffer_info.scissor_rect.right = static_cast<f32>(m_swapchain->width());
 			backbuffer_info.scissor_rect.bottom = static_cast<f32>(m_swapchain->height());
 
@@ -157,15 +164,15 @@ namespace rex
 			m_compute_engine->new_frame();
 
 			auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
-			render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
-			render_ctx->clear_render_target(current_backbuffer_rt());
+			render_ctx->transition_buffer(backbuffer_rendertarget(), ResourceState::RenderTarget);
+			//render_ctx->clear_render_target(backbuffer_rendertarget());
 			render_ctx->execute_on_gpu();
 		}
 		// Present the new frame to the main window
 		void GALBase::present()
 		{
 			auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "End Frame");
-			render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
+			render_ctx->transition_buffer(backbuffer_rendertarget(), ResourceState::Present);
 			render_ctx->execute_on_gpu();
 
 			m_swapchain->present();
@@ -199,9 +206,9 @@ namespace rex
 			return m_swapchain->height();
 		}
 		// Return the current render target of the swapchain
-		RenderTarget* GALBase::current_backbuffer_rt()
+		BackBufferRenderTarget* GALBase::backbuffer_rendertarget()
 		{
-			return m_swapchain->current_buffer();
+			return m_backbuffer_render_target.get();
 		}
 
 		// Create a new context which is used for rendering to render targets
@@ -288,6 +295,9 @@ namespace rex
 		void GALBase::init_swapchain()
 		{
 			m_swapchain = gfx::gal::instance()->create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
+			m_backbuffer_render_target = rsl::make_unique<BackBufferRenderTarget>(m_swapchain.get());
+
+			resource_manager::instance()->add_render_target(m_backbuffer_render_target.get(), "Swapchain Render Target");
 		}
 		// Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
 		void GALBase::init_sub_engines()
@@ -335,7 +345,7 @@ namespace rex
 			sampler_desc.address_mode_w = rex::gfx::TextureAddressMode::Wrap;
 			sampler_desc.mip_lod_bias = 0.0f;
 			sampler_desc.max_anisotropy = 0;
-			sampler_desc.comparison_func = rex::gfx::ComparisonFunc::Always;
+			sampler_desc.comparison_func = rex::gfx::ComparisonFunc::Never;
 			sampler_desc.border_color = rex::gfx::BorderColor::TransparentBlack;
 			sampler_desc.min_lod = 0.0f;
 			sampler_desc.max_lod = 0.0f;

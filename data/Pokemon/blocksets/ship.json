@@ -1,5 +1,5 @@
 {
-    "type_name": "Blockset",
-    "tileset":"Pokemon/tilesets/ship.png",
-    "blockset":"Pokemon/blocksets/ship.bst"
+  "type_name": "Blockset",
+  "tileset": "Pokemon/tilesets/ship.json",
+  "blockset": "Pokemon/blocksets/ship.bst"
 }

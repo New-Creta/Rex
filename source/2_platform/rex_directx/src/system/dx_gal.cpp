@@ -26,8 +26,8 @@
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
+#include "rex_directx/resources/dx_structured_buffer.h"
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
-
 
 #include "rex_engine/gfx/graphics.h"
 
@@ -58,6 +58,7 @@
 #include "rex_engine/gfx/materials/material_library.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
 #include "rex_engine/gfx/system/resource_cache.h"
+#include "rex_engine/gfx/system/resource_manager.h"
 
 
 
@@ -103,6 +104,7 @@ namespace rex
 
 		DirectXInterface::DirectXInterface(const OutputWindowUserData& userData)
 			: GALBase(userData)
+			, m_rtv_clear_color(rsl::colors::White)
 		{
 		}
 
@@ -300,8 +302,12 @@ namespace rex
 
 		rsl::unique_ptr<RenderTarget>         DirectXInterface::create_render_target(s32 width, s32 height, TextureFormat format)
 		{
-			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_render_target(width, height, format);
-			return create_render_target(d3d_texture);
+			ClearStateDesc clear_state{};
+			clear_state.rgba = m_rtv_clear_color;
+			clear_state.flags.add_state(ClearBits::ClearColorBuffer);
+
+			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_render_target(width, height, format, clear_state);
+			return create_render_target(d3d_texture, d3d::to_dx12(format));
 		}
 		rsl::unique_ptr<PipelineState>        DirectXInterface::create_pso(const PipelineStateDesc& desc)
 		{
@@ -373,9 +379,10 @@ namespace rex
 			wrl::ComPtr<ID3D12Resource> d3d_texture = allocate_depth_stencil(width, height, format, clearStateDesc);
 			DxResourceView desc_handle = create_dsv(d3d_texture.Get());
 
-			auto ds_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format, clearStateDesc);
+			auto dx_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format, clearStateDesc);
+			dx_buffer->debug_set_name("Depth Buffer");
 
-			return ds_buffer;
+			return dx_buffer;
 		}
 		rsl::unique_ptr<ConstantBuffer>       DirectXInterface::create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
 		{
@@ -412,7 +419,7 @@ namespace rex
 		{
 			CompileShaderDesc compile_vs_desc{};
 			compile_vs_desc.shader_source_code = sourceCode;
-			compile_vs_desc.shader_entry_point = "main";
+			compile_vs_desc.shader_entry_point = "VSMain";
 			compile_vs_desc.shader_feature_target = "vs_5_1";
 			compile_vs_desc.shader_name = shaderName;
 			compile_vs_desc.shader_type = ShaderType::Vertex;
@@ -434,7 +441,7 @@ namespace rex
 		{
 			CompileShaderDesc compile_ps_desc{};
 			compile_ps_desc.shader_source_code = sourceCode;
-			compile_ps_desc.shader_entry_point = "main";
+			compile_ps_desc.shader_entry_point = "PSMain";
 			compile_ps_desc.shader_feature_target = "ps_5_1";
 			compile_ps_desc.shader_name = shaderName;
 			compile_ps_desc.shader_type = ShaderType::Pixel;
@@ -497,26 +504,55 @@ namespace rex
 
 			return uab;
 		}
-		
+		rsl::unique_ptr<StructuredBuffer>       DirectXInterface::create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data)
+		{
+			s32 size = narrow_cast<s32>(stride.size_in_bytes() * numElements);
+
+			wrl::ComPtr<ID3D12Resource> d3d_buffer = allocate_structured_buffer(size);
+			d3d::set_debug_name_for(d3d_buffer.Get(), "Structured Buffer");
+			DxResourceView desc_handle = create_structured_buffer_srv(d3d_buffer.Get(), stride);
+
+			auto sb = rsl::make_unique<DxStructuredBuffer>(d3d_buffer, desc_handle, stride, size);
+
+			if (data)
+			{
+				auto copy_context = gfx::gal::instance()->new_render_ctx();
+				copy_context->update_buffer(sb.get(), data, size, 0);
+				auto sync_info = copy_context->execute_on_gpu();
+
+				auto render_context = gfx::gal::instance()->new_render_ctx();
+				render_context->stall(*sync_info.get());
+			}
+
+			return sb;
+		}
+
 		// View creation
 		// -------------------------------------------
-		rsl::unique_ptr<ResourceView> DirectXInterface::create_srv(RenderTarget* rt)
+		ResourceView* DirectXInterface::create_srv(const RenderTargetBase* rt)
 		{
-			DxResourceView view = create_texture2d_srv(d3d::to_dx12(rt)->dx_object());
-			return rsl::make_unique<DxResourceView>(view);
+			ResourceView* cached_view = resource_manager::instance()->shader_resource_view(rt);
+			if (cached_view)
+			{
+				return cached_view;
+			}
+
+			DxResourceView view = create_texture2d_srv(static_cast<ID3D12Resource*>(rt->api_object()));
+			rsl::unique_ptr<ResourceView> view_ptr = rsl::make_unique<DxResourceView>(view);
+			return resource_manager::instance()->store_shader_resource_view(rt, rsl::move(view_ptr));
 		}
 
 
 		// API Specific functions
 		// -------------------------------------------
-		rsl::unique_ptr<RenderTarget> DirectXInterface::create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
+		rsl::unique_ptr<RenderTarget> DirectXInterface::create_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format)
 		{
-			DxResourceView rtv = create_rtv(resource.Get());
+			DxResourceView rtv = create_rtv(resource.Get(), format);
 			return rsl::make_unique<DxRenderTarget>(resource, rtv, m_rtv_clear_color);
 		}
-		rsl::unique_ptr<RenderTarget> DirectXInterface::retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view)
+		rsl::unique_ptr<RenderTarget> DirectXInterface::retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format, DxResourceView view)
 		{
-			d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->retarget_rtv(resource.Get(), view);
+			d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->retarget_rtv(resource.Get(), format, view);
 			return rsl::make_unique<DxRenderTarget>(resource, view, m_rtv_clear_color);
 		}
 
@@ -626,16 +662,21 @@ namespace rex
 		{
 			return m_heap->create_unordered_access_buffer(size);
 		}
+		// Allocate a 1D buffer on the gpu for a structured buffer, returning a DirectX resource
+		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_structured_buffer(rsl::memory_size size)
+		{
+			return m_heap->create_structured_buffer(size);
+		}
 		// Allocate a 2D buffer on the gpu, returning a DirectX resource
 		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_texture2d(s32 width, s32 height, TextureFormat format)
 		{
 			DXGI_FORMAT d3d_format = d3d::to_dx12(format);
 			return m_heap->create_texture2d(d3d_format, width, height);
 		}
-		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_render_target(s32 width, s32 height, TextureFormat format)
+		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_render_target(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearColor)
 		{
 			DXGI_FORMAT d3d_format = d3d::to_dx12(format);
-			return m_heap->create_texture2d(d3d_format, width, height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+			return m_heap->create_render_target(d3d_format, width, height, clearColor);
 		}
 
 		wrl::ComPtr<ID3D12Resource> DirectXInterface::allocate_depth_stencil(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
@@ -645,14 +686,18 @@ namespace rex
 		}
 
 		// Create a render target view for a given resource
-		DxResourceView DirectXInterface::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
+		DxResourceView DirectXInterface::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture, DXGI_FORMAT format)
 		{
-			return d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->create_rtv(texture.Get());
+			return d3d::to_dx12(cpu_view_heap(ResourceViewType::RenderTarget))->create_rtv(texture.Get(), format);
 		}
 		// Create a shader resource view pointing to a 2D texture
 		DxResourceView DirectXInterface::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
 		{
 			return d3d::to_dx12(cpu_view_heap(ResourceViewType::Texture2D))->create_texture2d_srv(texture.Get());
+		}
+		DxResourceView DirectXInterface::create_structured_buffer_srv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size stride)
+		{
+			return d3d::to_dx12(cpu_view_heap(ResourceViewType::StructuredBuffer))->create_structured_buffer_srv(resource.Get(), stride);
 		}
 		// Create a constant buffer view pointing for a given resource
 		DxResourceView DirectXInterface::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)

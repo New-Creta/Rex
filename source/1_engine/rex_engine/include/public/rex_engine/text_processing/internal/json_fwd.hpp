@@ -134,7 +134,7 @@
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!
-@brief default JSONSerializer template argument
+@brief default JSONLoader template argument
 
 This serializer ignores the template arguments and uses ADL
 ([argument-dependent lookup](https://en.cppreference.com/w/cpp/language/adl))
@@ -153,7 +153,7 @@ template<template<typename U, typename V, typename... Args> class ObjectType =
          class NumberUnsignedType = rsl::uint64,
          class NumberFloatType = double,
          class AllocatorType = rsl::allocator,
-         template<typename T, typename SFINAE = void> class JSONSerializer =
+         template<typename T, typename SFINAE = void> class JSONLoader =
          adl_serializer,
          class BinaryType = rsl::vector<rsl::uint8>, // cppcheck-suppress syntaxError
          class CustomBaseClass = void>

@@ -54,7 +54,7 @@ namespace rex
 			auto current_ctx = gfx::gal::instance()->new_render_ctx();
 			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
 			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
-			Viewport viewport = { glm::vec2(0.0f, 0.0f), viewport_width, viewport_height, 0.0f, 1.0f };
+			Viewport viewport = { glm::vec2(0.0f, 0.0f), glm::vec2(viewport_width, viewport_height), 0.0f, 1.0f };
 			current_ctx->set_viewport(viewport);
 
 			ScissorRect rect = { 0, 0, viewport_width, viewport_height };

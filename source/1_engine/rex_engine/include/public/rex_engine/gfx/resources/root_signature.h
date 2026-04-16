@@ -2,6 +2,8 @@
 
 #include "rex_engine/gfx/system/shader_type.h"
 
+#include "rex_engine/gfx/resources/resource.h"
+
 #include "rex_engine/engine/types.h"
 
 namespace rex
@@ -36,7 +38,7 @@ namespace rex
     // [1] - shader resource view - register t0 - pixel visibility
     // [2] - sampler              - register s0 - pixel visibility
     //
-    class RootSignature
+    class RootSignature : public Resource
     {
     public:
       virtual ~RootSignature() = default;

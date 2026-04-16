@@ -2,7 +2,7 @@
   "name": "Route22Gate",
   "width": 5,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GATE.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\Route22Gate.blk",
   "border_block_idx": 10,
   "connections": [],

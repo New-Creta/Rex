@@ -39,6 +39,11 @@ namespace rex
 		{
 			return m_desc.bound_resources.unordered_access_buffers;
 		}
+		// The structured buffers of the shader in resource format
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::structured_buffers_resources() const
+		{
+			return m_desc.bound_resources.structured_buffers;
+		}
 		// The constant buffers of the shader in resource format
 		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::constant_buffers_resources() const
 		{

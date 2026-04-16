@@ -24,7 +24,7 @@ namespace rex
 			// Clear the cache
 			void clear();
 
-			rsl::string_view shader_name(rsl::string_view path) const;
+			scratch_string shader_name(rsl::string_view path, ShaderType type) const;
 
 		private:
 			rsl::unordered_map<rsl::tiny_stack_string, rsl::unique_ptr<Shader>> m_shader_map;

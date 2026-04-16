@@ -5,14 +5,16 @@
 #include "rex_std/string_view.h"
 #include "rex_std/unordered_map.h"
 
-#include "pokemon/poke_map.h"
 #include "pokemon/save_file.h"
 #include "pokemon/poke_structs.h"
-#include "pokemon/tile_renderer.h"
 #include "pokemon/map_coordinates.h"
+#include "pokemon/game_blockmap.h"
+#include "pokemon/player_character.h"
 
-#include "rex_engine/gfx/rendering/camera.h"
-#include "rex_engine/gfx/rendering/scene_renderer.h"
+#include "rex_engine/assets/map.h"
+
+#include "rex_engine/gfx/rendering/camera_2d.h"
+
 #include "glm/glm.hpp"
 
 #include "rex_std/bonus/math/point.h"
@@ -20,6 +22,7 @@
 namespace pokemon
 {
 	class MapMatrix;
+  class PokemonRenderer;
   struct MapRenderData;
 
   class GameSession
@@ -32,13 +35,19 @@ namespace pokemon
   private:
     SaveFile load_startup_savefile() const;
 
-    rsl::unique_ptr<Map> init_map(const SaveFile& startupSaveFile);
-    TileRenderer* init_tile_renderer(const MapRenderData& mapRenderData);
-    void init_input();
+    void init_map(const SaveFile& saveFile);
+    void init_player(const SaveFile& saveFile);
+    void init_camera();
+
+    void update_render_info();
 
   private:
-    rsl::unique_ptr<Map> m_active_map;
-    TileRenderer* m_tile_renderer;
-    TileCoord m_player_position; // player position in tiles
+    rex::Map* m_active_map;
+
+    // The blockmap, representing the current map and surroundings
+    rsl::unique_ptr<GameBlockMap> m_scene_blockmap;
+    rsl::unique_ptr<PlayerCharacter> m_player_character;
+
+    rsl::unique_ptr<rex::gfx::Camera2D> m_camera;
   };
 }

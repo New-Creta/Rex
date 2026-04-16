@@ -21,6 +21,7 @@ namespace rex
     public:
       DxResourceView() = default;
       DxResourceView(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size, IsShaderVisible isShaderVisible);
+      DxResourceView(const DxResourceView&) = default;
 
       // Increment the internal handle value by 1
       // It'll hold the address of the next descriptor

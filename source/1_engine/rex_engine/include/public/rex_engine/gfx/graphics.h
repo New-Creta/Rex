@@ -45,6 +45,7 @@
 #include "rex_engine/gfx/system/debug_interface.h"
 #include "rex_engine/gfx/system/swapchain.h"
 #include "rex_engine/gfx/rendering/renderer.h"
+#include "rex_engine/gfx/resources/backbuffer_render_target.h"
 #include "rex_engine/gfx/resources/vertex_buffer.h"
 #include "rex_engine/gfx/resources/index_buffer.h"
 #include "rex_engine/gfx/resources/root_signature.h"
@@ -55,6 +56,7 @@
 #include "rex_engine/gfx/resources/upload_buffer.h"
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
+#include "rex_engine/gfx/resources/structured_buffer.h"
 #include "rex_engine/gfx/materials/material.h"
 #include "rex_engine/gfx/system/shader_pipeline.h"
 #include "rex_engine/gfx/shader_reflection/shader_signature.h"
@@ -86,6 +88,7 @@ namespace rex
   {
     class GALBase;
     class PipelineState;
+    class Renderer;
 
     namespace gal
     {
@@ -185,12 +188,13 @@ namespace rex
       virtual rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc) = 0;
       virtual rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc) = 0;
       virtual rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr) = 0;
+      virtual rsl::unique_ptr<StructuredBuffer> create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data = nullptr) = 0;
       
       // --------------------------------
       // View creation
       // --------------------------------
       // Create a shader resource view pointing to a render target
-      virtual rsl::unique_ptr<ResourceView> create_srv(RenderTarget* rt) = 0;
+      virtual ResourceView* create_srv(const RenderTargetBase* rt) = 0;
 
       // --------------------------------
       // Contexts
@@ -208,7 +212,7 @@ namespace rex
 			// Return the height of the render target of the swapchain
 			s32 back_buffer_height() const;
       // Return the current render target of the swapchain
-      RenderTarget* current_backbuffer_rt();
+      BackBufferRenderTarget* backbuffer_rendertarget();
       // Construct a new renderer and add it to the list of renderers we should call
       template <typename T, typename ... Args>
       T* add_renderer(Args&& ... args)
@@ -301,9 +305,10 @@ namespace rex
       ViewHeapPool m_cpu_descriptor_heap_pool;            // Pool of descriptor heaps per type
       ViewHeapPool m_shader_visible_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker;      // The global tracker of resource states
+      rsl::unique_ptr<BackBufferRenderTarget> m_backbuffer_render_target;
 
       rsl::unordered_map<u64, rsl::unique_ptr<ResourceView>> m_resources_on_gpu;                                    // Holds a map of all resources already present on the GPU and their views
-      rsl::vector<rsl::unique_ptr<LegacyRenderer>> m_renderers;                                                           // Holds all the renderers
+      rsl::vector<rsl::unique_ptr<Renderer>> m_renderers;                                                           // Holds all the renderers
       rsl::array<RasterStateDesc, rsl::enum_refl::enum_count<CommonRasterState>()> m_common_raster_states;          // Holds a list of common raster states
       rsl::array<rsl::unique_ptr<Sampler2D>, rsl::enum_refl::enum_count<CommonSampler>()> m_common_samplers;        // Holds a list of common samplers
     };

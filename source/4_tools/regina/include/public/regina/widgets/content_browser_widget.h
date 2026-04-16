@@ -34,18 +34,25 @@ namespace regina
 
 	class ContentBrowserWidget : public Widget
 	{
+		using open_in_editor_delegate = rsl::function<void(rsl::string_view)>;
+
 	public:
 		ContentBrowserWidget();
 
+		void on_open_in_editor(const open_in_editor_delegate& openInEditor);
+
 	protected:
 		bool on_update() override;
+		void on_draw() override;
 
 	private:
-		void render_content_structure_context_menu();
+		void draw_content_hiearchy();
+		void draw_directory_content();
+		void draw_content_structure_context_menu();
 
-		void render_top_bar(f32 height);
-		void render_bottom_bar(f32 height);
-		void render_items();
+		void draw_top_bar(f32 height);
+		void draw_bottom_bar(f32 height);
+		void draw_items();
 
 		const Thumbnail* thumbnail_for_path(rsl::string_view path) const;
 
@@ -55,7 +62,6 @@ namespace regina
 		rsl::string m_current_directory;
 		rsl::vector<rsl::string> m_files_in_current_directory;
 		rsl::vector<rsl::string> m_directories_in_current_directory;
-		//rsl::vector<rsl::string_view> m_current_items;
 		rsl::vector<rsl::string> m_root_directories;
 		rsl::unique_ptr<ThumbnailManager> m_thumbnail_manager;
 
@@ -64,5 +70,7 @@ namespace regina
 
 		Selection m_content_selection;
 		Selection m_dir_selection;
+
+		open_in_editor_delegate m_open_in_editor_callback;
 	};
 }

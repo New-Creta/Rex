@@ -2,7 +2,7 @@
   "name": "IndigoPlateauLobby",
   "width": 8,
   "height": 6,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\MART.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\POKECENTER.json",
   "map_blocks": "Pokemon\\map_blocks\\IndigoPlateauLobby.blk",
   "border_block_idx": 0,
   "connections": [],

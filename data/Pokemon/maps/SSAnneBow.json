@@ -2,7 +2,7 @@
   "name": "SSAnneBow",
   "width": 10,
   "height": 7,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\SHIP.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\SHIP.json",
   "map_blocks": "Pokemon\\map_blocks\\SSAnneBow.blk",
   "border_block_idx": 35,
   "connections": [],

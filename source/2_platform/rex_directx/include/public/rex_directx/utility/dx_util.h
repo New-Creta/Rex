@@ -67,6 +67,7 @@ namespace rex
     class UploadBuffer;
     class ViewHeap;
     class ShaderSignature;
+    class Resource;
     class ResourceView;
     class PipelineState;
     class Fence;
@@ -74,7 +75,9 @@ namespace rex
     class RenderTarget;
     class ShaderPipelineParameters;
     class DepthStencilBuffer;
+    class BackBufferRenderTarget;
     class UnorderedAccessBuffer;
+    class StructuredBuffer;
     struct SamplerDesc;
 
     // DirectX classes
@@ -86,6 +89,7 @@ namespace rex
     class DxInputLayout;
     class DxViewHeap;
     class DxSampler2D;
+    class DxResource;
     class DxResourceView;
     class DxFence;
     class DxConstantBuffer;
@@ -96,6 +100,7 @@ namespace rex
     class DxDepthStencilBuffer;
     class DxUnorderedAccessBuffer;
     class DxPipelineState;
+    class DxStructuredBuffer;
     struct DxShaderPipelineParameters;
 
     namespace d3d
@@ -193,6 +198,7 @@ namespace rex
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
       // ------------------------------------
+
       DxCommandQueue* to_dx12(CommandQueue* cmdQueue);
       DxCommandAllocator* to_dx12(CommandAllocator* cmdAlloc);
       DxRootSignature* to_dx12(RootSignature* rootSig);
@@ -209,8 +215,10 @@ namespace rex
       DxIndexBuffer* to_dx12(IndexBuffer* indexBuffer);
       DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
+      const DxRenderTarget* to_dx12(const RenderTarget* renderTarget);
       DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer);
-      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* depthStencilBuffer);
+      DxUnorderedAccessBuffer* to_dx12(UnorderedAccessBuffer* unorderedAccessBuffer);
+      DxStructuredBuffer* to_dx12(StructuredBuffer* structuredBuffer);
       DxPipelineState* to_dx12(PipelineState* pso);
       DxShaderPipelineParameters to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters);
 
@@ -224,6 +232,8 @@ namespace rex
       ID3D12Resource* dx12_resource(IndexBuffer* buffer);
       ID3D12Resource* dx12_resource(UploadBuffer* buffer);
       ID3D12Resource* dx12_resource(Texture2D* texture);
+      ID3D12Resource* dx12_resource(Resource* resource);
+
       ID3D12PipelineState* dx12_pso(PipelineState* pso);
 
       // ------------------------------------

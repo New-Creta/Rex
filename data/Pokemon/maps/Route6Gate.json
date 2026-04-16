@@ -2,7 +2,7 @@
   "name": "Route6Gate",
   "width": 4,
   "height": 3,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GATE.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\Route6Gate.blk",
   "border_block_idx": 10,
   "connections": [],

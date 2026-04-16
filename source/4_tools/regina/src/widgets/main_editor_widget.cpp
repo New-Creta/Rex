@@ -50,6 +50,7 @@ namespace regina
 			ImGui::LoadIniSettingsFromDisk(main_layout_settings.data());
 		//}
 
+		init_widget_creators();
 		add_default_widgets();
 	}
 
@@ -78,13 +79,39 @@ namespace regina
 		draw_imgui_widgets();
 	}
 
+	void MainEditorWidget::init_widget_creators()
+	{
+		m_widget_create_funcs.emplace(rsl::type_id<ContentBrowserWidget>(), [this]()
+			{
+				auto content_manager = rsl::make_unique<ContentBrowserWidget>();
+
+				content_manager->on_open_in_editor([this](rsl::string_view fullpath) 
+					{
+						if (fullpath.contains("maps"))
+						{
+							rex::Map* new_map = rex::asset_db::instance()->load<rex::Map>(fullpath);
+							if (new_map != nullptr)
+							{
+								m_active_map = new_map;
+								on_new_active_map();
+							}
+						}
+					});
+
+				m_widgets.emplace_back(rsl::move(content_manager));
+			});
+		m_widget_create_funcs.emplace(rsl::type_id<Viewport>(), [this]()
+			{
+				auto viewport = rsl::make_unique<Viewport>(m_world_composer.tilemap(), nullptr);
+				m_viewport = viewport.get();
+				m_widgets.emplace_back(rsl::move(viewport));
+			});
+	}
+
 	void MainEditorWidget::add_default_widgets()
 	{
-		m_widgets.emplace_back(rsl::make_unique<ContentBrowserWidget>());
-
-		auto viewport = rsl::make_unique<Viewport>("test viewport", rsl::pointi32{ 640, 576 }, m_world_composer.tilemap(), nullptr);
-		m_viewport = viewport.get();
-		m_widgets.emplace_back(rsl::move(viewport));
+		create_widget<ContentBrowserWidget>();
+		create_widget<Viewport>();
 	}
 
 	void MainEditorWidget::update_widgets()
@@ -202,14 +229,21 @@ namespace regina
 		}
 
 		m_viewport->set_tilemap(m_world_composer.tilemap());
-		m_viewport->set_tileset(m_active_map->desc().map_header.blockset->tileset());
+		m_viewport->set_tileset(m_active_map->desc().blockset->tileset());
 
 		// 3. Move the camera to the active map
 		rsl::pointi32 pos_in_tilemap = m_world_composer.map_pos(m_active_map);
-		move_camera_to_pos(pos_in_tilemap);
+		m_viewport->set_camera_pos(pos_in_tilemap);
 	}
-	void MainEditorWidget::move_camera_to_pos(rsl::pointi32 pos)
+
+	void MainEditorWidget::create_widget(rsl::type_id_t typeId)
 	{
-		REX_INFO(LogMainEditor, "Moving camera position to ({}, {})", pos.x, pos.y);
+		if (!m_widget_create_funcs.contains(typeId))
+		{
+			REX_ERROR(LogMainEditor, "No creation func found for {}", typeId.name());
+		}
+
+		m_widget_create_funcs.at(typeId)();
 	}
+
 }

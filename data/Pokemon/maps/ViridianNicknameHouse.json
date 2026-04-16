@@ -3,7 +3,7 @@
   "name": "ViridianNicknameHouse",
   "width": 4,
   "height": 4,
-  "blockset": "Pokemon\\tilesets\\HOUSE.json",
+  "blockset": "Pokemon\\blocksets\\HOUSE.json",
   "map_blocks": "Pokemon\\map_blocks\\ViridianNicknameHouse.blk",
   "border_block_idx": 10,
   "connections": [],

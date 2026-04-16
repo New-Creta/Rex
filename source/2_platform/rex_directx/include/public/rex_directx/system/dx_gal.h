@@ -106,19 +106,20 @@ namespace rex
       rsl::unique_ptr<Material>               create_material(const MaterialDesc& matDesc)                                                                    override;
       rsl::unique_ptr<Sampler2D>              create_sampler2d(const SamplerDesc& desc)                                                                       override;
       rsl::unique_ptr<UnorderedAccessBuffer>  create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr)                               override;
+      rsl::unique_ptr<StructuredBuffer>       create_structured_buffer(rsl::memory_size stride, s32 numElements, const void* data = nullptr)                  override;
 
       // View creation
-      rsl::unique_ptr<ResourceView> create_srv(RenderTarget* rt) override;
+      ResourceView* create_srv(const RenderTargetBase* rt) override;
 
       // -------------------------
       // Resource creation from Direct X
       // -------------------------
 
       // Return a new render target constructed from a given gpu resource (usefull for swapchains)
-      rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource);
+      rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format);
 
       // Repoint an existing render target view to a new buffer and return this as a new render target
-      rsl::unique_ptr<RenderTarget> retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view);
+      rsl::unique_ptr<RenderTarget> retarget_render_target(wrl::ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format, DxResourceView view);
 
       // Log live gpu objects using DirectX api
       void report_live_objects();
@@ -144,17 +145,21 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
       // Allocate a 1D buffer on the gpu that allows for unordered access, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_unordered_access_buffer(rsl::memory_size size);
+      // Allocate a 1D buffer on the gpu for a structured buffer, returning a DirectX resource
+      wrl::ComPtr<ID3D12Resource> allocate_structured_buffer(rsl::memory_size size);
       // Allocate a 2D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, TextureFormat format);
       // Allocate a 2D buffer on the gpu, returning a DirectX resource
-      wrl::ComPtr<ID3D12Resource> allocate_render_target(s32 width, s32 height, TextureFormat format);
+      wrl::ComPtr<ID3D12Resource> allocate_render_target(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearColor);
       // Allocate a 2D buffer on the gpu, used for depth stencil testing
       wrl::ComPtr<ID3D12Resource> allocate_depth_stencil(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc);
 
       // Create a render target view for a given resource
-      DxResourceView create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
+      DxResourceView create_rtv(const wrl::ComPtr<ID3D12Resource>& texture, DXGI_FORMAT format);
       // Create a shader resource view pointing to a 2D texture
       DxResourceView create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
+      // Create a shader resource view pointing to a structured buffer
+      DxResourceView create_structured_buffer_srv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size stride);
       // Create a constant buffer view pointing for a given resource
       DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
       // Create a depth stencil view for a given resource

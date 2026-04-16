@@ -2,7 +2,7 @@
   "name": "CeladonMansionRoof",
   "width": 4,
   "height": 6,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\MANSION.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\MANSION.json",
   "map_blocks": "Pokemon\\map_blocks\\CeladonMansionRoof.blk",
   "border_block_idx": 9,
   "connections": [],

@@ -42,13 +42,14 @@ namespace rex
       // Transition a texture's resource state
       void transition_buffer(Texture2D* resource, ResourceState state)                            override;
       // Transition a render target's resource state
-      void transition_buffer(RenderTarget* resource, ResourceState state)                         override;
+      void transition_buffer(RenderTargetBase* resource, ResourceState state)                     override;
       void transition_buffer(DepthStencilBuffer* resource, ResourceState state)                   override;
+      void transition_buffer(StructuredBuffer* resource, ResourceState state)                     override;
 
       // Set the render target of the context
-      void set_render_target(RenderTarget* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) override;
+      void set_render_target(RenderTargetBase* colorRenderTarget, DepthStencilBuffer* depthRenderTarget) override;
       // Clear the render target of the context
-      void clear_render_target(RenderTarget* renderTarget, DepthStencilBuffer* depthRenderTarget)   override;
+      void clear_render_target(RenderTargetBase* renderTarget, DepthStencilBuffer* depthRenderTarget)   override;
       // Clears the depth stencil target of the context
       void clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget)                        override;
       // Set the vertex buffer of the context
@@ -98,9 +99,16 @@ namespace rex
       // Update an unordered access buffer's data
       void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
+      // Update a structured buffer's data
+      void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size) override;
+      void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
 
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;
+      void copy_rt_to_texture2d(RenderTargetBase* rt, Texture2D* texture) override;
+
+      // Set stencil buffer data
+      void set_stencil_value(u8 value) override;
 
       // Return the wrapped directx commandlist
       ID3D12GraphicsCommandList* dx_cmdlist();
@@ -114,9 +122,10 @@ namespace rex
       void end_profile_event() override;
 
     private:
-      // Transition a buffer into a new resource state
-      void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       void update_buffer(ID3D12Resource* resource, const void* data, rsl::memory_size size, s32 offset);
+
+      // Transition a buffer into a new resource state
+      void transition_buffer(Resource* resource, ID3D12Resource* d3dResource, ResourceState state);
 
       class DxRenderEngine* api_engine();
 

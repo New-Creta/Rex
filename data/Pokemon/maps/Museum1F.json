@@ -2,7 +2,7 @@
   "name": "Museum1F",
   "width": 10,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\MUSEUM.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GATE.json",
   "map_blocks": "Pokemon\\map_blocks\\Museum1F.blk",
   "border_block_idx": 10,
   "connections": [],

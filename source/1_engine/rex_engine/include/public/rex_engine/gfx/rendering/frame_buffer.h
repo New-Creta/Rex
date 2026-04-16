@@ -10,7 +10,7 @@ namespace rex
 {
 	namespace gfx
 	{
-		class RenderTarget;
+		class RenderTargetBase;
 		class RenderContext;
 		class DepthStencilBuffer;
 
@@ -23,12 +23,13 @@ namespace rex
 		public:
 			FrameBufferAttachmentDesc(SwapchainFrameBufferHandle);
 			FrameBufferAttachmentDesc(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc);
-			FrameBufferAttachmentDesc(RenderTarget* renderTarget);
+			FrameBufferAttachmentDesc(RenderTargetBase* renderTarget);
 			FrameBufferAttachmentDesc(DepthStencilBuffer* depthStencilBuffer);
 
 			// Getters
 			bool use_swapchain() const;
-			RenderTarget* render_target() const;
+			RenderTargetBase* render_target() const;
+			DepthStencilBuffer* depth_stencil_buffer() const;
 			s32 width() const;
 			s32 height() const;
 			TextureFormat format() const;
@@ -39,23 +40,24 @@ namespace rex
 			s32 m_height = -1;
 			TextureFormat m_format = TextureFormat::Unknown;
 			bool m_use_swapchain = false;
-			RenderTarget* m_render_target = nullptr;
+			RenderTargetBase* m_render_target = nullptr;
+			DepthStencilBuffer* m_depth_stencil_buffer = nullptr;
 			ClearStateDesc m_clear_state_desc;
 		};
 
 		class ColorBufferAttachment
 		{
 		public:
-			ColorBufferAttachment(RenderTarget* resourceView);
+			ColorBufferAttachment(RenderTargetBase* resourceView);
 			ColorBufferAttachment(SwapchainFrameBufferHandle);
 
 			// Returns the render target of the attachment
-			RenderTarget* render_target() const;
+			RenderTargetBase* render_target();
 			// Returns true if the attachment indicates that the swapchain's backbuffer should be used as render target
 			bool use_swapchain() const;
 
 		private:
-			RenderTarget* m_render_target = nullptr;
+			RenderTargetBase* m_render_target = nullptr;
 			bool m_use_swapchain = false;
 		};
 
@@ -72,12 +74,12 @@ namespace rex
 			// Bind the framebuffer to the render context
 			void bind_to(RenderContext* ctx);
 
-			const RenderTarget* render_target(s32 idx) const;
+			RenderTargetBase* render_target(s32 idx);
 
 		private:
 			constexpr static s32 s_max_num_rendertargets = 8;
 			rsl::vector<ColorBufferAttachment> m_attachments;
-			rsl::unique_ptr<DepthStencilBuffer> m_depth_stencil_buffer;
+			DepthStencilBuffer* m_depth_stencil_buffer;
 		};
 	}
 }

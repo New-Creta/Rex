@@ -9,7 +9,7 @@ struct PS_INPUT
 SamplerState default_sampler : register(s0, RENDER_PASS_REGISTER_SPACE);
 Texture2D default_texture : register(t0, RENDER_PASS_REGISTER_SPACE);
        
-float4 main(PS_INPUT input) : SV_Target
+float4 PSMain(PS_INPUT input) : SV_Target
 {
   float4 out_col = input.col * default_texture.Sample(default_sampler, input.uv);
   return out_col; 

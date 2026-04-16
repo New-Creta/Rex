@@ -2,7 +2,7 @@
   "name": "POWER PLANT",
   "width": 20,
   "height": 18,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\FACILITY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\FACILITY.json",
   "map_blocks": "Pokemon\\map_blocks\\PowerPlant.blk",
   "border_block_idx": 46,
   "connections": [],

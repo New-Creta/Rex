@@ -5,6 +5,7 @@
 namespace rex
 {
 	// Doesn't hold any members, just used to indicate the window resizing has ended
+	// this event gets raised after a resize has finished
 	class WindowEndResize : public Event<WindowEndResize>
 	{
 	};

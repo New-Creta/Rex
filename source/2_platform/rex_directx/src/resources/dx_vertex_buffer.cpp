@@ -6,13 +6,13 @@ namespace rex
   {
     DxVertexBuffer::DxVertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numVertices, rsl::memory_size vertexSize)
       : VertexBuffer(numVertices, vertexSize)
-      , m_resource(resource)
+      , DxResource(resource)
     {
     }
 
-    ID3D12Resource* DxVertexBuffer::dx_object()
+    void* DxVertexBuffer::api_object() const
     {
-      return m_resource.Get();
+      return dx_object();
     }
 
   }

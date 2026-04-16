@@ -14,12 +14,12 @@ namespace rex
     }
     
     // Set the render target on the pipeline, removes any depth stencil buffer from the pipeline
-    void RenderContext::set_render_target(RenderTarget* colorRenderTarget)
+    void RenderContext::set_render_target(RenderTargetBase* colorRenderTarget)
     {
       set_render_target(colorRenderTarget, nullptr);
     }
     // Clears the render target with its clear color. Does not clear depth stencil buffer
-    void RenderContext::clear_render_target(RenderTarget* renderTarget)
+    void RenderContext::clear_render_target(RenderTargetBase* renderTarget)
     {
       clear_render_target(renderTarget, nullptr);
     }
@@ -54,7 +54,6 @@ namespace rex
     void RenderContext::type_specific_reset(const ContextResetData& resetData)
     {
       // By default we set the current backbuffer as render target
-      set_render_target(resetData.current_backbuffer_rt);
       m_shader_visible_srv_heap = resetData.shader_visible_srv_desc_heap;
       m_shader_visible_sampler_heap = resetData.shader_visible_sampler_desc_heap;
     }

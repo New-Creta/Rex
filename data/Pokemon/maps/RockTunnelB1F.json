@@ -2,7 +2,7 @@
   "name": "RockTunnelB1F",
   "width": 20,
   "height": 18,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\CAVERN.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\CAVERN.json",
   "map_blocks": "Pokemon\\map_blocks\\RockTunnelB1F.blk",
   "border_block_idx": 3,
   "connections": [],

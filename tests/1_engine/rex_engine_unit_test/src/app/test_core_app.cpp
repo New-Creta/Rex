@@ -28,9 +28,9 @@ namespace rex::test
 
 	private:
 		ApplicationCreationParams m_app_creation_params;
-		rex::EngineParams::init_func m_init_func;
-		rex::EngineParams::update_func m_update_func;
-		rex::EngineParams::shutdown_func m_shutdown_func;
+		rex::EngineInitParams::init_func m_init_func;
+		rex::EngineInitParams::update_func m_update_func;
+		rex::EngineInitParams::shutdown_func m_shutdown_func;
 	};
 
 	rex::ApplicationCreationParams test_core_app_creation_params()

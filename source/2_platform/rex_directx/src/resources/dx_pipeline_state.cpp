@@ -11,9 +11,14 @@ namespace rex
 
     }
 
-    ID3D12PipelineState* DxPipelineState::dx_object()
+    ID3D12PipelineState* DxPipelineState::dx_object() const
     {
       return m_pso.Get();
+    }
+
+    void* DxPipelineState::api_object() const
+    {
+      return dx_object();
     }
 
   }

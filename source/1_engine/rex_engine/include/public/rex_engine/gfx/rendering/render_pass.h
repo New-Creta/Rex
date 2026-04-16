@@ -1,5 +1,9 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
+#include "rex_engine/gfx/rendering/frame_buffer.h"
+#include "rex_engine/gfx/rendering/camera_2d.h"
+
 #include "rex_engine/gfx/resources/pipeline_state.h"
 #include "rex_engine/gfx/resources/root_signature.h"
 #include "rex_engine/gfx/graphics.h"
@@ -7,6 +11,9 @@
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/gfx/resources/unordered_access_buffer.h"
+#include "rex_engine/gfx/resources/render_target.h"
+
+#include "rex_engine/math/coords.h"
 
 #include "rex_engine/text_processing/json.h"
 
@@ -14,8 +21,6 @@
 #include "rex_std/memory.h"
 #include "rex_std/optional.h"
 #include "rex_std/unordered_map.h"
-#include "rex_engine/engine/types.h"
-#include "rex_engine/gfx/rendering/frame_buffer.h"
 
 namespace rex
 {
@@ -39,6 +44,11 @@ namespace rex
 			rsl::unique_ptr<PipelineState> pso;
 		};
 
+		struct SceneParams
+		{
+			const TilesetAsset* tileset;
+		};
+
 		// A render pass acts like the "material" for the render pipeline
 		// It holds a set of data that needs to be tied to the render pipeline
 		// as well as the logic on how to use the render pipeline to draw
@@ -58,6 +68,8 @@ namespace rex
 			void set(rsl::string_view name, const UnorderedAccessBuffer* unorderedAccessBuffer);
 			void set(rsl::string_view name, const Texture2D* texture);
 			void set(rsl::string_view name, const Sampler2D* sampler);
+			void set(rsl::string_view name, const StructuredBuffer* sb);
+			void set(rsl::string_view name, const ResourceView* view);
 
 			// Return the slot of a renderpass parameter
 			s32 slot(rsl::string_view name) const;
@@ -72,12 +84,14 @@ namespace rex
 			// Setup the render pass
 			virtual void pre_pass() {};
 			// Go through the render pass
-			virtual void run_pass() {};
+			virtual void run_pass(RenderContext* /*ctx*/) {};
 			// Finish off the render pass
 			virtual void post_pass() {};
 
 		protected:
-			const RenderTarget* render_target(s32 idx) const;
+			RenderTargetBase* render_target(s32 idx);
+
+			void bind_my_params_to_pipeline(RenderContext* ctx);
 
 		private:
 			// Bind parameters of a store to the render pipeline

@@ -3,7 +3,7 @@
   "name": "ViridianMart",
   "width": 4,
   "height": 4,
-  "blockset": "Pokemon\\tilesets\\MART.json",
+  "blockset": "Pokemon\\blocksets\\POKECENTER.json",
   "map_blocks": "Pokemon\\map_blocks\\ViridianMart.blk",
   "border_block_idx": 0,
   "connections": [],

@@ -34,23 +34,34 @@ namespace rex
 		ViewShaderParam::ViewShaderParam(const ShaderParameterDesc& desc)
 			: ShaderParameter(desc)
 			, m_gpu_address(0)
-		{}
-		void ViewShaderParam::update_view(ViewOffset offset, const ConstantBuffer* cb)
+		{
+			REX_ASSERT_X(desc.num_views == 1, "A view shader parameter can only hold a single view");
+		}
+		void ViewShaderParam::update_view(s32 offset, const ConstantBuffer* cb)
 		{
 			update_view(offset, cb->gpu_address());
 		}
-		void ViewShaderParam::update_view(ViewOffset offset, const UnorderedAccessBuffer* uab)
+		void ViewShaderParam::update_view(s32 offset, const UnorderedAccessBuffer* uab)
 		{
 			update_view(offset, uab->gpu_address());
 		}
-		void ViewShaderParam::update_view(ViewOffset, const Texture2D*)
+		void ViewShaderParam::update_view(s32, const Texture2D*)
 		{
 			REX_ASSERT("Textures cannot be tied to an inline view. They need to be tied to a view table");
 		}
-		void ViewShaderParam::update_view(ViewOffset, const Sampler2D*)
+		void ViewShaderParam::update_view(s32, const Sampler2D*)
 		{
 			REX_ASSERT("Samplers cannot be tied to an inline view. They need to be tied to a view table");
 		}
+		void ViewShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
+		{
+			update_view(offset, sb->gpu_address());
+		}
+		void ViewShaderParam::update_view(s32, const ResourceView*)
+		{
+			REX_ASSERT("Views cannot be tied to an inline view. They need to be tied to a view table");
+		}
+
 		void ViewShaderParam::bind_to(RenderContext* ctx) const
 		{
 			switch (type())
@@ -59,12 +70,11 @@ namespace rex
 			default: REX_ASSERT("Invalid shader resource type request to bind");
 			}
 		}
-		void ViewShaderParam::update_view(ViewOffset offset, u64 gpuAddress)
+		void ViewShaderParam::update_view(s32 offset, u64 gpuAddress)
 		{
 			REX_UNUSED_PARAM(offset);
 
-			REX_ASSERT_X(offset.range_offset == 0, "Invalid range offset for binding a single view");
-			REX_ASSERT_X(offset.offset_within_range == 0, "Invalid offset within range for binding a single view");
+			REX_ASSERT_X(offset == 0, "Invalid range offset for binding a single view");
 			m_gpu_address = gpuAddress;
 		}
 
@@ -76,22 +86,31 @@ namespace rex
 		{
 			m_views.resize(desc.num_views);
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, const ConstantBuffer* cb)
+		void ViewTableShaderParam::update_view(s32 offset, const ConstantBuffer* cb)
 		{
 			update_view(offset, cb->resource_view());
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, const UnorderedAccessBuffer* uab)
+		void ViewTableShaderParam::update_view(s32 offset, const UnorderedAccessBuffer* uab)
 		{
 			update_view(offset, uab->resource_view());
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, const Texture2D* texture)
+		void ViewTableShaderParam::update_view(s32 offset, const Texture2D* texture)
 		{
 			update_view(offset, texture->resource_view());
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, const Sampler2D* sampler)
+		void ViewTableShaderParam::update_view(s32 offset, const Sampler2D* sampler)
 		{
 			update_view(offset, sampler->resource_view());
 		}
+		void ViewTableShaderParam::update_view(s32 offset, const StructuredBuffer* sb)
+		{
+			update_view(offset, sb->view());
+		}
+		void ViewTableShaderParam::update_view(s32 offset, const ResourceView* view)
+		{
+			m_views[offset] = view;
+		}
+
 		void ViewTableShaderParam::bind_to(RenderContext* ctx) const
 		{
 			ResourceViewType target_view_heap_type = ResourceViewType::Undefined;
@@ -99,6 +118,7 @@ namespace rex
 			{
 			case ShaderParameterType::ByteAddress: target_view_heap_type = ResourceViewType::ByteAddress; break;
 			case ShaderParameterType::UnorderedAccessView: target_view_heap_type = ResourceViewType::UnorderedAccess; break;
+			case ShaderParameterType::StructuredBuffer: target_view_heap_type = ResourceViewType::StructuredBuffer; break;
 			case ShaderParameterType::ConstantBuffer: target_view_heap_type = ResourceViewType::ConstantBuffer; break;
 			case ShaderParameterType::Texture: target_view_heap_type = ResourceViewType::Texture2D; break;
 			case ShaderParameterType::Sampler: target_view_heap_type = ResourceViewType::Sampler; break;
@@ -109,10 +129,5 @@ namespace rex
 			ctx->bind_view_table(slot(), start_handle);
 		}
 
-		void ViewTableShaderParam::update_view(ViewOffset offset, const ResourceView* view)
-		{
-			s32 abs_offset = offset.range_offset * offset.offset_within_range;
-			m_views[abs_offset] = view;
-		}
 	}
 }

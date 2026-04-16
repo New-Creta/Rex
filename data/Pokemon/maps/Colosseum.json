@@ -2,7 +2,7 @@
   "name": "Colosseum",
   "width": 5,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\CLUB.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\CLUB.json",
   "map_blocks": "Pokemon\\map_blocks\\Colosseum.blk",
   "border_block_idx": 14,
   "connections": [],

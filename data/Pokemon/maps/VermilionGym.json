@@ -2,7 +2,7 @@
   "name": "VermilionGym",
   "width": 5,
   "height": 9,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\GYM.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\GYM.json",
   "map_blocks": "Pokemon\\map_blocks\\VermilionGym.blk",
   "border_block_idx": 3,
   "connections": [],

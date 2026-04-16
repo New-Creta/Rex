@@ -2,7 +2,7 @@
   "name": "PokemonFanClub",
   "width": 4,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\INTERIOR.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\INTERIOR.json",
   "map_blocks": "Pokemon\\map_blocks\\PokemonFanClub.blk",
   "border_block_idx": 13,
   "connections": [],

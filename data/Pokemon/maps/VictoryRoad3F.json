@@ -3,7 +3,7 @@
   "name": "VictoryRoad3F",
   "width": 15,
   "height": 9,
-  "blockset": "Pokemon\\tilesets\\CAVERN.json",
+  "blockset": "Pokemon\\blocksets\\CAVERN.json",
   "map_blocks": "Pokemon\\map_blocks\\VictoryRoad3F.blk",
   "border_block_idx": 125,
   "connections": [],

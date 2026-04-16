@@ -2,7 +2,7 @@
   "name": "CopycatsHouse2F",
   "width": 4,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\REDS_HOUSE_2.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\REDS_HOUSE_2.json",
   "map_blocks": "Pokemon\\map_blocks\\CopycatsHouse2F.blk",
   "border_block_idx": 10,
   "connections": [],

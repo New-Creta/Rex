@@ -35,9 +35,9 @@ namespace rex
       DxViewHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& viewHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible);
 
       // Create a render target view and return a handle pointing to it
-      DxResourceView create_rtv(ID3D12Resource* resource);
+      DxResourceView create_rtv(ID3D12Resource* resource, DXGI_FORMAT format);
       // Retarget an existing rtv to a new resource
-      DxResourceView& retarget_rtv(ID3D12Resource* resource, DxResourceView& rtv);
+      DxResourceView& retarget_rtv(ID3D12Resource* resource, DXGI_FORMAT format, DxResourceView& rtv);
 
       // Create a depth stencil view and return a handle pointing to it
       DxResourceView create_dsv(ID3D12Resource* resource);
@@ -47,6 +47,8 @@ namespace rex
       DxResourceView create_uav(ID3D12Resource* resource, rsl::memory_size size);
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
+      // Create a shader resource view pointing to a structured buffer and return a handle pointing to this view
+      DxResourceView create_structured_buffer_srv(ID3D12Resource* resource, rsl::memory_size stride);
 
       // Create a 2D texture sampler
       rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);

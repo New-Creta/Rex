@@ -2,7 +2,7 @@
   "name": "CeladonMartRoof",
   "width": 10,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\LOBBY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\LOBBY.json",
   "map_blocks": "Pokemon\\map_blocks\\CeladonMartRoof.blk",
   "border_block_idx": 66,
   "connections": [],

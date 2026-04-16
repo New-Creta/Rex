@@ -2,7 +2,7 @@
   "name": "SilphCo2F",
   "width": 15,
   "height": 9,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\FACILITY.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\FACILITY.json",
   "map_blocks": "Pokemon\\map_blocks\\SilphCo2F.blk",
   "border_block_idx": 46,
   "connections": [],

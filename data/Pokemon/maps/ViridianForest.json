@@ -3,7 +3,7 @@
   "name": "VIRIDIAN FOREST",
   "width": 17,
   "height": 24,
-  "blockset": "Pokemon\\tilesets\\FOREST.json",
+  "blockset": "Pokemon\\blocksets\\FOREST.json",
   "map_blocks": "Pokemon\\map_blocks\\ViridianForest.blk",
   "border_block_idx": 3,
   "connections": [],

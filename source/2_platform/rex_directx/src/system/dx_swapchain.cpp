@@ -44,7 +44,8 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&d3d_buffer));
         d3d::set_debug_name_for(d3d_buffer.Get(), rsl::format("DxSwapchain Back Buffer {}", i));
-        auto render_target = static_cast<DirectXInterface*>(gfx::gal::instance())->create_render_target(d3d_buffer);
+        DXGI_FORMAT format = m_format == DXGI_FORMAT_R8G8B8A8_UNORM ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : m_format;
+        auto render_target = static_cast<DirectXInterface*>(gfx::gal::instance())->create_render_target(d3d_buffer, format);
         store_render_target(rsl::move(render_target));
       }
     }
@@ -56,7 +57,8 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&d3d_buffer));
         d3d::set_debug_name_for(d3d_buffer.Get(), rsl::format("DxSwapchain Back Buffer {}", i));
-        auto render_target = static_cast<DirectXInterface*>(gfx::gal::instance())->retarget_render_target(d3d_buffer, rtvs[i]);
+        DXGI_FORMAT format = m_format == DXGI_FORMAT_R8G8B8A8_UNORM ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : m_format;
+        auto render_target = static_cast<DirectXInterface*>(gfx::gal::instance())->retarget_render_target(d3d_buffer, format, rtvs[i]);
         store_render_target(rsl::move(render_target));
       }
     }

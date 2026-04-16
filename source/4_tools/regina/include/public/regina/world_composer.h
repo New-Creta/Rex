@@ -2,6 +2,7 @@
 
 #include "rex_engine/assets/map.h"
 #include "rex_engine/assets/tilemap.h"
+#include "rex_engine/shapes/minmax.h"
 
 #include "rex_std/unordered_map.h"
 

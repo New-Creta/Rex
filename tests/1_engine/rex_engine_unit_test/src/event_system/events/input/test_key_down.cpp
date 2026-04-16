@@ -15,12 +15,12 @@ TEST_CASE("TEST - Events - Key Down Event")
 
   // Immediate event fire
   key_code = rex::KeyCode::A;
-  rex::event_system::instance()->fire_event(rex::KeyDown(key_code));
+  rex::event_system::instance()->fire_event(rex::KeyDown(key_code, 0));
   REX_CHECK(num_quit_events_fired == 1);
 
   // Queued event fire
   key_code = rex::KeyCode::B;
-  rex::event_system::instance()->enqueue_event(rex::KeyDown(key_code));
+  rex::event_system::instance()->enqueue_event(rex::KeyDown(key_code, 0));
   REX_CHECK(num_quit_events_fired == 1);
 
   rex::event_system::instance()->dispatch_queued_events();

@@ -1,17 +1,15 @@
 #include "rex_engine/assets/tilemap.h"
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
-	Tilemap::Tilemap(s32 width, s32 height)
-		: m_width(width)
-		, m_height(height)
-		, m_tile_width_px(8)
-		, m_tile_height_px(8)
+	Tilemap::Tilemap(rsl::point<TileCount> size)
+		: m_size(size)
 	{
-		m_tiles = rsl::make_unique<u8[]>(m_width * m_height);
-		rsl::memset(m_tiles.get(), 0, m_width * m_height);
+		m_tiles = rsl::make_unique<u8[]>(width().get() * height().get());
+		rsl::memset(m_tiles.get(), 0, m_tiles.count());
 	}
 
 	void Tilemap::set(const u8* data, s32 len, s32 offset)
@@ -21,38 +19,32 @@ namespace rex
 		rsl::memcpy(m_tiles.get() + offset, data, len);
 	}
 
-	s32 Tilemap::width_in_px() const
+	void Tilemap::set(s32 offset, u8 value)
 	{
-		return m_width * m_tile_width_px;
-	}
-	s32 Tilemap::height_in_px() const
-	{
-		return m_height * m_tile_height_px;
+		m_tiles[offset] = value;
 	}
 
-	s32 Tilemap::width_in_tiles() const
+	TileCount Tilemap::width() const
 	{
-		return m_width;
+		return m_size.x;
 	}
-	s32 Tilemap::height_in_tiles() const
+	TileCount Tilemap::height() const
 	{
-		return m_height;
+		return m_size.y;
 	}
-	s32 Tilemap::tile_width_px() const
-	{
-		return m_tile_width_px;
-	}
-	s32 Tilemap::tile_height_px() const
-	{
-		return m_tile_height_px;
-	}
+
 	s32 Tilemap::num_tiles() const
 	{
-		return m_tiles.count();
+		return narrow_cast<s32>(m_tiles.count());
 	}
 	const u8* Tilemap::tiles() const
 	{
 		return m_tiles.get();
+	}
+
+	void Tilemap::init_tiles(rsl::unique_array<u8>&& tiles)
+	{
+		m_tiles = rsl::move(tiles);
 	}
 
 }

@@ -7,3 +7,18 @@ float4 convert_to_srgb(float4 color)
 
   return color;
 }
+
+// Check if a certain bit is set, counting from the least significat bit
+bool is_bit_set(int mask, int bit)
+{
+  return (mask >> bit) & 0x01;
+}
+
+// compare 2 float3s and return if they're equal or not
+// this is useful to do for an if statement
+// as you can't compare float3s directly
+bool is_equal(float3 lhs, float3 rhs)
+{
+  float dist = distance(lhs, rhs);
+  return (dist <= 0.001f) ? true : false;
+}

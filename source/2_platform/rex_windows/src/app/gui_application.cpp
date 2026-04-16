@@ -37,6 +37,9 @@
 
 #include "rex_engine/gfx/imgui/imgui_renderer.h"
 
+#include "rex_engine/gfx/rendering/scene_renderer_2d.h"
+#include "rex_engine/gfx/system/resource_manager.h"
+
 #include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/allocators/tracked_allocator.h"
@@ -140,10 +143,13 @@ namespace rex
 
         m_on_shutdown();
 
+        gfx::gal::instance()->flush();
+
+        gfx::scene_renderer::shutdown();
         gfx::shader_lib::shutdown();
-        gfx::renderer::shutdown();
         gfx::gal::shutdown();
         win::com_lib::shutdown();
+        gfx::resource_manager::shutdown();
       }
 
     private:
@@ -298,7 +304,7 @@ namespace rex
 
         WindowInfo window_info;
         window_info.title = create_window_title();
-        window_info.viewport = {0, 0, m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height};
+				window_info.viewport = { { 0, 0}, {m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height} };
 
         if(wnd->create(m_app_creation_params.platform_params->instance, m_app_creation_params.platform_params->show_cmd, window_info))
         {
@@ -347,14 +353,16 @@ namespace rex
         user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::instance()->get_int("max_frames_in_flight", 3);
 
+        gfx::resource_manager::init(globals::make_unique<gfx::ResourceManager>());
+
 #ifdef REX_USING_DIRECTX
         gfx::gal::init(globals::make_unique<gfx::DirectXInterface>(user_data));
-        gfx::renderer::init(globals::make_unique<gfx::Renderer>());
 #else
 #error "No Graphics API defined"
 #endif
 
         gfx::shader_lib::init(globals::make_unique<gfx::ShaderLibrary>());
+        gfx::scene_renderer::init(globals::make_unique<gfx::SceneRenderer2D>());
 
         // Add the imgui renderer, which is our main UI renderer for the moment
         gfx::ImGuiRendererCreationInfo imgui_creation_info{};

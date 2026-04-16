@@ -2,7 +2,7 @@
   "name": "CeruleanCave1F",
   "width": 15,
   "height": 9,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\CAVERN.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\CAVERN.json",
   "map_blocks": "Pokemon\\map_blocks\\CeruleanCave1F.blk",
   "border_block_idx": 125,
   "connections": [],

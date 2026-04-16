@@ -17,6 +17,10 @@ namespace rex
     return dst.back();
   }
 
+  // This adds as an indirection for an element in a container
+  // This is useful for a container that store objects directly and not pointers
+  // as this allows a user to always be able to access that object
+  // even after a reallocation has taken place
   template <typename Container, typename Accessor>
   class ContainerElement
   {

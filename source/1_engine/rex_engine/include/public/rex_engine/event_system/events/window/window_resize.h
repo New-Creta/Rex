@@ -16,6 +16,7 @@ namespace rex
 		OtherMaximized
 	};
 
+	// This event gets raised during the resize of a window
 	class WindowResize : public Event<WindowResize>
 	{
 	public:

@@ -1,6 +1,8 @@
 #include "rex_engine/gfx/shader_reflection/shader_pipeline_reflection_builder.h"
 #include "rex_engine/gfx/shader_reflection/view_table_builder.h"
 
+#include "rex_std/bonus/utility/add_flag.h"
+
 namespace rex
 {
 	namespace gfx
@@ -10,18 +12,21 @@ namespace rex
 			// Split of the shader parameters by register space
 			ShaderResources splitted_babs = split_resources(signature.byte_address_buffers_resources());
 			ShaderResources splitted_uabs = split_resources(signature.unordered_access_buffers_resources());
+			ShaderResources splitted_sbs = split_resources(signature.structured_buffers_resources());
 			ShaderResources splitted_cbs = split_resources(signature.constant_buffers_resources());
 			ShaderResources splitted_textures = split_resources(signature.textures());
 			ShaderResources splitted_samplers = split_resources(signature.samplers());
 
 			add_bindings(splitted_babs.renderpass_resources, ShaderParameterType::ByteAddress, s_renderpass_register_space, visibility);
 			add_bindings(splitted_uabs.renderpass_resources, ShaderParameterType::UnorderedAccessView, s_renderpass_register_space, visibility);
+			add_bindings(splitted_sbs.renderpass_resources, ShaderParameterType::StructuredBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_cbs.renderpass_resources, ShaderParameterType::ConstantBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_textures.renderpass_resources, ShaderParameterType::Texture, s_renderpass_register_space, visibility);
 			add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, s_renderpass_register_space, visibility);
 
 			add_bindings(splitted_babs.material_resources, ShaderParameterType::ByteAddress, s_material_register_space, visibility);
 			add_bindings(splitted_uabs.material_resources, ShaderParameterType::UnorderedAccessView, s_material_register_space, visibility);
+			add_bindings(splitted_sbs.material_resources, ShaderParameterType::StructuredBuffer, s_renderpass_register_space, visibility);
 			add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, s_material_register_space, visibility);
 			add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, s_material_register_space, visibility);
 			add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, s_material_register_space, visibility);
@@ -66,22 +71,23 @@ namespace rex
 
 			// Resource inputs will always be from the same shader, same type and register space
 			// Chances are we have 1 continious range that can store all the resources
-			// However, it is possible that resource registers are not continious
+			// However, it is possible that resource registers are not continuous
 			// in which case we split the resources of in another range
 
-			rsl::vector<ShaderResourceDeclaration> cb_views;
+			rsl::vector<ShaderResourceDeclaration> inline_view;
 			rsl::vector<ShaderResourceDeclaration> other_views;
 
 			for (const ShaderResourceDeclaration& resource : resources)
 			{
 				switch (resource.resource_type)
 				{
-				case ShaderParameterType::ConstantBuffer: cb_views.push_back(resource); break;
+				case ShaderParameterType::ConstantBuffer: inline_view.push_back(resource); break;
+				case ShaderParameterType::StructuredBuffer: inline_view.push_back(resource); break;
 				default: other_views.push_back(resource); break;
 				}
 			}
 
-			add_view_binding(param_store_desc, cb_views, type, expectedRegisterSpace, visibility);
+			add_view_binding(param_store_desc, inline_view, type, expectedRegisterSpace, visibility);
 			add_view_table_binding(param_store_desc, other_views, type, expectedRegisterSpace, visibility);
 		}
 		void ShaderPipelineReflectionBuilder::add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
@@ -96,13 +102,31 @@ namespace rex
 			// As we're processing a single view and not putting it in a table
 			for (s32 i = 0; i < resources.size(); ++i)
 			{
+				const ShaderResourceDeclaration& resource = resources[i];
+
+				// If the resource was already found in the map, meaning it's visible in another shader
+				// we have to add this shader's visibility to the existing entry's visibility
+				// instead of adding a new entry
+				if (paramStoreDesc->param_map.contains(resource.name))
+				{
+					s32 param_slot = paramStoreDesc->param_map.at(resource.name).slot;
+					auto it = rsl::find_if(m_reflection_result.parameters.begin(), m_reflection_result.parameters.end(),
+						[&](const ShaderParameterDeclaration& paramDecl)
+						{
+							return paramDecl.slot == param_slot;
+						});
+
+					REX_ASSERT_X(it != m_reflection_result.parameters.end(), "found existing parameter with name '{}', but not found parameter in list for root signature", resource.name);
+					rsl::add_flag(it->visibility, visibility);
+
+					continue;
+				}
+
 				s32 slot = m_reflection_result.parameters.size();
 				s32 idx = paramStoreDesc->shader_resource_descs.size();
 
-				const ShaderResourceDeclaration& resource = resources[i];
 				REX_ASSERT_X(resource.register_space == expectedRegisterSpace, "Unexpected register space of resource. space: {} expected: {}", resource.register_space, expectedRegisterSpace);
-				ViewOffset view_offset{};
-				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
+				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, 0 });
 				ViewRangeDeclaration view_range = ViewRangeDeclaration(resource.shader_register, 1, type, resource.register_space);
 				const auto& view_table = m_reflection_result.parameters.emplace_back(ShaderParameterDeclaration(slot, { view_range }, 1, type, visibility));
 				paramStoreDesc->shader_resource_descs.push_back(ShaderParameterDesc{ type, slot, view_table.total_num_views });
@@ -123,7 +147,10 @@ namespace rex
 			for (s32 i = 0; i < resources.size(); ++i)
 			{
 				const ShaderResourceDeclaration& resource = resources[i];
-				ViewOffset view_offset = view_table_builder.add_resource(resource);
+				REX_ASSERT_X(!paramStoreDesc->param_map.contains(resource.name), "Cannot use a non-constant buffer resource of the same name in multiple shaders.");
+
+
+				s32 view_offset = view_table_builder.add_resource(resource);
 				paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 			}
 

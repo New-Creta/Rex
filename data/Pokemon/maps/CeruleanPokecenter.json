@@ -2,7 +2,7 @@
   "name": "CeruleanPokecenter",
   "width": 7,
   "height": 4,
-    "type_name": "Map", "blockset": "Pokemon\\tilesets\\POKECENTER.json",
+    "type_name": "Map", "blockset": "Pokemon\\blocksets\\POKECENTER.json",
   "map_blocks": "Pokemon\\map_blocks\\CeruleanPokecenter.blk",
   "border_block_idx": 0,
   "connections": [],

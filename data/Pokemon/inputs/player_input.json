@@ -1,0 +1,42 @@
+[
+  {
+    "name": "walk_up",
+    "key": "W",
+    "type": "Down"
+  },
+  {
+    "name": "idle_up",
+    "key": "W",
+    "type": "Up"
+  },
+  {
+    "name": "walk_down",
+    "key": "S",
+    "type": "Down"
+  },
+  {
+    "name": "idle_down",
+    "key": "S",
+    "type": "Up"
+  },
+  {
+    "name": "walk_left",
+    "key": "A",
+    "type": "Down"
+  },
+  {
+    "name": "idle_left",
+    "key": "A",
+    "type": "Up"
+  },
+  {
+    "name": "walk_right",
+    "key": "D",
+    "type": "Down"
+  },
+  {
+    "name": "idle_right",
+    "key": "D",
+    "type": "Up"
+  }
+]

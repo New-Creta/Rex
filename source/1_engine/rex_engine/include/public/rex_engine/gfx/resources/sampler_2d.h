@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
 #include "rex_engine/gfx/resources/resource.h"
 #include "rex_engine/gfx/core/sampler_filtering.h"
 #include "rex_engine/gfx/core/texture_address_mode.h"

@@ -11,21 +11,20 @@ namespace rex
 {
 	DEFINE_LOG_CATEGORY(LogAssetDatabase);
 
-	void AssetDb::unload_all()
-	{
-		m_path_to_asset.clear();
-		m_asset_to_metadata.clear();
-	}
-
 	rsl::string_view AssetDb::asset_path(const Asset* asset)
 	{
-		return m_asset_to_metadata.at(asset).path;
+		if (m_asset_to_metadata.contains(asset))
+		{
+			return m_asset_to_metadata.at(asset).path;
+		}
+
+		return "";
 	}
 
-	Asset* AssetDb::load_from_json(rsl::type_id_t assetTypeId, rsl::string_view assetPath, LoadFlags loadFlags)
+	Asset* AssetDb::load(rsl::type_id_t assetTypeId, rsl::string_view assetPath, LoadFlags flags)
 	{
 		// If we already have the asset loaded, let's return it 
-		Asset* cached_asset = lookup_cached_asset(assetPath, loadFlags);
+		Asset* cached_asset = lookup_cached_asset(assetPath, flags);
 		if (cached_asset)
 		{
 			return cached_asset;
@@ -40,29 +39,26 @@ namespace rex
 
 		REX_VERBOSE(LogAssetDatabase, "Loading {}", assetPath);
 
-		// load the asset from disk
-		rex::memory::Blob asset_blob = rex::vfs::instance()->read_file(assetPath);
-		rex::json::json asset_json = rex::json::parse(asset_blob);
-
-		// If the json content could not be parsed, we can't continue, so we return
-		if (asset_json.is_discarded())
+		// If we don't have an importer for the type, we can't initialize it, so return
+		rsl::string_view type_name = assetTypeId.name();
+		if (!m_importers.contains(type_name))
 		{
-			REX_ERROR(LogAssetDatabase, "invalid json for asset {}", quoted(assetPath));
+			REX_ERROR(LogAssetDatabase, "Cannot load asset '{}' as it does not have an importer", assetPath);
 			return nullptr;
 		}
 
-		// If the asset is not of the expect type, we error out here as we can't initialize it
-		rsl::string_view asset_type_name = asset_json["type_name"];
-		if (asset_type_name != assetTypeId.name())
+		// If none of the loaders of the importer support the asset, we can't initialize it either, so have to return here as well
+		rsl::unique_ptr<AssetImporter>& importer = m_importers.at(type_name);
+		if (!importer->can_load(assetPath))
 		{
-			REX_ERROR(LogAssetDatabase, "Asset at {} is not of expected type. Expecting {}, actual {}", quoted(assetPath), assetTypeId.name(), asset_type_name);
-			return nullptr;
-		}
-		
-		// If we don't have a (de)serializer for the type, we can't initialize it, so return
-		if (!m_serializers.contains(asset_type_name))
-		{
-			REX_ERROR(LogAssetDatabase, "No serializer added to loaded an asset of type {}", asset_type_name);
+			REX_ERROR(LogAssetDatabase, "Cannot load asset '{}' as it does not have required extension.", assetPath);
+			REX_ERROR(LogAssetDatabase, "Required extension for asset should be one of the following:");
+			rsl::vector<rsl::string_view> allowed_extensions = importer->allowed_extensions();
+			for (rsl::string_view ext : allowed_extensions)
+			{
+				REX_ERROR(LogAssetDatabase, " -{}", ext);
+			}
+
 			return nullptr;
 		}
 
@@ -73,72 +69,25 @@ namespace rex
 		Asset* potentially_partially_loaded_asset = lookup_cached_asset(assetPath, LoadFlags::PartialLoad);
 		if (potentially_partially_loaded_asset)
 		{
-			m_serializers.at(assetTypeId.name())->hydrate_asset(potentially_partially_loaded_asset, asset_json);
+			importer->hydrate_asset(potentially_partially_loaded_asset, assetPath);
 			m_asset_to_metadata.at(potentially_partially_loaded_asset).is_partially_loaded = false;
 			return potentially_partially_loaded_asset;
 		}
 
 		// Deserialize, initialize and cache the asset
-		rsl::unique_ptr<Asset> asset = m_serializers.at(asset_type_name)->serialize_from_json(asset_json, loadFlags);
+		rsl::unique_ptr<Asset> asset(importer->load(assetPath, flags));
 
 		AssetMetaData metadata{};
 		metadata.path = rsl::string(assetPath);
-		metadata.is_partially_loaded = rsl::has_flag(loadFlags, LoadFlags::PartialLoad);
+		metadata.is_partially_loaded = rsl::has_flag(flags, LoadFlags::PartialLoad);
 		m_asset_to_metadata.emplace(asset.get(), metadata);
 		auto emplace_result = m_path_to_asset.emplace(assetPath, rsl::move(asset));
 
-		// Asset is loaded, so fire the event that is has fully loaded
-		event_system::instance()->fire_event(EndAssetLoad(assetPath, asset.get()));
-
-		return emplace_result.inserted_element->value.get();
-	}
-	Asset* AssetDb::load_from_binary(rsl::type_id_t assetTypeId, rsl::string_view assetPath, LoadFlags loadFlags)
-	{
-		// If we already have the asset loaded, let's return it 
-		Asset* cached_asset = lookup_cached_asset(assetPath, loadFlags);
-		if (cached_asset)
+		if (!emplace_result.emplace_successful)
 		{
-			return cached_asset;
-		}
-
-		// If the file doesn't exist, we can't load it
-		if (!rex::vfs::instance()->exists(assetPath))
-		{
-			REX_ERROR(LogAssetDatabase, "asset at path {} does not exist", quoted(assetPath));
+			REX_ERROR(LogAssetDatabase, "Failed to load asset on path '{}' for type '{}'", assetPath, assetTypeId.name());
 			return nullptr;
 		}
-
-		REX_VERBOSE(LogAssetDatabase, "Loading {}", assetPath);
-
-		// If we don't have a (de)serializer for the type, we can't initialize it, so return
-		if (!m_serializers.contains(assetTypeId.name()))
-		{
-			REX_ERROR(LogAssetDatabase, "No serializer added to loaded an asset of type \"{}\"", assetTypeId.name());
-			return nullptr;
-		}
-
-		// We know we can load the asset, so fire the event that it's beginning to load
-		event_system::instance()->fire_event(BeginAssetLoad(assetPath));
-
-		// load the asset from disk
-		rex::memory::Blob asset_blob = rex::vfs::instance()->read_file(assetPath);
-
-		// Hydrate the asset if it was partially loaded before
-		Asset* potentially_partially_loaded_asset = lookup_cached_asset(assetPath, LoadFlags::PartialLoad);
-		if (potentially_partially_loaded_asset)
-		{
-			m_serializers.at(assetTypeId.name())->hydrate_asset(potentially_partially_loaded_asset, asset_blob);
-			m_asset_to_metadata.at(potentially_partially_loaded_asset).is_partially_loaded = false;
-			return potentially_partially_loaded_asset;
-		}
-
-		// Deserialize, initialize and cache the asset
-		rsl::unique_ptr<Asset> asset = m_serializers.at(assetTypeId.name())->serialize_from_binary(asset_blob/*, loadFlags*/);
-		AssetMetaData metadata{};
-		metadata.path = rsl::string(assetPath);
-		metadata.is_partially_loaded = rsl::has_flag(loadFlags, LoadFlags::PartialLoad);
-		m_asset_to_metadata.emplace(asset.get(), metadata);
-		auto emplace_result = m_path_to_asset.emplace(assetPath, rsl::move(asset));
 
 		// Asset is loaded, so fire the event that is has fully loaded
 		event_system::instance()->fire_event(EndAssetLoad(assetPath, asset.get()));
@@ -162,10 +111,6 @@ namespace rex
 		return asset;
 	}
 
-	void AssetDb::serialize(rsl::type_id_t assetTypeId, Asset* asset, rsl::string_view assetPath)
-	{
-	}
-
 	void AssetDb::hydrate_asset(rsl::type_id_t assetTypeId, Asset* asset)
 	{
 		if (!m_asset_to_metadata.contains(asset))
@@ -179,11 +124,16 @@ namespace rex
 			return;
 		}
 
-		rsl::string_view asset_path = m_asset_to_metadata.at(asset).path;
-		rex::memory::Blob asset_blob = rex::vfs::instance()->read_file(asset_path);
-		rex::json::json asset_json = rex::json::parse(asset_blob);
+		// If we don't have an importer for the type, we can't initialize it, so return
+		rsl::string_view type_name = assetTypeId.name();
+		if (!m_importers.contains(type_name))
+		{
+			REX_ERROR(LogAssetDatabase, "Cannot hydrate asset as it does not have an importer");
+			return;
+		}
 
-		m_serializers.at(assetTypeId.name())->hydrate_asset(asset, asset_json);
+		rsl::string_view asset_path = m_asset_to_metadata.at(asset).path;
+		m_importers.at(assetTypeId.name())->hydrate_asset(asset, asset_path);
 		m_asset_to_metadata.at(asset).is_partially_loaded = false;
 	}
 
