@@ -33,6 +33,9 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
     conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
     conf.AddPublicDependency<Entt>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexHostFxr>(target, DependencySetting.DefaultWithoutLinking);
+    conf.AddPublicDependency<RexNetHost>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexEngineCSharp>(target, DependencySetting.Default);
 
     if (conf.Platform == Platform.win32 || conf.Platform == Platform.win64)
     {

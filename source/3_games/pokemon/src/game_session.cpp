@@ -71,6 +71,28 @@ namespace pokemon
 		// Objective: Add NPCs
 		// Objective: Add collision
 
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 		// Game tick is as followed

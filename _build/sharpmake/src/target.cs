@@ -8,7 +8,7 @@ public class RexTarget : ITarget
   public Platform Platform;
   public Config Config;
   public Compiler Compiler;
-  public DotNetFramework DotNetFramework = DotNetFramework.v4_8;
+  public DotNetFramework DotNetFramework = DotNetFramework.net8_0;
   public RexTarget()
   { }
   public RexTarget(Platform platform, DevEnv devEnv, Config config, Compiler compiler = Compiler.MSVC)
