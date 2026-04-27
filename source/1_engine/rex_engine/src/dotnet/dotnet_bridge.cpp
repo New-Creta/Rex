@@ -1,9 +1,11 @@
 #include "rex_engine/dotnet/dotnet_bridge.h"
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/module_manager.h"
 
 #include "rex_nethost/nethost.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
 
 #include "rex_engine/text_processing/text_processing.h"
 
@@ -12,25 +14,22 @@ namespace rex
 	DEFINE_LOG_CATEGORY(LogHostFxr);
 
 	DotNetBridge::DotNetBridge(rsl::string_view runtimeConfigPath)
-		: m_module(nullptr)
-		, m_init_for_cmd_line_fptr(nullptr)
-		, m_init_for_config_fptr(nullptr)
-		, m_get_delegate_fptr(nullptr)
-		, m_run_app_fptr(nullptr)
-		, m_close_fptr(nullptr)
-		, m_config_handle(nullptr)
-		, m_load_assembly_and_get_function_pointer_fn(nullptr)
+		: m_dotnet_runtime()
+		, m_load_assembly_and_get_function_pointer_fn()
+		, m_set_delegate_fn()
 	{
-		init_hostfxr();
-		init_hostfxr_funcs();
-		init_clr_funcs(runtimeConfigPath);
+		m_load_assembly_and_get_function_pointer_fn = m_dotnet_runtime.load_get_function_delegate(runtimeConfigPath);
+		m_dotnet_bridge_assembly_path.assign(module_manager::instance()->script_module_path("RexEngineCSharp"));
+
+		REX_ASSERT_X(file::exists(m_dotnet_bridge_assembly_path), "Filepath to RexengineCSharp dll does not exist. '{}'", m_dotnet_bridge_assembly_path);
+
+		m_set_delegate_fn = (set_delegate_fn)load_function(m_dotnet_bridge_assembly_path, "Rex.DelegateSetter", "SetDelegate");
 	}
 
-	DotNetBridge::~DotNetBridge()
-	{
-		m_close_fptr(m_config_handle);
+	void DotNetBridge::set_delegate(rsl::string_view classPath, rsl::string_view delegateName, void* fn)
+	{ 
+		m_set_delegate_fn(classPath.data(), delegateName.data(), fn);
 	}
-
 
 	// Load a function from a dotnet library using a class path and a method of that class
 	void* DotNetBridge::load_function(rsl::string_view assemblyPath, rsl::string_view classPath, rsl::string_view methodName) const
@@ -61,68 +60,20 @@ namespace rex
 		return func_ptr;
 	}
 
-	// Init hostfxr itself, finding its path and loading the module
-	void DotNetBridge::init_hostfxr()
-	{
-		get_hostfxr_parameters params{ sizeof(get_hostfxr_parameters), nullptr, nullptr };
-		char_t hostfxr_path[rex::path::max_path_length()];
-		size_t hostfxr_path_length = sizeof(hostfxr_path) / sizeof(char_t);
-
-		REX_ASSERT_X(get_hostfxr_path(hostfxr_path, &hostfxr_path_length, &params) == 0, "Failed to find hostfxr path");
-		temp_string hostfxr_path_ascii = rex::to_string<temp_string>(hostfxr_path);
-		m_module = load_library(hostfxr_path_ascii);
-		REX_ASSERT_X(m_module != nullptr, "Failed to load hostfxr module");
-	}
-	// Calls into the hostfxr module to load the api functions
-	void DotNetBridge::init_hostfxr_funcs()
-	{
-		m_init_for_cmd_line_fptr = (hostfxr_initialize_for_dotnet_command_line_fn)load_procedure(m_module, "hostfxr_initialize_for_dotnet_command_line");
-		m_init_for_config_fptr = (hostfxr_initialize_for_runtime_config_fn)load_procedure(m_module, "hostfxr_initialize_for_runtime_config");
-		m_get_delegate_fptr = (hostfxr_get_runtime_delegate_fn)load_procedure(m_module, "hostfxr_get_runtime_delegate");
-		m_run_app_fptr = (hostfxr_run_app_fn)load_procedure(m_module, "hostfxr_run_app");
-		m_close_fptr = (hostfxr_close_fn)load_procedure(m_module, "hostfxr_close");
-	}
-	// Loads clr api functions
-	void DotNetBridge::init_clr_funcs(rsl::string_view runtimeConfigPath)
-	{
-		// Load .NET Core
-		temp_wstring wide_runtime_config_path = rex::to_wstring<temp_wstring>(runtimeConfigPath);
-		int rc = m_init_for_config_fptr(wide_runtime_config_path.data(), nullptr, &m_config_handle);
-		if (rc != 0 || m_config_handle == nullptr)
-		{
-			REX_ERROR(LogHostFxr, "Failed to initialize clr functions of host fxr lib. Error: {}", rc);
-			m_close_fptr(m_config_handle);
-			return;
-		}
-
-		// Get the load assembly function pointer
-		void* load_assembly_and_get_function_pointer = nullptr;
-		rc = m_get_delegate_fptr(
-			m_config_handle,
-			hdt_load_assembly_and_get_function_pointer,
-			&load_assembly_and_get_function_pointer);
-		if (rc != 0 || load_assembly_and_get_function_pointer == nullptr)
-		{
-			REX_ERROR(LogHostFxr, "Get delegate failed: }", rc);
-		}
-
-		m_load_assembly_and_get_function_pointer_fn = (load_assembly_and_get_function_pointer_fn)load_assembly_and_get_function_pointer;
-	}
-
 	namespace dotnet
 	{
-		globals::GlobalUniquePtr<DotNetBridge> g_host_fxr_lib;
-		void init(globals::GlobalUniquePtr<DotNetBridge> hostFxrLib)
+		globals::GlobalUniquePtr<DotNetBridge> g_dotnet_bridge;
+		void init(globals::GlobalUniquePtr<DotNetBridge> dotnetBridge)
 		{
-			g_host_fxr_lib = rsl::move(hostFxrLib);
+			g_dotnet_bridge = rsl::move(dotnetBridge);
 		}
 		DotNetBridge* instance()
 		{
-			return g_host_fxr_lib.get();
+			return g_dotnet_bridge.get();
 		}
 		void shutdown()
 		{
-			g_host_fxr_lib.reset();
+			g_dotnet_bridge.reset();
 		}
 	}
 }

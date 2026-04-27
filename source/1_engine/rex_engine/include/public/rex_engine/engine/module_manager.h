@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/module.h"
+#include "rex_engine/engine/script_module.h"
 #include "rex_engine/engine/globals.h"
 
 #include "rex_std/vector.h"
@@ -20,6 +21,10 @@ namespace rex
 		// this function will return the Bob module
 		const Module* current() const;
 
+		// Query all modules and look for script a module with a certain name
+		// return the path to that module
+		rsl::string_view script_module_path(rsl::string_view moduleName);
+
 	private:
 		// Initialize a module based on its module file, who's path is provided to this func
 		Module* init_module(rsl::string_view modulePath);
@@ -27,6 +32,7 @@ namespace rex
 	private:
 		Module* m_current_module;
 		rsl::vector<rsl::unique_ptr<Module>> m_all_modules;
+		rsl::unordered_map<rsl::string, rsl::unique_ptr<ScriptModule>> m_all_script_modules;
 	};
 
 	namespace module_manager

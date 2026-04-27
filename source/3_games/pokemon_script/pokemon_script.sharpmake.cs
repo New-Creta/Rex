@@ -2,11 +2,11 @@ using Sharpmake;
 using System.IO;
 
 [Sharpmake.Generate]
-public class RexEngineCSharp : BasicCSProject
+public class PokemonCSharp : BasicCSProject
 {
-  public RexEngineCSharp()
+  public PokemonCSharp()
   {
-    Name = "RexEngineCSharp";
+    Name = "PokemonCSharp";
     SourceFilesExtensions.Clear();
     SourceFilesExtensions.Add(".cs");
 
@@ -27,7 +27,7 @@ public class RexEngineCSharp : BasicCSProject
 
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
-    conf.SolutionFolder = "1_engine";
+    conf.SolutionFolder = "3_games";
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)

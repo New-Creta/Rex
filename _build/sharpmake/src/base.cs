@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 using rex;
+using System.Runtime.CompilerServices;
 
 // This file defines the base class for all different kind of projects supported for rex.
 // The BaseProject is cross-language and defines things like config name, intermediate directory, ...
@@ -34,7 +35,7 @@ public class BaseConfiguration
   // This is called by configure functions of top level project types
   public void Configure(RexConfiguration conf, RexTarget target)
   {
-    conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
+    conf.Name = target.Config.ToString().ToLower();
     conf.DumpDependencyGraph = true;
 
     // These are private and are not virtualized to be configurable derived projects
@@ -557,6 +558,69 @@ public abstract class BasicCPPProject : Project
   }
   #endregion
 
+  // Sets the common module properties of this module
+  private void AddModuleDefaultProperties()
+  {
+    // Fill in common module fields
+    SetModuleProperty("name", Name);
+    SetModuleProperty("data_path", DataPath);
+  }
+  // Write the module dependencies to the module properties
+  private void SetModuleDependencies(RexConfiguration conf)
+  {
+    // Add every module filepath of every dependency to the module file we're currently writing
+    List<string> rexDependencies = new List<string>();
+    List<string> rexScriptDependencies = new List<string>();
+
+    List<DotNetDependency> dotnetDependencies = new List<DotNetDependency>();
+    dotnetDependencies.AddRange(conf.DotNetPublicDependencies);
+    dotnetDependencies.AddRange(conf.DotNetPrivateDependencies);
+
+    List<Configuration> configurationDependencies = conf.ConfigurationDependencies.ToList();
+    configurationDependencies.AddRange(dotnetDependencies.Select(x => x.Configuration));
+
+    foreach (RexConfiguration dependency in configurationDependencies)
+    {
+      BasicCPPProject cppProject = dependency.Project as BasicCPPProject;
+      if (cppProject != null)
+      {
+        rexDependencies.Add(PathGeneration.CreateModuleFilePath(dependency));
+        continue;
+      }
+
+      BasicCSProject csProject = dependency.Project as BasicCSProject;
+      if (csProject != null && csProject.IsScriptProject)
+      {
+        RexTarget dependencyTarget = dependency.Target as RexTarget;
+        rexScriptDependencies.Add(Path.Combine(dependency.TargetPath, Sharpmake.ExtensionMethods.ToVersionString(dependencyTarget.DotNetFramework), dependency.TargetFileFullNameWithExtension));
+        continue;
+      }
+    }
+
+    SetModulePropertyForConfig(conf, "dependencies", rexDependencies);
+    SetModulePropertyForConfig(conf, "scripts", rexScriptDependencies);
+  }
+  // Write the module file of this project
+  private void WriteModuleFile(RexConfiguration conf)
+  {
+    string moduleAsJson = _Module.SerializeForConfig(conf);
+
+    // Write the module file at the intermediate location
+    string intermediateModuleFilePath = Path.Combine(conf.IntermediatePath, $"{Name}_{conf.Name}_module.json");
+    Utils.SafeWriteFile(intermediateModuleFilePath, moduleAsJson);
+
+    string moduleFilePath = PathGeneration.CreateModuleFilePath(conf);
+    // Make sure the directory where the module file would be created exists
+    // otherwise we can't create the file
+    if (!Directory.Exists(Path.GetDirectoryName(moduleFilePath)))
+    {
+      Directory.CreateDirectory(Path.GetDirectoryName(moduleFilePath));
+    }
+
+    // Copy the module file to the final location after having having build it
+    conf.EventPostBuild.Add($"copy {intermediateModuleFilePath} {moduleFilePath} /Y");
+  }
+
   // Sets up the project to use clang tools when enabled.
   // Returns the commandline arguments to be passed to post_build.py
   // to enable these tools.
@@ -622,6 +686,7 @@ public abstract class BasicCPPProject : Project
       Directory.Delete(clangToolsPath, recursive: true);
     }
   }
+
 
   // This is called by Sharpmake itself after all the projects are created
   public override void PostLink()
@@ -779,7 +844,7 @@ public abstract class BasicCPPProject : Project
     // we hardcode "ninja" as that's the name of the devenv when ninja is selected
     string ninja_files_path = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, "ninja", Name);
     conf.TargetPath = Path.Combine(ninja_files_path, "bin", target.ProjectConfigurationName);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", target.ProjectConfigurationName, target.Compiler.ToString());
+    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", target.ProjectConfigurationName);
     conf.UseRelativePdbPath = false;
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
@@ -804,58 +869,14 @@ public abstract class BasicCPPProject : Project
       AdditionalSourceRootPaths.Add(DataPath);
     }
   }
-
-  // Sets the common module properties of this module
-  private void AddModuleDefaultProperties()
-  {
-    // Fill in common module fields
-    SetModuleProperty("name", Name);
-    SetModuleProperty("data_path", DataPath);
-  }
-  // Write the module dependencies to the module properties
-  private void SetModuleDependencies(RexConfiguration conf)
-  {
-    // Add every module filepath of every dependency to the module file we're currently writing
-    List<string> rexDependencies = new List<string>();
-    foreach (RexConfiguration dependency in conf.ConfigurationDependencies)
-    {
-      BasicCPPProject cppProject = dependency.Project as BasicCPPProject;
-      if (cppProject == null)
-      {
-        continue;
-      }
-
-      rexDependencies.Add(PathGeneration.CreateModuleFilePath(dependency));
-    }
-
-    SetModulePropertyForConfig(conf, "dependencies", rexDependencies);
-  }
-  // Write the module file of this project
-  private void WriteModuleFile(RexConfiguration conf)
-  {
-    string moduleAsJson = _Module.SerializeForConfig(conf);
-
-    // Write the module file at the intermediate location
-    string intermediateModuleFilePath = Path.Combine(conf.IntermediatePath, $"{Name}_{conf.Name}_module.json");
-    Utils.SafeWriteFile(intermediateModuleFilePath, moduleAsJson);
-
-    string moduleFilePath = PathGeneration.CreateModuleFilePath(conf);
-    // Make sure the directory where the module file would be created exists
-    // otherwise we can't create the file
-    if (!Directory.Exists(Path.GetDirectoryName(moduleFilePath)))
-    {
-      Directory.CreateDirectory(Path.GetDirectoryName(moduleFilePath));
-    }
-
-    // Copy the module file to the final location after having having build it
-    conf.EventPostBuild.Add($"copy {intermediateModuleFilePath} {moduleFilePath} /Y");
-  }
 }
 
 // This is the base class for every C# project used in the rex solution
 // Some of its functionality is sharedwith BasicCPPProject through BaseConfiguration
 public abstract class BasicCSProject : CSharpProject
 {
+  public bool IsScriptProject { get; set; } = false;
+
   public BasicCSProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     // Nothing to implement
@@ -873,7 +894,7 @@ public abstract class BasicCSProject : CSharpProject
     // These are protected and optionally extended by derived projects
     SetupOutputType(conf, target);
     SetupLibDependencies(conf, target);
-    SetupConfigRules(conf, target);
+    SetupOptimizationRules(conf, target);
     SetupConfigRules(conf, target);
     SetupPostBuildEvents(conf, target);
     SetupSolutionFolder(conf, target);
@@ -898,7 +919,8 @@ public abstract class BasicCSProject : CSharpProject
   // This is meant to be overriden by derived projects and extended where needed
   protected virtual void SetupConfigRules(RexConfiguration conf, RexTarget target)
   {
-    // Nothing to implement
+    conf.Options.Add(Options.CSharp.Nullable.Enabled);
+    conf.Options.Add(Options.CSharp.AllowUnsafeBlocks.Enabled);
   }
   // Setup rules for events that need to get fired after a build has finished.
   // Remember that these need to be in batch format.
@@ -911,11 +933,41 @@ public abstract class BasicCSProject : CSharpProject
   {
     // Nothing to implement
   }
+  protected virtual void SetupOptimizationRules(RexConfiguration conf, RexTarget target)
+  {
+    switch (target.Optimization)
+    {
+      case Optimization.FullOpt:
+        conf.Options.Add(Options.CSharp.Optimize.Enabled);
+        conf.Options.Add(Options.CSharp.DebugSymbols.Disabled);
+        conf.Options.Add(Options.CSharp.DebugType.None);
+        break;
+      case Optimization.FullOptWithPdb:
+        conf.Options.Add(Options.CSharp.Optimize.Enabled);
+        conf.Options.Add(Options.CSharp.DebugSymbols.Enabled);
+        conf.Options.Add(Options.CSharp.DebugType.Pdbonly);
+        break;
+      case Optimization.NoOpt:
+        conf.Options.Add(Options.CSharp.Optimize.Disabled);
+        conf.Options.Add(Options.CSharp.DebugSymbols.Enabled);
+        conf.Options.Add(Options.CSharp.DebugType.Full);
+        break;
+    }
+
+  }
   // Setup the target path and pdb locations
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
-    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    DevEnv devEnv = target.DevEnv;
+    if (devEnv == DevEnv.ninja)
+    {
+      devEnv = KitsRootPaths.VsVersionForNinja();
+    }
+
+    string startOutputPath = conf.ProjectPath.Replace(target.DevEnv.ToString(), devEnv.ToString());
+
+    conf.TargetPath = Path.Combine(startOutputPath, "bin", conf.Name);
+    conf.IntermediatePath = Path.Combine(startOutputPath, "intermediate", conf.Name);
     conf.UseRelativePdbPath = false;
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");

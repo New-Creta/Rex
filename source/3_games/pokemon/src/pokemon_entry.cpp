@@ -5,6 +5,9 @@
 #include "rex_engine/system/process.h"
 #include "pokemon/game_session.h"
 
+#include "rex_engine/scripts/csharp_script.h"
+#include "rex_engine/engine/module_manager.h"
+
 #include "imgui/imgui.h"
 
 namespace pokemon
@@ -18,6 +21,10 @@ namespace pokemon
     g_game_session = rsl::make_unique<GameSession>();
 
     REX_INFO(LogPokemon, "Pokemon initialized");
+
+    rsl::string_view pokemn_script_path = rex::module_manager::instance()->script_module_path("PokemonCSharp");
+    rex::CSharpScript pokemon_script(pokemn_script_path, { "Pokemon.TestScript", "RexEntry" });
+    pokemon_script.invoke();
 
     return true;
   }

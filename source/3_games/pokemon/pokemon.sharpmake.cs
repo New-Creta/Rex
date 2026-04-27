@@ -21,6 +21,8 @@ public class PokemonProject : GameProject
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
     base.SetupLibDependencies(conf, target);
+
+    conf.AddPrivateDependency<PokemonCSharp>(target);
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)

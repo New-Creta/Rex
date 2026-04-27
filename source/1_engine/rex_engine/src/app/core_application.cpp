@@ -342,6 +342,16 @@ namespace rex
     asset_db::instance()->add_loader<AnimatedSprite>(rsl::make_unique<AnimatedSpriteLoaderJson>());
   }
 
+  void foobar()
+  {
+    while (true)
+    {
+      REX_INFO(LogCoreApp, "Hello from C#!");
+      using namespace rsl::chrono_literals;
+      rsl::this_thread::sleep_for(1s);
+    }
+  }
+
   //--------------------------------------------------------------------------------------------
   void CoreApplication::init_globals()
   {
@@ -384,8 +394,8 @@ namespace rex
     profiling_session::init(globals::make_unique<ProfilingSession>());
 
     rsl::string_view dotnet_runtime_config_path = path::join(vfs::instance()->mount_path(MountingPoint::EngineRoot), "dotnet", "dotnet.runtimeconfig.json");
-    dotnet::init(globals::make_unique<DotNetBridge>(dotnet_runtime_config_path));
-
+    dotnet::init(globals::make_unique<DotNetBridge>(dotnet_runtime_config_path));  
+    
     REX_DEBUG(LogCoreApp, "Initializing asset database");
     init_asset_db();
   }

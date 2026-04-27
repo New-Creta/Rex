@@ -47,8 +47,8 @@ namespace Rex
     [UnmanagedCallersOnly]
     internal static void SetDelegate(IntPtr classNamePtr, IntPtr fieldNamePtr, IntPtr cppFuncPtr)
     {
-      string className = Marshal.PtrToStringUTF8(classNamePtr);
-      Type type = TypeInterface.FindType(className);
+      string? className = Marshal.PtrToStringUTF8(classNamePtr);
+      Type? type = TypeInterface.FindType(className);
 
       if (type == null)
       {
@@ -56,7 +56,13 @@ namespace Rex
         return;
       }
 
-      string fieldName = Marshal.PtrToStringUTF8(fieldNamePtr);
+      string? fieldName = Marshal.PtrToStringUTF8(fieldNamePtr);
+      if (fieldName == null)
+      {
+        Console.WriteLine($"Could not generate field name from pointer. Did you pass in a string?");
+        return;
+      }
+
       var bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
       FieldInfo? fieldInfo = type.GetField(fieldName, bindingFlags);
       if (fieldInfo == null)
@@ -74,5 +80,16 @@ namespace Rex
       fieldInfo.SetValue(null, cppFuncPtr);
       Console.WriteLine($"Delegate '{fieldName}' of '{className}' set!");
     }
+  }
+
+  internal static unsafe class InternalCalls
+  {
+    [UnmanagedCallersOnly]
+    public static void CallDelegate()
+    {
+      TestDelegate();
+    }
+
+    internal static delegate* unmanaged<void> TestDelegate;
   }
 }

@@ -1,5 +1,6 @@
 using Sharpmake;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 // This file describes the classes used to configuring projects.
 // A configuration is often tied to optimisation levels
@@ -61,6 +62,7 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Defines.Add(define);
     ExportDefines.Add(define);
   }
+
 }
 
 // Every entry in the config file that's passed in to a call into sharpmake

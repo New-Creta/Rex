@@ -28,6 +28,17 @@ namespace rex
 		return m_current_module;
 	}
 
+	rsl::string_view ModuleManager::script_module_path(rsl::string_view moduleName)
+	{
+		auto it = m_all_script_modules.find(moduleName);
+		if (it != m_all_script_modules.cend())
+		{
+			return it->value->assembly_path();
+		}
+
+		return "";
+	}
+
 	Module* ModuleManager::init_module(rsl::string_view modulePath)
 	{
 		if (!vfs::instance()->exists(modulePath))
@@ -69,6 +80,17 @@ namespace rex
 			if (module)
 			{
 				dependency_ptrs.push_back(module);
+			}
+		}
+
+		const rex::json::json& scripts = json_content["scripts"];
+		for (rsl::string_view script : scripts)
+		{
+			rsl::string_view script_name = path::stem(script);
+			auto it = m_all_script_modules.find(script_name);
+			if (it == m_all_script_modules.cend())
+			{
+				m_all_script_modules.emplace(script_name, rsl::make_unique<ScriptModule>(script));
 			}
 		}
 
