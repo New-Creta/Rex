@@ -6,7 +6,7 @@ namespace rex
 {
 	CSharpScript::CSharpScript(rsl::string_view assembly, CSharpScriptEntryPoint entryPoint)
 	{
-		m_entrypoint_fn = dotnet::instance()->load_function<entrypoint_fn>(assembly, entryPoint.classPath, entryPoint.function);
+		//m_entrypoint_fn = dotnet::instance()->load_function<entrypoint_fn>(assembly, entryPoint.classPath, entryPoint.function);
 	}
 
 	void CSharpScript::invoke(void* data, s32 size)

@@ -59,21 +59,4 @@ namespace rex
 
 		return func_ptr;
 	}
-
-	namespace dotnet
-	{
-		globals::GlobalUniquePtr<DotNetBridge> g_dotnet_bridge;
-		void init(globals::GlobalUniquePtr<DotNetBridge> dotnetBridge)
-		{
-			g_dotnet_bridge = rsl::move(dotnetBridge);
-		}
-		DotNetBridge* instance()
-		{
-			return g_dotnet_bridge.get();
-		}
-		void shutdown()
-		{
-			g_dotnet_bridge.reset();
-		}
-	}
 }

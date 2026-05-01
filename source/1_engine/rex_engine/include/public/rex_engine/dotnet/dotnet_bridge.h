@@ -51,11 +51,4 @@ namespace rex
 		using set_delegate_fn = void(*)(const char*, const char*, void*);
 		set_delegate_fn m_set_delegate_fn;
 	};
-
-	namespace dotnet
-	{
-		void init(globals::GlobalUniquePtr<DotNetBridge> dotNetBridge);
-		DotNetBridge* instance();
-		void shutdown();
-	}
 }

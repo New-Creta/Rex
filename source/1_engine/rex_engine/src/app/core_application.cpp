@@ -40,6 +40,7 @@
 
 #include "rex_std/internal/exception/exit.h"
 
+#include "rex_engine/scripts/script_engine.h"
 #include "rex_engine/dotnet/dotnet_bridge.h"
 
 #include <cstdlib>
@@ -329,6 +330,12 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
+  void CoreApplication::init_script_engine()
+  {
+    script_engine::init(globals::make_unique<ScriptEngine>());
+  }
+
+  //--------------------------------------------------------------------------------------------
   void CoreApplication::init_asset_db()
   {
     asset_db::init(globals::make_unique<AssetDb>());
@@ -393,8 +400,8 @@ namespace rex
     REX_DEBUG(LogCoreApp, "Initializing profiling system");
     profiling_session::init(globals::make_unique<ProfilingSession>());
 
-    rsl::string_view dotnet_runtime_config_path = path::join(vfs::instance()->mount_path(MountingPoint::EngineRoot), "dotnet", "dotnet.runtimeconfig.json");
-    dotnet::init(globals::make_unique<DotNetBridge>(dotnet_runtime_config_path));  
+    REX_DEBUG(LogCoreApp, "Initializing script engine");
+    init_script_engine();
     
     REX_DEBUG(LogCoreApp, "Initializing asset database");
     init_asset_db();
@@ -419,7 +426,7 @@ namespace rex
   {
     REX_INFO(LogCoreApp, "Shutting down globals");
 
-    dotnet::shutdown();
+    script_engine::shutdown();
     asset_db::shutdown();
     profiling_session::shutdown();
     event_system::shutdown();
