@@ -28,17 +28,6 @@ namespace rex
 		return m_current_module;
 	}
 
-	rsl::string_view ModuleManager::script_module_path(rsl::string_view moduleName)
-	{
-		auto it = m_all_script_modules.find(moduleName);
-		if (it != m_all_script_modules.cend())
-		{
-			return it->value->assembly_path();
-		}
-
-		return "";
-	}
-
 	Module* ModuleManager::init_module(rsl::string_view modulePath)
 	{
 		if (!vfs::instance()->exists(modulePath))
@@ -51,9 +40,12 @@ namespace rex
 		//   "name": "Bob",
 		//   "data_path": "D:\MyData",
 		//   "dependencies": [
-		//	   "D:\module_a\module.json",
-		//	   "D:\module_b\module.json",
-		//	  ]
+		//	   "D:\module_a\module.nproj",
+		//	   "D:\module_b\module.nrpoj",
+		//	  ],
+		//	 "runtime_dependencies": [
+		//     "D:\module_c\module.nproj"
+		//    ]
 		// }
 		//
 
@@ -72,7 +64,18 @@ namespace rex
 		}
 
 		rsl::string_view data_path = json_content["data_path"];
-		const rex::json::json& dependencies = json_content["dependencies"];
+		rsl::vector<Module*> dependency_ptrs = read_dependencies(json_content, "dependencies");
+		rsl::vector<Module*> runtime_dependency_ptrs = read_dependencies(json_content, "runtime_dependencies");
+
+		m_all_modules.emplace_back(rsl::make_unique<Module>(name, data_path, rsl::move(dependency_ptrs), rsl::move(runtime_dependency_ptrs)));
+
+		return m_all_modules.back().get();
+	}
+
+	// read dependencies from a json blob and return it
+	rsl::vector<Module*> ModuleManager::read_dependencies(json::json& jsonBlob, rsl::string_view name)
+	{
+		const rex::json::json& dependencies = jsonBlob[name];
 		rsl::vector<Module*> dependency_ptrs;
 		for (rsl::string_view dependency : dependencies)
 		{
@@ -83,20 +86,7 @@ namespace rex
 			}
 		}
 
-		const rex::json::json& scripts = json_content["scripts"];
-		for (rsl::string_view script : scripts)
-		{
-			rsl::string_view script_name = path::stem(script);
-			auto it = m_all_script_modules.find(script_name);
-			if (it == m_all_script_modules.cend())
-			{
-				m_all_script_modules.emplace(script_name, rsl::make_unique<ScriptModule>(script));
-			}
-		}
-
-		m_all_modules.emplace_back(rsl::make_unique<Module>(name, data_path, rsl::move(dependency_ptrs)));
-
-		return m_all_modules.back().get();
+		return dependency_ptrs;
 	}
 
 	namespace module_manager

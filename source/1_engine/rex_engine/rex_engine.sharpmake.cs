@@ -35,7 +35,7 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<Entt>(target, DependencySetting.Default);
     conf.AddPublicDependency<RexHostFxr>(target, DependencySetting.DefaultWithoutLinking);
     conf.AddPublicDependency<RexNetHost>(target, DependencySetting.Default);
-    conf.AddPublicDependency<RexEngineCSharp>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexEngineCSharp>(target, DependencySetting.Runtime);
 
     if (conf.Platform == Platform.win32 || conf.Platform == Platform.win64)
     {
@@ -51,19 +51,19 @@ public class RexEngine : EngineProject
     switch (target.Config)
     {
       case Config.debug:
-        conf.add_public_define("REX_BUILD_DEBUG");
+        conf.AddPublicDefine("REX_BUILD_DEBUG");
         break;
       case Config.debug_opt:
-        conf.add_public_define("REX_BUILD_DEBUG_OPT");
+        conf.AddPublicDefine("REX_BUILD_DEBUG_OPT");
         break;
       case Config.release:
-        conf.add_public_define("REX_BUILD_RELEASE");
+        conf.AddPublicDefine("REX_BUILD_RELEASE");
         break;
       case Config.coverage:
-        conf.add_public_define("REX_BUILD_COVERAGE");
+        conf.AddPublicDefine("REX_BUILD_COVERAGE");
         break;
       case Config.sanitization:
-        conf.add_public_define("REX_BUILD_SANITIZATION");
+        conf.AddPublicDefine("REX_BUILD_SANITIZATION");
         break;
       default:
         break;
@@ -73,11 +73,11 @@ public class RexEngine : EngineProject
     switch (target.Optimization)
     {
       case Optimization.NoOpt:
-        conf.add_public_define("REX_DISABLE_OPTIMIZATION");
+        conf.AddPublicDefine("REX_DISABLE_OPTIMIZATION");
         break;
       case Optimization.FullOptWithPdb:
       case Optimization.FullOpt:
-        conf.add_public_define("REX_ENABLE_OPTIMIZATION");
+        conf.AddPublicDefine("REX_ENABLE_OPTIMIZATION");
         break;
     }
 
@@ -86,9 +86,9 @@ public class RexEngine : EngineProject
     {
       case Config.debug:
       case Config.debug_opt:
-        conf.add_public_define("REX_ENABLE_MEM_TRACKING");
-        conf.add_public_define("REX_ENABLE_HR_CALL");
-        conf.add_public_define("REX_ENABLE_WIN_CALL");
+        conf.AddPublicDefine("REX_ENABLE_MEM_TRACKING");
+        conf.AddPublicDefine("REX_ENABLE_HR_CALL");
+        conf.AddPublicDefine("REX_ENABLE_WIN_CALL");
         goto case Config.sanitization;
       case Config.sanitization:
         break;
@@ -97,7 +97,7 @@ public class RexEngine : EngineProject
     // Set the fuzzy define if we're generating fuzzy tests
     if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
-      conf.add_public_define("REX_BUILD_FUZZY");
+      conf.AddPublicDefine("REX_BUILD_FUZZY");
     }
   }
 
@@ -108,17 +108,17 @@ public class RexEngine : EngineProject
     switch (conf.Platform)
     {
       case Platform.win32:
-        conf.add_public_define("REX_PLATFORM_X86");
-        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.AddPublicDefine("REX_PLATFORM_X86");
+        conf.AddPublicDefine("REX_PLATFORM_WINDOWS");
         conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
         break;
       case Platform.win64:
-        conf.add_public_define("REX_PLATFORM_X64");
-        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.AddPublicDefine("REX_PLATFORM_X64");
+        conf.AddPublicDefine("REX_PLATFORM_WINDOWS");
         conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
         break;
       case Platform.linux:
-        conf.add_public_define("REX_PLATFORM_LINUX");
+        conf.AddPublicDefine("REX_PLATFORM_LINUX");
         conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
         break;
       default:
@@ -130,17 +130,17 @@ public class RexEngine : EngineProject
   {
     base.SetupConfigSettings(conf, target);
 
-    conf.add_public_define("GLM_FORCE_SILENT_WARNINGS");
+    conf.AddPublicDefine("GLM_FORCE_SILENT_WARNINGS");
     
     switch (ProjectGen.Settings.GraphicsAPI)
     {
       case ProjectGen.GraphicsAPI.OpenGL:
-        conf.add_public_define("REX_API_OPENGL");
+        conf.AddPublicDefine("REX_API_OPENGL");
         break;
       case ProjectGen.GraphicsAPI.DirectX12:
-        conf.add_public_define("REX_API_DIRECTX12");
-            conf.add_public_define("GLM_FORCE_DEPTH_ZERO_TO_ONE");
-            conf.add_public_define("GLM_FORCE_LEFT_HANDED");
+        conf.AddPublicDefine("REX_API_DIRECTX12");
+            conf.AddPublicDefine("GLM_FORCE_DEPTH_ZERO_TO_ONE");
+            conf.AddPublicDefine("GLM_FORCE_LEFT_HANDED");
         break;
       default:
         break;
@@ -148,14 +148,14 @@ public class RexEngine : EngineProject
 
     if (ProjectGen.Settings.AsanEnabled)
     {
-      conf.add_public_define("REX_ASAN");
+      conf.AddPublicDefine("REX_ASAN");
     }
 
     if (ProjectGen.Settings.UbsanEnabled)
     {
-      conf.add_public_define("REX_UBSAN");
+      conf.AddPublicDefine("REX_UBSAN");
     }
 
-    conf.add_public_define("REXLOG_COMPILED_LIB");
+    conf.AddPublicDefine("REXLOG_COMPILED_LIB");
   }
 }

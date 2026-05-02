@@ -20,7 +20,7 @@ public class Regina : ToolsProject
     if (ProjectGen.Settings.AutoTestsEnabled)
     {
       conf.Output = Configuration.OutputType.Lib;
-      conf.add_public_define("REX_ENABLE_AUTO_TESTS");
+      conf.AddPublicDefine("REX_ENABLE_AUTO_TESTS");
     }
     else
     {
@@ -40,7 +40,7 @@ public class Regina : ToolsProject
 
         if (target.Config == Config.release)
         {
-          conf.add_public_define("REX_WINDOWS_GUI_APP");
+          conf.AddPublicDefine("REX_WINDOWS_GUI_APP");
           conf.Options.Add(Options.Vc.Linker.SubSystem.Windows);
         }
         else

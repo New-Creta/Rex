@@ -50,7 +50,7 @@ public class BaseConfiguration
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
-    conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}_{target.Compiler}";
+    conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}";
   }
   // Setup default configuration settings.
   private void SetupDefaultConfigurationSettings(RexConfiguration conf, RexTarget target)
@@ -264,7 +264,7 @@ public abstract class BasicCPPProject : Project
 
   protected virtual void SetupConfigSettings(RexConfiguration conf, RexTarget target)
   {
-    conf.disable_exceptions();
+    conf.DisableExceptions();
 
     // Keep in mind, visual studio takes care of its dependencies
     // If project A depends on project B, visual studio will
@@ -291,9 +291,9 @@ public abstract class BasicCPPProject : Project
       // We need to somehow configure the paths so that the visual studio projects are pointing correctly
       // but we still use the ninja files that are located elsewhere.
       conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-      conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} build -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
-      conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} build -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
-      conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} build -nobuild -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
+      conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} build -project={Name} -config={target.Config} -dont_build_dependencies";
+      conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} build -clean -project={Name} -config={target.Config} -dont_build_dependencies";
+      conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} build -nobuild -clean -project={Name} -config={target.Config} -dont_build_dependencies";
       conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, conf.TargetFileFullNameWithExtension);
     }
 
@@ -452,7 +452,7 @@ public abstract class BasicCPPProject : Project
     {
       case Platform.win32:
       case Platform.win64:
-        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.AddPublicDefine("REX_PLATFORM_WINDOWS");
 
         // This manifest enables utf8 for win API -A functions
         // Please see this link for more details
@@ -476,13 +476,13 @@ public abstract class BasicCPPProject : Project
     switch (target.Compiler)
     {
       case Compiler.MSVC:
-        conf.add_public_define("REX_COMPILER_MSVC");
+        conf.AddPublicDefine("REX_COMPILER_MSVC");
         break;
       case Compiler.Clang:
-        conf.add_public_define("REX_COMPILER_CLANG");
+        conf.AddPublicDefine("REX_COMPILER_CLANG");
         break;
       case Compiler.GCC:
-        conf.add_public_define("REX_COMPILER_GCC");
+        conf.AddPublicDefine("REX_COMPILER_GCC");
         break;
       default:
         break;
@@ -497,10 +497,10 @@ public abstract class BasicCPPProject : Project
     {
       case Config.debug:
       case Config.debug_opt:
-        conf.add_public_define("REX_ENABLE_ASSERTS");
+        conf.AddPublicDefine("REX_ENABLE_ASSERTS");
         break;
       case Config.release:
-        conf.add_public_define("REX_NO_LOGGING");
+        conf.AddPublicDefine("REX_NO_LOGGING");
         break;
       case Config.coverage:
       case Config.sanitization:
@@ -570,7 +570,6 @@ public abstract class BasicCPPProject : Project
   {
     // Add every module filepath of every dependency to the module file we're currently writing
     List<string> rexDependencies = new List<string>();
-    List<string> rexScriptDependencies = new List<string>();
 
     List<DotNetDependency> dotnetDependencies = new List<DotNetDependency>();
     dotnetDependencies.AddRange(conf.DotNetPublicDependencies);
@@ -582,23 +581,20 @@ public abstract class BasicCPPProject : Project
     foreach (RexConfiguration dependency in configurationDependencies)
     {
       BasicCPPProject cppProject = dependency.Project as BasicCPPProject;
+      
       if (cppProject != null)
       {
         rexDependencies.Add(PathGeneration.CreateModuleFilePath(dependency));
         continue;
       }
-
-      BasicCSProject csProject = dependency.Project as BasicCSProject;
-      if (csProject != null && csProject.IsScriptProject)
-      {
-        RexTarget dependencyTarget = dependency.Target as RexTarget;
-        rexScriptDependencies.Add(Path.Combine(dependency.TargetPath, Sharpmake.ExtensionMethods.ToVersionString(dependencyTarget.DotNetFramework), dependency.TargetFileFullNameWithExtension));
-        continue;
-      }
     }
 
-    SetModulePropertyForConfig(conf, "dependencies", rexDependencies);
-    SetModulePropertyForConfig(conf, "scripts", rexScriptDependencies);
+    List<string> runtimeDependencies = new List<string>();
+    foreach (RexConfiguration runtimeDependency in conf.RuntimeDependencies)
+    {
+      runtimeDependencies.Add(Path.Combine(runtimeDependency.ProjectPath, $"{runtimeDependency.ProjectFullFileName}.nproj"));
+    }
+    SetModulePropertyForConfig(conf, "runtime_dependencies", runtimeDependencies);
   }
   // Write the module file of this project
   private void WriteModuleFile(RexConfiguration conf)
@@ -846,8 +842,8 @@ public abstract class BasicCPPProject : Project
     conf.TargetPath = Path.Combine(ninja_files_path, "bin", target.ProjectConfigurationName);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", target.ProjectConfigurationName);
     conf.UseRelativePdbPath = false;
-    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
-    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
+    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}{conf.LinkerPdbSuffix}.pdb");
+    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}{conf.CompilerPdbSuffix}.pdb");
   }
 
   // Add the include path to the configuration, if the path exists
@@ -875,8 +871,6 @@ public abstract class BasicCPPProject : Project
 // Some of its functionality is sharedwith BasicCPPProject through BaseConfiguration
 public abstract class BasicCSProject : CSharpProject
 {
-  public bool IsScriptProject { get; set; } = false;
-
   public BasicCSProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     // Nothing to implement
@@ -1140,10 +1134,10 @@ public class TestProject : BasicCPPProject
     switch (target.Config)
     {
       case Config.coverage:
-        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch.
+        conf.AddPublicDefine("REX_DISABLE_CATCH"); // we don't need to check catch.
         break;
       case Config.sanitization:
-        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
+        conf.AddPublicDefine("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       default:
         break;

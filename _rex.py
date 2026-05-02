@@ -25,7 +25,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.90"
+required_rexpy_version = "0.1.92"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
@@ -58,6 +58,7 @@ def _run_script(scriptPath : str, args : list[str]):
   script_args.append('python')
   script_args.append(scriptPath)
   script_args.extend(args)
+  print(f'running: {' '.join(script_args)}')
   proc = subprocess.Popen(args=script_args)
   proc.wait()
 

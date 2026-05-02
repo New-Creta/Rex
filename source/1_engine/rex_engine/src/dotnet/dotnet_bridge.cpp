@@ -19,10 +19,13 @@ namespace rex
 		, m_set_delegate_fn()
 	{
 		m_load_assembly_and_get_function_pointer_fn = m_dotnet_runtime.load_get_function_delegate(runtimeConfigPath);
-		m_dotnet_bridge_assembly_path.assign(module_manager::instance()->script_module_path("RexEngineCSharp"));
+		const Module* engine_csharp_module = module_manager::instance()->current()->find_runtime_dependency("RexEngineCSharp");
+		REX_ASSERT_X(engine_csharp_module, "Engine's C# cannot be found");
 
+		// The C# module is the glue between C++ and C#. 
+		// We load the function that can set delegates in C# pointing back to C++ here
+		m_dotnet_bridge_assembly_path.assign(engine_csharp_module->target_path());
 		REX_ASSERT_X(file::exists(m_dotnet_bridge_assembly_path), "Filepath to RexengineCSharp dll does not exist. '{}'", m_dotnet_bridge_assembly_path);
-
 		m_set_delegate_fn = (set_delegate_fn)load_function(m_dotnet_bridge_assembly_path, "Rex.DelegateSetter", "SetDelegate");
 	}
 

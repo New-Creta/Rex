@@ -24,7 +24,7 @@ namespace rex
 		bool compile_script(rsl::string_view name);
 
 		// Convert the script name to where it'd be on disk
-		rsl::string_view find_script_path(rsl::string_view name);
+		//rsl::string_view find_script_path(rsl::string_view name);
 
 
 	private:

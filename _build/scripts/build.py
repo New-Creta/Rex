@@ -39,22 +39,15 @@ if __name__ == "__main__":
   parser.add_argument("-sln", default="", help="path to nsln file")
   parser.add_argument("-project", default="regina", help="project to build")
   parser.add_argument("-config", default="debug_opt", help="configuration to build for")
-  parser.add_argument("-compiler", default="unknown", help="configuration to build with")
   parser.add_argument("-dont_build_dependencies", default=False, help="build only the project specified and not its dependencies", action="store_true")
   parser.add_argument("-verbose", default=False, action="store_true", help="enable verbose output")
 
-  args, unknown = parser.parse_known_args()
-
-  if args.compiler == "unknown":
-    if regis.util.is_windows():
-      args.compiler = "msvc"
-    else:
-      args.compiler = "clang"
+  args = parser.parse_args()
 
   task = regis.task_raii_printing.TaskRaiiPrint("Building")
 
   start = time.perf_counter()
-  result = regis.build.new_build(args.project, args.config, args.compiler, not args.nobuild, args.clean, args.sln, not args.dont_build_dependencies, args.verbose)
+  result = regis.build.new_build(args.project, args.config, not args.nobuild, args.clean, args.sln, not args.dont_build_dependencies, args.verbose)
   end = time.perf_counter()
 
   if result != 0:

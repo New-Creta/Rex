@@ -20,8 +20,6 @@ public class PokemonCSharp : BasicCSProject
     // ignore the templates folder, these are used for auto generation, shouldn't be added to the project itself
     SourceFilesExcludeRegex.Add("templates");
 
-    IsScriptProject = true;
-
     AddTargets(RexTarget.CreateTargets().ToArray());
   }
 
@@ -38,6 +36,8 @@ public class PokemonCSharp : BasicCSProject
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
     base.SetupLibDependencies(conf, target);
+
+    conf.AddPublicDependency<PokemonProject>(target);
 
     conf.ReferencesByName.AddRange(new Strings("System",
                                                "System.Core",
