@@ -28,6 +28,9 @@ namespace rex
 		// read dependencies from a json blob and return it
 		rsl::vector<Module*> read_dependencies(json::json& jsonBlob, rsl::string_view name);
 
+		// read runtime dependencies from a json blob which point to projects and not module files
+		rsl::vector<Module*> read_runtime_dependencies(json::json& jsonBlob, rsl::string_view name);
+		
 	private:
 		Module* m_current_module;
 		rsl::vector<rsl::unique_ptr<Module>> m_all_modules;

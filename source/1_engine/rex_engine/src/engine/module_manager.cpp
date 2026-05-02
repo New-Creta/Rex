@@ -2,6 +2,7 @@
 
 #include "rex_engine/system/process.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_std/bonus/algorithms.h"
@@ -87,6 +88,28 @@ namespace rex
 		}
 
 		return dependency_ptrs;
+	}
+
+	rsl::vector<Module*> ModuleManager::read_runtime_dependencies(json::json& jsonBlob, rsl::string_view name)
+	{
+		rsl::vector<Module*> runtime_dependency_modules;
+
+		const rex::json::json& ninja_projects = jsonBlob[name];
+		for (rsl::string_view ninja_project_path : ninja_projects)
+		{
+			json::json ninja_project = json::read_from_file(ninja_project_path);
+			rsl::string_view output_directory = path::parent_path(ninja_project["output_path"]);
+			scratch_string module_path = path::join(output_directory, "module.json");
+			if (file::exists(module_path))
+			{
+				runtime_dependency_modules.push_back(init_module(module_path));
+			}
+
+			// compile the module instead
+			//TODO: Compile module
+
+			runtime_dependency_modules.push_back(init_module(module_path));
+		}
 	}
 
 	namespace module_manager
