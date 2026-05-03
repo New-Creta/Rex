@@ -15,11 +15,13 @@ namespace rex
 	class CSharpScript
 	{
 	public:
-		CSharpScript(rsl::string_view assembly, CSharpScriptEntryPoint entryPoint);
+		using entrypoint_fn = void(*)(void*, s32);
+
+	public:
+		CSharpScript(entrypoint_fn func);
 		void invoke(void* ptr = nullptr, s32 size = 0);
 		
 	private:
-		using entrypoint_fn = void(*)(void*, s32);
 		entrypoint_fn m_entrypoint_fn;
 	};
 }

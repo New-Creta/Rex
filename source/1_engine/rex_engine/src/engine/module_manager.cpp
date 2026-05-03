@@ -5,8 +5,6 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/diagnostics/log.h"
 
-#include "rex_engine/ninja/ninja.h"
-
 #include "rex_std/bonus/algorithms.h"
 
 namespace rex

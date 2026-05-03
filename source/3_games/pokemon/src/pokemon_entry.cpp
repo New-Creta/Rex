@@ -23,16 +23,6 @@ namespace pokemon
 
     REX_INFO(LogPokemon, "Pokemon initialized");
 
-    rsl::unique_ptr<rex::CSharpScript> pokemon_script = rex::script_engine::instance()->load_script("PokemonCSharp");
-
-    //rsl::string_view pokemn_script_path = rex::module_manager::instance()->script_module_path("PokemonCSharp");
-    //rex::CSharpScript pokemon_script(pokemn_script_path, { "Pokemon.TestScript", "RexEntry" });
-
-
-    //rex::CSharpScript pokemon_script = rex::script_engine::instance()->load_script("", "", "");
-
-    //pokemon_script.invoke();
-
     return true;
   }
 

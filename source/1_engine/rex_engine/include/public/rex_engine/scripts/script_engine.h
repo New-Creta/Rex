@@ -15,17 +15,13 @@ namespace rex
 	public:
 		ScriptEngine();
 
-		rsl::unique_ptr<CSharpScript> load_script(rsl::string_view name);
+		rsl::unique_ptr<CSharpScript> load_script(rsl::string_view name, CSharpScriptEntryPoint entryPoint);
 
 	private:
 		void init_dotnet();
 		rsl::string find_msbuild_path();
 
 		bool compile_script(rsl::string_view name);
-
-		// Convert the script name to where it'd be on disk
-		//rsl::string_view find_script_path(rsl::string_view name);
-
 
 	private:
 		rsl::unique_ptr<DotNetBridge> m_dotnet_bridge;

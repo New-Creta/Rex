@@ -16,23 +16,12 @@ namespace rex
 		init_dotnet();
 	}
 	
-	rsl::unique_ptr<CSharpScript> ScriptEngine::load_script(rsl::string_view name)
+	rsl::unique_ptr<CSharpScript> ScriptEngine::load_script(rsl::string_view name, CSharpScriptEntryPoint entryPoint)
 	{
-		//rsl::string_view script_path = find_script_path(name);
-		//if (vfs::instance()->exists(script_path))
-		//{
-		//	return rsl::make_unique<CSharpScript>(script_path, CSharpScriptEntryPoint{ "", "" });
-		//}
+		const Module* script_module = module_manager::instance()->current()->find_runtime_dependency(name);
+		CSharpScript::entrypoint_fn entrypoint_func = m_dotnet_bridge->load_function<CSharpScript::entrypoint_fn>(script_module->target_path(), entryPoint.classPath, entryPoint.function);
 
-		//if (m_allow_runtime_caching)
-		//{
-		//	if (compile_script(name))
-		//	{
-		//		return rsl::make_unique<CSharpScript>(script_path, CSharpScriptEntryPoint{ "", "" });
-		//	}
-		//}
-
-		return nullptr;
+		return rsl::make_unique<CSharpScript>(entrypoint_func);
 	}
 
 	bool ScriptEngine::compile_script(rsl::string_view name)
@@ -43,17 +32,6 @@ namespace rex
 
 		return system(compile_cs_script_cmd.c_str()) == 0;
 	}
-
-	//rsl::string_view ScriptEngine::find_script_path(rsl::string_view name)
-	//{
-	//	rsl::string_view script_module_path = module_manager::instance()->script_module_path(name);
-	//	if (!script_module_path.empty())
-	//	{
-	//		return script_module_path;
-	//	}
-
-	//	return "";
-	//}
 
 	void ScriptEngine::init_dotnet()
 	{
