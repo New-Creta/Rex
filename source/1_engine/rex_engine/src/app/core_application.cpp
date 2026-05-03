@@ -350,16 +350,6 @@ namespace rex
     asset_db::instance()->add_loader<AnimatedSprite>(rsl::make_unique<AnimatedSpriteLoaderJson>());
   }
 
-  void foobar()
-  {
-    while (true)
-    {
-      REX_INFO(LogCoreApp, "Hello from C#!");
-      using namespace rsl::chrono_literals;
-      rsl::this_thread::sleep_for(1s);
-    }
-  }
-
   //--------------------------------------------------------------------------------------------
   void CoreApplication::init_globals()
   {

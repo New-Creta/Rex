@@ -81,15 +81,4 @@ namespace Rex
       Console.WriteLine($"Delegate '{fieldName}' of '{className}' set!");
     }
   }
-
-  internal static unsafe class InternalCalls
-  {
-    [UnmanagedCallersOnly]
-    public static void CallDelegate()
-    {
-      TestDelegate();
-    }
-
-    internal static delegate* unmanaged<void> TestDelegate;
-  }
 }

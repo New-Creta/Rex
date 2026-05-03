@@ -77,7 +77,7 @@ namespace rex
       string moduleAsJson = RexModule.SerializeForConfig(projectDataPath, conf);
 
       // Write the module file at the intermediate location
-      string intermediateModuleFilePath = Path.Combine(conf.IntermediatePath, $"{conf.Project.Name}_{conf.Name}_module.json");
+      string intermediateModuleFilePath = PathGeneration.CreateIntermediateModuleFilePath(conf);
       Utils.SafeWriteFile(intermediateModuleFilePath, moduleAsJson);
 
       string moduleFilePath = PathGeneration.CreateModuleFilePath(conf);

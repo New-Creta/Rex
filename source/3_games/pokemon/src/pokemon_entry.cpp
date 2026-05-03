@@ -5,10 +5,6 @@
 #include "rex_engine/system/process.h"
 #include "pokemon/game_session.h"
 
-#include "rex_engine/scripts/script_engine.h"
-#include "rex_engine/scripts/csharp_script.h"
-#include "rex_engine/engine/module_manager.h"
-
 #include "imgui/imgui.h"
 
 namespace pokemon

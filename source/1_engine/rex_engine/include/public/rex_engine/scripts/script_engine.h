@@ -19,14 +19,12 @@ namespace rex
 
 	private:
 		void init_dotnet();
-		rsl::string find_msbuild_path();
 
 		bool compile_script(rsl::string_view name);
 
 	private:
 		rsl::unique_ptr<DotNetBridge> m_dotnet_bridge;
 
-		rsl::string m_msbuild_path;
 		bool m_allow_runtime_caching;
 	};
 

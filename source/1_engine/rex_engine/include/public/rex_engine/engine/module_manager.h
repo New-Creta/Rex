@@ -25,7 +25,7 @@ namespace rex
 		// This won't do any good if it's a build dependency statically linked in
 		// to the current running program
 		// but can be useful for runtime dependency if they're not present or require reloading
-		void compile_module(rsl::string_view name, rsl::string_view config);
+		RunProcessResult compile_module(rsl::string_view name, rsl::string_view config);
 
 	private:
 		// Initialize a module based on its module file, who's path is provided to this func

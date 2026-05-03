@@ -11,7 +11,6 @@
 namespace rex
 {
 	ScriptEngine::ScriptEngine()
-		: m_msbuild_path(find_msbuild_path())
 	{
 		init_dotnet();
 	}
@@ -26,29 +25,14 @@ namespace rex
 
 	bool ScriptEngine::compile_script(rsl::string_view name)
 	{
-		rsl::string_view script_path = name;
-		auto arguments = rsl::format("-property:configuration={} -t:restore, rebuild", REX_CONFIG_NAME);
-		auto compile_cs_script_cmd = rsl::format("{} {} {}", m_msbuild_path, script_path, arguments);
-
-		return system(compile_cs_script_cmd.c_str()) == 0;
+		RunProcessResult result = module_manager::instance()->compile_module(name, REX_CONFIG_NAME);
+		return result.returncode == 0;
 	}
 
 	void ScriptEngine::init_dotnet()
 	{
 		rsl::string_view dotnet_runtime_config_path = path::join(vfs::instance()->mount_path(MountingPoint::EngineRoot), "dotnet", "dotnet.runtimeconfig.json");
 		m_dotnet_bridge = rsl::make_unique<DotNetBridge>(dotnet_runtime_config_path);
-	}
-
-	rsl::string ScriptEngine::find_msbuild_path()
-	{
-		rsl::string_view vswhere_path = "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe";
-		auto cmd = rsl::format("\"{}\" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe", vswhere_path);
-
-		RunProcessResult find_msbuild_result = process::run(cmd);
-		rsl::string_view vswhere_output = find_msbuild_result.output;
-		vswhere_output = strip(vswhere_output);
-		
-		return rsl::string(vswhere_output);
 	}
 
 	namespace script_engine
