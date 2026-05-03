@@ -68,6 +68,17 @@ namespace pokemon
 		update_render_info();
 
 
+
+		// The original game doesn't go through an update loop when a script is active.
+		// The game will change a sprite position and state and this is immediately reflected through tile rendering
+		// Meaning if a script is active to move a sprite from A to B, that'll be all the game is doing at the time
+		// it will not update any NPCs, not process input, not animate water, ..
+
+
+
+
+
+
 		// Objective: Add NPCs
 		// Objective: Add collision
 

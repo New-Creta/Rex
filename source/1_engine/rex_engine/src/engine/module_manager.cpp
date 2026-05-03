@@ -29,12 +29,12 @@ namespace rex
 		return m_current_module;
 	}
 
-	void ModuleManager::compile_module(rsl::string_view name, rsl::string_view config)
+	RunProcessResult ModuleManager::compile_module(rsl::string_view name, rsl::string_view config)
 	{
 		scratch_string rex_python_path = path::join(engine::instance()->root(), "_rex.py");
 
 		auto build_module_cmd = rsl::format("py {} build -project={} -config={} -dont_build_dependencies", rex_python_path, name, config);
-		process::run(build_module_cmd);
+		return process::run(build_module_cmd);
 	}
 
 	Module* ModuleManager::init_module(rsl::string_view modulePath)

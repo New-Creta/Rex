@@ -1783,6 +1783,7 @@ wCurMap:: db
 wCurrentTileBlockMapViewPointer:: dw
 
 ; player's position on the current map
+; nick comment: (I believe this is expressed in squares)
 wYCoord:: db
 wXCoord:: db
 
