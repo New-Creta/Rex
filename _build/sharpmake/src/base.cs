@@ -103,9 +103,6 @@ public abstract class BasicCPPProject : Project
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
 
-  // The module that this project represents
-  RexModule _Module = new RexModule();
-
   // The path where you can find the data for this project, if there is any
   public string DataPath { get; protected set; }
 
@@ -173,10 +170,6 @@ public abstract class BasicCPPProject : Project
 
     // Setup the data paths so they're added to the project, if there are any
     SetupDataPaths();
-
-    // Store the default properties of the module
-    // they can be overwriten later by derived project classes
-    AddModuleDefaultProperties();
   }
 
   // This is called by Sharpmake and acts as the configure entry point.
@@ -507,10 +500,6 @@ public abstract class BasicCPPProject : Project
         ClangToolsEnabled = false;
         break;
     }
-
-    SetModulePropertyForConfig(conf, "compiler", target.Compiler.ToString());
-    SetModulePropertyForConfig(conf, "config", target.Config.ToString());
-    SetModulePropertyForConfig(conf, "platform", target.Platform.ToString());
   }
   // Setup rules for events that need to get fired after a build has finished.
   // Remember that these need to be in batch format.
@@ -542,80 +531,7 @@ public abstract class BasicCPPProject : Project
     }
   }
 
-  // Add or update a property of the module
-  // all module properties will be serialized to json after sharpmake linking
-  // This allows the engine to load these files at runtime to get information about its modules
-  protected void SetModuleProperty(string name, object value)
-  {
-    _Module.SetModuleProperty(name, value);
-  }
-  // Add or update a property of the module
-  // all module properties will be serialized to json after sharpmake linking
-  // This allows the engine to load these files at runtime to get information about its modules
-  protected void SetModulePropertyForConfig(RexConfiguration conf, string name, object value)
-  {
-    _Module.SetModulePropertyForConfig(conf, name, value);
-  }
   #endregion
-
-  // Sets the common module properties of this module
-  private void AddModuleDefaultProperties()
-  {
-    // Fill in common module fields
-    SetModuleProperty("name", Name);
-    SetModuleProperty("data_path", DataPath);
-  }
-  // Write the module dependencies to the module properties
-  private void SetModuleDependencies(RexConfiguration conf)
-  {
-    // Add every module filepath of every dependency to the module file we're currently writing
-    List<string> rexDependencies = new List<string>();
-
-    List<DotNetDependency> dotnetDependencies = new List<DotNetDependency>();
-    dotnetDependencies.AddRange(conf.DotNetPublicDependencies);
-    dotnetDependencies.AddRange(conf.DotNetPrivateDependencies);
-
-    List<Configuration> configurationDependencies = conf.ConfigurationDependencies.ToList();
-    configurationDependencies.AddRange(dotnetDependencies.Select(x => x.Configuration));
-
-    foreach (RexConfiguration dependency in configurationDependencies)
-    {
-      BasicCPPProject cppProject = dependency.Project as BasicCPPProject;
-      
-      if (cppProject != null)
-      {
-        rexDependencies.Add(PathGeneration.CreateModuleFilePath(dependency));
-        continue;
-      }
-    }
-
-    List<string> runtimeDependencies = new List<string>();
-    foreach (RexConfiguration runtimeDependency in conf.RuntimeDependencies)
-    {
-      runtimeDependencies.Add(Path.Combine(runtimeDependency.ProjectPath, $"{runtimeDependency.ProjectFullFileName}.nproj"));
-    }
-    SetModulePropertyForConfig(conf, "runtime_dependencies", runtimeDependencies);
-  }
-  // Write the module file of this project
-  private void WriteModuleFile(RexConfiguration conf)
-  {
-    string moduleAsJson = _Module.SerializeForConfig(conf);
-
-    // Write the module file at the intermediate location
-    string intermediateModuleFilePath = Path.Combine(conf.IntermediatePath, $"{Name}_{conf.Name}_module.json");
-    Utils.SafeWriteFile(intermediateModuleFilePath, moduleAsJson);
-
-    string moduleFilePath = PathGeneration.CreateModuleFilePath(conf);
-    // Make sure the directory where the module file would be created exists
-    // otherwise we can't create the file
-    if (!Directory.Exists(Path.GetDirectoryName(moduleFilePath)))
-    {
-      Directory.CreateDirectory(Path.GetDirectoryName(moduleFilePath));
-    }
-
-    // Copy the module file to the final location after having having build it
-    conf.EventPostBuild.Add($"copy {intermediateModuleFilePath} {moduleFilePath} /Y");
-  }
 
   // Sets up the project to use clang tools when enabled.
   // Returns the commandline arguments to be passed to post_build.py
@@ -695,9 +611,8 @@ public abstract class BasicCPPProject : Project
       RexTarget rexTarget = config.Target as RexTarget;
 
       GenerateClangToolProjectFile(rexConfig, rexTarget);
-      SetModuleDependencies(rexConfig);
 
-      WriteModuleFile(rexConfig);
+      RexModule.WriteModuleFile(DataPath, rexConfig);
     }
   }
 
@@ -871,9 +786,23 @@ public abstract class BasicCPPProject : Project
 // Some of its functionality is sharedwith BasicCPPProject through BaseConfiguration
 public abstract class BasicCSProject : CSharpProject
 {
+  public string DataPath { get; protected set; }
+
   public BasicCSProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     // Nothing to implement
+  }
+
+  // This gets called before any configuration gets performed
+  public override void PreConfigure()
+  {
+    base.PreConfigure();
+
+    // If the DataPath was not set in the constructor, we're using the default datapath
+    if (string.IsNullOrEmpty(DataPath))
+    {
+      DataPath = Path.Combine(Globals.DataRoot, Name);
+    }
   }
 
   [Configure]
@@ -892,6 +821,20 @@ public abstract class BasicCSProject : CSharpProject
     SetupConfigRules(conf, target);
     SetupPostBuildEvents(conf, target);
     SetupSolutionFolder(conf, target);
+  }
+
+  // This is called by Sharpmake itself after all the projects are created
+  public override void PostLink()
+  {
+    base.PostLink();
+
+    foreach (Configuration config in Configurations)
+    {
+      RexConfiguration rexConfig = config as RexConfiguration;
+      RexTarget rexTarget = config.Target as RexTarget;
+
+      RexModule.WriteModuleFile(DataPath, rexConfig);
+    }
   }
 
   protected abstract void SetupOutputType(RexConfiguration conf, RexTarget target);
@@ -1058,8 +1001,6 @@ public class GameProject : BasicCPPProject
     {
       Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
     }
-
-    SetModuleProperty("project_name", ProjectName);
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)

@@ -21,15 +21,18 @@ namespace rex
 		// this function will return the Bob module
 		const Module* current() const;
 
+		// Compile a module at runtime. 
+		// This won't do any good if it's a build dependency statically linked in
+		// to the current running program
+		// but can be useful for runtime dependency if they're not present or require reloading
+		void compile_module(rsl::string_view name, rsl::string_view config);
+
 	private:
 		// Initialize a module based on its module file, who's path is provided to this func
 		Module* init_module(rsl::string_view modulePath);
 
 		// read dependencies from a json blob and return it
 		rsl::vector<Module*> read_dependencies(json::json& jsonBlob, rsl::string_view name);
-
-		// read runtime dependencies from a json blob which point to projects and not module files
-		rsl::vector<Module*> read_runtime_dependencies(json::json& jsonBlob, rsl::string_view name);
 		
 	private:
 		Module* m_current_module;

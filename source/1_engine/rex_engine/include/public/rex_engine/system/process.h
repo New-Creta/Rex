@@ -10,7 +10,11 @@ namespace rex
     rsl::string output;
     s32 returncode;
   };
-  RunProcessResult run_process(rsl::string_view cmd);
+
+  namespace process
+  {
+    RunProcessResult run(rsl::string_view cmd);
+  }
 
   namespace current_process
   {

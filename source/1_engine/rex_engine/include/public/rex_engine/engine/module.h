@@ -15,12 +15,14 @@ namespace rex
 	class Module
 	{
 	public:
-		Module(rsl::string_view name, rsl::string_view dataPath, rsl::vector<Module*>&& dependencies, rsl::vector<Module*>&& runtimeDependencies);
+		Module(rsl::string_view moduleName, rsl::string_view configName, rsl::string_view sourceRoot, rsl::string_view dataRoot, rsl::string_view targetPath, rsl::vector<Module*>&& dependencies);
 		const rsl::vector<Module*>& dependencies() const;
 
 		rsl::string_view name() const;
 		rsl::string_view data_path() const;
 		rsl::string_view target_path() const;
+
+		void add_runtime_dependency(Module* module);
 
 		// Find a runtime module of a plugin
 		// This allows a client to load the runtime module
@@ -29,6 +31,8 @@ namespace rex
 
 	private:
 		rsl::string m_name;
+		rsl::string m_config_name;
+		rsl::string m_source_root;
 		rsl::string m_data_path;
 		rsl::string m_target_path;
 		rsl::vector<Module*> m_dependencies;

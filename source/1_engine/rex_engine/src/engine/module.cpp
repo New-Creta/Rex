@@ -9,11 +9,14 @@ namespace rex
 {
 	DEFINE_LOG_CATEGORY(LogModule);
 
-	Module::Module(rsl::string_view name, rsl::string_view dataPath, rsl::vector<Module*>&& dependencies, rsl::vector<Module*>&& runtimeDependencies)
-		: m_name(name)
-		, m_data_path(dataPath)
+	Module::Module(rsl::string_view moduleName, rsl::string_view configName, rsl::string_view sourceRoot, rsl::string_view dataRoot, rsl::string_view targetPath, rsl::vector<Module*>&& dependencies)
+		: m_name(moduleName)
+		, m_config_name(configName)
+		, m_source_root(sourceRoot)
+		, m_data_path(dataRoot)
+		, m_target_path(targetPath)
 		, m_dependencies(rsl::move(dependencies))
-		, m_runtime_dependencies(rsl::move(runtimeDependencies))
+		, m_runtime_dependencies()
 	{
 	}
 
@@ -28,6 +31,11 @@ namespace rex
 	rsl::string_view Module::target_path() const
 	{
 		return m_target_path;
+	}
+
+	void Module::add_runtime_dependency(Module* module)
+	{
+		m_runtime_dependencies.push_back(module);
 	}
 
 	const Module* Module::find_runtime_dependency(rsl::string_view name) const

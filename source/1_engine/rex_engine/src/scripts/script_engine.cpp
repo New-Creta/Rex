@@ -66,7 +66,7 @@ namespace rex
 		rsl::string_view vswhere_path = "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe";
 		auto cmd = rsl::format("\"{}\" -latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe", vswhere_path);
 
-		RunProcessResult find_msbuild_result = run_process(cmd);
+		RunProcessResult find_msbuild_result = process::run(cmd);
 		rsl::string_view vswhere_output = find_msbuild_result.output;
 		vswhere_output = strip(vswhere_output);
 		

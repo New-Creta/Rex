@@ -284,4 +284,8 @@
 			<Item Name="num">m_num_elements</Item>
 		</Expand>
 	</Type>
+
+	<Type Name="rex::Module">
+		<DisplayString>{m_name} - {m_config_name}</DisplayString>
+	</Type>
 </AutoVisualizer>

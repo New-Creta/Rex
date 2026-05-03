@@ -228,6 +228,7 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::mount_engine_paths() // NOLINT(readability-convert-member-functions-to-static)
   {
+    vfs::instance()->mount(MountingPoint::Root, engine::instance()->root());
     vfs::instance()->mount(MountingPoint::EngineRoot, engine::instance()->engine_root());
 
     vfs::instance()->mount(MountingPoint::EngineSettings, path::join(engine::instance()->engine_root(), "settings"));

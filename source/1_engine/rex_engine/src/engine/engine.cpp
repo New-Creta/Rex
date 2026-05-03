@@ -59,6 +59,7 @@ namespace rex
 		paths.project_name = init_project_name(process_path);
 		paths.data_root.assign(path::find_in_parent("data", path::parent_path(process_path)));
 		paths.root.assign(path::parent_path(paths.data_root));
+		paths.intermediate_data_root.assign(path::join(paths.root, ".rex"));
 		path::join_to(paths.engine_root, paths.data_root, "rex");
 		path::join_to(paths.project_root, paths.data_root, paths.project_name);
 		path::join_to(paths.sessions_root, paths.data_root, "_sessions");
@@ -148,6 +149,12 @@ namespace rex
 	rsl::string_view EngineGlobals::root() const
 	{
 		return engine_paths().root;
+	}
+
+	// Returns the root of all intermediate files, aka the .rex folder
+	rsl::string_view EngineGlobals::intermediate_data_root() const
+	{
+		return engine_paths().intermediate_data_root;
 	}
 
 	// Returns the root directory where all data is loaded from

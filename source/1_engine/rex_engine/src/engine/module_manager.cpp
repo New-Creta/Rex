@@ -5,6 +5,8 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_engine/ninja/ninja.h"
+
 #include "rex_std/bonus/algorithms.h"
 
 namespace rex
@@ -29,6 +31,14 @@ namespace rex
 		return m_current_module;
 	}
 
+	void ModuleManager::compile_module(rsl::string_view name, rsl::string_view config)
+	{
+		scratch_string rex_python_path = path::join(engine::instance()->root(), "_rex.py");
+
+		auto build_module_cmd = rsl::format("py {} build -project={} -config={} -dont_build_dependencies", rex_python_path, name, config);
+		process::run(build_module_cmd);
+	}
+
 	Module* ModuleManager::init_module(rsl::string_view modulePath)
 	{
 		if (!vfs::instance()->exists(modulePath))
@@ -36,47 +46,46 @@ namespace rex
 			return nullptr;
 		}
 
-		// Example module content
-		// {
-		//   "name": "Bob",
-		//   "data_path": "D:\MyData",
-		//   "dependencies": [
-		//	   "D:\module_a\module.nproj",
-		//	   "D:\module_b\module.nrpoj",
-		//	  ],
-		//	 "runtime_dependencies": [
-		//     "D:\module_c\module.nproj"
-		//    ]
-		// }
-		//
-
 		// If the modules was already loaded, use that one instead
 		rex::json::json json_content = rex::json::read_from_file(modulePath);
-		rsl::string_view name = json_content["name"];
+		rsl::string_view module_name = json_content["module_name"];
+		
 		auto it = rsl::find_if(m_all_modules.begin(), m_all_modules.end(),
 			[&](const rsl::unique_ptr<Module>& module)
 			{
-				return module->name() == name;
+				return module->name() == module_name;
 			});
-		
 		if (it != m_all_modules.end())
 		{
 			return it->get();
 		}
+		
+		rsl::string_view source_root = json_content["source_root"];
+		rsl::string_view data_root = json_content["data_root"];
+		rsl::string_view config_name = json_content["config_name"];
+		rsl::string_view target_path = json_content["target_path"];
 
-		rsl::string_view data_path = json_content["data_path"];
-		rsl::vector<Module*> dependency_ptrs = read_dependencies(json_content, "dependencies");
+		// We can have an infinite loop / stack overflow here as a module have a runtime dependency
+		// which in turn can have a build dependency on the original module
+		// that's why we load runtime modules independantly, this also makes more sense
+		// if runtime dependencies aren't necessarily known at init time
+		rsl::vector<Module*> dependency_ptrs = read_dependencies(json_content, "build_dependencies");
+		rsl::unique_ptr<Module> new_module = rsl::make_unique<Module>(module_name, config_name, source_root, data_root, target_path, rsl::move(dependency_ptrs));
+		Module* raw_new_module = m_all_modules.emplace_back(rsl::move(new_module)).get();
+
 		rsl::vector<Module*> runtime_dependency_ptrs = read_dependencies(json_content, "runtime_dependencies");
+		for (Module* runtime_dependency : runtime_dependency_ptrs)
+		{
+			raw_new_module->add_runtime_dependency(runtime_dependency);
+		}
 
-		m_all_modules.emplace_back(rsl::make_unique<Module>(name, data_path, rsl::move(dependency_ptrs), rsl::move(runtime_dependency_ptrs)));
-
-		return m_all_modules.back().get();
+		return raw_new_module;
 	}
 
 	// read dependencies from a json blob and return it
-	rsl::vector<Module*> ModuleManager::read_dependencies(json::json& jsonBlob, rsl::string_view name)
+	rsl::vector<Module*> ModuleManager::read_dependencies(json::json& jsonBlob, rsl::string_view fieldName)
 	{
-		const rex::json::json& dependencies = jsonBlob[name];
+		const rex::json::json& dependencies = jsonBlob[fieldName];
 		rsl::vector<Module*> dependency_ptrs;
 		for (rsl::string_view dependency : dependencies)
 		{
@@ -88,28 +97,6 @@ namespace rex
 		}
 
 		return dependency_ptrs;
-	}
-
-	rsl::vector<Module*> ModuleManager::read_runtime_dependencies(json::json& jsonBlob, rsl::string_view name)
-	{
-		rsl::vector<Module*> runtime_dependency_modules;
-
-		const rex::json::json& ninja_projects = jsonBlob[name];
-		for (rsl::string_view ninja_project_path : ninja_projects)
-		{
-			json::json ninja_project = json::read_from_file(ninja_project_path);
-			rsl::string_view output_directory = path::parent_path(ninja_project["output_path"]);
-			scratch_string module_path = path::join(output_directory, "module.json");
-			if (file::exists(module_path))
-			{
-				runtime_dependency_modules.push_back(init_module(module_path));
-			}
-
-			// compile the module instead
-			//TODO: Compile module
-
-			runtime_dependency_modules.push_back(init_module(module_path));
-		}
 	}
 
 	namespace module_manager
