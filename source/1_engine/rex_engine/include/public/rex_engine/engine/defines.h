@@ -45,3 +45,14 @@
 //-------------------------------------------------------------------------
 // TODO
 #define REX_STATIC_TODO RSL_STATIC_TODO
+
+//-------------------------------------------------------------------------
+#ifdef REX_BUILD_DEBUG
+#define REX_CONFIG_NAME "debug"
+#elif REX_BUILD_DEBUG_OPT
+#define REX_CONFIG_NAME "debug_opt"
+#elif REX_BUILD_RELEASE
+#define REX_CONFIG_NAME "release"
+#else
+#error "Failed to find correct config name"
+#endif

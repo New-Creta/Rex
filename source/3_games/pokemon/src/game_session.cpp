@@ -71,8 +71,8 @@ namespace pokemon
 		// Objective: Add NPCs
 		// Objective: Add collision
 
-
-
+		
+		
 		// Game tick is as followed
 		// 
 		// 1. If the player is still animating, tick the animation and advance to the next frame

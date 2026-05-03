@@ -8,7 +8,7 @@ public class RexTarget : ITarget
   public Platform Platform;
   public Config Config;
   public Compiler Compiler;
-  public DotNetFramework DotNetFramework = DotNetFramework.v4_8;
+  public DotNetFramework DotNetFramework = DotNetFramework.net8_0;
   public RexTarget()
   { }
   public RexTarget(Platform platform, DevEnv devEnv, Config config, Compiler compiler = Compiler.MSVC)
@@ -25,9 +25,8 @@ public class RexTarget : ITarget
     get
     {
       string config = string.Concat(Config.ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
-      string comp = Compiler.ToString();
 
-      string name = string.Concat(config, " - ", comp);
+      string name = string.Concat(config);
       return name;
     }
   }
@@ -114,7 +113,7 @@ public class RexTarget : ITarget
 
     if (ProjectGen.Settings.EnableDefaultConfigs)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, ProjectGen.Settings.CppCompiler));
     }
     return targets;
   }

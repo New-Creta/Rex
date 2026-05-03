@@ -5,6 +5,17 @@
 
 namespace rex
 {
+  struct RunProcessResult
+  {
+    rsl::string output;
+    s32 returncode;
+  };
+
+  namespace process
+  {
+    RunProcessResult run(rsl::string_view cmd);
+  }
+
   namespace current_process
   {
 		u32 id();

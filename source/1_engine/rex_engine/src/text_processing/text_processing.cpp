@@ -331,4 +331,19 @@ namespace rex
     return -1; // Invalid input
   }
 
+  // converts a multi byte string to a wide character string
+  void to_wstring(rsl::string_view str, tchar* outBuffer, s32 maxLength)
+  {
+    size_t num_converted = 0;
+    mbstowcs_s(&num_converted, outBuffer, maxLength, str.data(), str.length());
+  }
+
+  // converts a wide character string to a multi byte string
+  void to_string(rsl::wstring_view str, char8* outBuffer, s32 maxLength)
+  {
+    size_t num_converted = 0;
+    wcstombs_s(&num_converted, outBuffer, maxLength, str.data(), str.length());
+  }
+
+
 } // namespace rex

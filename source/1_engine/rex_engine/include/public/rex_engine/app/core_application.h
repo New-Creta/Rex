@@ -82,6 +82,8 @@ namespace rex
     // load all engine settings into memory
     void load_settings();
     void init_thread_pool();
+    // initialize the script engine which can have its own initialization stages
+    void init_script_engine();
     // initialize asset db and adding its serializers
     void init_asset_db();
 

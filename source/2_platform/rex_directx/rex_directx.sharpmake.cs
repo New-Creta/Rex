@@ -19,7 +19,7 @@ public class RexDirectX : PlatformProject
   {
     base.SetupConfigSettings(conf, target);
 
-    conf.add_public_define("REX_USING_DIRECTX");
+    conf.AddPublicDefine("REX_USING_DIRECTX");
   }
 
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
@@ -41,13 +41,13 @@ public class RexDirectX : PlatformProject
       case Config.debug_opt:
       case Config.coverage:
       case Config.sanitization:
-        conf.add_public_define("REX_ENABLE_DX_CALL");
-        conf.add_public_define("REX_ENABLE_IMGUI");
-        conf.add_public_define("REX_ENABLE_DEBUG_RESOURCE_NAMES");
-        conf.add_public_define("REX_ENABLE_DX12_DEBUG_LAYER");
-        conf.add_public_define("REX_ENABLE_GFX_DEBUGGING");
-        conf.add_public_define("REX_ENABLE_DXGI_DEBUG_LAYER");
-        conf.add_public_define("REX_ENABLE_DEBUG_SHADER_COMPILATION");
+        conf.AddPublicDefine("REX_ENABLE_DX_CALL");
+        conf.AddPublicDefine("REX_ENABLE_IMGUI");
+        conf.AddPublicDefine("REX_ENABLE_DEBUG_RESOURCE_NAMES");
+        conf.AddPublicDefine("REX_ENABLE_DX12_DEBUG_LAYER");
+        conf.AddPublicDefine("REX_ENABLE_GFX_DEBUGGING");
+        conf.AddPublicDefine("REX_ENABLE_DXGI_DEBUG_LAYER");
+        conf.AddPublicDefine("REX_ENABLE_DEBUG_SHADER_COMPILATION");
         break;
       case Config.release:
         break;

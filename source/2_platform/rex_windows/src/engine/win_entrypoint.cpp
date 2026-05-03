@@ -47,7 +47,7 @@ int rex_win_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine
   __try
   {
     rex::ApplicationCreationParams app_params = rex::app_entry(creation_params);
-    REX_INFO(LogWindows, "Early initializaion took {} ms", rsl::chrono::duration_cast<rsl::chrono::duration<f32, rsl::milli>>(early_init_timer.elapsed_time()).count());
+    REX_INFO(LogWindows, "Early initialization took {} ms", rsl::chrono::duration_cast<rsl::chrono::duration<f32, rsl::milli>>(early_init_timer.elapsed_time()).count());
 
     if(app_params.is_gui_app)
     {
