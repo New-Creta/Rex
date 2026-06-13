@@ -100,7 +100,7 @@ DEF rLCDC_DEFAULT EQU %11100011
 	ld a, BANK(SFX_Shooting_Star)
 	ld [wAudioROMBank], a
 	ld [wAudioSavedROMBank], a
-	ld a, $9c
+	ld a, $9c							; this will set hAutoBGTransferDest to 0x9c00 which points into VRAM
 	ldh [hAutoBGTransferDest + 1], a
 	xor a
 	ldh [hAutoBGTransferDest], a

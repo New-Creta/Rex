@@ -1,6 +1,4 @@
 #pragma once
 
-namespace pokemon
-{
-	void ClearSprites();
-}
+void ClearSprites();
+void HideSprites();

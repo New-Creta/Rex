@@ -1,44 +1,31 @@
-#include <cstdint>
+void ClearSprites(void)
 
-extern uint8_t wShadowOAM[];
-extern uint8_t wShadowOAMEnd[];
-
-// ============================================================================
-// ClearSprites
-//
-// ASM:
-//   - Clears entire shadow OAM buffer to 0
-// ============================================================================
-
-inline void ClearSprites()
 {
-  constexpr size_t size =
-    wShadowOAMEnd - wShadowOAM;
+  char cVar1;
+  SpriteOAM* pSVar2;
 
-  for (size_t i = 0; i < size; ++i)
-  {
-    wShadowOAM[i] = 0;
-  }
+  cVar1 = wShadowOAMEnd - wShadowOAM;
+  pSVar2 = &::wShadowOAM;
+  do {
+    pSVar2->YCoord = 0;
+    cVar1 = cVar1 + -1;
+    pSVar2 = (SpriteOAM*)&pSVar2->XCoord;
+  } while (cVar1 != '\0');
+  return;
 }
 
-// ============================================================================
-// HideSprites
-//
-// ASM:
-//   - Sets Y coordinate of all 40 sprites to 160
-//   - Each OAM entry is 4 bytes
-//   - Writing Y=160 hides sprite on Game Boy hardware
-// ============================================================================
+void HideSprites(void)
 
-inline void HideSprites()
 {
-  constexpr uint8_t HIDDEN_Y = 160;
-  constexpr uint8_t SPRITE_COUNT = 40;
-  constexpr uint8_t OAM_ENTRY_SIZE = 4;
+  char cVar1;
+  SpriteOAM* pSVar2;
 
-  for (uint8_t i = 0; i < SPRITE_COUNT; ++i)
-  {
-    // First byte of each OAM entry = Y position
-    wShadowOAM[i * OAM_ENTRY_SIZE] = HIDDEN_Y;
-  }
+  pSVar2 = &wShadowOAM;
+  cVar1 = '(';
+  do {
+    pSVar2->YCoord = 0xa0;
+    pSVar2 = pSVar2 + 1;
+    cVar1 = cVar1 + -1;
+  } while (cVar1 != '\0');
+  return;
 }

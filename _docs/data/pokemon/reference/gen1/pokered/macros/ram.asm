@@ -103,6 +103,7 @@ MACRO sprite_oam_struct
 \1Attributes:: db
 ENDM
 
+; see MACRO connection in macros\scripts\maps.asm
 MACRO map_connection_struct
 \1ConnectedMap::            db
 \1ConnectionStripSrc::      dw

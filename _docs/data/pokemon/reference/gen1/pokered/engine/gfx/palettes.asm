@@ -7,11 +7,11 @@ _RunPaletteCommand:
 .not_default
 	cp SET_PAL_PARTY_MENU_HP_BARS
 	jp z, UpdatePartyMenuBlkPacket
-	ld l, a
+	ld l, a			; because the pointers are 2 bytes, the offset is value of A * 2, which we calculate by adding it to itself
 	ld h, 0
 	add hl, hl
 	ld de, SetPalFunctions
-	add hl, de
+	add hl, de		; this now pointers to the function in SetPalFunctions
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -299,6 +299,8 @@ InitPartyMenuBlkPacket:
 UpdatePartyMenuBlkPacket:
 ; Update the blk packet with the palette of the HP bar that is
 ; specified in [wWhichPartyMenuHPBar].
+
+	; Nick DB: add 'wWhichPartyMenuHPBar' to 'wPartyMenuHPBarColors' and store the value its pointing at in 'a'
 	ld hl, wPartyMenuHPBarColors
 	ld a, [wWhichPartyMenuHPBar]
 	ld e, a
@@ -306,14 +308,14 @@ UpdatePartyMenuBlkPacket:
 	add hl, de
 	ld e, l
 	ld d, h
-	ld a, [de]
+	ld a, [de] ; Nick DB: end of loading into 'a' register
 	and a
-	ld e, (1 << 2) | 1 ; green
+	ld e, (1 << 2) | 1 ; green == 0, but we're loading 5 as that indicates PAL_GREENBAR
 	jr z, .next
 	dec a
-	ld e, (2 << 2) | 2 ; yellow
+	ld e, (2 << 2) | 2 ; yellow == 1, but we're loading 10 as that indicates PAL_YELLOWBAR
 	jr z, .next
-	ld e, (3 << 2) | 3 ; red
+	ld e, (3 << 2) | 3 ; red == 2, but we're loading 15 as that indicates PAL_REDBAR
 .next
 	push de
 	ld hl, wPartyMenuBlkPacket + 8 + 1

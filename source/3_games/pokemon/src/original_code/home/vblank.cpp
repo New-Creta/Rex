@@ -102,15 +102,10 @@ void VBlank() {
     MBC1RomBank = wVBlankSavedROMBank;
 }
 
-// -----------------------------
-// DelayFrame
-// -----------------------------
-void DelayFrame() {
-    constexpr uint8_t NOT_VBLANKED = 1;
+void DelayFrame(void)
 
-    hVBlankOccurred = NOT_VBLANKED;
-
-    while (hVBlankOccurred) {
-        // equivalent to HALT waiting for VBlank interrupt
-    }
+{
+  do {
+    halt();
+  } while (true);
 }

@@ -1,6 +1,3 @@
 #pragma once
 
-namespace pokemon
-{
-	void DisableLCD();
-}
+void DisableLCD();

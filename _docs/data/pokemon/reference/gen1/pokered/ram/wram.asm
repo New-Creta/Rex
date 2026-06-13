@@ -1795,6 +1795,7 @@ wLastMap:: db
 
 wUnusedD366:: db
 
+; see map_header macro in macros\scripts\maps.asm
 wCurMapHeader::
 wCurMapTileset:: db
 wCurMapHeight:: db

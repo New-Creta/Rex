@@ -215,6 +215,7 @@ BlkPacket_GameFreakIntro:
 	db $00
 
 
+; the bellow are the palletes to be used. Above is the actual data that should be send
 PalPacket_Empty:          PAL_SET 0, 0, 0, 0
 PalPacket_PartyMenu:      PAL_SET PAL_MEWMON, PAL_GREENBAR, PAL_YELLOWBAR, PAL_REDBAR
 PalPacket_Black:          PAL_SET PAL_BLACK, PAL_BLACK, PAL_BLACK, PAL_BLACK
