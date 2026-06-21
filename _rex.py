@@ -58,7 +58,7 @@ def _run_script(scriptPath : str, args : list[str]):
   script_args.append('python')
   script_args.append(scriptPath)
   script_args.extend(args)
-  print(f'running: {' '.join(script_args)}')
+  print(f'running: {" ".join(script_args)}')
   proc = subprocess.Popen(args=script_args)
   proc.wait()
 
