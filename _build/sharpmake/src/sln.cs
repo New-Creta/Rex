@@ -58,6 +58,7 @@ namespace rex
       }
 
       conf.AddProject<PokemonProject>(target);
+      conf.AddProject<PokemonOgProject>(target);
     }
 
     protected void GenerateTargets()
