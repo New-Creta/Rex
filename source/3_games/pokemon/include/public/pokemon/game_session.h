@@ -11,6 +11,8 @@
 #include "pokemon/game_blockmap.h"
 #include "pokemon/player_character.h"
 
+#include "pokemon/game_loops/game_loop.h"
+
 #include "rex_engine/assets/map.h"
 
 #include "rex_engine/gfx/rendering/camera_2d.h"
@@ -49,5 +51,7 @@ namespace pokemon
     rsl::unique_ptr<PlayerCharacter> m_player_character;
 
     rsl::unique_ptr<rex::gfx::Camera2D> m_camera;
+
+    rsl::unique_ptr<GameLoop> m_game_loop;
   };
 }

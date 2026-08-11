@@ -60,6 +60,41 @@ namespace pokemon
 
 	void GameSession::update()
 	{
+		// Original Pokemon game loop:
+		// 
+		// Intro (Gamefreak logo, Gangar + Nidorino fight, startup screen)
+		// -> detects if an existing save is present
+		// -> if so add "continue" to main menu and loads main menu
+		// -> if not, load Prof oak intro and goes through that
+		//  
+		// Overworld loop
+		// -> To much to go into detail, but this the main game loop
+		//
+		// Battle loop
+		// Is load on top of overworld loop
+		// Keeps looping until battle has finished
+
+		m_game_loop = rsl::move(m_game_loop->run());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		// Tick all objects in the scene that require ticking
 		m_player_character->tick();
 		m_camera->set_pos(m_player_character->pos());
