@@ -1,13 +1,14 @@
 #include "pokemon/original_code/home/init.h"
 
 #include "pokemon/original_code/home/lcd.h"
+#include "pokemon/original_code/ram/wram.h"
 #include "pokemon/original_code/engine/movie/intro.h"
 
 void Init(void)
 {
-  wAudioROMBank = 0x1f;
-  wAudioSavedROMBank = 0x1f;
-  wUpdateSpritesEnabled = 0xff;
+  wram.audio_data.wAudioROMBank       = 0x1f;
+  wram.audio_data.wAudioSavedROMBank  = 0x1f;
+  wram.data.wUpdateSpritesEnabled     = 0xff;
   PlayIntro();
 
   DisableLCD();
