@@ -282,7 +282,7 @@ PlayMoveSoundB:
 	jp PlaySound
 
 LoadIntroGraphics:
-	ld hl, FightIntroBackMon
+	ld hl, FightIntroBackMon ; gengar holds the black tile that's required for the black border drawing
 	ld de, vChars2
 	ld bc, FightIntroBackMonEnd - FightIntroBackMon
 	ld a, BANK(FightIntroBackMon)
@@ -322,7 +322,7 @@ PlayShootingStar:
 	res 5, [hl]
 	set 3, [hl]
 	ld c, 64
-	call DelayFrames
+	call DelayFrames ; have the black border be on screen for 64 frames
 	farcall AnimateShootingStar
 	push af
 	pop af

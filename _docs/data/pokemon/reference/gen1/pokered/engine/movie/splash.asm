@@ -64,7 +64,7 @@ AnimateShootingStar:
 	ld c, 4
 	ld de, 4
 .clearOAMLoop
-	ld [hl], 160
+	ld [hl], 160 ; set the Y coordinate of the star's OAM to 160 to hide it off screen
 	add hl, de
 	dec c
 	jr nz, .clearOAMLoop
