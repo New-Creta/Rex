@@ -8,6 +8,7 @@
 #include "rex_engine/math/coords.h"
 
 #include "pokemon/map_coordinates.h"
+#include "pokemon/game_loops/game_loop_state.h"
 
 namespace pokemon
 {

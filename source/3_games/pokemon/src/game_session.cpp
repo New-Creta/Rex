@@ -40,42 +40,114 @@
 
 #include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
+#include "pokemon/oam_structs.h"
+
 namespace pokemon
 {
 	DEFINE_LOG_CATEGORY(LogGameSession);
 
 	GameSession::GameSession()
+		: m_state_info()
 	{
 		// We don't want any assets, script, resource, to magically load in another one, all of this needs to be explicitly defined in data, not in code.
 		// However, knowing what to load when the game boots up is tricky to specify in data.
 		// It's a bit of a chicken and egg problem. To just get it over with, we have a startup save file
 		// This acts like any other save file and holds all the data to initialize the game on first startup
 		// Any other save file gets loaded on top of this save file, overwriting data where needed
-		SaveFile startup_save_file = load_startup_savefile();
+		m_state_info.state = GameLoopState::Copyright;
 
-		init_map(startup_save_file);
-		init_player(startup_save_file);
-		init_camera();
+		m_state_tree.emplace(GameLoopState::Copyright, StateTask(
+			[this]() { begin_copyright(); },
+			[this]() { return tick_copyright(); },
+			[this]() { end_copyright(); }
+		));
+		m_state_tree.emplace(GameLoopState::BlackBorders, StateTask(
+			[this]() { begin_black_borders(); },
+			[this]() { return tick_black_borders(); },
+			[this]() { end_black_borders(); }
+		));
+		m_state_tree.emplace(GameLoopState::GamefreakLogo, StateTask(
+			[this]() { begin_gamefreak(); },
+			[this]() { return tick_gamefreak(); },
+			[this]() { end_gamefreak(); }
+		));
+		m_state_tree.emplace(GameLoopState::Fight, StateTask(
+			[this]() { begin_fight(); },
+			[this]() { return tick_fight(); },
+			[this]() { end_fight(); }
+		));
+		m_state_tree.emplace(GameLoopState::StartMenu, StateTask(
+			[this]() { begin_startmenu(); },
+			[this]() { return tick_startmenu(); },
+			[this]() { end_startmenu(); }
+		));
+		m_state_tree.emplace(GameLoopState::OakIntro, StateTask(
+			[this]() { begin_oak_intro(); },
+			[this]() { return tick_oak_intro(); },
+			[this]() { end_oak_intro(); }
+		));
+		m_state_tree.emplace(GameLoopState::Overworld, StateTask(
+			[this]() { begin_overworld(); },
+			[this]() { return tick_overworld(); },
+			[this]() { end_overworld(); }
+		));
+		m_state_tree.emplace(GameLoopState::Battle, StateTask(
+			[this]() { begin_battle(); },
+			[this]() { return tick_battle(); },
+			[this]() { end_battle(); }
+		));
 	}
 
 	void GameSession::update()
 	{
+		GameLoopState new_state = m_state_tree[m_state_info.state].tick();
+
+		if (new_state != m_state_info.state)
+		{
+			m_state_tree[m_state_info.state].end();
+			m_state_info.state = new_state;
+			m_state_tree[m_state_info.state].begin();
+			m_state_info.num_frames_active = 0;
+		}
+		else
+		{
+			m_state_info.num_frames_active++;
+		}
+
+
+
 		// Original Pokemon game loop:
 		// 
-		// Intro (Gamefreak logo, Gangar + Nidorino fight, startup screen)
+		// Intro 
+		// -> Copyright
+		// -> Gamefreak logo
+		//		-> Shooting start from top right to bottom left
+		//		-> Flash of gamefreak logo
+		//		-> Load small stars
+		// -> Gangar + Nidorino fight
+		// 
+		// Title Screen
+		// -> loops through pokemon, awaiting user input
+		// 
+		// Main Menu
 		// -> detects if an existing save is present
 		// -> if so add "continue" to main menu and loads main menu
 		// -> if not, load Prof oak intro and goes through that
-		//  
+		// 
 		// Overworld loop
 		// -> To much to go into detail, but this the main game loop
 		//
 		// Battle loop
-		// Is load on top of overworld loop
-		// Keeps looping until battle has finished
+		// -> Is loaded on top of overworld loop
+		// -> Keeps looping until battle has finished
 
-		m_game_loop = rsl::move(m_game_loop->run());
-
+		rsl::unique_ptr<GameLoop> new_game_loop = m_game_loop->run();
+		if (new_game_loop)
+		{
+			m_game_loop->end();
+			m_game_loop = rsl::move(new_game_loop);
+			m_game_loop->begin();
+		}
 
 
 
@@ -185,5 +257,184 @@ namespace pokemon
 		params.world_width_in_tiles.get() = m_scene_blockmap->width().get();
 
 		rex::gfx::scene_renderer::instance()->update_params(params);
+	}
+
+	void GameSession::begin_copyright()
+	{
+		// Load the copyright tiles into memory and send it to the gpu
+		rex::scratch_string copyright_tiles = rex::path::join(rex::engine::instance()->project_root(), "gfx", "splash", "copyright.png");
+		rex::scratch_string gamefreak_tiles = rex::path::join(rex::engine::instance()->project_root(), "gfx", "title", "gamefreak_inc.png");
+		
+		tiles::reset();
+		tiles::load(copyright_tiles);
+		tiles::load(gamefreak_tiles);
+		tiles::copy_to_vram();
+
+		tile_renderer::start_coord(2, 7);
+		tile_renderer::set_indices(
+			{
+				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A,										// ©'95.'96.'98 Nintendo
+				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72,				// ©'95.'96.'98 	 inc.
+				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, // ©'95.'96.'98 GAME FREAK inc.
+			}
+		);
+	}
+	pokemon::GameLoopState GameSession::tick_copyright()
+	{
+		const s16 num_frames_to_be_active = 180;
+		if (m_state_info.num_frames_active > num_frames_to_be_active)
+		{
+			return pokemon::GameLoopState::BlackBorders;
+		}
+		return pokemon::GameLoopState::Copyright;
+	}
+	void GameSession::end_copyright()
+	{
+
+	}
+
+	void GameSession::begin_black_borders()
+	{
+		// gengar tilemap holds the black tile which is required for the black border rendering
+		rex::scratch_string gengar_tiles = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "gengar.png");
+
+		rex::scratch_string nidorino_tiles_1 = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "red_nidorino_1.png");
+		rex::scratch_string nidorino_tiles_2 = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "red_nidorino_2.png");
+		rex::scratch_string nidorino_tiles_3 = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "red_nidorino_3.png");
+
+		tiles::reset();
+		tiles::load(gengar_tiles);
+		tiles::load(nidorino_tiles_1);
+		tiles::load(nidorino_tiles_2);
+		tiles::load(nidorino_tiles_3);
+		tiles::copy_to_vram();
+
+	}
+	GameLoopState GameSession::tick_black_borders()
+	{
+		const s16 num_frames_to_be_active = 64;
+		if (m_state_info.num_frames_active > num_frames_to_be_active)
+		{
+			return pokemon::GameLoopState::GamefreakLogo;
+		}
+		return pokemon::GameLoopState::BlackBorders;
+	}
+	void GameSession::end_black_borders()
+	{
+
+	}
+
+	void GameSession::begin_gamefreak()
+	{
+		rex::scratch_string gamefreak_text = rex::path::join(rex::engine::instance()->project_root(), "gfx", "splash", "gamefreak_presents.png");
+		rex::scratch_string gamefreak_logo = rex::path::join(rex::engine::instance()->project_root(), "gfx", "splash", "gamefreak_logo.png");
+		rex::scratch_string shooting_star = rex::path::join(rex::engine::instance()->project_root(), "gfx", "battle", "move_anim_1.png");
+		rex::scratch_string falling_star = rex::path::join(rex::engine::instance()->project_root(), "gfx", "splash", "falling_star.png");
+
+		tiles::load(gamefreak_text);
+		tiles::load(gamefreak_logo);
+		tiles::load(shooting_star, 0x03); // copy the third tile in the list, which is the top left quadrant of the star
+		tiles::load(shooting_star, 0x13); // copy the 13th tile in the list, which is the bottom left quadarant of the star
+		tiles::load(falling_star);
+
+		// gamefreak logo OAM data
+		oam::add(OAMStruct{10,  9, 0, 0, 0x8d, 0});
+		oam::add(OAMStruct{11,  9, 0, 0, 0x8e, 0});
+		oam::add(OAMStruct{10, 10, 0, 0, 0x8f, 0});
+		oam::add(OAMStruct{11, 10, 0, 0, 0x90, 0});
+		oam::add(OAMStruct{10, 11, 0, 0, 0x91, 0});
+		oam::add(OAMStruct{11, 11, 0, 0, 0x92, 0});
+		oam::add(OAMStruct{ 6, 12, 0, 0, 0x80, 0});
+		oam::add(OAMStruct{ 7, 12, 0, 0, 0x81, 0});
+		oam::add(OAMStruct{ 8, 12, 0, 0, 0x82, 0});
+		oam::add(OAMStruct{ 9, 12, 0, 0, 0x83, 0});
+		oam::add(OAMStruct{10, 12, 0, 0, 0x93, 0});
+		oam::add(OAMStruct{11, 12, 0, 0, 0x84, 0});
+		oam::add(OAMStruct{12, 12, 0, 0, 0x85, 0});
+		oam::add(OAMStruct{13, 12, 0, 0, 0x83, 0});
+		oam::add(OAMStruct{14, 12, 0, 0, 0x81, 0});
+		oam::add(OAMStruct{15, 12, 0, 0, 0x86, 0});
+
+		// shooting start OAM data
+		oam::add(OAMStruct{20, 0, 0, 0, 0xa0, OAMAttributes::DmgPalette });
+		oam::add(OAMStruct{20, 0, 0, 0, 0xa0, OAMAttributes::DmgPalette | OAMAttributes::FlipX });
+		oam::add(OAMStruct{20, 0, 0, 0, 0xa1, OAMAttributes::DmgPalette });
+		oam::add(OAMStruct{20, 0, 0, 0, 0xa1, OAMAttributes::DmgPalette | OAMAttributes::FlipX });
+
+		oam::add(OAMStruct{ 0, 0, 0, 0, 0xa2, OAMAttributes::BehindBg | OAMAttributes::DmgPalette });
+
+	}
+	pokemon::GameLoopState GameSession::tick_gamefreak()
+	{
+
+	}
+	void GameSession::end_gamefreak()
+	{
+
+	}
+
+	void GameSession::begin_fight()
+	{
+
+	}
+	pokemon::GameLoopState GameSession::tick_fight()
+	{
+
+	}
+	void GameSession::end_fight()
+	{
+
+	}
+
+	void GameSession::begin_startmenu()
+	{
+
+	}
+	pokemon::GameLoopState GameSession::tick_startmenu()
+	{
+
+	}
+	void GameSession::end_startmenu()
+	{
+
+	}
+
+	void GameSession::begin_oak_intro()
+	{
+
+	}
+	pokemon::GameLoopState GameSession::tick_oak_intro()
+	{
+
+	}
+	void GameSession::end_oak_intro()
+	{
+
+	}
+
+	void GameSession::begin_overworld()
+	{
+
+	}
+	pokemon::GameLoopState GameSession::tick_overworld()
+	{
+
+	}
+	void GameSession::end_overworld()
+	{
+
+	}
+
+	void GameSession::begin_battle()
+	{
+
+	}
+	pokemon::GameLoopState GameSession::tick_battle()
+	{
+
+	}
+	void GameSession::end_battle()
+	{
+
 	}
 }
