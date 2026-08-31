@@ -41,10 +41,14 @@ namespace pokemon
   {
   public:
     GameSession();
+    ~GameSession();
 
     void update();
 
   private:
+    void init_globals();
+    void init_state_tree();
+
     SaveFile load_startup_savefile() const;
 
     void init_map(const SaveFile& saveFile);

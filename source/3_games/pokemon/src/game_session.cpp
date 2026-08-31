@@ -40,12 +40,16 @@
 
 #include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
-#include "pokemon/oam_structs.h"
+#include "pokemon/oam.h"
+
+#include "pokemon/tiles.h"
+#include "pokemon/tile_renderer.h"
 
 namespace pokemon
 {
 	DEFINE_LOG_CATEGORY(LogGameSession);
 
+	
 	GameSession::GameSession()
 		: m_state_info()
 	{
@@ -54,48 +58,13 @@ namespace pokemon
 		// It's a bit of a chicken and egg problem. To just get it over with, we have a startup save file
 		// This acts like any other save file and holds all the data to initialize the game on first startup
 		// Any other save file gets loaded on top of this save file, overwriting data where needed
-		m_state_info.state = GameLoopState::Copyright;
 
-		m_state_tree.emplace(GameLoopState::Copyright, StateTask(
-			[this]() { begin_copyright(); },
-			[this]() { return tick_copyright(); },
-			[this]() { end_copyright(); }
-		));
-		m_state_tree.emplace(GameLoopState::BlackBorders, StateTask(
-			[this]() { begin_black_borders(); },
-			[this]() { return tick_black_borders(); },
-			[this]() { end_black_borders(); }
-		));
-		m_state_tree.emplace(GameLoopState::GamefreakLogo, StateTask(
-			[this]() { begin_gamefreak(); },
-			[this]() { return tick_gamefreak(); },
-			[this]() { end_gamefreak(); }
-		));
-		m_state_tree.emplace(GameLoopState::Fight, StateTask(
-			[this]() { begin_fight(); },
-			[this]() { return tick_fight(); },
-			[this]() { end_fight(); }
-		));
-		m_state_tree.emplace(GameLoopState::StartMenu, StateTask(
-			[this]() { begin_startmenu(); },
-			[this]() { return tick_startmenu(); },
-			[this]() { end_startmenu(); }
-		));
-		m_state_tree.emplace(GameLoopState::OakIntro, StateTask(
-			[this]() { begin_oak_intro(); },
-			[this]() { return tick_oak_intro(); },
-			[this]() { end_oak_intro(); }
-		));
-		m_state_tree.emplace(GameLoopState::Overworld, StateTask(
-			[this]() { begin_overworld(); },
-			[this]() { return tick_overworld(); },
-			[this]() { end_overworld(); }
-		));
-		m_state_tree.emplace(GameLoopState::Battle, StateTask(
-			[this]() { begin_battle(); },
-			[this]() { return tick_battle(); },
-			[this]() { end_battle(); }
-		));
+		init_globals();
+		init_state_tree();
+	}
+	GameSession::~GameSession()
+	{
+		tiles::shutdown();
 	}
 
 	void GameSession::update()
@@ -209,6 +178,57 @@ namespace pokemon
 		
 	}
 
+	void GameSession::init_globals()
+	{
+		tiles::init(rex::globals::make_unique<TilesManager>());
+		tile_renderer::init(rex::globals::make_unique<TileRenderer>());
+	}
+	void GameSession::init_state_tree()
+	{
+		m_state_info.state = GameLoopState::Copyright;
+
+		m_state_tree.emplace(GameLoopState::Copyright, StateTask(
+			[this]() { begin_copyright(); },
+			[this]() { return tick_copyright(); },
+			[this]() { end_copyright(); }
+		));
+		m_state_tree.emplace(GameLoopState::BlackBorders, StateTask(
+			[this]() { begin_black_borders(); },
+			[this]() { return tick_black_borders(); },
+			[this]() { end_black_borders(); }
+		));
+		m_state_tree.emplace(GameLoopState::GamefreakLogo, StateTask(
+			[this]() { begin_gamefreak(); },
+			[this]() { return tick_gamefreak(); },
+			[this]() { end_gamefreak(); }
+		));
+		m_state_tree.emplace(GameLoopState::Fight, StateTask(
+			[this]() { begin_fight(); },
+			[this]() { return tick_fight(); },
+			[this]() { end_fight(); }
+		));
+		m_state_tree.emplace(GameLoopState::StartMenu, StateTask(
+			[this]() { begin_startmenu(); },
+			[this]() { return tick_startmenu(); },
+			[this]() { end_startmenu(); }
+		));
+		m_state_tree.emplace(GameLoopState::OakIntro, StateTask(
+			[this]() { begin_oak_intro(); },
+			[this]() { return tick_oak_intro(); },
+			[this]() { end_oak_intro(); }
+		));
+		m_state_tree.emplace(GameLoopState::Overworld, StateTask(
+			[this]() { begin_overworld(); },
+			[this]() { return tick_overworld(); },
+			[this]() { end_overworld(); }
+		));
+		m_state_tree.emplace(GameLoopState::Battle, StateTask(
+			[this]() { begin_battle(); },
+			[this]() { return tick_battle(); },
+			[this]() { end_battle(); }
+		));
+	}
+
 	SaveFile GameSession::load_startup_savefile() const
 	{
 		rex::scratch_string default_startup_save_filepath = rex::path::join(rex::engine::instance()->project_root(), "startup_save_file.json");
@@ -265,13 +285,13 @@ namespace pokemon
 		rex::scratch_string copyright_tiles = rex::path::join(rex::engine::instance()->project_root(), "gfx", "splash", "copyright.png");
 		rex::scratch_string gamefreak_tiles = rex::path::join(rex::engine::instance()->project_root(), "gfx", "title", "gamefreak_inc.png");
 		
-		tiles::reset();
-		tiles::load(copyright_tiles);
-		tiles::load(gamefreak_tiles);
-		tiles::copy_to_vram();
+		s32 dst_start = 0;
+		dst_start += tiles::instance()->load(copyright_tiles, dst_start);
+		dst_start += tiles::instance()->load(gamefreak_tiles, dst_start);
+		tiles::instance()->copy_to_gpu();
 
-		tile_renderer::start_coord(2, 7);
-		tile_renderer::set_indices(
+		tile_renderer::instance()->set_indices(
+			2, 7,
 			{
 				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A,										// ©'95.'96.'98 Nintendo
 				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72,				// ©'95.'96.'98 	 inc.
@@ -302,12 +322,12 @@ namespace pokemon
 		rex::scratch_string nidorino_tiles_2 = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "red_nidorino_2.png");
 		rex::scratch_string nidorino_tiles_3 = rex::path::join(rex::engine::instance()->project_root(), "gfx", "intro", "red_nidorino_3.png");
 
-		tiles::reset();
-		tiles::load(gengar_tiles);
-		tiles::load(nidorino_tiles_1);
-		tiles::load(nidorino_tiles_2);
-		tiles::load(nidorino_tiles_3);
-		tiles::copy_to_vram();
+		s16 dst_start = 0;
+		dst_start += tiles::instance()->load(gengar_tiles, dst_start);
+		dst_start += tiles::instance()->load(nidorino_tiles_1, dst_start);
+		dst_start += tiles::instance()->load(nidorino_tiles_2, dst_start);
+		dst_start += tiles::instance()->load(nidorino_tiles_3, dst_start);
+		tiles::instance()->copy_to_gpu();
 
 	}
 	GameLoopState GameSession::tick_black_borders()

@@ -2,6 +2,8 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/engine/defines.h"
+#include "rex_engine/engine/globals.h"
+#include "pokemon/memory_constants.h"
 
 namespace pokemon
 {
@@ -22,4 +24,21 @@ namespace pokemon
 		s8 tile_id;			// Tile index to use from tilemap
 		s8 attributes;	// Attributes of the object
 	};
+
+	// OAM == Object Attribute Memory
+	class Oam
+	{
+	public:
+		Oam();
+
+	private:
+		rsl::array<OAMStruct, constants::g_oam_size / sizeof(OAMStruct)> m_objects;
+	};
+
+	namespace oam
+	{
+		void init(rex::globals::GlobalUniquePtr<Oam>&& oam);
+		Oam* instance();
+		void shutdown();
+	}
 }
