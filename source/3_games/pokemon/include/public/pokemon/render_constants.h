@@ -30,6 +30,9 @@ namespace pokemon
 		constexpr u8 g_block_height_px = g_num_tiles_per_block_column * g_tile_height_px;
 		constexpr u16 g_block_size_px = g_block_width_px * g_block_height_px;
 
+		constexpr u8 g_vram_tilemap_width = 16;
+		constexpr u8 g_vram_tilemap_height = 24;
+
 		constexpr u8 g_screen_width = 160;
 		constexpr u8 g_screen_height = 144;
 

@@ -288,9 +288,8 @@ namespace pokemon
 		s32 dst_start = 0;
 		dst_start += tiles::instance()->load(copyright_tiles, dst_start);
 		dst_start += tiles::instance()->load(gamefreak_tiles, dst_start);
-		tiles::instance()->copy_to_gpu();
 
-		tile_renderer::instance()->set_indices(
+		tiles::instance()->set_indices(
 			2, 7,
 			{
 				0x60, 0x61, 0x62, 0x61, 0x63, 0x61, 0x64, 0x7F, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A,										// ©'95.'96.'98 Nintendo
