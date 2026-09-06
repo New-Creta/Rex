@@ -32,54 +32,25 @@ namespace pokemon
 
 		// There is no guarantee that the tilemap on disk has the same resolution as the vram tilemap
 		// Therefore we have to ensure we have the proper mapping between them
-		// We load 1 vram row at a tile from the tilemapD
-		rsl::div_result res = rsl::div<s32>(dstStartIdx, constants::g_vram_tilemap_width);
-		s32 dst_start = res.quot * (constants::g_vram_tilemap_width * constants::g_tile_size_px) + res.rem * (constants::g_tile_size / constants::g_tile_height_px);
-		s32 src_start = 0;
-		
-		s32 dst_pixel_row_size = constants::g_vram_tilemap_width;
-		s32 src_pixel_row_size = tileset->row_width;
-
-		s32 dst_batch_size = constants::g_tile_width_px * dst_pixel_row_size;
-		s32 src_batch_size = constants::g_tile_width_px * src_pixel_row_size;
-
-		constexpr s32 src_tile_row_width = 2;
-		constexpr s32 dst_tile_row_width = 16;
-		
-
-
-
-
-		s32 tile_idx_being_copied = 0;
-
 		constexpr s32 tile_px_row_size = constants::g_tile_size / constants::g_tile_width_px;
-		s32 num_tiles = tileset->num_tiles();
+		s32 num_tiles = tileset->num_tiles;
 		for (s32 tile_idx = 0; tile_idx < num_tiles; ++tile_idx)
 		{
+			rsl::div_result dst_div_res = rsl::div<s32>(tile_idx, constants::g_vram_tilemap_width);
+			rsl::div_result src_div_res = rsl::div<s32>(tile_idx, tileset->row_width);
+
+			s32 dst_start = dst_div_res.quot * constants::g_tile_size * constants::g_vram_tilemap_width + dst_div_res.rem * tile_px_row_size;
+			s32 src_start = src_div_res.quot * constants::g_tile_size * tileset->row_width + src_div_res.rem * tile_px_row_size;
+
 			for (s32 i = 0; i < constants::g_tile_height_px; ++i)
 			{
-				s32 dst_tile_start = dst_start + batch_start + i * constants::g_vram_tilemap_width * tile_px_row_size;
-				s32 src_tile_start = src_start;
-			}
-		}
+				s32 dst_offset = dst_start + i * constants::g_vram_tilemap_width * tile_px_row_size;
+				s32 src_offset = src_start + i * tileset->row_width * tile_px_row_size;
 
+				void* dst = tilemap->data() + dst_offset;
+				void* src = tileset->data + src_offset;
 
-		// Now we have to ensure we only copy 1 vram tilemap row at a time
-		s32 num_tile_batches = 1 + tileset->num_tiles / constants::g_vram_tilemap_width;
-		for (s32 tile_batch_num = 0; tile_batch_num < num_tile_batches; ++tile_batch_num)
-		{
-			s32 dst_batch_start = tile_batch_num * dst_batch_size;
-			s32 src_batch_start = tile_batch_num * src_batch_size;
-			for (s32 i = 0; i < constants::g_tile_height_px; ++i)
-			{
-				s32 dst_offset = dst_start + batch_start + i * constants::g_vram_tilemap_width;
-				s32 src_offset = src_start + i * src_pixel_row_size;
-
-				void* dst = m_tilemap + dst_offset;
-
-				s32 src_offset = 0;
-				rsl::memcpy(dst, tileset.data + src_offset, constants::g_tile_width_px);
-				dst += constants::g_tile_width_px;
+				rsl::memcpy(dst, src, tile_px_row_size);
 			}
 		}
 	}
