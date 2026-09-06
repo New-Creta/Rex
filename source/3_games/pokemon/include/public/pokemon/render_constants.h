@@ -6,44 +6,58 @@ namespace pokemon
 {
 	namespace constants
 	{
+		constexpr u8 g_map_padding_blocks = 3;
+		
+		// The width and height of a single row of the tilemap in vram (represented in tiles)
+		constexpr u8 g_vram_tilemap_width = 16;
+		constexpr u8 g_vram_tilemap_height = 24;
+		
+		constexpr u8 g_screen_width = 160;
+		constexpr u8 g_screen_height = 144;
 
+		// Tiles
+		constexpr u8 g_tile_width_px = 8;
+		constexpr u8 g_tile_height_px = 8;
+		
+		constexpr u8 g_tile_size_px = g_tile_width_px * g_tile_height_px;
+		
+		constexpr u8 g_screen_width_in_tiles = g_screen_width / g_tile_width_px;
+		constexpr u8 g_screen_height_in_tiles = g_screen_height / g_tile_height_px;
+
+		// Squares
 		constexpr u8 g_num_tiles_per_square_row = 2;
 		constexpr u8 g_num_tiles_per_square_column = 2;
 		constexpr u8 g_num_tiles_per_square = g_num_tiles_per_square_row * g_num_tiles_per_square_column;
 
+		constexpr u8 g_square_width_px = g_num_tiles_per_square_row * g_tile_width_px;
+		constexpr u8 g_square_height_px = g_num_tiles_per_square_column * g_tile_height_px;
+		
+		constexpr u8 g_screen_width_in_squares = g_screen_width / g_square_width_px;
+		constexpr u8 g_screen_height_in_squares = g_screen_height / g_square_height_px;
+		
+		constexpr u16 g_square_size_px = g_square_width_px * g_square_height_px;
+
+		// Blocks
 		constexpr u8 g_num_tiles_per_block_row = 4;
 		constexpr u8 g_num_tiles_per_block_column = 4;
 		constexpr u8 g_num_tiles_per_block = g_num_tiles_per_block_row * g_num_tiles_per_block_column;
 
-		constexpr u8 g_map_padding_blocks = 3;
-		constexpr u8 g_map_padding_tiles = g_map_padding_blocks * g_num_tiles_per_block_row;
-
-		constexpr u8 g_tile_width_px = 8;
-		constexpr u8 g_tile_height_px = 8;
-		constexpr u8 g_tile_size_px = g_tile_width_px * g_tile_height_px;
-
-		constexpr u8 g_square_width_px = g_num_tiles_per_square_row * g_tile_width_px;
-		constexpr u8 g_square_height_px = g_num_tiles_per_square_column * g_tile_height_px;
-		constexpr u16 g_square_size_px = g_square_width_px * g_square_height_px;
-
 		constexpr u8 g_block_width_px = g_num_tiles_per_block_row * g_tile_width_px;
 		constexpr u8 g_block_height_px = g_num_tiles_per_block_column * g_tile_height_px;
-		constexpr u16 g_block_size_px = g_block_width_px * g_block_height_px;
-
-		constexpr u8 g_vram_tilemap_width = 16;
-		constexpr u8 g_vram_tilemap_height = 24;
-
-		constexpr u8 g_screen_width = 160;
-		constexpr u8 g_screen_height = 144;
-
-		constexpr u8 g_screen_width_in_tiles = g_screen_width / g_tile_width_px;
-		constexpr u8 g_screen_height_in_tiles = g_screen_height / g_tile_height_px;
-
-		constexpr u8 g_screen_width_in_squares = g_screen_width / g_square_width_px;
-		constexpr u8 g_screen_height_in_squares = g_screen_height / g_square_height_px;
 
 		constexpr u8 g_screen_width_in_blocks = g_screen_width / g_block_width_px;
 		constexpr u8 g_screen_height_in_blocks = g_screen_height / g_block_height_px;
+		
+		constexpr u16 g_block_size_px = g_block_width_px * g_block_height_px;
+
+
+
+
+
+
+
+
+
 
 		constexpr rsl::pointi8 g_camera_look_ahead =
 		{

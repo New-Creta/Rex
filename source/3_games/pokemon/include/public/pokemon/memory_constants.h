@@ -33,6 +33,7 @@ namespace pokemon
 		constexpr s32 g_romn_size = 16_kib;
 		constexpr s32 g_vram_size = 8_kib;
 		constexpr s32 g_tilemap_size = 6144_bytes;
+		constexpr s32 g_tile_size = 16_bytes;
 		constexpr s32 g_tile_indices_size = 2048_bytes;
 		constexpr s32 g_xram_size = 8_kib;
 		constexpr s32 g_wram_size = 8_kib;
