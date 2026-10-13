@@ -8,7 +8,7 @@ namespace pokemon
 	class StateTask
 	{
 		using task_begin_func = rsl::function<void()>;
-		using task_tick_func = rsl::function<GameLoopState()>;
+		using task_tick_func = rsl::function<void()>;
 		using task_end_func = rsl::function<void()>;
 
 	public:
