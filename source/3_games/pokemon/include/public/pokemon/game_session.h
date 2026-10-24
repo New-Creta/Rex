@@ -51,60 +51,8 @@ namespace pokemon
 
     SaveFile load_startup_savefile() const;
 
-    void init_map(const SaveFile& saveFile);
-    void init_player(const SaveFile& saveFile);
-    void init_camera();
-
-    void update_render_info();
-
-
-    void begin_copyright();
-    GameLoopState tick_copyright();
-    void end_copyright();
-
-    void begin_black_borders();
-    GameLoopState tick_black_borders();
-    void end_black_borders();
-
-    void begin_gamefreak();
-    GameLoopState tick_gamefreak();
-    void end_gamefreak();
-
-    void begin_fight();
-    GameLoopState tick_fight();
-    void end_fight();
-
-    void begin_startmenu();
-    GameLoopState tick_startmenu();
-    void end_startmenu();
-
-    void begin_oak_intro();
-    GameLoopState tick_oak_intro();
-    void end_oak_intro();
-
-    void begin_overworld();
-    GameLoopState tick_overworld();
-    void end_overworld();
-
-    void begin_battle();
-    GameLoopState tick_battle();
-    void end_battle();
-
-
-
   private:
     StateInfo m_state_info;
     rsl::unordered_map<GameLoopState, StateTask> m_state_tree;
-
-
-    rex::Map* m_active_map;
-
-    // The blockmap, representing the current map and surroundings
-    rsl::unique_ptr<GameBlockMap> m_scene_blockmap;
-    rsl::unique_ptr<PlayerCharacter> m_player_character;
-
-    rsl::unique_ptr<rex::gfx::Camera2D> m_camera;
-
-    rsl::unique_ptr<GameLoop> m_game_loop;
   };
 }

@@ -24,6 +24,7 @@ namespace pokemon
 		// Loads a tileset into vram at a location.
 		// that location being an index
 		s16 load(rsl::string_view tilesetPath, s16 dstStartIdx);
+		s16 load(rsl::string_view tilesetPath, s16 dstStartIdx, s16 srcStartTileIdx, s16 srcNumTileIdx);
 		// Set tile indices to be rendered at coordinate
 		void set_indices(s16 x, s16 y, rsl::initializer_list<s32> indices);
 

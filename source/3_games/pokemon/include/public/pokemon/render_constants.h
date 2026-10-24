@@ -50,8 +50,17 @@ namespace pokemon
 		
 		constexpr u16 g_block_size_px = g_block_width_px * g_block_height_px;
 
+		class ScreenObjectSize
+		{
+		public:
+			constexpr explicit ScreenObjectSize(u8 sizeInPixels = 0)
+				: m_size_in_pixels(sizeInPixels)
+			{
+			}
 
-
+		private:
+			u8 m_size_in_pixels;
+		};
 
 
 
@@ -72,4 +81,10 @@ namespace pokemon
 			g_screen_height_in_tiles 
 		};
 	}
+}
+
+
+constexpr pokemon::constants::ScreenObjectSize operator""_tile_width(unsigned long long val)
+{
+	return pokemon::constants::ScreenObjectSize(val);
 }

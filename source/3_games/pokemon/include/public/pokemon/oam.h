@@ -5,10 +5,13 @@
 #include "rex_engine/engine/globals.h"
 #include "pokemon/memory_constants.h"
 
+#include "rex_std/bonus/math.h"
+
 namespace pokemon
 {
-	enum class OAMAttributes
+	enum class OAMAttributes : u8
 	{
+		None						= 0,
 		CGBPalleteMask	= 0b11,
 		Bank						= BIT(3),
 		DmgPalette			= BIT(4),
@@ -17,12 +20,14 @@ namespace pokemon
 		BehindBg				= BIT(7)
 	};
 
+
+	rsl::pointi8 calc_oam_coord(s8 x_tile, s8 y_tile, s8 x_pixel, s8 y_pixel);
 	struct OAMStruct
 	{
 		s8 y_coord;			// Y coordinate in pixels, starting from the top
 		s8 x_coord;			// X coordinate in pixels, starting from the left
 		s8 tile_id;			// Tile index to use from tilemap
-		s8 attributes;	// Attributes of the object
+		OAMAttributes attributes;	// Attributes of the object
 	};
 
 	// OAM == Object Attribute Memory
@@ -30,6 +35,8 @@ namespace pokemon
 	{
 	public:
 		Oam();
+
+		void set(s32 idx, OAMStruct oamData);
 
 	private:
 		rsl::array<OAMStruct, constants::g_oam_size / sizeof(OAMStruct)> m_objects;

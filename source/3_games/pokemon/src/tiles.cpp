@@ -25,6 +25,13 @@ namespace pokemon
 
 	s16 TilesManager::load(rsl::string_view tilesetPath, s16 dstStartIdx)
 	{
+		s16 start_idx = 0;
+		s16 num_to_load = -1;
+		return load(tilesetPath, dstStartIdx, start_idx, num_to_load);
+	}
+
+	s16 TilesManager::load(rsl::string_view tilesetPath, s16 dstStartIdx, s16 srcStartTileIdx, s16 srcNumTileIdx)
+	{
 		REX_ASSERT_X(dstStartIdx < constants::g_tilemap_size / constants::g_tile_size, "destination index must be less than {} as that's how many tiles can possible be loaded into RAM");
 
 		// Load the tileset from disk
@@ -33,8 +40,11 @@ namespace pokemon
 		// There is no guarantee that the tilemap on disk has the same resolution as the vram tilemap
 		// Therefore we have to ensure we have the proper mapping between them
 		constexpr s32 tile_px_row_size = constants::g_tile_size / constants::g_tile_width_px;
-		s32 num_tiles = tileset->num_tiles;
-		for (s32 tile_idx = 0; tile_idx < num_tiles; ++tile_idx)
+		s32 num_tiles = srcNumTileIdx != -1 
+			? tileset->num_tiles
+			: rsl::min(srcNumTileIdx, tileset->num_tiles);
+		
+		for (s32 tile_idx = srcStartTileIdx; tile_idx < num_tiles; ++tile_idx)
 		{
 			rsl::div_result dst_div_res = rsl::div<s32>(tile_idx, constants::g_vram_tilemap_width);
 			rsl::div_result src_div_res = rsl::div<s32>(tile_idx, tileset->row_width);
