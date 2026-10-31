@@ -45,3 +45,4 @@ packages/
 build/CMakeFiles/
 build/CMakeCache.txt
 build/.cmake/
+_docs/data/gameboy/gameboy_debugger/bgb.ini

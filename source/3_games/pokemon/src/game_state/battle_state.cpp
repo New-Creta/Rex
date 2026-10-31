@@ -16,9 +16,9 @@ namespace pokemon
 	{
 
 	}
-	GameLoopState BattleState::tick(s32 frameIdx)
+	GameState BattleState::tick(s32 frameIdx)
 	{
-
+		return GameState::Battle;
 	}
 	void BattleState::end()
 	{

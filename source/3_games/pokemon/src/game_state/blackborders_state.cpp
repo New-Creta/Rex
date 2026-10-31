@@ -2,8 +2,9 @@
 
 #include "rex_engine/memory/memory_types.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_std/bonus/utility.h"
 
-#include "pokemon/tiles.h"
+#include "pokemon/system/tiles.h"
 
 namespace pokemon
 {
@@ -31,16 +32,15 @@ namespace pokemon
 		dst_start += tiles::instance()->load(nidorino_tiles_1, dst_start);
 		dst_start += tiles::instance()->load(nidorino_tiles_2, dst_start);
 		dst_start += tiles::instance()->load(nidorino_tiles_3, dst_start);
-		tiles::instance()->copy_to_gpu();
 	}
-	GameLoopState BlackBordersState::tick(s32 frameIdx)
+	GameState BlackBordersState::tick(s32 frameIdx)
 	{
 		const s16 num_frames_to_be_active = 64;
 		if (frameIdx > num_frames_to_be_active)
 		{
-			return pokemon::GameLoopState::GamefreakLogo;
+			return pokemon::GameState::GamefreakLogo;
 		}
-		return pokemon::GameLoopState::BlackBorders;
+		return pokemon::GameState::BlackBorders;
 	}
 	void BlackBordersState::end()
 	{

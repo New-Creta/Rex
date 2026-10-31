@@ -1,7 +1,7 @@
 #include "rex_engine/gfx/shader_reflection/shader_pipeline_reflection_builder.h"
 #include "rex_engine/gfx/shader_reflection/view_table_builder.h"
 
-#include "rex_std/bonus/utility/add_flag.h"
+#include "rex_std/bonus/utility/flags.h"
 
 namespace rex
 {

@@ -16,9 +16,9 @@ namespace pokemon
 	{
 
 	}
-	GameLoopState StartMenuState::tick(s32 frameIdx)
+	GameState StartMenuState::tick(s32 frameIdx)
 	{
-
+		return GameState::StartMenu;
 	}
 	void StartMenuState::end()
 	{

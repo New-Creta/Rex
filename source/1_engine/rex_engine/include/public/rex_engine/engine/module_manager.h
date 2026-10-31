@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/module.h"
-#include "rex_engine/engine/script_module.h"
 #include "rex_engine/engine/globals.h"
+#include "rex_engine/system/process.h"
 
 #include "rex_std/vector.h"
 

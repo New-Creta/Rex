@@ -3,10 +3,10 @@
 #include "rex_engine/memory/memory_types.h"
 #include "rex_engine/filesystem/path.h"
 
-#include "pokemon/tiles.h"
-#include "pokemon/oam.h"
+#include "pokemon/system/tiles.h"
+#include "pokemon/system/oam.h"
 
-#include "pokemon/render_constants.h"
+#include "pokemon/constants/render_constants.h"
 
 namespace pokemon
 {
@@ -62,10 +62,12 @@ namespace pokemon
 		oam::instance()->set(3, OAMStruct{ rex::narrow_cast<s8>(x_size * 20), 0, 0xa1i8, rsl::add_flag(OAMAttributes::DmgPalette, OAMAttributes::FlipX) });
 
 	}
-	GameLoopState GamefreakLogoState::tick(s32 frameIdx)
+	GameState GamefreakLogoState::tick(s32 frameIdx)
 	{
 		// Load this when the big star loop has finished
 		load_small_start_oam();
+
+		return GameState::GamefreakLogo;
 	}
 	void GamefreakLogoState::end()
 	{

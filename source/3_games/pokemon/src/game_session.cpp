@@ -14,8 +14,8 @@
 
 #include "rex_engine/shapes/rect.h"
 
-#include "pokemon/poke_structs.h"
-#include "pokemon/render_constants.h"
+#include "pokemon/old_code/poke_structs.h"
+#include "pokemon/constants/render_constants.h"
 
 #include "rex_std/bonus/math.h"
 #include "rex_std/bonus/math/point.h"
@@ -40,10 +40,9 @@
 
 #include "rex_engine/gfx/rendering/render_passes/background_pass.h"
 
-#include "pokemon/oam.h"
+#include "pokemon/system/oam.h"
 
-#include "pokemon/tiles.h"
-#include "pokemon/tile_renderer.h"
+#include "pokemon/system/tiles.h"
 
 #include "pokemon/game_state/battle_state.h"
 #include "pokemon/game_state/blackborders_state.h"
@@ -76,27 +75,37 @@ namespace pokemon
 		tiles::shutdown();
 	}
 
+	void GameSession::post_init()
+	{
+		m_state_tree.at(m_state_info.state).begin();
+	}
+
 	void GameSession::update()
 	{
-		GameLoopState next_state = m_state_tree[m_state_info.state].tick(m_state_info.num_frames_active);
+		StateTask& current_state_task = m_state_tree.at(m_state_info.state);
+		GameState next_state = current_state_task.tick(m_state_info.num_frames_active);
 
 		if (next_state != m_state_info.state)
 		{
-			m_state_tree[m_state_info.state].end();
+			REX_INFO(LogGameSession, "Transition from game state '{}' -> '{}'", rsl::enum_refl::enum_name(m_state_info.state), rsl::enum_refl::enum_name(next_state));
+
+			current_state_task.end();
 			m_state_info.state = next_state;
-			m_state_tree[m_state_info.state].begin();
+			m_state_tree.at(m_state_info.state).begin();
 			m_state_info.num_frames_active = 0;
 		}
 		else
 		{
 			m_state_info.num_frames_active++;
 		}
+
+		REX_STATIC_TODO("This should eventually make its way into the engine, but for now, we'll render from game code");
+		m_renderer.render();
 	}
 
 	void GameSession::init_globals()
 	{
-		tiles::init(rex::globals::make_unique<TilesManager>());
-		tile_renderer::init(rex::globals::make_unique<TileRenderer>());
+		tiles::init(rex::globals::make_unique<BackgroundTilesPass>());
 	}
 	void GameSession::init_state_tree()
 	{
@@ -125,16 +134,16 @@ namespace pokemon
 		// -> Is loaded on top of overworld loop
 		// -> Keeps looping until battle has finished
 
-		m_state_info.state = GameLoopState::Copyright;
+		m_state_info.state = GameState::Copyright;
 
-		m_state_tree.emplace(GameLoopState::Copyright, CopyrightState());
-		m_state_tree.emplace(GameLoopState::BlackBorders, BlackBordersState());
-		m_state_tree.emplace(GameLoopState::GamefreakLogo, GamefreakLogoState());
-		m_state_tree.emplace(GameLoopState::Fight, FightSceneState());
-		m_state_tree.emplace(GameLoopState::StartMenu, StartMenuState());
-		m_state_tree.emplace(GameLoopState::OakIntro, OakIntroState());
-		m_state_tree.emplace(GameLoopState::Overworld, OverworldState());
-		m_state_tree.emplace(GameLoopState::Battle, BattleState());
+		m_state_tree.emplace(GameState::Copyright, CopyrightState());
+		m_state_tree.emplace(GameState::BlackBorders, BlackBordersState());
+		m_state_tree.emplace(GameState::GamefreakLogo, GamefreakLogoState());
+		m_state_tree.emplace(GameState::Fight, FightSceneState());
+		m_state_tree.emplace(GameState::StartMenu, StartMenuState());
+		m_state_tree.emplace(GameState::OakIntro, OakIntroState());
+		m_state_tree.emplace(GameState::Overworld, OverworldState());
+		m_state_tree.emplace(GameState::Battle, BattleState());
 	}
 
 	SaveFile GameSession::load_startup_savefile() const

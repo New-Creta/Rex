@@ -16,9 +16,9 @@ namespace pokemon
 	{
 
 	}
-	GameLoopState OverworldState::tick(s32 frameIdx)
+	GameState OverworldState::tick(s32 frameIdx)
 	{
-
+		return GameState::Overworld;
 	}
 	void OverworldState::end()
 	{

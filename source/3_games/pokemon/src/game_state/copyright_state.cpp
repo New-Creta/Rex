@@ -4,7 +4,7 @@
 #include "rex_engine/engine/engine.h"
 #include "rex_engine/filesystem/path.h"
 
-#include "pokemon/tiles.h"
+#include "pokemon/system/tiles.h"
 
 namespace pokemon
 {
@@ -37,14 +37,14 @@ namespace pokemon
 			}
 			);
 	}
-	GameLoopState CopyrightState::tick(s32 frameIdx)
+	GameState CopyrightState::tick(s32 frameIdx)
 	{
 		const s16 num_frames_to_be_active = 180;
 		if (frameIdx > num_frames_to_be_active)
 		{
-			return pokemon::GameLoopState::BlackBorders;
+			return pokemon::GameState::BlackBorders;
 		}
-		return pokemon::GameLoopState::Copyright;
+		return pokemon::GameState::Copyright;
 	}
 	void CopyrightState::end()
 	{

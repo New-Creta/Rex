@@ -114,7 +114,22 @@ namespace rex
       desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
       desc.Texture2D.MipLevels = 1;
       desc.Texture2D.MostDetailedMip = 0;
-      desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+      // If we only have a single channel stored
+      // Map the value of that channel to every other channel
+      // to render greyscale
+      if (desc.Format == DXGI_FORMAT_R8_UNORM)
+      {
+        desc.Shader4ComponentMapping = D3D12_ENCODE_SHADER_4_COMPONENT_MAPPING(
+          D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_0,
+          D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_0,
+          D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_0,
+          D3D12_SHADER_COMPONENT_MAPPING_FORCE_VALUE_1);
+      }
+      else
+      {
+        desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+      }
 
       DxResourceView desc_handle = new_free_handle();
       m_device->CreateShaderResourceView(resource, &desc, desc_handle);

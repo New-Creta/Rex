@@ -1,9 +1,13 @@
 #include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/engine/asset_db.h"
 
 #include "rex_engine/diagnostics/log.h"
 
 #include "rex_engine/system/process.h"
+
 #include "pokemon/game_session.h"
+#include "pokemon/serialization/binary_loaders/tileset_loader.h"
+#include "pokemon/old_code/tileset.h"
 
 #include "imgui/imgui.h"
 
@@ -13,11 +17,20 @@ namespace pokemon
 
   rsl::unique_ptr<GameSession> g_game_session;
 
+  void init_data_importers()
+  {
+    rex::asset_db::instance()->add_loader<Tileset>(rsl::make_unique<TilesetLoader>());
+  }
+
   bool initialise(const rex::ApplicationCreationParams& /*appCreationParams*/)
   {
+    init_data_importers();
+
     g_game_session = rsl::make_unique<GameSession>();
 
     REX_INFO(LogPokemon, "Pokemon initialized");
+
+    g_game_session->post_init();
 
     return true;
   }

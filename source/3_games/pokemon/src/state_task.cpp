@@ -14,7 +14,7 @@ namespace pokemon
 	{
 		m_on_begin();
 	}
-	GameLoopState StateTask::tick(s32 frameIdx)
+	GameState StateTask::tick(s32 frameIdx)
 	{
 		return m_on_tick(frameIdx);
 	}

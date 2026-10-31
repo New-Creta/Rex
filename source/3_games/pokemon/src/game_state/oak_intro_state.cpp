@@ -16,9 +16,9 @@ namespace pokemon
 	{
 
 	}
-	GameLoopState OakIntroState::tick(s32 frameIdx)
+	GameState OakIntroState::tick(s32 frameIdx)
 	{
-
+		return GameState::OakIntro;
 	}
 	void OakIntroState::end()
 	{

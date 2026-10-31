@@ -5,13 +5,11 @@
 #include "rex_std/string_view.h"
 #include "rex_std/unordered_map.h"
 
-#include "pokemon/game_loops/save_file.h"
-#include "pokemon/poke_structs.h"
-#include "pokemon/map_coordinates.h"
-#include "pokemon/game_blockmap.h"
-#include "pokemon/player_character.h"
-
-#include "pokemon/game_loops/game_loop.h"
+#include "pokemon/old_code/save_file.h"
+#include "pokemon/old_code/poke_structs.h"
+#include "pokemon/old_code/map_coordinates.h"
+#include "pokemon/old_code/game_blockmap.h"
+#include "pokemon/old_code/player_character.h"
 
 #include "rex_engine/assets/map.h"
 
@@ -23,7 +21,7 @@
 #include "rex_std/unordered_map.h"
 
 #include "pokemon/state_task.h"
-#include "pokemon/game_loops/game_loop_state.h"
+#include "pokemon/pkmn_renderer.h"
 
 namespace pokemon
 {
@@ -33,7 +31,7 @@ namespace pokemon
 
   struct StateInfo
   {
-    GameLoopState state;
+    GameState state;
     s16 num_frames_active;
   };
 
@@ -43,6 +41,10 @@ namespace pokemon
     GameSession();
     ~GameSession();
 
+    // Function called after all systems have been initialized.
+    // Useful to call if you need to do some setup as part of the first frame
+    // that you don't want to repeat in the update loop
+    void post_init();
     void update();
 
   private:
@@ -53,6 +55,7 @@ namespace pokemon
 
   private:
     StateInfo m_state_info;
-    rsl::unordered_map<GameLoopState, StateTask> m_state_tree;
+    rsl::unordered_map<GameState, StateTask> m_state_tree;
+    Renderer m_renderer;
   };
 }

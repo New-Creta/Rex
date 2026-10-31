@@ -61,7 +61,20 @@ namespace rex
         dst += aligned_pitch_size;
       }
 
-      return inc_texture_offsset(total_size, alignment);
+      return inc_texture_offset(total_size, alignment);
+    }
+
+    UploadDataAllocation DxUploadBuffer::allocate_data(s64 size, s32 alignment)
+    {
+      // Write the data into our mapped memory
+      REX_ASSERT_X(can_fit_alloc(size, alignment), "Upload buffer overflow. Would write more into the upload buffer than is supported");
+
+      dec_buffer_offset(size);
+
+      rsl::byte* data = (rsl::byte*)m_mapped_data + current_buffer_offset(); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      data = align(data, alignment);
+
+      return UploadDataAllocation(this, rsl::span<rsl::byte>(data, size), current_buffer_offset());
     }
 
     void* DxUploadBuffer::api_object() const

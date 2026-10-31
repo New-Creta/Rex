@@ -103,6 +103,10 @@ namespace rex
       void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
 
+      // Allocate a section of the upload buffer to the user to copy directly into
+      UploadDataAllocation allocate_upload_region(rsl::memory_size size) override;
+      void upload_allocated_region(UnorderedAccessBuffer* buffer, UploadDataAllocation uploadAllocation, s32 offset) override;
+
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;
       void copy_rt_to_texture2d(RenderTargetBase* rt, Texture2D* texture) override;

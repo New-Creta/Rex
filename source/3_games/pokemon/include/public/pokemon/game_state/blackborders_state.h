@@ -10,7 +10,7 @@ namespace pokemon
 		BlackBordersState();
 
 		void begin();
-		GameLoopState tick(s32 frameIdx);
+		GameState tick(s32 frameIdx);
 		void end();
 
 	private:
