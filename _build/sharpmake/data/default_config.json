@@ -69,6 +69,14 @@
       "None"
     ]
   },
+  "CppCompiler": {
+    "Description": "Compiler to use to compile C++ projects",
+    "Value": "MSVC",
+    "Options": [
+      "MSVC",
+      "Clang"
+    ]
+  },
   "disable-clang-tidy-for-thirdparty": {
     "Description": "Disable clang-tidy usage on third-party projects",
     "Value": true

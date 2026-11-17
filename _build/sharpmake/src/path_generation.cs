@@ -1,5 +1,6 @@
 using Sharpmake;
 using System.IO;
+using System.Xml.Linq;
 
 namespace rex
 {
@@ -46,6 +47,11 @@ namespace rex
       // hardcoded to a value with taking config into account
       // this is to make it easy on the runtime to find the file
       return "module.json";
+    }
+    // Return the path where the module file should be written to
+    public static string CreateIntermediateModuleFilePath(RexConfiguration conf)
+    {
+      return Path.Combine(conf.IntermediatePath, $"{conf.Project.Name}_{conf.Name}_module.json");
     }
     // Return the path where the module file should be written to
     public static string CreateModuleFilePath(RexConfiguration conf)

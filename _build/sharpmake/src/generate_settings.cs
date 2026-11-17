@@ -412,6 +412,7 @@ namespace ProjectGen
     static public bool AutoTestsEnabled = false;                  // Generate solution for auto testing
 
     static public IDE IDE = IDE.VisualStudio19;                     // Choose the IDE this sharpmake instance is generating for
+    static public Compiler CppCompiler = Compiler.MSVC;           // The compiler to use to compile C++ projects
 
     static public string ClangTidyRegex = "";                     // Regex of files to run clang-tidy on
     static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;  // The graphics API to be used by the engine

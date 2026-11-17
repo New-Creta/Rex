@@ -28,7 +28,7 @@ public class PokemonProject : GameProject
     if (ProjectGen.Settings.AutoTestsEnabled)
     {
       conf.Output = Configuration.OutputType.Lib;
-      conf.add_public_define("REX_ENABLE_AUTO_TESTS");
+      conf.AddPublicDefine("REX_ENABLE_AUTO_TESTS");
     }
     else
     {
@@ -44,7 +44,7 @@ public class PokemonProject : GameProject
     {
       case Platform.win32:
       case Platform.win64:
-        conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools | DependencySetting.Runtime);
 
         if (target.Config == Config.release)
         {

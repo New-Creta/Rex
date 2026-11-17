@@ -24,7 +24,7 @@ public class RegenerateProjects : Project
   public void Configure(RexConfiguration conf, RexTarget target)
   {
     // We need give the configuration a proper name or sharpmake fails to generate
-    conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
+    conf.Name = target.Config.ToString().ToLower();
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Name);
     conf.SolutionFolder = "_Generation";
 

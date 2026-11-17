@@ -51,7 +51,7 @@ def main():
 
     
     # strip out all non-tiles at the end
-    # a non tile is defined as being all white, at the end of a 2bppp
+    # a non tile is defined as being all white, at the end of a 2bpp
     has_non_tiles = True
     while has_non_tiles:
         last_tile_bytes = tile_bytes[-1]
