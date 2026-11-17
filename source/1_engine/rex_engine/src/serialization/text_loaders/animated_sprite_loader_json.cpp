@@ -19,7 +19,7 @@ namespace rex
 		
 	}
 
-	rsl::unique_ptr<Asset> AnimatedSpriteLoaderJson::load(rsl::string_view assetPath, LoadFlags loadFlags)
+	rsl::unique_ptr<Asset> AnimatedSpriteLoaderJson::load(rsl::string_view assetPath, LoadFlags /*loadFlags*/)
 	{
 		rex::json::json json_blob = rex::json::read_from_file(assetPath);
 		rsl::string_view flipbook_path = json_blob["flipbook"];
@@ -27,7 +27,7 @@ namespace rex
 		Flipbook* flipbook = rex::asset_db::instance()->load<Flipbook>(flipbook_path);
 		return rsl::make_unique<AnimatedSprite>(flipbook);
 	}
-	void AnimatedSpriteLoaderJson::hydrate_asset(Asset* asset, rsl::string_view assetPath)
+	void AnimatedSpriteLoaderJson::hydrate_asset(Asset* /*asset*/, rsl::string_view /*assetPath*/)
 	{
 		// Nothing to implement
 	}
