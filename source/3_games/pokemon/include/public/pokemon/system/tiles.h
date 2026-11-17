@@ -8,6 +8,8 @@
 
 #include "rex_engine/gfx/rendering/render_pass.h"
 
+#include "glm/glm.hpp"
+
 namespace rex
 {
 	namespace gfx
@@ -25,20 +27,16 @@ namespace pokemon
 {
 	struct TilemapRenderingMetaData
 	{
-		// Tile texture data
-		u32 texture_tiles_per_row;   // the number of tiles per row in the tileset texture
-		f32 inv_texture_width;       // the inverse width of the tileset texture, in pixels
-		f32 inv_texture_height;      // the inverse height of the tileset texture, in pixels
+		u32 screen_tiles_per_row;							// the number of tiles per tile row on the screen
+		u32 tilemap_tiles_per_row;						// the number of tiles per tile row in the texture
 
-		// Render target data
-		u32 screen_width_in_tiles;   // the number of tiles we render on a single row
-		f32 inv_tile_screen_width;   // the inverse of the width of a single tile on the screen
-		f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
+		glm::vec2 inv_tile_screen_size;				// the inverse of the width of a single tile on the screen
+		glm::vec2 inv_pixel_screen_size;			// the inverse size of a single vintage pixel
 
-		int screen_pixel_offset_x;			// Additional vintage pixel offset applied to the camera position (useful for when player is walking)
-		int screen_pixel_offset_y;			// Additional vintage pixel offset applied to the camera position (useful for when player is walking)
-		float inv_pixel_screen_width;		// the inverse size of a single vintage pixel
-		float inv_pixel_screen_height;	// the inverse size of a single vintage pixel
+		glm::vec2 tile_tilemap_size;					// the width and height of a single tile in the tilemap
+		glm::vec2 inv_tile_tilemap_size;			// the inverse width and height of a single tile in the tilemap
+
+		rsl::point<s32> screen_pixel_offset;	// the extra offset of a tile using vintage pixel size
 	};
 
 	class BackgroundTilesPass : public rex::gfx::RenderPass
@@ -50,6 +48,7 @@ namespace pokemon
 		// that location being an index
 		s16 load(rsl::string_view tilesetPath, s16 dstStartIdx);
 		s16 load(rsl::string_view tilesetPath, s16 dstStartIdx, s16 srcStartTileIdx, s16 srcNumTileIdx);
+		
 		// Set tile indices to be rendered at coordinate
 		void set_indices(s16 x, s16 y, rsl::initializer_list<s32> indices);
 
@@ -63,6 +62,8 @@ namespace pokemon
 		void init_ib(rex::gfx::RenderContext* ctx);
 		void init_shader_params();
 		void init_tile_render_info();
+
+		rex::gfx::UnorderedAccessBuffer* active_tilemap();
 
 	private:
 		// The vertex buffer for a single tile
@@ -87,7 +88,8 @@ namespace pokemon
 
 		// The indices of the tiles to render on screen
 		// Starting from the top left and going to the bottom right
-		rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tile_indices;
+		rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tile_indices_a;
+		rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tile_indices_b;
 
 		TilemapRenderingMetaData m_metadata;
 	};

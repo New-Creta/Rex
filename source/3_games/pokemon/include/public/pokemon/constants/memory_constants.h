@@ -34,7 +34,7 @@ namespace pokemon
 		constexpr s64 g_vram_size = 8_kib;
 		constexpr s64 g_tilemap_size = 6144_bytes;
 		constexpr s64 g_tile_size = 16_bytes;
-		constexpr s64 g_tile_indices_size = 2048_bytes;
+		constexpr s64 g_tile_indices_size = 1024_bytes; // The gameboy has 2 of these
 		constexpr s64 g_xram_size = 8_kib;
 		constexpr s64 g_wram_size = 8_kib;
 		constexpr s64 g_oam_size  = 160_bytes;

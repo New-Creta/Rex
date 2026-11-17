@@ -2,7 +2,7 @@
 
 #include "pokemon/constants/memory_constants.h"
 #include "pokemon/constants/render_constants.h"
-#include "pokemon/old_code/tileset.h"
+#include "pokemon/system/registers.h"
 
 #include "rex_engine/engine/asset_db.h"
 #include "rex_engine/serialization/image_loading.h"
@@ -19,6 +19,7 @@
 
 #include "rex_std/bonus/cinttypes.h"
 
+
 namespace pokemon
 {
 	using TileVertex = rex::gfx::VertexPos2DTex;
@@ -26,6 +27,7 @@ namespace pokemon
 
 	BackgroundTilesPass::BackgroundTilesPass()
 		: rex::gfx::RenderPass(create_desc())
+		, m_metadata()
 	{
 		init_gfx_resources();
 	}
@@ -53,8 +55,10 @@ namespace pokemon
 
 		REX_ASSERT_X(image_load_res.num_channels == 1, "Expecting only a single channel for tilesets. '{}' has more than 1 channel", tilesetPath);
 
-		const u8 tiles_per_byte = 4;
-		const u8 tiles_2bpp_data_size = image_load_res.data.byte_size() / tiles_per_byte;
+		const u8 pixels_per_byte = 4;
+		const u32 tiles_2bpp_data_size = image_load_res.data.byte_size() / pixels_per_byte;
+
+		REX_ASSERT_X(tiles_2bpp_data_size <= constants::g_tilemap_size, "Trying to load too many tiles in 1 go. The limit is {}, you try to load {}", constants::g_tilemap_size, tiles_2bpp_data_size);
 
 		auto ctx = rex::gfx::gal::instance()->new_render_ctx();
 		rex::gfx::UploadDataAllocation upload_allocation = ctx->allocate_upload_region(tiles_2bpp_data_size);
@@ -83,13 +87,14 @@ namespace pokemon
 		}
 
 		ctx->upload_allocated_region(m_tilemap.get(), upload_allocation);
-		return image_load_res.data.elem_size();
+		return tiles_2bpp_data_size / constants::g_tile_size;
 	}
+	
 	void BackgroundTilesPass::set_indices(s16 x, s16 y, rsl::initializer_list<s32> indices)
 	{
-		s32 start_idx = y * constants::g_screen_height_in_tiles + x;
+		s32 start_idx = y * constants::g_screen_width_in_tiles + x;
 		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
-		render_ctx->update_buffer(m_tile_indices.get(), indices.begin(), indices.size(), start_idx);
+		render_ctx->update_buffer(active_tilemap(), indices.begin(), indices.size(), start_idx);
 	}
 
 	void BackgroundTilesPass::run_pass(rex::gfx::RenderContext* ctx)
@@ -124,29 +129,14 @@ namespace pokemon
 	void BackgroundTilesPass::init_gfx_resources()
 	{
 		m_tilemap = rex::gfx::gal::instance()->create_unordered_access_buffer(constants::g_tilemap_size);
-		m_tile_indices = rex::gfx::gal::instance()->create_unordered_access_buffer(constants::g_tile_indices_size);
+		m_tile_indices_a = rex::gfx::gal::instance()->create_unordered_access_buffer(constants::g_tile_indices_size);
+		m_tile_indices_b = rex::gfx::gal::instance()->create_unordered_access_buffer(constants::g_tile_indices_size);
 
 		auto ctx = rex::gfx::gal::instance()->new_render_ctx();
 		init_vb(ctx.get());
 		init_ib(ctx.get());
 		init_shader_params();
 		init_tile_render_info();
-
-
-
-
-		// This metadata requires updating as we are rendering slightly different now
-		// We're not using a texture anymore for rendering tiles, we're using a byte buffer instead
-		// This has an impact on UV calculation and sampling of the right color
-		//
-		// Also the screen width / height will always be the same, as we're using the way the game boy
-		// rendering techniques to render tiles to the screen (although we render all tiles in 1 go, instead
-		// of splitting this up into 3 instruction cycles).
-		// We render 1 tiles outside of the immediate viewport to support for camera offset
-		// when the camera is moving to have a smooth transition of the background
-		m_metadata.screen_width_in_tiles = constants::g_screen_width_in_tiles;
-		m_metadata.inv_pixel_screen_width = 2.0f / constants::g_screen_width;
-		m_metadata.inv_pixel_screen_height = 2.0f / constants::g_screen_height;
 	}
 	void BackgroundTilesPass::init_vb(rex::gfx::RenderContext* ctx)
 	{
@@ -192,8 +182,45 @@ namespace pokemon
 	}
 	void BackgroundTilesPass::init_tile_render_info()
 	{
-		m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData));
+		// This metadata requires updating as we are rendering slightly different now
+		// We're not using a texture anymore for rendering tiles, we're using a byte buffer instead
+		// This has an impact on UV calculation and sampling of the right color
+		//
+		// Also the screen width / height will always be the same, as we're using the way the game boy
+		// rendering techniques to render tiles to the screen (although we render all tiles in 1 go, instead
+		// of splitting this up into 3 instruction cycles).
+		// We render 1 tiles outside of the immediate viewport to support for camera offset
+		// when the camera is moving to have a smooth transition of the background
+		
+		// This is the resolution of the VRAM tiles buffer
+		// As tiles get loaded into VRAM and from there, they get copied
+		// into the render target
+		// This is the resolution of the render target, represented in tiles
+		m_metadata.screen_tiles_per_row = constants::g_screen_width_in_tiles;
+		m_metadata.inv_pixel_screen_size = { 2.0f / constants::g_screen_width, 2.0f / constants::g_screen_height };
+		m_metadata.inv_tile_screen_size = { 2.0f / constants::g_screen_width_in_tiles, 2.0f / constants::g_screen_height_in_tiles };
+
+		m_metadata.tilemap_tiles_per_row = constants::g_vram_tilemap_width;
+		m_metadata.tile_tilemap_size = { constants::g_vram_tilemap_width, constants::g_vram_tilemap_height };
+		m_metadata.inv_tile_tilemap_size = { 1.0f / constants::g_vram_tilemap_width, 1.0f / constants::g_vram_tilemap_height };
+
+		m_metadata.screen_pixel_offset = { 0, 0 };
+
+		m_tile_render_info = rex::gfx::gal::instance()->create_constant_buffer(sizeof(TilemapRenderingMetaData), "Tilemap Rendering Metadata");
 		set("RenderingMetaData", m_tile_render_info.get());
+
+		auto render_ctx = rex::gfx::gal::instance()->new_render_ctx();
+		render_ctx->update_buffer(m_tile_render_info.get(), &m_metadata, sizeof(m_metadata));
+	}
+
+	rex::gfx::UnorderedAccessBuffer* BackgroundTilesPass::active_tilemap()
+	{
+		if (registers::g_lcdc.bg_tile_map || registers::g_lcdc.window_tilemap)
+		{
+			return m_tile_indices_b.get();
+		}
+
+		return m_tile_indices_a.get();
 	}
 
 	namespace tiles
