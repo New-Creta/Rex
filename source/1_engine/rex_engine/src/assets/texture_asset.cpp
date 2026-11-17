@@ -7,16 +7,25 @@
 
 namespace rex
 {
-	TextureAsset::TextureAsset(u8* data, s32 width, s32 height, s32 /*numChannels*/)
+	TextureAsset::TextureAsset(u8* data, s32 width, s32 height, gfx::TextureFormat textureFormat)
 	{
-		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, gfx::TextureFormat::Unorm4, data);
+		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, textureFormat, data);
 	}
-	TextureAsset::TextureAsset(rsl::Rgba* data, s32 width, s32 height, s32 /*numChannels*/)
+	TextureAsset::TextureAsset(rsl::Rgba* data, s32 width, s32 height, gfx::TextureFormat textureFormat)
 	{
-		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, gfx::TextureFormat::Unorm4, data);
+		m_texture_resource = gfx::gal::instance()->create_texture2d(width, height, textureFormat, data);
 	}
 
 	TextureAsset::~TextureAsset() = default;
+
+	s32 TextureAsset::width() const
+	{
+		return m_texture_resource->width();
+	}
+	s32 TextureAsset::height() const
+	{
+		return m_texture_resource->height();
+	}
 
 	const gfx::Texture2D* TextureAsset::texture_resource() const
 	{

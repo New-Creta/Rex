@@ -70,15 +70,15 @@ namespace pokemon
 	{
 		m_input_mappings = rex::asset_db::instance()->load<rex::InputMapping>("Pokemon/inputs/player_input.json");
 
-		m_input_mappings->bind_action("walk_up",			[this](const rex::KeyState& info) { move_up();		});
-		m_input_mappings->bind_action("walk_down",		[this](const rex::KeyState& info) { move_down();	});
-		m_input_mappings->bind_action("walk_left",		[this](const rex::KeyState& info) { move_left();	});
-		m_input_mappings->bind_action("walk_right",		[this](const rex::KeyState& info) { move_right(); });
+		m_input_mappings->bind_action("walk_up",			[this](const rex::KeyState& /*info*/) { move_up();		});
+		m_input_mappings->bind_action("walk_down",		[this](const rex::KeyState& /*info*/) { move_down();	});
+		m_input_mappings->bind_action("walk_left",		[this](const rex::KeyState& /*info*/) { move_left();	});
+		m_input_mappings->bind_action("walk_right",		[this](const rex::KeyState& /*info*/) { move_right(); });
 
-		m_input_mappings->bind_action("idle_up",			[this](const rex::KeyState& info) { go_idle(); });
-		m_input_mappings->bind_action("idle_down",		[this](const rex::KeyState& info) { go_idle(); });
-		m_input_mappings->bind_action("idle_left",		[this](const rex::KeyState& info) { go_idle(); });
-		m_input_mappings->bind_action("idle_right",		[this](const rex::KeyState& info) { go_idle();  });
+		m_input_mappings->bind_action("idle_up",			[this](const rex::KeyState& /*info*/) { go_idle(); });
+		m_input_mappings->bind_action("idle_down",		[this](const rex::KeyState& /*info*/) { go_idle(); });
+		m_input_mappings->bind_action("idle_left",		[this](const rex::KeyState& /*info*/) { go_idle(); });
+		m_input_mappings->bind_action("idle_right",		[this](const rex::KeyState& /*info*/) { go_idle();  });
 	}
 	void PlayerCharacter::init_sprite()
 	{

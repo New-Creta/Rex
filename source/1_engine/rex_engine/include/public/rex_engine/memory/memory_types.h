@@ -43,6 +43,7 @@ namespace rex
 	template <typename Key, typename Value>
 	using scratch_map						= rsl::map<Key, Value, rsl::less<Key>, GlobalScratchAllocator>;
 	using scratch_string				= rsl::basic_string<char8, rsl::char_traits<char8>, GlobalScratchAllocator>;
+	using scratch_wstring				= rsl::basic_string<tchar, rsl::char_traits<tchar>, GlobalScratchAllocator>;
 	using scratch_string_stream = rsl::basic_stringstream<char8, rsl::char_traits<char8>, GlobalScratchAllocator>;
 
 	//----------------------
@@ -57,6 +58,7 @@ namespace rex
 	template <typename Key, typename Value>
 	using temp_map							= rsl::map<Key, Value, rsl::less<Key>, GlobalSingleFrameAllocator>;
 	using temp_string						= rsl::basic_string<char8, rsl::char_traits<char8>, GlobalSingleFrameAllocator>;
+	using temp_wstring					= rsl::basic_string<tchar, rsl::char_traits<tchar>, GlobalSingleFrameAllocator>;
 	using temp_string_stream = rsl::basic_stringstream<char8, rsl::char_traits<char8>, GlobalSingleFrameAllocator>;
 
 }

@@ -5,6 +5,9 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory.h"
 
+#include "rex_std/functional.h"
+#include "rex_std/span.h"
+
 // DATA UPLOAD STRATEGY
 // Textures are added to the front of the buffer
 // Buffers are added at the back
@@ -49,6 +52,31 @@ namespace rex
 {
   namespace gfx
   {
+    class UploadBuffer;
+    class UploadDataAllocation
+    {
+    public:
+      UploadDataAllocation(UploadBuffer* uploadBuffer, rsl::span<rsl::byte> allocation, s64 writeOffset);
+
+      rsl::byte& UploadDataAllocation::operator[](s32 idx);
+			const rsl::byte& UploadDataAllocation::operator[](s32 idx) const;
+
+      rsl::byte* data();
+      s64 size() const;
+      s64 write_offset() const;
+      bool is_from_buffer(UploadBuffer* uploadBuffer) const;
+
+    private:
+      // The upload buffer the allocation was made from
+      UploadBuffer* m_upload_buffer;
+
+      // The allocation block itself
+      rsl::span<rsl::byte> m_allocation;
+
+      // The write offset into the buffer where the allocation starts
+      s64 m_write_offset;
+    };
+
     // Interface for an api agnostic upload buffer
     class UploadBuffer : public Buffer
     {
@@ -64,6 +92,8 @@ namespace rex
       // Write data on cpu side, it returns the offset into the upload buffer where data was written to
       virtual s64 stage_texture_data(const void* data, s32 width, s32 height, TextureFormat format) = 0;
 
+      // Allocate an area within the upload buffer so the user can manually copy into this data
+      virtual UploadDataAllocation allocate_data(s64 size, s32 alignment = 1) = 0;
 
     protected:
       // Return if the buffer can support an allocation of a given size and allignment
@@ -77,7 +107,7 @@ namespace rex
       // Decrease the offset of where buffer data goes
       s64 dec_buffer_offset(s64 size);
       // Increase the offset of where texture data goes
-      s64 inc_texture_offsset(s64 size, s32 alignment);
+      s64 inc_texture_offset(s64 size, s32 alignment);
 
     private:
       // Textures are written at the front of the buffer

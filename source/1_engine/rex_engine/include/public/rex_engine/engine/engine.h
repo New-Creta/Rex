@@ -16,6 +16,7 @@ namespace rex
 	{
 		rsl::string project_name;
 		rsl::string root;
+		rsl::string intermediate_data_root;
 		rsl::string data_root;
 		rsl::string engine_root;
 		rsl::string project_root;
@@ -63,6 +64,9 @@ namespace rex
 
 		// Returns the root of all files
 		rsl::string_view root() const;
+
+		// Returns the root of all intermediate files, aka the .rex folder
+		rsl::string_view intermediate_data_root() const;
 
 		// Returns the root directory where all data is loaded from
 		rsl::string_view data_root() const;

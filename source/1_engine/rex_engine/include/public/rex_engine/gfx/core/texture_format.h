@@ -10,6 +10,7 @@ namespace rex
     enum class TextureFormat
     {
       Unknown = 0,
+      Unorm1,       // 1 component,  1 byte per component
       Unorm3,       // 3 components, 1 byte per component
       Unorm4,       // 4 components, 1 byte per component
       Unorm4Srgb,   // 4 components, 1 byte per component, scaled for SRGB

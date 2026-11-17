@@ -293,6 +293,7 @@ namespace rex
         {
         case TextureFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
         case TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+        case TextureFormat::Unorm1: return DXGI_FORMAT_R8_UNORM;
         case TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
         case TextureFormat::Depth32: return DXGI_FORMAT_D32_FLOAT;
         case TextureFormat::Depth24Stencil8: return DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -969,6 +970,7 @@ namespace rex
 
         case DXGI_FORMAT_R8G8B8A8_UNORM:        return TextureFormat::Unorm4;
         case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:   return TextureFormat::Unorm4Srgb;
+        case DXGI_FORMAT_R8_UNORM:              return TextureFormat::Unorm1;
 
         case DXGI_FORMAT_R32G32B32A32_TYPELESS:
         case DXGI_FORMAT_R32G32B32A32_FLOAT:
@@ -1028,7 +1030,6 @@ namespace rex
         case DXGI_FORMAT_R16_SNORM:
         case DXGI_FORMAT_R16_SINT:
         case DXGI_FORMAT_R8_TYPELESS:
-        case DXGI_FORMAT_R8_UNORM:
         case DXGI_FORMAT_R8_UINT:
         case DXGI_FORMAT_R8_SNORM:
         case DXGI_FORMAT_R8_SINT:

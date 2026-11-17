@@ -23,11 +23,14 @@
 
 #include "rex_engine/gfx/system/graphics_context.h"
 
+#include "rex_std/span.h"
+
 namespace rex
 {
 	namespace gfx
 	{
 		class GraphicsEngine;
+		class UploadDataAllocation;
 	}
 
 	namespace gfx
@@ -161,6 +164,11 @@ namespace rex
 			// Update an structured buffer's data
 			virtual void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size) = 0;
 			virtual void update_buffer(StructuredBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
+
+			// Allocate a section of the upload buffer to the user to copy directly into
+			virtual UploadDataAllocation allocate_upload_region(rsl::memory_size size) = 0;
+			virtual void upload_allocated_region(UnorderedAccessBuffer* buffer, UploadDataAllocation uploadAllocation, s32 offset = 0) = 0;
+
 			// Update a texture's data
 			virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 			virtual void copy_rt_to_texture2d(RenderTargetBase* rt, Texture2D* texture) = 0;

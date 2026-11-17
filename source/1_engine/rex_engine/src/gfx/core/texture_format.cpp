@@ -10,6 +10,7 @@ namespace rex
 		{
       switch (format)
       {
+      case rex::gfx::TextureFormat::Unorm1:            return 1 * sizeof(char8);
       case rex::gfx::TextureFormat::Unorm4:            return 4 * sizeof(char8);
       case rex::gfx::TextureFormat::Unorm3:            return 3 * sizeof(char8);
       case rex::gfx::TextureFormat::Unorm4Srgb:        return 4 * sizeof(char8);

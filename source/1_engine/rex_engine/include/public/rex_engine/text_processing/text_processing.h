@@ -79,4 +79,29 @@ namespace rex
   // January starts at index 1
   s32 month_name_to_nr(rsl::string_view monthName);
 
+  // converts a multi byte string to a wide character string
+  template <typename StringType>
+  StringType to_wstring(rsl::string_view str)
+  {
+    StringType wide_str;
+    wide_str.resize(str.size());
+    to_wstring(str, wide_str.data(), wide_str.length() + 1);
+
+    return wide_str;
+  }
+  void to_wstring(rsl::string_view str, tchar* outBuffer, s32 maxLength);
+
+  // converts a wide character string to a multi byte string
+  template <typename StringType>
+  StringType to_string(rsl::wstring_view wideStr)
+  {
+    StringType str;
+    str.resize(wideStr.size());
+    to_string(wideStr, str.data(), str.length() + 1);
+
+    return str;
+  }
+  void to_string(rsl::wstring_view str, char8* outBuffer, s32 maxLength);
+
+
 } // namespace rex

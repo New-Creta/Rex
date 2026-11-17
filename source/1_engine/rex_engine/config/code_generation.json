@@ -16,6 +16,7 @@
     "ClassName": "MountingPoint",
     "Filepath": "1_engine/rex_engine/include/public/rex_engine/filesystem/mounting_point.h",
     "Content": [
+      "Root /*Root of everything. Consider this as the path pointing to the root of the entire workspace*/",
       "Logs /*Folder where all logs go*/",
       "EngineSettings /*Root directory of engine settings*/",
       "EngineMaterials /*Root directory of engine settings*/",

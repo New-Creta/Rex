@@ -4,6 +4,8 @@
 #include "rex_directx/resources/dx_resource.h"
 #include "rex_engine/gfx/resources/upload_buffer.h"
 
+#include "rex_std/span.h"
+
 namespace rex
 {
   namespace gfx
@@ -30,6 +32,9 @@ namespace rex
       s64 stage_buffer_data(const void* data, s64 size, s32 alignment = 1) override;
       // Write data on cpu side, it returns the offset into the upload buffer where data was written to
       s64 stage_texture_data(const void* data, s32 width, s32 height, TextureFormat format) override;
+
+      // Allocate an area within the upload buffer so the user can manually copy into this data
+      UploadDataAllocation allocate_data(s64 size, s32 alignment = 1);
 
       void* api_object() const override;
 

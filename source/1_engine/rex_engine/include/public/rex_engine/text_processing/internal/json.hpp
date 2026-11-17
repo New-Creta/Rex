@@ -21573,7 +21573,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             auto result = m_data.m_value.object->emplace(rsl::forward<KeyType>(key), nullptr);
-            return set_parent(result.key->second);
+            return set_parent(result.inserted_element->value);
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));

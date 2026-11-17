@@ -319,7 +319,24 @@ namespace rex
       update_buffer(dx_sb->dx_object(), data, size, offset);
     }
 
-    // Update a texture's data on the gpu
+    UploadDataAllocation DxRenderContext::allocate_upload_region(rsl::memory_size size)
+    {
+      UploadBufferLock upload_buffer_lock = api_engine()->lock_upload_buffer();
+
+      return upload_buffer_lock.upload_buffer()->allocate_data(size);
+    }
+
+    // Upload a previous allocated span from of the upload buffer to the GPU
+    void DxRenderContext::upload_allocated_region(UnorderedAccessBuffer* buffer, UploadDataAllocation uploadAllocation, s32 offset)
+    {
+      UploadBufferLock upload_buffer_lock = api_engine()->lock_upload_buffer();
+      DxUnorderedAccessBuffer* dx_ua_buffer = d3d::to_dx12(buffer);
+
+      // Find the write offset into the upload buffer based
+      REX_ASSERT_X(uploadAllocation.is_from_buffer(upload_buffer_lock.upload_buffer()), "Trying to upload data from the wrong upload buffer");
+      m_cmd_list->CopyBufferRegion(dx_ua_buffer->dx_object(), offset, d3d::to_dx12(upload_buffer_lock.upload_buffer())->dx_object(), uploadAllocation.write_offset(), uploadAllocation.size());
+    }
+
     void DxRenderContext::update_texture2d(Texture2D* texture, const void* data)
     {
       UploadBufferLock upload_buffer_lock = api_engine()->lock_upload_buffer();
